@@ -1,2 +1,3 @@
 from test_computechi2 import test_computechi2
+from test_iterfit import test_iterfit
 from test_hogg_iau_name import test_hogg_iau_name

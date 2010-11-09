@@ -10,5 +10,14 @@ setup(
     license='LICENSE.txt',
     description='Replacement for IDL',
     long_description=open('README.txt').read(),
+    classifiers = [ 'Development Status :: 2 - Pre-Alpha',
+        'Environment :: Console',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python',
+        'Topic :: Scientific/Engineering',
+        'Topic :: Scientific/Engineering :: Astronomy',
+        ],
 )
 
