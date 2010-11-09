@@ -4,6 +4,8 @@
 def pcomp(x,**kwargs):
     """Replacement for IDL pcomp built-in.
     """
+    import numpy as np
+    from scipy.linalg import eigh
     if x.ndim != 2:
         raise ValueError('Input array must be two-dimensional')
     no,nv = x.shape
