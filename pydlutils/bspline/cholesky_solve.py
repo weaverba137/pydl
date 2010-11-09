@@ -2,6 +2,7 @@
 #
 #
 def cholesky_solve(a,bb):
+    import numpy as np
     b = bb.copy()
     bw = a.shape[0]
     n = b.shape[0] - bw

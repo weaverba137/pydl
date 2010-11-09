@@ -5,8 +5,12 @@ def set_maskbits():
     """Populate the maskbits cache.
     """
     import yanny
+    import pydlutils.sdss
+    import os
+    import os.path
     if pydlutils.sdss.maskbits is None:
-        maskfile = yanny.yanny(os.getenv('IDLUTILS_DIR')+'/data/sdss/sdssMaskbits.par')
+        maskfile = yanny.yanny(os.path.join(
+            os.getenv('IDLUTILS_DIR'),'data','sdss','sdssMaskbits.par'))
         if str(maskfile) == '':
             raise IOError('File with mask bits not found!')
         #

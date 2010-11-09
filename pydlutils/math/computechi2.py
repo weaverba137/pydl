@@ -2,6 +2,7 @@ def computechi2(y,sqivar,templates):
     """Solve the linear set of equations Ax=b using SVD.
     """
     import numpy as np
+    from numpy.linalg import svd
     if len(templates.shape) > 1:
         nstar = templates.shape[1]
     else:

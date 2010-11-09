@@ -1,4 +1,5 @@
 def cholesky_band(l,mininf=0.0,verbose=False):
+    import numpy as np
     lower = l.copy()
     bw,nn = lower.shape
     n = nn - bw

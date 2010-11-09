@@ -4,6 +4,9 @@
 def iterfit(xdata,ydata,invvar=None,**kwargs):
     """Iteratively fit a bspline set to data.
     """
+    import numpy as np
+    from pydlutils.bspline import bspline
+    from pydlutils.math import djs_reject
     nx = xdata.size
     if ydata.size != nx:
         raise ValueError('Dimensions of xdata and ydata do not agree.')

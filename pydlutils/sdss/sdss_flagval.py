@@ -6,6 +6,7 @@ def sdss_flagval(flagprefix,inlabel):
 
     Some bitfields are larger than 32 bits, so use python long() just to be safe.
     """
+    import pydlutils.sdss
     pydlutils.sdss.set_maskbits()
     #
     # Make sure inlabel is a list
@@ -14,9 +15,9 @@ def sdss_flagval(flagprefix,inlabel):
         inlabel = [inlabel]
     flagvalue = 0L
     for l in inlabel:
-        if flagprefix.upper() in maskbits:
-            if l.upper() in maskbits[flagprefix.upper()]:
-                flagvalue += 2L**maskbits[flagprefix.upper()][l.upper()]
+        if flagprefix.upper() in pydlutils.sdss.maskbits:
+            if l.upper() in pydlutils.sdss.maskbits[flagprefix.upper()]:
+                flagvalue += 2L**pydlutils.sdss.maskbits[flagprefix.upper()][l.upper()]
             else:
                 print "Unknown bit label %s for flag %s!" % (flagprefix.upper(), l.upper())
                 return None

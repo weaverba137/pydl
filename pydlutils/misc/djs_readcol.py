@@ -17,6 +17,7 @@ def djs_readcol(name,**kwargs):
     X = skip
     """
     import re
+    import numpy as np
     #
     # Number of lines
     #
