@@ -1,4 +1,8 @@
 #
+# yannytools is pretty much a necessity
+#
+setupRequired("yannytools")
+#
 # idlutils is needed to get the maskbits data
 #
 setupOptional("idlutils")

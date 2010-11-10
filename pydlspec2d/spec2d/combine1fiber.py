@@ -1,6 +1,11 @@
 def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     """Combine several spectra of the same object, or resample a single spectrum.
     """
+    import numpy as np
+    import pydlutils.bspline
+    import pydlutils.sdss
+    from pydl import smooth
+    from pydlspec2d.spec2d import aesthetics
     #
     # Check that dimensions of inputs are valid.
     #
@@ -23,7 +28,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     # Set defaults
     #
-    EPS = np.finfo(pylab.float32).eps
+    EPS = np.finfo(np.float32).eps
     if 'binsz' in kwargs:
         binsz = kwargs['binsz']
     else:
@@ -214,7 +219,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     # Grow regions where 3 or more pixels are rejected together ???
     #
     # print newivar
-    foo = pydl.smooth(newivar,3)
+    foo = smooth(newivar,3)
     # print foo
     # sys.exit(1)
     badregion = np.absolute(foo) < EPS

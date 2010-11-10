@@ -1,6 +1,8 @@
 def aesthetics(flux,invvar,**kwargs):
     import numpy as np
     from scipy.special import erf
+    from pydlutils.image import djs_maskinterp
+    from pydlspec2d import Pydlspec2dException
     badpts = invvar == 0
     if badpts.any():
         if 'method' not in kwargs:
@@ -8,9 +10,9 @@ def aesthetics(flux,invvar,**kwargs):
         else:
             method = kwargs['method']
         if method == 'traditional':
-            newflux = pydlutils.image.djs_maskinterp(flux,invvar == 0,const=True)
+            newflux = djs_maskinterp(flux,invvar == 0,const=True)
         elif method == 'noconst':
-            newflux = pydlutils.image.djs_maskinterp(flux,invvar == 0)
+            newflux = djs_maskinterp(flux,invvar == 0)
         elif method == 'mean':
             newflux = flux.copy()
             goodpts = invvar > 0
@@ -21,7 +23,7 @@ def aesthetics(flux,invvar,**kwargs):
             nflux = flux.size
             mingood = goodpts.min()
             maxgood = goodpts.max()
-            newflux = pydlutils.image.djs_maskinterp(flux,invvar == 0,const=True)
+            newflux = djs_maskinterp(flux,invvar == 0,const=True)
             pixels = np.arange(nflux,dtype='f')
             if mingood > 0:
                 damp1 = float(min(mingood,l))
