@@ -1,5 +1,5 @@
 #
-#
+# $Id$
 #
 def spec_path(plate,**kwargs):
     """Return the path to spPlate files

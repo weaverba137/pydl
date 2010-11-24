@@ -155,6 +155,13 @@ def readspec(platein,fiber='all',**kwargs):
         # Read photoPlate information, if available
         #
         photofile = os.path.join(sppath[0],"photoPlate-%s.fits" % pmjdstr)
+        if not os.path.exists(photofile):
+            #
+            # Hmm, maybe this is an SDSS-I,II plate
+            #
+            photofile = os.path.join(os.getenv('SPECTRO_MATCH'),run2d,
+                os.path.basename(os.getenv('PHOTO_RESOLVE')),thisplate,
+                "photoPlate-%s.fits" % pmjdstr)
         if os.path.exists(photofile):
             photop = pyfits.open(photofile)
             tmp = photop[1].data[thisfiber-1]
