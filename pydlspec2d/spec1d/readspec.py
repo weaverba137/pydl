@@ -32,6 +32,10 @@ def readspec(platein,fiber='all',**kwargs):
             nmjd = 1
         if nmjd != nplate:
             raise TypeError("Plate & MJD must have the same length!")
+    if 'run2d' in kwargs:
+        run2d = kwargs['run2d']
+    else:
+        run2d = os.getenv('RUN2D')
     if 'run1d' in kwargs:
         run1d = kwargs['run1d']
     else:
@@ -41,7 +45,7 @@ def readspec(platein,fiber='all',**kwargs):
         # Read all fibers
         #
         nfibers = number_of_fibers(plate,**kwargs)
-        total_fibers = pylab.sum(nfibers)
+        total_fibers = nfibers.sum()
         platevec = np.zeros(total_fibers,dtype='i4')
         fibervec = np.zeros(total_fibers,dtype='i4')
         k = 0
@@ -160,7 +164,7 @@ def readspec(platein,fiber='all',**kwargs):
             # Hmm, maybe this is an SDSS-I,II plate
             #
             photofile = os.path.join(os.getenv('SPECTRO_MATCH'),run2d,
-                os.path.basename(os.getenv('PHOTO_RESOLVE')),thisplate,
+                os.path.basename(os.getenv('PHOTO_RESOLVE')),"%04d" % thisplate,
                 "photoPlate-%s.fits" % pmjdstr)
         if os.path.exists(photofile):
             photop = pyfits.open(photofile)

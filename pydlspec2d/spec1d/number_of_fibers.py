@@ -7,9 +7,19 @@ def number_of_fibers(plate,**kwargs):
     import os
     import os.path
     import pyfits
+    import numpy as np
     from pydlspec2d.spec1d import latest_mjd
     mjd = latest_mjd(plate,**kwargs)
     nfiber = np.zeros(mjd.size,dtype='i4')
+    #
+    # SDSS-I,II plates
+    #
+    nfiber[mjd < 55025] = 640
+    #
+    # Short circuit the case where
+    #
+    if (nfiber == 640).all():
+        return nfiber
     #
     # Not all BOSS plates have 1000 fibers
     #
@@ -35,8 +45,4 @@ def number_of_fibers(plate,**kwargs):
     for k in range(mjd.size):
         nfiber[k] = platentotal[(plateplate==plate[k]) & (platemjd==mjd[k]) &
         (platerun2d==run2d) & (platerun1d==run1d)]
-    #
-    # SDSS-I,II plates
-    #
-    nfiber[mjd < 55025] = 640
     return nfiber
