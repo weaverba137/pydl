@@ -1,5 +1,5 @@
 #
-#
+# $Id$
 #
 def uniq(x,index=None):
     """Replicates the IDL uniq function.

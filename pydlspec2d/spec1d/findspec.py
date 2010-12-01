@@ -20,7 +20,7 @@ def findspec(*args,**kwargs):
     if 'sdss' in kwargs:
         topdir = os.getenv('SPECTRO_REDUX')
         run2d = '26'
-        run1d = None
+        run1d = ''
     else:
         if 'topdir' in kwargs:
             topdir = kwargs['topdir']
@@ -57,7 +57,7 @@ def findspec(*args,**kwargs):
             pydlspec2d.spec1d.findspec_cache['plist'] = plist
     qdone = plist.field('STATUS1D') == 'Done'
     qdone2d = plist.field('RUN2D').strip() == run2d
-    if run1d is None:
+    if run1d == '':
         qdone1d = np.ones(plist.size,dtype='bool')
     else:
         qdone1d = plist.field('RUN1D').strip() == run1d
@@ -109,7 +109,7 @@ def findspec(*args,**kwargs):
         ('RA','d'),('DEC','d')])
     for i in range(iplate.size):
         spplate = pydlspec2d.spec1d.readspec(plist[iplate[i]].field('PLATE'),mjd=plist[iplate[i]].field('MJD'),
-            topdir=topdir,run2d=run2d)
+            topdir=topdir,run2d=run2d,run1d=run1d)
         index_to = i0 + np.arange(n_total[iplate[i]],dtype='i4')
         plugmap['PLATE'][index_to] = plist[iplate[i]].field('PLATE')
         plugmap['MJD'][index_to] = plist[iplate[i]].field('MJD')
