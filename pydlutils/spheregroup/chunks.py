@@ -95,6 +95,11 @@ class chunks(object):
         # Create an empty set of lists to hold the output of self.assign()
         #
         self.chunkList = [[list() for j in range(self.nRa[i])] for i in range(self.nDec)]
+        #
+        # nChunkMax will be the length of the largest list in chunkList
+        # it is computed by chunks.assign()
+        #
+        self.nChunkMax = 0
         return
     def rarange(self,ra,minSize):
         """Finds the offset which yields the smallest raRange & returns both.
@@ -164,6 +169,11 @@ class chunks(object):
                     if currRaChunk >= 0 and currRaChunk <= self.nRa[decChunk]-1:
                         if not chunkDone[decChunk][currRaChunk]:
                             self.chunkList[decChunk][currRaChunk].append(i)
+                            #
+                            # Update nChunkMax
+                            #
+                            if len(self.chunkList[decChunk][currRaChunk]) > self.nChunkMax:
+                                self.nChunkMax = len(self.chunkList[decChunk][currRaChunk])
                             chunkDone[decChunk][currRaChunk] = True
         return
     def getbounds(self,ra,dec,marginSize):
@@ -243,3 +253,87 @@ class chunks(object):
         else:
             raChunk = -1
         return (raChunk, decChunk)
+    def friendsoffriends(self,ra,dec,linkSep):
+        """Friends-of-friends using chunked data.
+        """
+        nPoints = ra.size
+        inGroup = self.np.zeros(nPoints,dtype='i4') - 1
+        #
+        # mapGroups contains an equivalency mapping of groups.  mapGroup[i]=j
+        # means i and j are actually the same group.  j<=i always, by design.
+        # The largest number of groups you can get
+        # (assuming linkSep < marginSize < minSize) is 9 times the number of
+        # targets
+        #
+        mapGroups = self.np.zeros(9*nPoints,dtype='i4') - 1
+        nMapGroups = 0
+        for i in range(self.nDec):
+            for j in range(self.nRa[i]):
+                chunkGroup = self.chunkfriendsoffriends(ra,dec,self.chunkList[i][j],linkSep)
+                for k in range(chunkGroup.nGroups):
+                    minEarly = 9*nPoints
+                    l = chunkGroup.firstGroup(k)
+                    while l != -1:
+                        if inGroup[self.chunkList[i][j][l]] != -1:
+                            checkEarly = inGroup[self.chunkList[i][j][l]]
+                            while mapGroups[checkEarly] != checkEarly:
+                                checkEarly=mapGroups[checkEarly]
+                            minEarly = min(minEarly,checkEarly)
+                        else:
+                            inGroup[self.chunkList[i][j][l]] = nMapGroups
+                        l = chunkGroup.nextGroup(l)
+                    if minEarly == 9*nPoints:
+                        mapGroups[nMapGroups] = nMapGroups
+                    else:
+                        mapGroups[nMapGroups] = minEarly
+                        l = chunkGroup.firstGroup(k)
+                        while l != -1:
+                            checkEarly = inGroup[self.chunkList[i][j][l]]
+                            while mapGroups[checkEarly] != checkEarly:
+                                tmpEarly=mapGroups[checkEarly]
+                                mapGroups[checkEarly]=minEarly
+                                checkEarly=tmpEarly
+                            mapGroups[checkEarly]=minEarly
+                            l=chunkGroup.nextGroup(l)
+                    nMapGroups += 1
+        #
+        # Now all groups which are mapped to themselves are the real groups
+        # Make sure the mappings are set up to go all the way down.
+        #
+        nGroups = 0
+        for i in range(nMapGroups):
+            if mapGroups[i] != -1:
+                if mapGroups[i] == i:
+                    mapGroups[i] = nGroups
+                    nGroups += 1
+                else:
+                    mapGroups[i] = mapGroups[mapGroups[i]]
+            else:
+                raise self.PydlutilsException("MapGroups[%d]=%d in chunks.friendsoffriends()." % (i,mapGroups[i]))
+        for i in range(nPoints):
+            inGroup[i] = mapGroups[inGroup[i]]
+        firstGroup = self.np.zeros(nPoints,dtype='i4') - 1
+        nextGroup = self.np.zeros(nPoints,dtype='i4') - 1
+        multGroup = self.np.zeros(nPoints,dtype='i4')
+        for i in range(nPoints-1,-1,-1):
+            nextGroup[i] = firstGroup[inGroup[i]]
+            firstGroup[inGroup[i]] = i
+        for i in range(nGroups):
+            j = firstGroup[i]
+            while j != -1:
+                multGroup[i] += 1
+                j = nextGroup[j]
+        return (inGroup, multGroup, firstGroup, nextGroup, nGroups)
+    def chunkfriendsoffriends(self,ra,dec,chunkList,linkSep):
+        """Does friends-of-friends on the ra, dec that are defined by
+        chunkList.
+        """
+        from pydlutils.spheregroup import groups
+        #
+        # Convert ra, dec into something that can be digested by the
+        # groups object.
+        #
+        x = self.np.deg2rad(self.np.vstack(ra[chunkList],dec[chunkList]))
+        radLinkSep = self.np.deg2rad(linkSep)
+        group = groups(x,radLinkSep,'sphereradec')
+        return group
