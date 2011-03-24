@@ -5,6 +5,9 @@ def mrdfits(filename,hdu=0,**kwargs):
     """Read a FITS file & return the data.
 
     Only bintables are supported right now.
+
+    Note: this is really a port of hogg_mrdfits, rather than just mrdfits.
+    in the future, this may be split into two modules.
     """
     import pyfits
     if 'range' in kwargs and 'rows' in kwargs:
