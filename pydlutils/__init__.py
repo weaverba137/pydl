@@ -7,6 +7,7 @@ class PydlutilsException(pydl.PydlException):
     pass
 
 import bspline
+import fits
 import goddard
 import image
 import mangle
@@ -15,4 +16,5 @@ import misc
 import sdss
 import spheregroup
 
-__all__ = ['PydlutilsException', 'bspline', 'goddard', 'image', 'mangle', 'math', 'misc', 'sdss', 'spheregroup' ]
+__all__ = ['PydlutilsException', 'bspline', 'fits', 'goddard',
+    'image', 'mangle', 'math', 'misc', 'sdss', 'spheregroup' ]
