@@ -243,7 +243,11 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     # Interpolate over masked pixels, just for aesthetic purposoes.
     #
     goodpts = newivar > 0
-    newflux = aesthetics(newflux,newivar)
+    if 'aesthetics' in kwargs:
+        amethod = kwargs['aesthetics']
+    else:
+        amethod = 'traditional'
+    newflux = aesthetics(newflux,newivar,method=amethod)
     # if 'interpolate' in kwargs:
     #     newflux = pydlutils.image.djs_maskinterp(newflux,~goodpts,const=True)
     # else:

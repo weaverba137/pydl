@@ -80,7 +80,7 @@ def pca_gal(**kwargs):
     # Do PCA solution.
     #
     pcaflux = pca_solve(spplate['flux'],objinvvar,spplate['loglam'],zfit,
-        niter=niter,nkeep=nkeep,newloglam=newloglam)
+        niter=niter,nkeep=nkeep,newloglam=newloglam,aesthetics='mean')
     #
     # Fill in bad data with a running median of the good data.
     #
