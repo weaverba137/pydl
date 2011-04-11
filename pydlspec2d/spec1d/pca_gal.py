@@ -163,8 +163,13 @@ def pca_gal(**kwargs):
     #
     if os.path.exists(outfile+'.fits'):
         os.remove(outfile+'.fits')
-    hdu = pyfits.PrimaryHDU(pcaflux['flux'])
-    hdulist = pyfits.HDUList([hdu])
+    hdu0 = pyfits.PrimaryHDU(pcaflux['flux'])
+    hdu1 = pyfits.new_table(pyfits.ColDefs([
+        pyfits.Column(name='plate',format='J',array=plate),
+        pyfits.Column(name='mjd',format='J',array=mjd),
+        pyfits.Column(name='fiber',format='J',array=fiber),
+        pyfits.Column(name='redshift',format='D',array=zfit)]))
+    hdulist = pyfits.HDUList([hdu0,hdu1])
     hdulist[0].header.update('OBJECT','GALAXY')
     hdulist[0].header.update('COEFF0',pcaflux['newloglam'][0])
     hdulist[0].header.update('COEFF1',pcaflux['newloglam'][1]-pcaflux['newloglam'][0])
@@ -172,6 +177,7 @@ def pca_gal(**kwargs):
     hdulist[0].header.update('SPEC2D','eigenspectra','Version of idlspec2d')
     for i in range(len(pcaflux['eigenval'])):
         hdulist[0].header.update("EIGEN%d" % i,pcaflux['eigenval'][i])
+    hdulist[1].header.update('FILENAME',inputfile)
     hdulist.writeto(outfile+'.fits')
     plot_eig(outfile+'.fits')
     return
