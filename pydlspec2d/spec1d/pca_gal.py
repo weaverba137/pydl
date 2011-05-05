@@ -175,6 +175,8 @@ def pca_gal(**kwargs):
     hdulist[0].header.update('COEFF1',pcaflux['newloglam'][1]-pcaflux['newloglam'][0])
     hdulist[0].header.update('IDLUTILS','pydlutils','Version of idlutils')
     hdulist[0].header.update('SPEC2D','eigenspectra','Version of idlspec2d')
+    hdulist[0].header.update('RUN2D',os.getenv('RUN2D'),'Version of 2d reduction')
+    hdulist[0].header.update('RUN1D',os.getenv('RUN1D'),'Version of 1d reduction')
     for i in range(len(pcaflux['eigenval'])):
         hdulist[0].header.update("EIGEN%d" % i,pcaflux['eigenval'][i])
     hdulist[1].header.update('FILENAME',inputfile)
