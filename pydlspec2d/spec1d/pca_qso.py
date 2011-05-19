@@ -109,7 +109,7 @@ def pca_qso(**kwargs):
             #
             acoeff = np.zeros((nobj,ikeep+1),dtype=pcaflux1['acoeff'].dtype)
             for iobj in range(nobj):
-                out = computechi2(safeflux[iobj,:],np.sqrt(pcaflux1['newivar'][iobj,:]),
+                out = computechi2(saveflux[iobj,:],np.sqrt(pcaflux1['newivar'][iobj,:]),
                     pcaflux['flux'])
                 acoeff[iobj,:] = out['acoeff']
             #
