@@ -16,7 +16,7 @@ def pca_qso(**kwargs):
     from pydlutils.image import djs_maskinterp
     from pydlutils.math import djs_median, computechi2
     from pydlutils.misc import djs_readcol
-    from pydlspec2d.spec1d import pca_solve, plot_eig, readspec, skymask, wavevector, computechi2
+    from pydlspec2d.spec1d import pca_solve, plot_eig, readspec, skymask, wavevector
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:
