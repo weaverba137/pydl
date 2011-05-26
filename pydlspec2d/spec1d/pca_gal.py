@@ -104,8 +104,8 @@ def pca_gal(**kwargs):
     #
     colorvec = ['k','r','g','b','m','c']
     smallfont = FontProperties(size='xx-small');
+    nspectra = pcaflux['newflux'].shape[0]
     if 'flux' in kwargs:
-        nspectra = pcaflux['newflux'].shape[0]
         nfluxes = 30
         separation = 5.0
         nplots = nspectra/nfluxes
@@ -125,6 +125,14 @@ def pca_gal(**kwargs):
             ax.set_ylim(pcaflux['newflux'][istart,:].min(),pcaflux['newflux'][iend-1,:].max()+separation*(nfluxes-1))
             fig.savefig('%s.flux.%04d-%04d.png'%(outfile,istart+1,iend+1))
             pylab.close(fig)
+    fig = pylab.figure(dpi=100)
+    ax = fig.add_subplot(111)
+    p = ax.plot(10.0**pcaflux['newloglam'],(pcaflux['newivar'] == 0).sum(0)/float(nspectra),'k-')
+    ax.set_xlabel(u'Wavelength [Å]')
+    ax.set_ylabel('Fraction of spectra with missing data')
+    ax.set_title('Missing Data')
+    fig.savefig(outfile+'.missing.png')
+    pylab.close(fig)
     aratio10 = pcaflux['acoeff'][:,1]/pcaflux['acoeff'][:,0]
     aratio20 = pcaflux['acoeff'][:,2]/pcaflux['acoeff'][:,0]
     aratio30 = pcaflux['acoeff'][:,3]/pcaflux['acoeff'][:,0]

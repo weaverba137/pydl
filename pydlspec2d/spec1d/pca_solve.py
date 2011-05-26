@@ -45,6 +45,7 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
     if loglam is None:
         fullflux = flux
         fullivar = ivar
+        fullloglam = kwargs['newloglam']
         nnew = flux.shape[0]
     else:
         if 'newloglam' in kwargs:
