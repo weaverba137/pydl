@@ -102,8 +102,10 @@ def pca_qso(**kwargs):
                 #
                 # Add to existing dict
                 #
-                for k in pcaflux1:
-                    pcaflux[k] = np.vstack((pcaflux[k],pcaflux1[k]))
+                # for k in pcaflux1:
+                #     pcaflux[k] = np.vstack((pcaflux[k],pcaflux1[k]))
+                pcaflux['flux'] = np.vstack((pcaflux['flux'],pcaflux1['flux']))
+                pcaflux['eigenval'] = np.concatenate((pcaflux['eigenval'],pcaflux1['eigenval']))
             #
             # Re-solve for the coefficients using all PCA components so far
             #

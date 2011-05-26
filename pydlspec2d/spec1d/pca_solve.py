@@ -43,10 +43,10 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
     # Determine the new wavelength mapping.
     #
     if loglam is None:
-        fullflux = flux
-        fullivar = ivar
-        fullloglam = kwargs['newloglam']
-        nnew = flux.shape[0]
+        newflux = flux
+        newivar = ivar
+        newloglam = kwargs['newloglam']
+        nnew = flux.shape[1]
     else:
         if 'newloglam' in kwargs:
             fullloglam = kwargs['newloglam']
@@ -81,19 +81,19 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
                 ivar[iobj,indx],newloglam=fullloglam,binsz=dloglam,aesthetics='mean') # ,verbose=True)
             fullflux[iobj,:] = flux1
             fullivar[iobj,:] = ivar1
-    #
-    # Find the columns out side of which there is no data at all
-    #
-    nzi = fullivar.nonzero()
-    firstcol = nzi[1].min()
-    lastcol = nzi[1].max()
-    newflux = fullflux[:,firstcol:lastcol+1]
-    newivar = fullivar[:,firstcol:lastcol+1]
-    newloglam = fullloglam[firstcol:lastcol+1]
-    nnew = newloglam.size
-    nzi = newivar.nonzero()
-    first_nonzero = (np.arange(nobj,dtype=nzi[0].dtype),
-        np.array([nzi[1][nzi[0]==k].min() for k in range(nobj)]))
+        #
+        # Find the columns out side of which there is no data at all
+        #
+        nzi = fullivar.nonzero()
+        firstcol = nzi[1].min()
+        lastcol = nzi[1].max()
+        newflux = fullflux[:,firstcol:lastcol+1]
+        newivar = fullivar[:,firstcol:lastcol+1]
+        newloglam = fullloglam[firstcol:lastcol+1]
+        nnew = newloglam.size
+    # nzi = newivar.nonzero()
+    # first_nonzero = (np.arange(nobj,dtype=nzi[0].dtype),
+    #     np.array([nzi[1][nzi[0]==k].min() for k in range(nobj)]))
     #
     # Construct the synthetic weight vector, to be used when replacing the
     # low-S/N object pixels with the reconstructions.
