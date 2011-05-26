@@ -34,7 +34,7 @@ def pca_qso(**kwargs):
     if 'niter' in kwargs:
         niter = kwargs['niter']
     else:
-        niter = 10
+        niter = 200
     nkeep = 4
     minuse = 3
     #
@@ -110,13 +110,13 @@ def pca_qso(**kwargs):
             acoeff = np.zeros((nobj,ikeep+1),dtype=pcaflux1['acoeff'].dtype)
             for iobj in range(nobj):
                 out = computechi2(saveflux[iobj,:],np.sqrt(pcaflux1['newivar'][iobj,:]),
-                    pcaflux['flux'])
+                    pcaflux['flux'].T)
                 acoeff[iobj,:] = out['acoeff']
             #
             # Prevent re-binning of spectra on subsequent calls to pca_solve()
             #
             objloglam = None
-            objflux = saveflux - np.dot(acoeff,pcaflux['flux'].T)
+            objflux = saveflux - np.outer(acoeff,pcaflux['flux'])
             objivar = pcaflux1['newivar']
     else:
         #
