@@ -91,9 +91,9 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
         newivar = fullivar[:,firstcol:lastcol+1]
         newloglam = fullloglam[firstcol:lastcol+1]
         nnew = newloglam.size
-    # nzi = newivar.nonzero()
-    # first_nonzero = (np.arange(nobj,dtype=nzi[0].dtype),
-    #     np.array([nzi[1][nzi[0]==k].min() for k in range(nobj)]))
+    nzi = newivar.nonzero()
+    first_nonzero = (np.arange(nobj,dtype=nzi[0].dtype),
+        np.array([nzi[1][nzi[0]==k].min() for k in range(nobj)]))
     #
     # Construct the synthetic weight vector, to be used when replacing the
     # low-S/N object pixels with the reconstructions.
