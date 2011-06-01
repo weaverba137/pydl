@@ -119,7 +119,7 @@ def pca_qso(**kwargs):
             #
             objloglam = None
             objflux = saveflux - np.outer(acoeff,pcaflux['flux'])
-            objivar = pcaflux1['newivar']
+            objinvvar = pcaflux1['newivar']
     else:
         #
         # Do a normal simultaneous PCA solution
