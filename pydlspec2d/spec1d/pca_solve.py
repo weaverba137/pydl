@@ -94,9 +94,9 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
         newflux = fullflux
         newivar = fullivar
         newloglam = fullloglam
-    # nzi = newivar.nonzero()
-    # first_nonzero = (np.arange(nobj,dtype=nzi[0].dtype),
-    #     np.array([nzi[1][nzi[0]==k].min() for k in range(nobj)]))
+    nzi = newivar.nonzero()
+    first_nonzero = (np.arange(nobj,dtype=nzi[0].dtype),
+        np.array([nzi[1][nzi[0]==k].min() for k in range(nobj)]))
     #
     # Construct the synthetic weight vector, to be used when replacing the
     # low-S/N object pixels with the reconstructions.
@@ -149,8 +149,8 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
             #
             # eigenval = 1
             # coeff = 1
-            # flux0 = np.tile(filtflux[first_nonzero],nnew).reshape(nnew,nobj).transpose()
-            flux0 = np.tile(filtflux,nnew).reshape(nnew,nobj).transpose()
+            flux0 = np.tile(filtflux[first_nonzero],nnew).reshape(nnew,nobj).transpose()
+            # flux0 = np.tile(filtflux,nnew).reshape(nnew,nobj).transpose()
             totflux = np.absolute(filtflux - flux0).sum(1)
             goodobj = totflux > 0
             if goodobj.all():
