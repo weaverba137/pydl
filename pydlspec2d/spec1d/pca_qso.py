@@ -118,7 +118,11 @@ def pca_qso(**kwargs):
             # Prevent re-binning of spectra on subsequent calls to pca_solve()
             #
             objloglam = None
-            objflux = saveflux - np.outer(acoeff,pcaflux['flux'])
+            if ikeep == 0:
+                objflux = saveflux - np.outer(acoeff,pcaflux['flux'])
+            else:
+                objflux = saveflux - np.dot(acoeff,pcaflux['flux'])
+            # objflux = saveflux - np.outer(acoeff,pcaflux['flux'])
             objinvvar = pcaflux1['newivar']
     else:
         #
