@@ -124,6 +124,7 @@ def pca_qso(**kwargs):
                 objflux = saveflux - np.dot(acoeff,pcaflux['flux'])
             # objflux = saveflux - np.outer(acoeff,pcaflux['flux'])
             objinvvar = pcaflux1['newivar']
+            pcaflux['acoeff'] = acoeff
     else:
         #
         # Do a normal simultaneous PCA solution
