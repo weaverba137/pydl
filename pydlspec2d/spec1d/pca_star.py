@@ -117,11 +117,11 @@ def pca_star(**kwargs):
         #
         # Re-normalize the first eigenspectrum to a mean of 1
         #
-        print(pcaflux['flux'].dtype)
+        # print(pcaflux['flux'].dtype)
         norm = pcaflux['flux'][0,:].mean()
         pcaflux['flux'] /= norm
         pcaflux['acoeff'] *= norm
-        print(pcaflux['flux'].dtype)
+        # print(pcaflux['flux'].dtype)
         #
         # Now loop through each stellar subclass and reconstruct
         # an eigenspectrum for that subclass
@@ -137,7 +137,7 @@ def pca_star(**kwargs):
             thesesubclassnum[ii] = isub
             if nkeep == 1:
                 thisflux = pcaflux['flux'].reshape(pcaflux['newloglam'].shape)
-                print(thisflux.dtype)
+                # print(thisflux.dtype)
             else:
                 aratio = pcaflux['acoeff'][ii,1]/pcaflux['acoeff'][ii,0]
                 #
@@ -145,7 +145,7 @@ def pca_star(**kwargs):
                 #
                 thisratio = np.median(aratio)
                 thisflux = pcaflux['flux'][0,:] + thisratio.astype('f') * pcaflux['flux'][1,:]
-                print(thisflux.dtype)
+                # print(thisflux.dtype)
             if fullflux is None:
                 fullflux = thisflux
             else:
