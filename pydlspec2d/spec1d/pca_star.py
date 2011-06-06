@@ -74,7 +74,8 @@ def pca_star(**kwargs):
         #
         # Find the subclasses for this stellar type
         #
-        indx = slist['class'] == c
+        indx = (slist['class'] == c).nonzero()[0]
+        nindx = indx.size
         thesesubclass = slist['subclass'][indx]
         isort = np.argsort(thesesubclass)
         subclasslist = thesesubclass[isort[uniq(thesesubclass[isort])]]
@@ -96,7 +97,7 @@ def pca_star(**kwargs):
         # and set fluxes to zero at the blue+red ends of the spectrum
         #
         # minuse = 1 # ?
-        minuse = np.floor((indx.sum()+1) / 3.0)
+        minuse = np.floor((nindx+1) / 3.0)
         qbad = pcaflux['usemask'] < minuse
         #
         # Interpolate over all bad pixels
