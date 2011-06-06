@@ -74,6 +74,7 @@ def pca_star(**kwargs):
         #
         # Find the subclasses for this stellar type
         #
+        print("Finding eigenspectra for Stellar class {0}".format(c))
         indx = (slist['class'] == c).nonzero()[0]
         nindx = indx.size
         thesesubclass = slist['subclass'][indx]
@@ -140,7 +141,7 @@ def pca_star(**kwargs):
                 # np.median(foo) is equivalent to MEDIAN(foo,/EVEN)
                 #
                 thisratio = np.median(aratio)
-                thisflux = pcaflux['flux'][0,:] + thisratio * pcaflux['flux'][1,:]
+                thisflux = pcaflux['flux'][0,:] + thisratio.astype('f') * pcaflux['flux'][1,:]
             if fullflux is None:
                 fullflux = thisflux
             else:
@@ -207,5 +208,5 @@ def pca_star(**kwargs):
         hdulist[0].header.update("NAME%d" % i,namearr[i]+' ')
     hdulist[1].header.update('FILENAME',inputfile)
     hdulist.writeto(outfile+'.fits')
-    plot_eig(outfile+'.fits')
+    # plot_eig(outfile+'.fits')
     return
