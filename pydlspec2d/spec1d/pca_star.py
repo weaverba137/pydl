@@ -112,7 +112,7 @@ def pca_star(**kwargs):
         if qbad[0]:
             pcaflux['flux'][:,0:igood[0]-1] = 0
         if qbad[npix-1]:
-            pcaflux['flux'][:,igood[::-1][0]+1:npix-1] = 0
+            pcaflux['flux'][:,igood[::-1][0]+1:npix] = 0
         #
         # Re-normalize the first eigenspectrum to a mean of 1
         #
@@ -182,7 +182,7 @@ def pca_star(**kwargs):
             ax.set_xticklabels(subclasslist)
             ax.set_ylabel('Eigenvalue Ratio, $a_1/a_0$')
             ax.set_title('STAR {0}: Eigenvalue Ratios'.format(c))
-            fig.savefig(outfile+'.ratio.png')
+            fig.savefig(outfile+'.{0}.ratio.png'.format(c))
             pylab.close(fig)
     #
     # Save output to FITS file.
