@@ -106,7 +106,7 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
         indx = newivar[:,ipix] != 0
         if indx.any():
             synwvec[ipix] = newivar[indx,ipix].mean()
-    fluxdict = {'flux':newflux.astype('f'), 'eigenval':1.0, 'acoeff':1.0,
+    fluxdict = {'flux':newflux, 'eigenval':1.0, 'acoeff':1.0,
         'outmask':np.ones((nnew,),dtype='i4'),
         'usemask':np.ones((nnew,),dtype='i4'),
         'newflux':newflux,'newivar':newivar,
@@ -116,6 +116,7 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
     # If there is only one object spectrum, then all we can do is return it.
     #
     if nobj == 1:
+        fluxdict['flux'] = newflux.astype('f')
         return fluxdict
     #
     # Rejection iteration loop.
