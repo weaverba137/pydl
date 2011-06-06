@@ -10,12 +10,12 @@ def uniq(x,index=None):
         if indicies.size > 0:
             return indicies
         else:
-            return x.size - 1
+            return np.array([x.size - 1,])
     else:
         q = x[index]
         indicies = (q != np.roll(q,-1)).nonzero()[0]
         if indicies.size > 0:
             return index[indicies]
         else:
-            return q.size - 1
+            return np.array([q.size - 1,])
 
