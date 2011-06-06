@@ -17,5 +17,5 @@ def uniq(x,index=None):
         if indicies.size > 0:
             return index[indicies]
         else:
-            return np.array([q.size - 1,])
+            return np.array([q.size - 1,],dtype=index.dtype)
 
