@@ -169,7 +169,7 @@ def pca_star(**kwargs):
             isort = thesesubclassnum.argsort()
             p = ax.plot(thesesubclassnum[isort],allratio[isort],marker='None',linestyle='None')
             for k in range(len(indx)):
-                t = ax.text(thesesubclassnum[isort[k]],allratio[isort[j]],
+                t = ax.text(thesesubclassnum[isort[k]],allratio[isort[k]],
                     "%04d-%04d"%(slist['plate'][indx[isort[k]]],slist['fiberid'][indx[isort[k]]]),
                     horizontalalignment='center', verticalalignment='center',
                     color=colorvec[k%len(colorvec)],
