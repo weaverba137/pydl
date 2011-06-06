@@ -165,7 +165,7 @@ def pca_star(**kwargs):
         if nkeep > 1:
             fig = pylab.figure(dpi=100)
             ax = fig.add_subplot(111)
-            allratio = acoeff[:,1]/acoeff[:,0]
+            allratio = pcaflux['acoeff'][:,1]/pcaflux['acoeff'][:,0]
             isort = thesesubclassnum.argsort()
             p = ax.plot(thesesubclassnum[isort],allratio[isort],marker='None',linestyle='None')
             for k in range(len(indx)):
