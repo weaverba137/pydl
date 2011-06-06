@@ -20,8 +20,8 @@ def pca_gal(**kwargs):
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:
-        inputfile = os.path.join((os.getenv('IDLSPEC2D_DIR'),
-            'templates','eigeninput_gal.dat'))
+        inputfile = os.path.join(os.getenv('IDLSPEC2D_DIR'),
+            'templates','eigeninput_gal.dat')
     if 'wavemin' in kwargs:
         wavemin = kwargs['wavemin']
     else:

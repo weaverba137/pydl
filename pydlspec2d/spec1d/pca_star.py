@@ -16,14 +16,12 @@ def pca_star(**kwargs):
     from pydl import uniq
     from pydlutils.goddard.astro import get_juldate
     from pydlutils.image import djs_maskinterp
-    from pydlutils.math import djs_median
-    from pydlutils.misc import djs_readcol
-    from pydlspec2d.spec1d import pca_solve, plot_eig, readspec, skymask, wavevector
+    from pydlspec2d.spec1d import pca_solve, readspec, skymask
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:
-        inputfile = os.path.join((os.getenv('IDLSPEC2D_DIR'),
-            'templates','eigeninput_star.par'))
+        inputfile = os.path.join(os.getenv('IDLSPEC2D_DIR'),
+            'templates','eigeninput_star.par')
     wavemin = 0
     wavemax = 0
     snmax = 100.0
@@ -70,6 +68,8 @@ def pca_star(**kwargs):
     #
     fullflux = None
     namearr = list()
+    colorvec = ['k','r','g','b','m','c']
+    smallfont = FontProperties(size='xx-small');
     for c in classlist:
         #
         # Find the subclasses for this stellar type
@@ -87,9 +87,9 @@ def pca_star(**kwargs):
             nkeep = 1
         else:
             nkeep = 2
-        newloglam = spplate['loglam']
+        newloglam = spplate['loglam'][0,:]
         pcaflux = pca_solve(spplate['flux'][indx,:],objinvvar[indx,:],
-            spplate['loglam'], slist['cz'][indx]/cspeed, wavemin=wavemin,
+            spplate['loglam'][indx,:], slist['cz'][indx]/cspeed, wavemin=wavemin,
             wavemax=wavemax, niter=niter, nkeep=nkeep, newloglam=newloglam)
         #
         # Interpolate over bad flux values in the middle of a spectrum,
@@ -150,11 +150,12 @@ def pca_star(**kwargs):
             #
             plotflux = thisflux/thisflux.max()
             ax.plot(10.0**pcaflux['newloglam'],plotflux,"{0}-".format(colorvec[isub%len(colorvec)]),linewidth=1)
-            ax.set_xlabel(u'Wavelength [Å]')
-            ax.set_ylabel('Flux [arbitrary units]')
-            ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
+            if isum == 0:
+                ax.set_xlabel(u'Wavelength [Å]')
+                ax.set_ylabel('Flux [arbitrary units]')
+                ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
             t = ax.text(10.0**pcaflux['newloglam'][-1],plotflux[-1],subclasslist[isub],
-                horizontalalignment='center',verticalalignment='center',
+                horizontalalignment='right',verticalalignment='center',
                 color=colorvec[isub%len(colorvec)],fontproperties=smallfont)
         fig.savefig(outfile+'.{0}.png'.format(c))
         pylab.close(fig)
