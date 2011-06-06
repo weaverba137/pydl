@@ -4,6 +4,7 @@ from number_of_fibers import number_of_fibers
 from pca_gal import pca_gal
 from pca_qso import pca_qso
 from pca_solve import pca_solve
+from pca_star import pca_star
 from plot_eig import plot_eig
 from readspec import readspec
 from skymask import skymask
