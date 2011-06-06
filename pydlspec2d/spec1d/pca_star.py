@@ -150,6 +150,8 @@ def pca_star(**kwargs):
             # Plot spectra
             #
             plotflux = thisflux/thisflux.max()
+            print(pcaflux['newloglam'].shape)
+            print(plotflux.shape)
             ax.plot(10.0**pcaflux['newloglam'],plotflux,"{0}-".format(colorvec[isub%len(colorvec)]),linewidth=1)
             if isub == 0:
                 ax.set_xlabel(u'Wavelength [Å]')
