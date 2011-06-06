@@ -133,7 +133,7 @@ def pca_star(**kwargs):
             ii = (thesesubclass == subclasslist[isub]).nonzero()[0]
             thesesubclassnum[ii] = isub
             if nkeep == 1:
-                thisflux = pcaflux['flux']
+                thisflux = pcaflux['flux'].reshape(pcaflux['newloglam'].shape)
             else:
                 aratio = pcaflux['acoeff'][ii,1]/pcaflux['acoeff'][ii,0]
                 #
@@ -150,8 +150,8 @@ def pca_star(**kwargs):
             # Plot spectra
             #
             plotflux = thisflux/thisflux.max()
-            print(pcaflux['newloglam'].shape)
-            print(plotflux.shape)
+            # print(pcaflux['newloglam'].shape)
+            # print(plotflux.shape)
             ax.plot(10.0**pcaflux['newloglam'],plotflux,"{0}-".format(colorvec[isub%len(colorvec)]),linewidth=1)
             if isub == 0:
                 ax.set_xlabel(u'Wavelength [Å]')
