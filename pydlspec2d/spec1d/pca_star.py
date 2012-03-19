@@ -199,7 +199,7 @@ def pca_star(**kwargs):
         pyfits.Column(name='plate',format='J',array=slist['plate']),
         pyfits.Column(name='mjd',format='J',array=slist['mjd']),
         pyfits.Column(name='fiber',format='J',array=slist['fiberid']),
-        pyfits.Column(name='redshift',format='D',array=slist['cz']/cspeed)]))
+        pyfits.Column(name='redshift',format='D',unit='km/s',array=slist['cz'])]))
     hdulist = pyfits.HDUList([hdu0,hdu1])
     hdulist[0].header.update('OBJECT','STAR')
     hdulist[0].header.update('COEFF0',pcaflux['newloglam'][0])
