@@ -28,8 +28,6 @@ def munu_to_radec(mu, nu, **kwargs):
     zz = sinmu * cosnu * sini + sinnu * cosi
     ra = np.rad2deg(np.arctan2(yy,xx)) + node
     dec = np.rad2deg(np.arcsin(zz))
-    ra = np.zeros(mu.shape,dtype=mu.dtype)
-    dec = np.zeros(nu.shape,dtype=mu.dtype)
     if 'phi' in kwargs:
         phi = np.rad2deg(np.arctan2(cosmu * sini,
             (-sinmu * sinnu * sini + cosnu * cosi)*cosnu))
