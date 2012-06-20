@@ -17,21 +17,21 @@ def munu_to_radec(mu, nu, **kwargs):
         raise ValueError('Must specify either STRIPE or NODE,INCL!')
     if mu.size != nu.size:
         raise ValueError('Number of elements in MU and NU must agree!')
-    sinnu = np.sin(np.radians(nu))
-    cosnu = np.cos(np.radians(nu))
-    sini = np.sin(np.radians(incl))
-    cosi = np.cos(np.radians(incl))
-    sinmu = np.sin(np.radians(mu-node))
-    cosmu = np.cos(np.radians(mu-node))
+    sinnu = np.sin(np.deg2rad(nu))
+    cosnu = np.cos(np.deg2rad(nu))
+    sini = np.sin(np.deg2rad(incl))
+    cosi = np.cos(np.deg2rad(incl))
+    sinmu = np.sin(np.deg2rad(mu-node))
+    cosmu = np.cos(np.deg2rad(mu-node))
     xx = cosmu * cosnu
     yy = sinmu * cosnu * cosi - sinnu * sini
     zz = sinmu * cosnu * sini + sinnu * cosi
-    ra = np.degrees(np.arctan2(yy,xx)) + node
-    dec = np.degrees(np.arcsin(zz))
+    ra = np.rad2deg(np.arctan2(yy,xx)) + node
+    dec = np.rad2deg(np.arcsin(zz))
     ra = np.zeros(mu.shape,dtype=mu.dtype)
     dec = np.zeros(nu.shape,dtype=mu.dtype)
     if 'phi' in kwargs:
-        phi = np.degrees(np.arctan2(cosmu * sini,
+        phi = np.rad2deg(np.arctan2(cosmu * sini,
             (-sinmu * sinnu * sini + cosnu * cosi)*cosnu))
         return (ra,dec,phi)
     else:
