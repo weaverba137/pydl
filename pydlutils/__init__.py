@@ -8,6 +8,7 @@ class PydlutilsException(pydl.PydlException):
 
 import bspline
 import cooling
+import coord
 import fits
 import goddard
 import image
