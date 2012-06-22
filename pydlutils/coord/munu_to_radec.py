@@ -26,7 +26,7 @@ def munu_to_radec(mu, nu, **kwargs):
     xx = cosmu * cosnu
     yy = sinmu * cosnu * cosi - sinnu * sini
     zz = sinmu * cosnu * sini + sinnu * cosi
-    ra = np.rad2deg(np.arctan2(yy,xx)) + node
+    ra = cirrange(np.rad2deg(np.arctan2(yy,xx)) + node)
     dec = np.rad2deg(np.arcsin(zz))
     if 'phi' in kwargs:
         phi = np.rad2deg(np.arctan2(cosmu * sini,
