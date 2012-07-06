@@ -8,9 +8,9 @@ def hmf_gal(**kwargs):
     import os
     import os.path
     import pickle
-    import pylab
     import matplotlib
     matplotlib.use('Agg') # Non-interactive back-end
+    import pylab
     import pyfits
     import numpy as np
     # from matplotlib.font_manager import fontManager, FontProperties
