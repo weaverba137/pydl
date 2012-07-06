@@ -25,7 +25,7 @@ def hmf_gal(**kwargs):
     else:
         inputfile = os.path.join(os.getenv('IDLSPEC2D_DIR'),
             'templates','eigeninput_gal.dat')
-    outdir = os.path.basename(inputfile)
+    outdir = os.path.dirname(inputfile)
     if 'wavemin' in kwargs:
         wavemin = kwargs['wavemin']
     else:
