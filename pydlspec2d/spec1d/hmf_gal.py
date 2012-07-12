@@ -29,7 +29,14 @@ def hmf_gal(**kwargs):
 
     Side Effects
     ------------
-    Creates spEigenGal-MJD.fits and some associated QA plots.
+    Creates spEigenGal-MJD.fits and some associated QA plots.  These files
+    will be created in the same directory as the inputfile (see above).
+
+    Notes
+    -----
+    The ``$RUN2D`` environment variable must be set.  This routine will search
+    for a pickle file of the form ``eigeninput_gal_$RUN2D.dump``.  If this file
+    is not found, it will be created.
     """
     import os
     import os.path

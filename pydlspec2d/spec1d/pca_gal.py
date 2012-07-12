@@ -4,6 +4,30 @@
 #
 def pca_gal(**kwargs):
     """Wrapper on pca_solve to handle galaxy eigenspectra.
+
+    Keyword Parameters
+    ------------------
+    inputfile : str, optional
+        The list of spectra to use.  If not specified, $IDLSPEC2D_DIR/tempates/eigeninput_gal.dat will be used.
+    wavemin : float, optional
+        Minimum wavelength for the template.  If not specified 1850 Å will be used.
+    wavemax : float, optional
+        Maximum wavelength for the template.  If not specified 10000 Å will be used.
+    niter : int, optional
+        Number of iterations.  The default is 10.
+    dump : bool, optional
+        If set, save input data in a Python pickle file.
+    flux : bool, optional
+        If set to ``True`` make some additional QA plots of the input spectra.
+        The default is ``False``.
+
+    Returns
+    -------
+    None
+
+    Side Effects
+    ------------
+    Creates spEigenGal-MJD.fits and some associated QA plots.
     """
     import os
     import os.path
