@@ -4,6 +4,32 @@
 #
 def hmf_gal(**kwargs):
     """Wrapper on hmf_solve analogous to pca_gal and pca_solve.
+
+    Keyword Parameters
+    ------------------
+    inputfile : str, optional
+        The list of spectra to use.  If not specified, $IDLSPEC2D_DIR/tempates/eigeninput_gal.dat will be used.
+    wavemin : float, optional
+        Minimum wavelength for the template.  If not specified 1900 Å will be used.
+    wavemax : float, optional
+        Maximum wavelength for the template.  If not specified 10000 Å will be used.
+    K : int, optional
+        Number of templates to calculate.  The default is 4.
+    nonnegative : bool, optional
+        If set to ``True`` use nonnegative HMF.  The default is ``False``.
+    epsilon : float, optional
+        Value of regularization parameter to use.  The default is 0.0, which means it is not used.
+    flux : bool, optional
+        If set to ``True`` make some additional QA plots of the input spectra.
+        The default is ``False``.
+
+    Returns
+    -------
+    None
+
+    Side Effects
+    ------------
+    Creates spEigenGal-MJD.fits and some associated QA plots.
     """
     import os
     import os.path

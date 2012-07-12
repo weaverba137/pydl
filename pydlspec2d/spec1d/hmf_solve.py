@@ -142,7 +142,7 @@ def hmf_solve(spectra,invvar,K=4,nonnegative=False,epsilon=None):
     nonnegative : bool, optional
         Set this to ``True`` to perform nonnegative HMF.
     epsilon : float, optional
-        Regularization parameter.  Set to any float value to turn it on.
+        Regularization parameter.  Set to any non-zero float value to turn it on.
 
     Returns
     -------
