@@ -1,2 +1,5 @@
-from test_pcomp import test_pcomp
-from test_smooth import test_smooth
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+"""
+This is the pydl/tests directory.
+"""

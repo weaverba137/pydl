@@ -1,2 +1,14 @@
-include *.txt
-recursive-include *.txt
+include README.rst
+
+include distribute_setup.py
+recursive-include pydl *.pyx *.c
+
+recursive-include docs *
+recursive-include licenses *
+recursive-include cextern *
+recursive-include scripts *
+
+exclude *.pyc *.o
+prune docs/_build
+prune build
+

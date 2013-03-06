@@ -11,6 +11,7 @@ __pycache__
 
 # Other generated files
 */version.py
+pydl/pydl.cfg
 
 # Sphinx
 _build

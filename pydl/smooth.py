@@ -1,8 +1,33 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def smooth(signal,owidth,edge_truncate=False):
-    """Replacement for IDL smooth function.
+    """Replicates the IDL SMOOTH() function.
+
+    Parameters
+    ----------
+    signal : array_like
+        The array to be smoothed.
+    owidth : int or array_like
+        Width of the smoothing window.  Can be a scalar or an array with length
+        equal to the number of dimensions of `signal`.
+    edge_truncate : bool, optional
+        Set `edge_truncate` to ``True`` to apply smoothing to all points.  Points
+        near the edge are normally excluded from smoothing.
+
+    Returns
+    -------
+    smooth : array_like
+        A smoothed array with the same dimesions and type as `signal`.
+
+    Notes
+    -----
+
+    References
+    ----------
+    http://www.exelisvis.com/docs/SMOOTH.html
+
+    Examples
+    --------
     """
     if owidth % 2 == 0:
        width = owidth + 1
