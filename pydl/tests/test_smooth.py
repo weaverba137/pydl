@@ -1,12 +1,15 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 import numpy as np
-from pydl import smooth
 
 def test_smooth():
+    from ..smooth import smooth
+    from numpy import arange, array, sin
     #
     # Test smooth function
     #
-    x = 8.0*np.arange(100)/100.0 - 4.0
-    noise = np.array([2.30610, -0.606922, -0.495611, 0.319969, -0.852573,
+    x = 8.0*arange(100)/100.0 - 4.0
+    noise = array([2.30610, -0.606922, -0.495611, 0.319969, -0.852573,
         -0.718530, -0.822457, -0.914747, -2.06190, -0.367282,
         -1.07346, 0.333589, -0.171405, 1.29557, 1.04241,
         0.745161, 1.12171, -1.68132,     1.33361,      1.09108,
@@ -30,8 +33,8 @@ def test_smooth():
         1.95981,   -0.0884865,    -0.872654,     0.133105,     -1.24190,
         0.465836,    -0.210268,
         0.675163,     -1.54661,    -0.993406,   -0.0257759])
-    y = np.sin(x) + 0.1*noise
-    print smooth(y,5)
-    print smooth(y,5,True)
-    return
-
+    y = sin(x) + 0.1*noise
+    s = smooth(y,5)
+    assert s.shape == (100,)
+    s_edge = smooth(y,5,True)
+    assert s_edge.shape == (100,)

@@ -2,18 +2,21 @@
 # -*- coding: utf-8 -*-
 def test_file_lines():
     from ..file_lines import file_lines
+    from os.path import dirname, join
     import glob
     #
     # Find the test files
     #
-    plainfiles = glob.glob('t/this-file-contains-*-lines.txt')
-    gzfiles = glob.glob('t/this-file-contains-*-lines.txt.gz')
+    datadir = join(dirname(__file__),'t')
+    fileglob = join(datadir,'this-file-contains-*-lines.txt')
+    plainfiles = glob.glob(fileglob)
+    gzfiles = glob.glob(fileglob+'.gz')
     for p in plainfiles:
         n = file_lines(p)
         number_of_lines = int(p.split('-')[3])
         assert n == number_of_lines
     for p in gzfiles:
-        n = file_lines(p,compressed=True)
+        n = file_lines(p,compress=True)
         number_of_lines = int(p.split('-')[3])
         assert n == number_of_lines
     #
@@ -25,3 +28,8 @@ def test_file_lines():
     n = file_lines(gzfiles,compress=True)
     number_of_lines = [int(p.split('-')[3]) for p in gzfiles]
     assert n == number_of_lines
+    #
+    # Make sure empty files work
+    #
+    n = file_lines(join(datadir,'this-file-is-empty.txt'))
+    assert n == 0

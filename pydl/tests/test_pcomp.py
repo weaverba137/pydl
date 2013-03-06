@@ -1,8 +1,11 @@
-from pydl import pcomp
-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def test_pcomp():
+    from ..pcomp import pcomp
+    from numpy import array, tile
     import numpy as np
-    array = np.array([[19.5, 43.1, 29.1, 11.9],
+    pcomp_data = array([
+        [19.5, 43.1, 29.1, 11.9],
         [24.7, 49.8, 28.2, 22.8],
         [30.7, 51.9, 37.0, 18.7],
         [29.8, 54.3, 31.1, 20.1],
@@ -22,8 +25,7 @@ def test_pcomp():
         [30.2, 58.6, 24.6, 25.4],
         [22.7, 48.2, 27.1, 14.8],
         [25.2, 51.0, 27.5, 21.1]])
-    means = np.tile(array.mean(0),20).reshape(array.shape)
-    newarray = array - means
+    means = tile(pcomp_data.mean(0),20).reshape(pcomp_data.shape)
+    newarray = pcomp_data - means
     foo = pcomp(newarray,covariance=True)
-    print foo
-    return
+    assert isinstance(foo,dict)
