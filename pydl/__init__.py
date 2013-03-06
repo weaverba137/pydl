@@ -1,3 +1,10 @@
+"""
+====
+pydl
+====
+
+This docstring is supplied to the long description in setup.py.
+"""
 from file_lines import file_lines
 from pcomp import pcomp
 from smooth import smooth
