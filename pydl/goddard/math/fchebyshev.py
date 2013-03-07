@@ -1,7 +1,17 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def fchebyshev(x,m):
+    """Compute a Chebyshev polynomial.
+
+    Parameters
+    ----------
+    x : array_like
+    m : int
+
+    Returns
+    -------
+    fchebyshev : array_like
+    """
     import numpy as np
     from scipy.special import chebyt
     if isinstance(x,np.ndarray):

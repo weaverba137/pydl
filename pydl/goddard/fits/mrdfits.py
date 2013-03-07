@@ -1,6 +1,5 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def mrdfits(filename,hdu=0,**kwargs):
     """Read a FITS file & return the data.
 

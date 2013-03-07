@@ -1,7 +1,17 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def flegendre(x,m):
+    """Compute a Legendre polynomial.
+
+    Parameters
+    ----------
+    x : array_like
+    m : int
+
+    Returns
+    -------
+    flegendre : array_like
+    """
     import numpy as np
     from scipy.special import legendre
     if isinstance(x,np.ndarray):
