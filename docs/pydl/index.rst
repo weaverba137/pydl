@@ -1,5 +1,5 @@
-Template package
-================
+pydl
+====
 
-This is the documentation for the affiliated package.
+This is the documentation for pydl.
 

@@ -15,6 +15,7 @@ pydl/pydl.cfg
 
 # Sphinx
 _build
+_static
 
 # Packages/installer info
 *.egg
