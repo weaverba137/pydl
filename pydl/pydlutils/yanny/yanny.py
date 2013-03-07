@@ -270,11 +270,21 @@ class yanny(dict):
         # If the file exists, read it
         #
         if filename is not None:
-            if os.access(filename,os.R_OK):
-                self._filename = filename
-                with open(filename,'r') as f:
-                    self._contents = f.read()
-                self._parse()
+            #
+            # Handle file-like objects
+            #
+            if isinstance(filename,str):
+                if os.access(filename,os.R_OK):
+                    self._filename = filename
+                    with open(filename,'r') as f:
+                        self._contents = f.read()
+            else:
+                #
+                # Assume file-like
+                #
+                self._filename = 'in_memory.par'
+                self._contents = filename.read()
+            self._parse()
         return
     #
     #

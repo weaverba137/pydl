@@ -7,7 +7,7 @@ def read_ds_cooling(fname,logT=None):
     ----------
     fname : { 'm-00.cie', 'm-05.cie', 'm+05.cie', 'm-10.cie', 'm-15.cie', 'm-20.cie', 'm-30.cie', 'mzero.cie' }
         Name of the data file to read.
-    logT : array_like, optional
+    logT : ndarray, optional
         If provided, values will be interpolated to the provided values.  If
         not provided, the values in the data files will be returned.
 
