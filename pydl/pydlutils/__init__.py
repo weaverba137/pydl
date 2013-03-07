@@ -18,6 +18,7 @@ import math
 import misc
 import sdss
 import spheregroup
+import yanny
 
 __all__ = ['PydlutilsException', 'bspline', 'cooling', 'fits', 'goddard',
-    'image', 'mangle', 'math', 'misc', 'sdss', 'spheregroup' ]
+    'image', 'mangle', 'math', 'misc', 'sdss', 'spheregroup', 'yanny' ]
