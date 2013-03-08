@@ -1,5 +1,13 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def computechi2(y,sqivar,templates):
     """Solve the linear set of equations Ax=b using SVD.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
     """
     import numpy as np
     from numpy.linalg import svd

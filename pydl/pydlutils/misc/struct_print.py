@@ -1,30 +1,57 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
-# $Id$
-#
-def struct_print(array,**kwargs):
-    """Print a NumPy record array (analogous to an IDL structure) in a nice
-    way.
+def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit=7,
+    html=False,no_head=False,debug=False):
+    """Print a NumPy record array (analogous to an IDL structure) in a nice way.
 
-    filename - a file name or file object
+    Parameters
+    ----------
+    array : ndarray
+        A record array to print.
+    filename : str or file-like, optional
+        If supplied, write to this file.
+    formatcodes : dict, optional
+        If supplied, use explicit format for certain columns.
+    alias : dict, optional
+        If supplied, use this mapping of record array column names to printed column names.
+    fdigit : int, optional
+        Width of 32-bit floating point columns, default 5.
+    ddigit : int, optional
+        Width of 64-bit floating point columns, default 7.
+    html : bool, optional
+        If ``True``, print an html table.
+    no_head : bool, optional
+        If ``True``, *don't* print a header line.
+    debug : bool, optional
+        If ``True``, print some extra debugging information.
+
+    Returns
+    -------
+    struct_print : tuple
+        A tuple containing a list of the lines in the table.  If `html` is ``True``,
+        also returns a list of lines of CSS for formatting the table.
+
+    Examples
+    --------
+    >>> pydl.pydlutils.misc.struct_print(np.array([(1,2.34,'five'),(2,3.456,'seven'),(3,4.5678,'nine')],dtype=[('a','i4'),('bb','f4'),('ccc','S5')]))
+    (['a bb          ccc  ',
+      '- ----------- -----',
+      '1        2.34 five ',
+      '2       3.456 seven',
+      '3      4.5678 nine '],
+     [])
     """
     import numpy as np
-    from pydlutils import PydlutilsException
+    from .. import PydlutilsException
     f = None # This variable will store a file handle
-    if 'filename' in kwargs:
-        if isinstance(kwargs['filename'],file):
-            f = kwargs['filename']
+    if filename is not None:
+        if isinstance(filename,file):
+            f = filename
         else:
-            f = open(kwargs['filename'],'w')
-    if 'fdigit' in kwargs:
-        fdigit = kwargs['fdigit']
-    else:
-        fdigit = 5
-    if 'ddigit' in kwargs:
-        ddigit = kwargs['ddigit']
-    else:
-        ddigit = 7
-    if 'html' in kwargs:
-        html = True
+            f = open(filename,'w')
+    if html:
         headstart = '<tr><th>'
         headsep = '</th><th>'
         headend = '</th></tr>'
@@ -48,7 +75,6 @@ def struct_print(array,**kwargs):
             '}',
             '</style>' ]
     else:
-        html = False
         headstart = ''
         headsep = ' '
         headend = ''
@@ -59,34 +85,22 @@ def struct_print(array,**kwargs):
     #
     # Alias should be a dictionary that maps structure names to column names
     #
-    if 'alias' in kwargs:
-        if isinstance(kwargs['alias'],dict):
-            alias = kwargs['alias']
-            #
-            # Fill in missing values of the alias dictionary
-            #
-            for tag in array.dtype.names:
-                if tag not in alias:
-                    alias[tag] = tag
-        else:
-            raise PydlutilsException("Invalid type for alias keyword.")
-    else:
+    if alias is None:
         #
         # Create a dummy alias dictionary
         #
         alias = dict(zip(array.dtype.names,array.dtype.names))
-    #
-    # Formatcodes allows an override for
-    #
-    if 'formatcodes' in kwargs:
-        if isinstance(kwargs['formatcodes'],dict):
-            formatcodes = kwargs['formatcodes']
-        else:
-            raise PydlutilsException("Invalid type for formatcodes keyword.")
     else:
         #
-        # Create an empty dictionary that will hold the format codes.
+        # Fill in any missing values of the alias dictionary
         #
+        for tag in array.dtype.names:
+            if tag not in alias:
+                alias[tag] = tag
+    #
+    # Formatcodes allows an override for certain columns.
+    #
+    if formatcodes is None:
         formatcodes = dict()
     #
     # This dictionary will hold the number of characters in each column
@@ -95,15 +109,15 @@ def struct_print(array,**kwargs):
     #
     # Construct format codes for each column
     #
-    for tag in array.dtype.names:
+    for k, tag in enumerate(array.dtype.names):
         if tag in formatcodes:
             thiscode = formatcodes[tag]
-            thisn = len(thiscode % array[tag][0])
+            thisn = len(thiscode.format(array[tag][0]))
         else:
             d = array.dtype.fields[tag][0]
             if d.kind == 'i':
                 thisn = max(max(len(str(array[tag].min())),len(str(array[tag].max()))),len(tag))
-                thiscode = "%%%dd" % thisn
+                thiscode = "{{{0:d}:{1:d}d}}".format(k,thisn)
             elif d.kind == 'f':
                 if d.itemsize == 8:
                     prec = ddigit
@@ -112,12 +126,12 @@ def struct_print(array,**kwargs):
                 thisn = prec + 6
                 if array[tag].min() < 0:
                     thisn += 1
-                thiscode = "%%%d.%dg" % (thisn,prec)
+                thiscode = "{{{0:d}:{1:d}.{2:d}g}}".format(k,thisn,prec)
             elif d.kind == 'S':
                 thisn = max(d.itemsize,len(tag))
-                thiscode = "%%%ds" % thisn
+                thiscode = "{{{0:d}:{1:d}s}}".format(k,thisn)
             else:
-                raise PydlutilsException("Unsupported kind: %s" % d.kind)
+                raise PydlutilsException("Unsupported kind: {0}".format(d.kind))
             formatcodes[tag] = thiscode
         nchar[tag] = thisn
     #
@@ -132,8 +146,8 @@ def struct_print(array,**kwargs):
         hdr1 = headstart + headsep.join([alias[tag] for tag in array.dtype.names]) + headend
         lines.append(hdr1)
     else:
-        if 'no_head' not in kwargs:
-            hdr1 = headstart + headsep.join([("%%%ds" % nchar[tag]) % alias[tag] for tag in array.dtype.names]) + headend
+        if not no_head:
+            hdr1 = headstart + headsep.join([("{{0:{0:d}s}}".format(nchar[tag])).format(alias[tag]) for tag in array.dtype.names]) + headend
             hdr2 = headstart + headsep.join(['-' * nchar[tag] for tag in array.dtype.names]) + headend
             lines.append(hdr1)
             lines.append(hdr2)
@@ -141,15 +155,14 @@ def struct_print(array,**kwargs):
     # Create a format string for the data from the individual format codes
     #
     rowformat = colstart + colsep.join([formatcodes[tag] for tag in array.dtype.names]) + colend
-    if 'debug' in kwargs:
-        print rowformat
-    lines += [rowformat % array[k].tolist() for k in range(array.size)]
+    if debug:
+        print(rowformat)
+    lines += [rowformat.format(*array[k]) for k in range(array.size)]
     if html:
         lines.append('</table>')
     if f is None:
-        print "\n".join(lines)
-        print
+        print("\n".join(lines)+"\n")
     else:
-        f.writelines(["%s\n" % l for l in lines])
+        f.write("\n".join(lines)+"\n")
         f.close()
     return (lines,css)

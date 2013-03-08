@@ -1,12 +1,30 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
-#
-#
-def hogg_iau_name(ra,dec,prefix='SDSS',precision=1):
+def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
     """Properly format astronomical source names to the IAU convention.
 
-    Arguments:
-    ra -- Right ascencion in decimal degrees
-    dec -- Declination in decimal degrees.
+    Parameters
+    ----------
+    ra : float or ndarray
+        Right ascencion in decimal degrees
+    dec : float or ndarray
+        Declination in decimal degrees.
+    prefix : str, optional
+        Add this prefix to the string, defaults to 'SDSS'.
+    precision : int, optional
+        Display this many digits of precision on seconds, default 1.
+    debug : bool, optional
+        If ``True``, print some extra debug information.
+
+    Returns
+    -------
+    hogg_iau_name : str or list
+        The IAU name for the coordinates.
+
+    Examples
+    --------
     """
     import numpy as np
     #
@@ -21,27 +39,58 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1):
     ram = np.floor(60.0*(h-rah))
     ras = 60.0*(60.0*(h-rah) - ram)
     ras = np.floor(ras*10.0**(precision+1))/10.0**(precision+1)
-    rasformat = "%%0%d.%df" % (precision+4, precision+1)
+    rasformat = "{{2:0{0:d}.{1:d}f}}".format(precision+4, precision+1)
+    if debug:
+        print(rasformat)
+    rah = rah.astype(np.int32)
+    ram = ram.astype(np.int32)
     desgn = np.array(list('+'*len(dec)))
-    desgn[pylab.find(dec < 0)] = '-'
+    desgn[dec < 0] = '-'
     adec = np.absolute(dec)
     ded = np.floor(adec)
     dem = np.floor(60.0*(adec-ded))
     des = 60.0*(60.0*(adec-ded) - dem)
     des = np.floor(des*10.0**precision)/10.0**precision
-    desformat = "%%0%d.%df" % (precision+3, precision)
+    desformat = "{{6:0{0:d}.{1:d}f}}".format(precision+3, precision)
     if precision == 0:
-        desformat = "%02d"
-    adformat = "%%02d%%02d%s%%s%%02d%%02d%s" % (rasformat,desformat)
-    adstr = map(lambda a,b,c,d,e,f,g: adformat % (a,b,c,d,e,f,g),
+        desformat = "{6:02d}"
+        des = des.astype(np.int32)
+    if debug:
+        print(desformat)
+    ded = ded.astype(np.int32)
+    dem = dem.astype(np.int32)
+    adformat = "{{0:02d}}{{1:02d}}{0}{{3:s}}{{4:02d}}{{5:02d}}{1}".format(rasformat,desformat)
+    if debug:
+        print(adformat)
+        print(rah, ram, ras, desgn, ded, dem, des)
+    adstr = map(lambda a,b,c,d,e,f,g: adformat.format(a,b,c,d,e,f,g),
         rah, ram, ras, desgn, ded, dem, des)
     if prefix == '':
         jstr = 'J'
     else:
         jstr = ' J'
-    name = map(lambda x: "%s%s%s" % (prefix, jstr, x), adstr)
+    name = map(lambda x: "{0}{1}{2}".format(prefix, jstr, x), adstr)
     if len(ra) == 1:
         return name[0]
     else:
         return name
-
+#
+#
+#
+def main():
+    from astropy.utils.compat import argparse
+    parser = argparse.ArgumentParser(description='Properly format astronomical source names to the IAU convention.')
+    parser.add_argument('-d', '--debug', dest='debug', action='store_true',
+        help='Print extra debug information.')
+    parser.add_argument('-P', '--precision', dest='precision', action='store',
+        metavar='N', default=1, type=int, help='Time the Fibonacci generator.')
+    parser.add_argument('-p', '--prefix', dest='prefix', action='store',
+        metavar='STR', default='SDSS', help='Add this prefix to the name.')
+    parser.add_argument('ra', metavar='RA', type=float,
+        help='Right Ascension.')
+    parser.add_argument('dec', metavar='Dec', type=float,
+        help='Declination.')
+    options = parser.parse_args()
+    print(hogg_iau_name(options.ra,options.dec,
+        prefix=options.prefix,precision=options.precision,debug=options.debug))
+    return

@@ -1,10 +1,38 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def djs_laxisnum(dims,iaxis=0):
-    import numpy as np
+    """Returns an integer array where each element of the array is set equal to its index number in the specified axis.
+
+    Parameters
+    ----------
+    dims : list
+        Dimensions of the array to return.
+    iaxis : int, optional
+        Index along this dimension.
+
+    Returns
+    -------
+    djs_laxisnum : ndarray
+        An array of indexes with ``dtype=int32``.
+
+    Raises
+    ------
+    ValueError
+        If `iaxis` is greater than or equal to the number of dimensions.
+    NotImplementedError
+        If the number of dimensions is greater than three.
+
+    Examples
+    --------
+    >>> pydl.pydlutils.misc.djs_laxisnum([4,4])
+    array([[0, 0, 0, 0],
+           [1, 1, 1, 1],
+           [2, 2, 2, 2],
+           [3, 3, 3, 3]], dtype=int32)
+    """
+    from numpy import zeros
     ndimen = len(dims)
-    result = np.zeros(dims,dtype='i4')
+    result = zeros(dims,dtype='i4')
     if ndimen == 1:
         pass
     elif ndimen == 2:
@@ -15,7 +43,7 @@ def djs_laxisnum(dims,iaxis=0):
             for k in range(dims[1]):
                 result[:,k] = k
         else:
-            raise ValueError("Bad value for iaxis: %d" % iaxis)
+            raise ValueError("Bad value for iaxis: {0:d}".format(iaxis))
     elif ndimen == 3:
         if iaxis == 0:
             for k in range(dims[0]):
@@ -27,8 +55,8 @@ def djs_laxisnum(dims,iaxis=0):
             for k in range(dims[2]):
                 result[:,:,k] = k
         else:
-            raise ValueError("Bad value for iaxis: %d" % iaxis)
+            raise ValueError("Bad value for iaxis: {0:d}".format(iaxis))
     else:
-        raise NotImplementedError("%d dimensions not supported." % ndimen)
+        raise NotImplementedError("{0:d} dimensions not supported.".format(ndimen))
     return result
 

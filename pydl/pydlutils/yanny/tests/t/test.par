@@ -1,0 +1,72 @@
+#
+# test.par
+#
+# FTCL/Yanny file for testing the perl & python yanny readers.
+#
+# This file is much more complicated than the usual yanny file, but should
+# be completely compliant with the specifications in
+# http://www.sdss.org/dr6/dm/flatFiles/yanny.html
+#
+# $Id: test.par 114735 2010-07-02 22:15:51Z weaver $
+#
+mjd 54579 # a keyword/value pair
+alpha beta gamma delta # another pair
+
+typedef enum {
+    FALSE,
+    TRUE
+} BOOLEAN;
+
+typedef enum {
+    FAILURE,
+    INCOMPLETE,
+    SUCCESS
+} STATUS;
+
+typedef struct {
+    float mag[5];
+    char b[5][];
+    char foo[25];
+    double c;
+    int flags[2];
+    BOOLEAN new_flag;
+} MYSTRUCT;
+
+typedef struct {
+    float foo<3>; # This is archaic array notation, strongly deprecated,
+    char bar<10>; # but still technically supported.
+} OLD;
+
+typedef struct {
+    STATUS state;
+    char timestamp[]; #UTC timestamp in format 2008-06-21T00:27:33
+} STATUS_UPDATE;
+
+mystruct {17.5 17.546 17.4 16.1 16.0} {the rain in "spain is" wet} \
+    mystruct 1.24345567 {123123 1231213} FALSE
+mystruct {17.5 17.446 17.4 16.1 16.0} {the snow in chile "is dry"} \
+    "My dog has no nose." 7.24345567 {123123 0}       TRUE
+mystruct {17.5 17.446 17.4 16.1 16.0} {this string is  empty ""} \
+    "" 7.24345567 {123123 0}       TRUE
+mystruct {17.5 17.446 17.4 16.1 16.0} \
+    {"this array contains empty strings" "" "this array contains empty strings" "" empty} \
+    "" 7.24345567 {123123 0}       TRUE
+mystruct {17.5 17.446 17.4 16.1 16.0} {  this array doesn't contain quotes} \
+    "" 7.24345567 {123123 0}       TRUE
+status_update INCOMPLETE 2008-06-21T00:27:33
+status_update SUCCESS    2008-06-21T02:27:33
+status_update FAILURE    2008-06-21T03:27:33
+
+STATUS_UPDATE SUCCESS 2008-06-22T00:27:33
+STATUS_UPDATE FAILURE 2008-06-22T01:27:33
+STATUS_UPDATE SUCCESS 2008-06-22T00:27:33
+STATUS_UPDATE FAILURE 2008-06-22T01:27:33
+# Appended by FTCL.pm at 2008-06-23 23:09:58 UTC.
+STATUS_UPDATE SUCCESS 2008-06-22T00:27:33
+STATUS_UPDATE FAILURE 2008-06-22T01:27:33
+# Appended by FTCL.pm at 2008-06-23 23:26:52 UTC.
+STATUS_UPDATE SUCCESS 2008-06-22T00:27:33
+STATUS_UPDATE FAILURE 2008-06-22T01:27:33
+#
+old {1.2 2.3 3.4} hello
+old {4.3 3.2 2.1} { { } }

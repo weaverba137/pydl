@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-import pydl
+#from pydl import PydlException
 
 #
 # Define this early on so that submodules can use it
 #
-class PydlutilsException(pydl.PydlException):
+#class PydlutilsException(PydlException):
+#    pass
+class PydlutilsException(Exception):
     pass
 
 #import bspline
@@ -13,8 +15,8 @@ import cooling
 #import fits
 #import image
 #import mangle
-#import math
-#import misc
+import math
+import misc
 import sdss
 #import spheregroup
 import yanny

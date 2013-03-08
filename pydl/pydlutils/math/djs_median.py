@@ -1,12 +1,15 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def djs_median(array,**kwargs):
     """Compute the median of an array.
 
-    Arguments:
-    array -- input array
-    Keyword Arguments:
+    Parameters
+    ----------
+    array : ndarray
+        input array
+
+    Keyword Arguments
+    -----------------
     width -- Do a median filter with this window size.
     axis  -- Perform the median along this axis.
     """

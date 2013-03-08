@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""An example command-line script. Simply calls hogg_iau_name()."""
+#
+from pydl.pydlutils.misc.hogg_iau_name import main
+#
+main()

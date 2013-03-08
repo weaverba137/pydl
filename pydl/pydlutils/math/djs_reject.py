@@ -1,15 +1,21 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def djs_reject(data,model,**kwargs):
     """Routine to reject points when doing an iterative fit to data.
 
-    Arguments:
-    data -- The data
-    model -- The model
+    Parameters
+    ----------
+    data : ndarray
+        The data
+    model : ndarray
+        The model
+
+    Returns
+    -------
+    djs_reject :
     """
     import numpy as np
-    from pydlutils.misc import djs_laxisnum
+    from ..misc import djs_laxisnum
     if model is not None:
         if data.shape != model.shape:
             raise ValueError('Dimensions of data and model do not agree.')

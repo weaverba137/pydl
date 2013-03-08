@@ -1,23 +1,22 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def find_contiguous(x):
     """Find the longest sequence of contiguous non-zero array elements.
 
     Parameters
     ----------
-    x : numpy.array
+    x : ndarray
         A 1d array. A dtype of bool is preferred although any dtype where the
         operation ``if x[k]:`` is well-defined should work.
 
     Returns
     -------
-    longest : list
+    find_contiguous : list
         A list of indices of the longest contiguous non-zero sequence.
 
     Examples
     --------
-    >>> find_contiguous(np.array([0,1,1,1,0,1,1,0,1]))
+    >>> pydl.pydlutils.math.find_contiguous(np.array([0,1,1,1,0,1,1,0,1]))
     [1,2,3]
     """
     contig = list()

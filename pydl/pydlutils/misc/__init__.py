@@ -1,4 +1,9 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+"""
+This subpackage corresponds to the misc directory of idlutils.
+"""
 from djs_laxisnum import djs_laxisnum
-from djs_readcol import djs_readcol
+#from djs_readcol import djs_readcol
 from hogg_iau_name import hogg_iau_name
 from struct_print import struct_print
