@@ -4,8 +4,8 @@ def test_yanny():
     """Used to test the yanny class.
     """
     import os
-    #from .. import yanny
-    from pydl.pydlutils.yanny import yanny
+    from .. import yanny
+    #from pydl.pydlutils.yanny import yanny
     #
     # Describe what should be in the object
     #
