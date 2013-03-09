@@ -18,7 +18,7 @@ def set_maskbits(idlutils_version='v5_5_8'):
         If the data file could not be retrieved.
     """
     from ..yanny import yanny
-    from urllib2 import urlopen
+    #from urllib2 import urlopen
     from astropy.utils.data import download_file
     if idlutils_version == 'trunk' or idlutils_version.startswith('branches/'):
         iversion = idlutils_version

@@ -32,13 +32,14 @@ def read_ds_cooling(fname,logT=None):
     --------
     >>> pydl.pydlutils.cooling.read_ds_cooling('m-15.cie')
     """
-    from urllib2 import urlopen
+    from astropy.utils.data import download_file
     from numpy import interp
     from astropy.io import ascii
     baseurl = 'http://www.mso.anu.edu.au/~ralph/data/cool/'
     if fname not in ('m-00.cie', 'm-05.cie', 'm+05.cie', 'm-10.cie', 'm-15.cie', 'm-20.cie', 'm-30.cie', 'mzero.cie'):
         raise ValueError('Invalid value for data file: {0}'.format(fname))
-    with urlopen(baseurl+fname) as coolingfile:
+    filename = download_file(baseurl+fname,cache=True)
+    with open(filename) as coolingfile:
         coolingfile = coolingfile.read()
     data = ascii.read(coolingfile.split('\n')[2:],delimiter='\t')
     if logT is None:
