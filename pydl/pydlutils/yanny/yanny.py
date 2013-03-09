@@ -256,7 +256,7 @@ class yanny(dict):
             #
             # Handle file-like objects
             #
-            if isinstance(filename,str):
+            if isinstance(filename,str) or isinstance(filename,unicode):
                 if os.access(filename,os.R_OK):
                     self.filename = filename
                     with open(filename,'r') as f:

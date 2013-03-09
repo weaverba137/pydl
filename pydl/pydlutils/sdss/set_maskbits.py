@@ -19,14 +19,16 @@ def set_maskbits(idlutils_version='v5_5_8'):
     """
     from ..yanny import yanny
     from urllib2 import urlopen
+    from astropy.utils.data import download_file
     if idlutils_version == 'trunk' or idlutils_version.startswith('branches/'):
         iversion = idlutils_version
     else:
         iversion = 'tags/'+idlutils_version
     baseurl = 'http://www.sdss3.org/svn/repo/idlutils/{0}/data/sdss/sdssMaskbits.par'.format(iversion)
-    par = urlopen(baseurl)
-    maskfile = yanny(par)
-    par.close()
+    filename = download_file(baseurl,cache=True)
+    #par = urlopen(baseurl)
+    maskfile = yanny(filename)
+    #par.close()
     #
     # Parse the file & cache the results in maskbits
     #
