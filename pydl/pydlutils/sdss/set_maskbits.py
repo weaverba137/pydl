@@ -10,7 +10,8 @@ def set_maskbits(idlutils_version='v5_5_8'):
 
     Returns
     -------
-    None
+    set_maskbits : dict
+        A dictionary of bitmasks suitable for caching.
 
     Raises
     ------

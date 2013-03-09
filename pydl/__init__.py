@@ -141,8 +141,3 @@ class PydlException(Exception):
     pass
 
 __all__ = ['file_lines', 'pcomp', 'smooth', 'uniq', 'PydlException']
-
-#
-# TODO: Add check for presence of sdssMaskbits.par file.  If not present,
-# try to download it.
-#
