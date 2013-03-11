@@ -10,11 +10,12 @@ part of astronomical IDL libraries.  The emphasis is on reproducing results of
 the astronomical library functions.  Only the bare minimum of IDL_ built-in
 functions are implemented to support this.
 
-There are three astronomical IDL libraries targeted:
+There are four astronomical IDL libraries targeted:
 
 * idlutils_
 * `Goddard utilities`_ (which are distributed with idlutils)
-* idlspec2d_
+* idlspec2d_ : tools for working with SDSS/BOSS spectroscopic data
+* photoop_ : tools for working with SDSS imaging data
 
 The current goal is to get this package affiliated with the astropy_ project.
 
@@ -29,6 +30,7 @@ the repository is http://github.com/weaverba137/pydl .
 .. _idlutils: http://www.sdss3.org/dr9/software/idlutils.php
 .. _`Goddard utilities`: http://idlastro.gsfc.nasa.gov/
 .. _idlspec2d: http://www.sdss3.org/svn/repo/idlspec2d/trunk/
+.. _photoop: http://www.sdss3.org/svn/repo/photoop/trunk/
 .. _astropy: http://www.astropy.org/
 .. _SDSS-III: http://www.sdss3.org/
 .. _`svn repository`: http://www.sdss3.org/dr9/software/products.php

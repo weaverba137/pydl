@@ -1,14 +1,19 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-#from pydl import PydlException
-
+"""
+This subpackage implements functions from the photoop package.
+"""
 #
 # Define this early on so that submodules can use it
 #
+#from .. import PydlException
 #class PydlutilsException(PydlException):
 #    pass
 class PydlutilsException(Exception):
     pass
-
+#
+# Import subpackages
+#
 #import bspline
 import cooling
 #import coord
@@ -20,6 +25,7 @@ import misc
 import sdss
 #import spheregroup
 import yanny
-
-#__all__ = ['PydlutilsException', 'bspline', 'cooling', 'fits',
-#    'image', 'mangle', 'math', 'misc', 'sdss', 'spheregroup', 'yanny' ]
+#
+# Set __all__
+#
+__all__ = ['PydlutilsException', 'cooling', 'math', 'misc', 'sdss', 'yanny']

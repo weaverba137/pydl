@@ -7,16 +7,15 @@ This subpackage implements functions from the photoop package.
 # Define this early on so that submodules can use it
 #
 #from .. import PydlException
-#class Pydlspec2dException(PydlException):
+#class PyhotoopException(PydlException):
 #    pass
-class Pydlspec2dException(Exception):
+class PyhotoopException(Exception):
     pass
 #
 # Import subpackages
 #
-import spec1d
-import spec2d
+#import photoobj
 #
 # Set __all__
 #
-__all__ = ['Pydlspec2dException', 'spec1d', 'spec2d']
+#__all__ = ['PyhotoopException', 'photoobj' ]
