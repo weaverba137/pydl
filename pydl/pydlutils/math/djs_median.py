@@ -1,28 +1,39 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def djs_median(array,**kwargs):
+def djs_median(array,dimension=None,width=None,boundary='none'):
     """Compute the median of an array.
+
+    Use a filtering box or collapse the image along one dimension.
 
     Parameters
     ----------
     array : ndarray
         input array
+    dimension : int, optional
+        Compute the median over this dimension. It is an error to specify both
+        `dimension` and `width`.
+    width : int, optional
+        Width of the median window. It is an error to specify both
+        `dimension` and `width`.
+    boundary : { 'none', 'reflect', 'nearest', 'wrap' }, optional
+        Boundary condition to impose.  'none' means no filtering is done within
+        `width`/2 of the boundary.  'reflect' means reflect pixel values around the
+        boundary. 'nearest' means use the values of the nearest boundary pixel.
+        'wrap' means wrap pixel values around the boundary. 'nearest' and 'wrap'
+        are not implemented.
 
-    Keyword Arguments
-    -----------------
-    width -- Do a median filter with this window size.
-    axis  -- Perform the median along this axis.
+    Returns
+    -------
+    djs_median : ndarray
+        The output.  If neither `dimension` nor `width` are set, this is a scalar
+        value, just the output of ``numpy.median()``.  If `width` is set, the
+        result has the same shape as the input array.
     """
     import numpy as np
     from scipy.signal import medfilt
-    if 'boundary' in kwargs:
-        boundary = kwargs['boundary']
-    else:
-        boundary = 'none'
-    if 'axis' not in kwargs and 'width' not in kwargs:
+    if dimension is None and width is None:
         return np.median(array)
-    elif 'axis' not in kwargs:
-        width = kwargs['width']
+    elif dimension is None:
         if boundary == 'none':
             if width == 1:
                 medarray = array
@@ -70,9 +81,8 @@ def djs_median(array,**kwargs):
                     raise NotImplementedError('This boundary condition not implemented')
                 else:
                     raise ValueError('Unknown boundary condition.')
-    elif 'width' not in kwargs:
+    elif width is None:
         raise NotImplementedError('This type of median is not implemented')
     else:
-        raise ValueError('Invalid to specify both axis & width.')
+        raise ValueError('Invalid to specify both dimension & width.')
     return medarray
-

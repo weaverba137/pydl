@@ -1,7 +1,9 @@
-from pydlutils.math import computechi2
-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def test_computechi2():
     import numpy as np
+    from .. import computechi2
+    #from pydl.pydlutils.math import computechi2
     x = np.arange(20)
     y = np.array([6.6198438, 1.3491303, 0.41035045, 9.4013375, 4.1103360,
         4.3522868, 4.6338078, 4.7400367, 5.1860726, 5.1082748,
@@ -13,5 +15,23 @@ def test_computechi2():
         0.536489, 0.772543, 0.957729, 0.883976, 1.11559])
     templates = np.vstack((np.ones((20,),dtype='d'),x)).transpose()
     chi2 = computechi2(y,sqivar,templates)
-    print chi2
-    return
+    #
+    # 20 data points, 2 parameters = 18 degrees of freedom.
+    #
+    assert chi2.dof == 18
+    #
+    # The covariance matrix should be symmetric
+    #
+    assert (chi2.covar.T == chi2.covar).all()
+    #
+    # The variance vector should be the same as the diagonal of the covariance
+    # matrix
+    #
+    assert (chi2.var == np.diag(chi2.covar)).all()
+    #print chi2.chi2
+    #print chi2.acoeff
+    #print chi2.covar
+    #print chi2.yfit
+#
+#if __name__ == '__main__':
+#    test_computechi2()
