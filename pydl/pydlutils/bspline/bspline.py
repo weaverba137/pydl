@@ -1,35 +1,43 @@
-# import profile
-#
-# Classes
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
 class bspline(object):
     """Bspline class.
 
     Functions in the bspline library are implemented as methods on this
     class.
+
+    Parameters
+    ----------
+    x
+    nord
+    npoly
+    bkpt
+    bkspread
+    verbose
+
+    Attributes
+    ----------
+    breakpoints
+    nord
+    npoly
+    mask
+    coeff
+    icoeff
+    xmin
+    xmax
+    funcname
     """
     import numpy as np
-    def __init__(self,x,**kwargs):
+    def __init__(self,x,nord=4,npoly=1,bkpt=None,bkspread=1.0,verbose=False,**kwargs):
         """Init creates an object whose attributes are similar to the
         structure returned by the create_bspline function.
         """
         #
-        # Default values
-        #
-        if 'nord' in kwargs:
-            nord = kwargs['nord']
-        else:
-            nord = 4
-        if 'npoly' in kwargs:
-            npoly = kwargs['npoly']
-        else:
-            npoly = 1
-        #
         # Set the breakpoints.
         #
-        if 'bkpt' in kwargs and kwargs['bkpt'] is not None:
-            bkpt = kwargs['bkpt']
-        else:
+        if bkpt is None:
             startx = x.min()
             rangex = x.max() - startx
             if 'placed' in kwargs:
@@ -63,19 +71,15 @@ class bspline(object):
         imin = bkpt.argmin()
         imax = bkpt.argmax()
         if x.min() < bkpt[imin]:
-            if 'silent' not in kwargs:
-                print 'Lowest breakpoint does not cover lowest x value: changing.'
+            if verbose:
+                print('Lowest breakpoint does not cover lowest x value: changing.')
             bkpt[imin] = x.min()
         if x.max() > bkpt[imax]:
-            if 'silent' not in kwargs:
-                print 'Highest breakpoint does not cover highest x value: changing.'
+            if verbose:
+                print('Highest breakpoint does not cover highest x value: changing.')
             bkpt[imax] = x.max()
         nshortbkpt = bkpt.size
         fullbkpt = bkpt.copy()
-        if 'bkspread' in kwargs:
-            bkspread = kwargs['bkspread']
-        else:
-            bkspread = 1.0
         if nshortbkpt == 1:
             bkspace = bkspread
         else:
@@ -99,18 +103,26 @@ class bspline(object):
             self.coeff = self.np.zeros((nc,),dtype='d')
             self.icoeff = self.np.zeros((nc,),dtype='d')
         self.xmin = 0.0
-        self.xmax = 1.1
+        self.xmax = 1.0
         self.funcname = 'legendre'
         return
     #
     #
     #
-    def fit(self,xdata,ydata,invvar,**kwargs):
+    def fit(self,xdata,ydata,invvar,x2=None):
+        """
+        Parameters
+        ----------
+        xdata
+        ydata
+        invvar
+        x2
+
+        Returns
+        -------
+        fit
+        """
         from pydlutils.bspline import cholesky_band, cholesky_solve
-        if 'x2' in kwargs:
-            x2 = kwargs['x2']
-        else:
-            x2 = None
         goodbk = self.mask[self.nord:]
         nn = goodbk.sum()
         if nn < self.nord:
@@ -118,7 +130,7 @@ class bspline(object):
             return (-2,yfit)
         nfull = nn * self.npoly
         bw = self.npoly * self.nord
-        a1,lower,upper = self.action(xdata,**kwargs)
+        a1,lower,upper = self.action(xdata,x2=x2)
         foo = self.np.tile(invvar,bw).reshape(bw,invvar.size).transpose()
         a2 = a1 * foo
         alpha = self.np.zeros((bw,nfull+bw),dtype='d')
@@ -161,13 +173,20 @@ class bspline(object):
     #
     #
     #
-    def action(self,x,**kwargs):
-        from pydl import uniq
-        from pydlutils.goddard.math import fchebyshev, flegendre
+    def action(self,x,x2=None):
+        """
+        Parameters
+        ----------
+        x
+        x2
+
+        Returns
+        -------
+        action
+        """
+        from ... import uniq
+        from ...goddard.math import fchebyshev, flegendre
         nx = x.size
-        if 'x2' in kwargs and kwargs['x2'] is not None:
-            if kwargs['x2'].size != nx:
-                raise ValueError('Dimensions of x and x2 do not match.')
         nbkpt = self.mask.sum()
         if nbkpt < 2*self.nord:
             return (-2,0,0)
@@ -184,8 +203,10 @@ class bspline(object):
         rindx = indx[::-1]
         bb = uniq(rindx,self.np.arange(rindx.size,dtype='i4'))
         lower[rindx[bb]-self.nord+1] = nx - bb - 1
-        if 'x2' in kwargs and kwargs['x2'] is not None:
-            x2norm = 2.0 * (kwargs['x2'] - sset['xmin']) / (sset['xmax'] - sset['xmin'] ) - 1.0
+        if x2 is not None:
+            if x2.size != nx:
+                raise ValueError('Dimensions of x and x2 do not match.')
+            x2norm = 2.0 * (x2 - self.xmin) / (self.xmax - self.xmin ) - 1.0
             if self.funcname == 'poly':
                 temppoly = self.np.ones((nx,self.npoly),dtype='f')
                 for i in range(1,self.npoly):
@@ -211,6 +232,15 @@ class bspline(object):
     #
     #
     def intrv(self,x):
+        """
+        Parameters
+        ----------
+        x
+
+        Returns
+        -------
+        intrv
+        """
         gb = self.breakpoints[self.mask]
         n = gb.size - self.nord
         indx = self.np.zeros((x.size,),dtype='i4')
@@ -224,6 +254,16 @@ class bspline(object):
     #
     #
     def bsplvn(self,x,ileft):
+        """
+        Parameters
+        ----------
+        x
+        ileft
+
+        Returns
+        -------
+        bsplvn
+        """
         bkpt = self.breakpoints[self.mask]
         vnikx = self.np.zeros((x.size,self.nord),dtype=x.dtype)
         deltap = vnikx.copy()
@@ -246,17 +286,29 @@ class bspline(object):
     #
     #
     #
-    def value(self,x,**kwargs):
+    def value(self,x,x2=None,action=None,lower=None,upper=None):
+        """
+        Parameters
+        ----------
+        x
+        x2
+        action
+        lower
+        upper
+
+        Returns
+        -------
+        value
+        """
         xsort = x.argsort()
         xwork = x[xsort]
-        if 'x2' in kwargs and kwargs['x2'] is not None:
-            x2work = kwargs['x2'][xsort]
+        if x2 is not None:
+            x2work = x2[xsort]
         else:
             x2work = None
-        if 'action' in kwargs:
-            action = kwargs['action']
-            lower = kwargs['lower']
-            upper = kwargs['upper']
+        if action is not None:
+            if lower is None or upper is None:
+                raise ValueError('Must specify lower and upper if action is set.')
         else:
             action,lower,upper = self.action(xwork,x2=x2work)
         yfit = self.np.zeros(x.shape,dtype=x.dtype)
@@ -294,6 +346,15 @@ class bspline(object):
     #
     #
     def maskpoints(self,err):
+        """
+        Parameters
+        ----------
+        err
+
+        Returns
+        -------
+        maskpoints
+        """
         nbkpt = self.mask.sum()
         if nbkpt <= 2*self.nord:
             return -2

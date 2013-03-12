@@ -1,7 +1,17 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def cholesky_solve(a,bb):
+    """Solve the equation Ax=b where A is a Cholesky-banded matrix.
+
+    Parameters
+    ----------
+    a
+    bb
+
+    Returns
+    -------
+    cholesky_solve :
+    """
     import numpy as np
     b = bb.copy()
     bw = a.shape[0]

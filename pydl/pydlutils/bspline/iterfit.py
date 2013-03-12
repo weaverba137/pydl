@@ -1,23 +1,30 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
-#
-#
-def iterfit(xdata,ydata,invvar=None,**kwargs):
+def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs):
     """Iteratively fit a bspline set to data.
+
+    Parameters
+    ----------
+    xdata
+    ydata
+    invvar
+    upper
+    lower
+    x2
+    maxiter
+
+    Returns
+    -------
+    iterfit : tuple
     """
     import numpy as np
-    from pydlutils.bspline import bspline
-    from pydlutils.math import djs_reject
+    from .bspline import bspline
+    from ..math import djs_reject
     nx = xdata.size
     if ydata.size != nx:
         raise ValueError('Dimensions of xdata and ydata do not agree.')
-    if 'upper' in kwargs:
-        upper = kwargs['upper']
-    else:
-        upper = 5
-    if 'lower' in kwargs:
-        lower = kwargs['lower']
-    else:
-        lower = 5
     if invvar is not None:
         if invvar.size != nx:
             raise ValueError('Dimensions of xdata and invvar do not agree.')
@@ -30,13 +37,9 @@ def iterfit(xdata,ydata,invvar=None,**kwargs):
         if var == 0:
             var = 1.0
         invvar = np.ones(ydata.shape,dtype=ydata.dtype)/var
-    if 'x2' in kwargs:
-        if kwargs['x2'].size != nx:
+    if x2 is not None:
+        if x2.size != nx:
             raise ValueError('Dimensions of xdata and x2 do not agree.')
-    if 'maxiter' in kwargs:
-        maxiter = kwargs['maxiter']
-    else:
-        maxiter = 10
     yfit = np.zeros(ydata.shape)
     if invvar.size == 1:
         outmask = True
@@ -50,24 +53,24 @@ def iterfit(xdata,ydata,invvar=None,**kwargs):
         sset.coeff = 0
     else:
         if not maskwork.any():
-            print 'No valid data points.'
-            return (None,None)
+            raise ValueError('No valid data points.')
+            #return (None,None)
         if 'fullbkpt' in kwargs:
             fullbkpt = kwargs['fullbkpt']
         else:
             sset = bspline(xdata[xsort[maskwork]],**kwargs)
             if maskwork.sum() < sset.nord:
-                print 'Number of good data points fewer than nord.'
+                print('Number of good data points fewer than nord.')
                 return (sset,outmask)
-            if 'x2' in kwargs:
+            if x2 is not None:
                 if 'xmin' in kwargs:
                     xmin = kwargs['xmin']
                 else:
-                    xmin = kwargs['x2'].min()
+                    xmin = x2.min()
                 if 'xmax' in kwargs:
                     xmax = kwargs['xmax']
                 else:
-                    xmax = kwargs['x2'].max()
+                    xmax = x2.max()
                 if xmin == xmax:
                     xmax = xmin + 1
                 sset.xmin = xmin
@@ -77,8 +80,8 @@ def iterfit(xdata,ydata,invvar=None,**kwargs):
     xwork = xdata[xsort]
     ywork = ydata[xsort]
     invwork = invvar[xsort]
-    if 'x2' in kwargs:
-        x2work = kwargs['x2'][xsort]
+    if x2 is not None:
+        x2work = x2[xsort]
     else:
         x2work = None
     iiter = 0
