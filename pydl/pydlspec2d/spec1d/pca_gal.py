@@ -84,59 +84,69 @@ def pca_gal(**kwargs):
     mjd = input_data['mjd'].data
     fiber = input_data['fiber'].data
     zfit = input_data['zfit'].data
-    spplate = readspec(plate,fiber,mjd=mjd,**kwargs)
-    #
-    # Insist that all of the requested spectra exist.
-    #
-    missing = spplate['plugmap']['FIBERID'] == 0
-    if missing.any():
-        imissing = missing.nonzero()[0]
-        for k in imissing:
-            print("Missing plate={0:d} mjd={1:d} fiber={2:d}".format(plate[k],mjd[k],fiber[k]))
-        raise ValueError("{0:d} missing object(s).".format(missing.sum()))
-    #
-    # Do not fit where the spectrum may be dominated by sky-sub residuals.
-    #
-    objinvvar = skymask(spplate['invvar'],spplate['andmask'],spplate['ormask'])
-    ifix = spplate['flux']**2 * objinvvar > snmax**2
-    if ifix.any():
-        objinvvar[ifix.nonzero()] = (snmax/spplate['flux'][ifix.nonzero()])**2
-    #
-    # Set the new wavelength mapping here.  If the binsz keyword is not set,
-    # then bin size is determined from the first spectrum returned by readspec.
-    # This is fine in the case where all spectra have the same bin size
-    # (though their starting wavelengths may differ).  However, this may not
-    # be a safe assumption in the future.
-    #
-    if 'binsz' in kwargs:
-        objdloglam = kwargs['binsz']
-    else:
-        objdloglam = spplate['loglam'][0,1] - spplate['loglam'][0,0]
-    newloglam = wavevector(np.log10(wavemin),np.log10(wavemax),
-        binsz=objdloglam)
-    #
-    # Do PCA solution.
-    #
-    pcaflux = pca_solve(spplate['flux'],objinvvar,spplate['loglam'],zfit,
-        niter=niter,nkeep=nkeep,newloglam=newloglam,aesthetics='mean')
-    #
-    # Fill in bad data with a running median of the good data.
-    #
-    qgood = pcaflux['usemask'] >= minuse
-    medflux = np.zeros(pcaflux['flux'].shape,dtype=pcaflux['flux'].dtype)
-    if not qgood.all():
-        for i in range(nkeep):
-            medflux[i,qgood] = djs_median(pcaflux['flux'][i,qgood],
-                width=51,boundary='nearest')
-            medflux[i,:] = djs_maskinterp(medflux[i,:],~qgood,const=True)
-        pcaflux['flux'][:,~qgood] = medflux[:,~qgood]
-    #
-    # Dump input fluxes to a file for debugging purposes.
-    #
     if 'dump' in kwargs:
-        f = open(kwargs['dump'],'w')
-        pickle.dump(pcaflux, f)
+        dumpfile = kwargs['dump']
+    else:
+        dumpfile = 'this-file-does-not-exist'
+    if os.path.exists(dumpfile):
+        print("Loading data from {0}.".format(dumpfile))
+        f = open(dumpfile)
+        pcaflux = pickle.load(f)
         f.close()
+    else:
+        spplate = readspec(plate,fiber,mjd=mjd,**kwargs)
+        #
+        # Insist that all of the requested spectra exist.
+        #
+        missing = spplate['plugmap']['FIBERID'] == 0
+        if missing.any():
+            imissing = missing.nonzero()[0]
+            for k in imissing:
+                print("Missing plate={0:d} mjd={1:d} fiber={2:d}".format(plate[k],mjd[k],fiber[k]))
+            raise ValueError("{0:d} missing object(s).".format(missing.sum()))
+        #
+        # Do not fit where the spectrum may be dominated by sky-sub residuals.
+        #
+        objinvvar = skymask(spplate['invvar'],spplate['andmask'],spplate['ormask'])
+        ifix = spplate['flux']**2 * objinvvar > snmax**2
+        if ifix.any():
+            objinvvar[ifix.nonzero()] = (snmax/spplate['flux'][ifix.nonzero()])**2
+        #
+        # Set the new wavelength mapping here.  If the binsz keyword is not set,
+        # then bin size is determined from the first spectrum returned by readspec.
+        # This is fine in the case where all spectra have the same bin size
+        # (though their starting wavelengths may differ).  However, this may not
+        # be a safe assumption in the future.
+        #
+        if 'binsz' in kwargs:
+            objdloglam = kwargs['binsz']
+        else:
+            objdloglam = spplate['loglam'][0,1] - spplate['loglam'][0,0]
+        newloglam = wavevector(np.log10(wavemin),np.log10(wavemax),
+            binsz=objdloglam)
+        #
+        # Do PCA solution.
+        #
+        pcaflux = pca_solve(spplate['flux'],objinvvar,spplate['loglam'],zfit,
+            niter=niter,nkeep=nkeep,newloglam=newloglam,aesthetics='mean')
+        #
+        # Fill in bad data with a running median of the good data.
+        #
+        qgood = pcaflux['usemask'] >= minuse
+        medflux = np.zeros(pcaflux['flux'].shape,dtype=pcaflux['flux'].dtype)
+        if not qgood.all():
+            for i in range(nkeep):
+                medflux[i,qgood] = djs_median(pcaflux['flux'][i,qgood],
+                    width=51,boundary='nearest')
+                medflux[i,:] = djs_maskinterp(medflux[i,:],~qgood,const=True)
+            pcaflux['flux'][:,~qgood] = medflux[:,~qgood]
+        #
+        # Dump input fluxes to a file for debugging purposes.
+        #
+        if 'dump' in kwargs:
+            f = open(kwargs['dump'],'w')
+            pickle.dump(pcaflux, f)
+            f.close()
     #
     # Make plots
     #
