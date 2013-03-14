@@ -35,6 +35,8 @@ def pca_gal(**kwargs):
     import os
     import os.path
     import pickle
+    import matplotlib
+    matplotlib.use('Agg') # Non-interactive back-end
     import pylab
     from astropy.io import fits as pyfits
     import numpy as np

@@ -1,6 +1,9 @@
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-#
+"""
+Create template files with HMF.
+"""
+from __future__ import print_function
 #
 def hmf_gal(**kwargs):
     """Wrapper on hmf_solve analogous to pca_gal and pca_solve.
@@ -44,15 +47,16 @@ def hmf_gal(**kwargs):
     import matplotlib
     matplotlib.use('Agg') # Non-interactive back-end
     import pylab
-    import pyfits
+    from astropy.io import fits as pyfits
     import numpy as np
     # from matplotlib.font_manager import fontManager, FontProperties
-    from pydlutils.goddard.astro import get_juldate
-    from pydlutils.image import djs_maskinterp
-    from pydlutils.math import djs_median, find_contiguous
-    from pydlutils.misc import djs_readcol
-    from pydlspec2d.spec1d import plot_eig, readspec, skymask, wavevector, hmf_solve
-    from pydlspec2d.spec2d import combine1fiber
+    from ...goddard.astro import get_juldate
+    from ...pydlutils.image import djs_maskinterp
+    from ...pydlutils.math import djs_median, find_contiguous
+    #from ...pydlutils.misc import djs_readcol
+    from astropy.io import ascii
+    from . import plot_eig, readspec, skymask, wavevector, hmf_solve
+    from ..spec2d import combine1fiber
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:
@@ -94,7 +98,15 @@ def hmf_gal(**kwargs):
     #
     # Read the input spectra
     #
-    plate,mjd,fiber,zfit = djs_readcol(inputfile,format='(L,L,L,D)')
+    #plate,mjd,fiber,zfit = djs_readcol(inputfile,format='(L,L,L,D)')
+    converters = {'plate': [ascii.convert_numpy(np.int32)],
+        'mjd': [ascii.convert_numpy(np.int32)],
+        'fiber': [ascii.convert_numpy(np.int32)] }
+    input_data = ascii.read(inputfile,names=['plate','mjd','fiber','zfit'],converters=converters)
+    plate = input_data['plate'].data
+    mjd = input_data['mjd'].data
+    fiber = input_data['fiber'].data
+    zfit = input_data['zfit'].data
     #
     # Run combine1fiber
     #
@@ -300,4 +312,55 @@ def hmf_gal(**kwargs):
     hdulist[1].header.update('FILENAME',inputfile,'Original input file')
     hdulist.writeto(outfile+'.fits')
     plot_eig(outfile+'.fits')
+    return
+#
+#
+#
+def main():
+    """Gets called when the script is executed.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+
+    Side-Effects
+    ------------
+    Creates a FITS file and some PNG plots.
+    """
+    #
+    # Imports for main()
+    #
+    import os
+    import os.path
+    import sys
+    from astropy.utils.compat import argparse
+    #
+    # Get Options
+    #
+    parser = argparse.ArgumentParser(description=__doc__,prog=os.path.basename(sys.argv[0]))
+    parser.add_argument('-F', '--flux', action='store_true', dest='flux',
+        help='Plot input spectra.')
+    parser.add_argument('-d', '--dump', action='store', dest='dump',
+        metavar='FILE', default=os.path.join(os.getenv('HOME'),'scratch','eigeninput_gal.dump'),
+        help='Dump data to a pickle file.')
+    parser.add_argument('-n', '--nonnegative', action='store_true', dest='nonnegative',
+        help='Use non-negative HMF method.')
+    parser.add_argument('-e', '--epsilon', action='store', type=float, dest='epsilon',
+        metavar='EPSILON', default=1.0, help='Set the epsilon parameter (default 1.0). Set to 0 to turn off entirely')
+    parser.add_argument('-K', '--dims', action='store', type=int, dest='K',
+        metavar='K', default=4, help='Set the number of functions to model (default 4).')
+    #parser.add_argument('-d', '--outdir', action='store', dest='outdir',
+    #    metavar='DIR', default=os.path.join(os.getenv('HOME'),'scratch'),
+    #    help='Write output files to DIR.')
+    parser.add_argument('-f', '--file', action='store', dest='inputfile',
+        metavar='FILE', default=os.path.join(os.getenv('HOME'),'scratch','eigeninput_gal.dat'),
+        help='Read input spectra and redshifts from FILE.')
+    options = parser.parse_args()
+    hmf_gal(inputfile=options.inputfile,dump=options.dump,K=options.K,epsilon=options.epsilon,
+        nonnegative=options.nonnegative,flux=options.flux)
+    return
 
