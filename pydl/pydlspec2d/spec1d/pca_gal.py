@@ -1,6 +1,9 @@
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-#
+"""
+Create template files.
+"""
+from __future__ import print_function
 #
 def pca_gal(**kwargs):
     """Wrapper on pca_solve to handle galaxy eigenspectra.
@@ -33,14 +36,15 @@ def pca_gal(**kwargs):
     import os.path
     import pickle
     import pylab
-    import pyfits
+    from astropy.io import fits as pyfits
     import numpy as np
     from matplotlib.font_manager import fontManager, FontProperties
-    from pydlutils.goddard.astro import get_juldate
-    from pydlutils.image import djs_maskinterp
-    from pydlutils.math import djs_median
-    from pydlutils.misc import djs_readcol
-    from pydlspec2d.spec1d import pca_solve, plot_eig, readspec, skymask, wavevector
+    from ...goddard.astro import get_juldate
+    from ...pydlutils.image import djs_maskinterp
+    from ...pydlutils.math import djs_median
+    #from ...pydlutils.misc import djs_readcol
+    from astropy.io import ascii
+    from . import pca_solve, plot_eig, readspec, skymask, wavevector
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:
@@ -69,7 +73,15 @@ def pca_gal(**kwargs):
     #
     # Read the input spectra
     #
-    plate,mjd,fiber,zfit = djs_readcol(inputfile,format='(L,L,L,D)')
+    #plate,mjd,fiber,zfit = djs_readcol(inputfile,format='(L,L,L,D)')
+    converters = {'plate': [ascii.convert_numpy(np.int32)],
+        'mjd': [ascii.convert_numpy(np.int32)],
+        'fiber': [ascii.convert_numpy(np.int32)] }
+    input_data = ascii.read(inputfile,names=['plate','mjd','fiber','zfit'],converters=converters)
+    plate = input_data['plate'].data
+    mjd = input_data['mjd'].data
+    fiber = input_data['fiber'].data
+    zfit = input_data['zfit'].data
     spplate = readspec(plate,fiber,mjd=mjd,**kwargs)
     #
     # Insist that all of the requested spectra exist.
@@ -78,8 +90,8 @@ def pca_gal(**kwargs):
     if missing.any():
         imissing = missing.nonzero()[0]
         for k in imissing:
-            print "Missing plate=%d mjd=%d fiber=%d" % (plate[k],mjd[k],fiber[k])
-        raise ValueError("%d missing object(s)." % missing.sum())
+            print("Missing plate={0:d} mjd={1:d} fiber={2:d}".format(plate[k],mjd[k],fiber[k]))
+        raise ValueError("{0:d} missing object(s).".format(missing.sum()))
     #
     # Do not fit where the spectrum may be dominated by sky-sub residuals.
     #
@@ -214,4 +226,53 @@ def pca_gal(**kwargs):
     hdulist[1].header.update('FILENAME',inputfile)
     hdulist.writeto(outfile+'.fits')
     plot_eig(outfile+'.fits')
+    return
+#
+#
+#
+def main():
+    """Gets called when the script is executed.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
+
+    Side-Effects
+    ------------
+    Creates a FITS file and some PNG plots.
+    """
+    #
+    # Imports for main()
+    #
+    import os
+    import os.path
+    import sys
+    from astropy.utils.compat import argparse
+    #
+    # Get Options
+    #
+    parser = argparse.ArgumentParser(description=__doc__,prog=os.path.basename(sys.argv[0]))
+    parser.add_argument('-F', '--flux', action='store_true', dest='flux',
+        help='Plot input spectra.')
+    parser.add_argument('-d', '--dump', action='store_true', dest='dump',
+        help='Dump data to a pickle file.')
+    #parser.add_argument('-n', '--nonnegative', action='store_true', dest='nonnegative',
+    #    help='Use non-negative HMF method.')
+    #parser.add_argument('-e', '--epsilon', action='store', type=float, dest='epsilon',
+    #    metavar='EPSILON', default=1.0, help='Set the epsilon parameter (default 1.0). Set to 0 to turn off entirely')
+    #parser.add_argument('-K', '--dims', action='store', type=int, dest='K',
+    #    metavar='K', default=4, help='Set the number of functions to model (default 4).')
+    #parser.add_argument('-d', '--outdir', action='store', dest='outdir',
+    #    metavar='DIR', default=os.path.join(os.getenv('HOME'),'scratch'),
+    #    help='Write output files to DIR.')
+    parser.add_argument('-f', '--file', action='store', dest='inputfile',
+        metavar='FILE', default=os.path.join(os.getenv('HOME'),'scratch','eigeninput_gal.dat'),
+        help='Read input spectra and redshifts from FILE.')
+    options = parser.parse_args()
+    pca_gal(inputfile=options.inputfile,dump=options.dump,
+        flux=options.flux)
     return

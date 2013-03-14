@@ -1,11 +1,15 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+#
 def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     """Combine several spectra of the same object, or resample a single spectrum.
     """
     import numpy as np
-    import pydlutils.bspline
-    import pydlutils.sdss
+    import pydl.pydlutils.bspline
+    import pydl.pydlutils.sdss
     from pydl import smooth
-    from pydlspec2d.spec2d import aesthetics
+    from . import aesthetics
     #
     # Check that dimensions of inputs are valid.
     #
@@ -84,11 +88,11 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         # are set.
         #
         if 'verbose' in kwargs:
-            print 'No good points'
-        bitval = pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
+            print('No good points')
+        bitval = pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
         if 'finalmask' in kwargs:
-            bitval = bitval | (pydlutils.sdss.sdss_flagval('SPPIXMASK','NOPLUG') *
-                (finalmask[0] & pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')))
+            bitval = bitval | (pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NOPLUG') *
+                (finalmask[0] & pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')))
         andmask = andmask | bitval
         ormask = ormask | bitval
         return (newflux,newivar)
@@ -112,14 +116,14 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                     #
                     # Fit without variance
                     #
-                    sset,bmask = pydlutils.bspline.iterfit(inloglam[ss],objflux[ss],
+                    sset,bmask = pydl.pydlutils.bspline.iterfit(inloglam[ss],objflux[ss],
                         nord=nord,groupbadpix=True,requiren=1,bkspace=bkptbin,
                         silent=True)
                 else:
                     #
                     # Fit with variance
                     #
-                    sset,bmask = pydlutils.bspline.iterfit(inloglam[ss],objflux[ss],
+                    sset,bmask = pydl.pydlutils.bspline.iterfit(inloglam[ss],objflux[ss],
                         invvar=objivar[ss],
                         nord=nord,groupbadpix=True,requiren=1,bkspace=bkptbin,
                         silent=True)
@@ -127,12 +131,12 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                     sset = None
                     bmask = np.zeros(len(ss))
                     if 'verbose' in kwargs:
-                        print 'WARNING: All B-spline coefficients have been set to zero!'
+                        print('WARNING: All B-spline coefficients have been set to zero!')
             else:
                 bmask = np.zeros(len(ss))
                 sset = None
                 if 'verbose' in kwargs:
-                    print 'WARNING: Not enough data for B-spline fit!'
+                    print('WARNING: Not enough data for B-spline fit!')
             inside = ((newloglam >= inloglam[ss].min()-EPS) &
                 (newloglam <= inloglam[ss].max()+EPS)).nonzero()[0]
             #
@@ -145,7 +149,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                 if bvalumask.any():
                     newmask[inside[bvalumask]] = 1
                 if 'verbose' in kwargs:
-                    print 'Masked %d of %d pixels.' % (bmask.sum()-bmask.size,bmask.size)
+                    print('Masked {0:d} of {1:d} pixels.'.format(bmask.sum()-bmask.size,bmask.size))
                 #
                 # Determine which pixels should be masked based upon the spline
                 # fit. Set the combinerej bit.
@@ -163,10 +167,10 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                     if objivar is not None:
                         objivar[ss[ireplace]] = 0.0
                         if 'verbose' in kwargs:
-                            print 'Replaced %d pixels in objivar.' % len(ss[ireplace])
+                            print('Replaced {0:d} pixels in objivar.'.format(len(ss[ireplace])))
                     if 'finalmask' in kwargs:
                         finalmask[ss[ireplace]] = (finalmask[ss[ireplace]] |
-                            pydlutils.sdss.sdss_flagval('SPPIXMASK','COMBINEREJ'))
+                            pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','COMBINEREJ'))
             fullcombmask[ss] = bmask
         #
         # Combine inverse variance and pixel masks.
@@ -225,7 +229,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     badregion = np.absolute(foo) < EPS
     if badregion.any():
         if 'verbose' in kwargs:
-            print 'WARNING: Growing bad pixel region, %d pixels found.' % badregion.sum()
+            print('WARNING: Growing bad pixel region, {0:d} pixels found.'.format(badregion.sum()))
         ibad = badregion.nonzero()[0]
         lowerregion = np.where(ibad-2 < 0,0,ibad-2)
         upperregion = np.where(ibad+2 > nfinalpix-1,nfinalpix-1,ibad+2)
@@ -236,7 +240,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     inff = ((~np.isfinite(newflux)) | (~np.isfinite(newivar)))
     if inff.any():
-        print 'WARNING: %d NaNs in combined spectra.' % inff.sum()
+        print('WARNING: {0:d} NaNs in combined spectra.'.format(inff.sum()))
         newflux[inff] = 0.0
         newivar[inff] = 0.0
     #
@@ -257,7 +261,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         maxglam = newloglam[goodpts].max()
         ibad = ((newloglam < minglam) | (newloglam > maxglam))
         if ibad.any():
-            ormask[ibad] |= pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
+            ormask[ibad] |= pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
     #
     # Replace values of -1 in the andmask with 0.
     #
@@ -265,6 +269,6 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     # Copy the nodata bad pixels from the ormask to the andmask.
     #
-    andmask |= ormask & pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
+    andmask |= ormask & pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
     return (newflux,newivar)
 

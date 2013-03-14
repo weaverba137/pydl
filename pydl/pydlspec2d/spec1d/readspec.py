@@ -1,5 +1,6 @@
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
 def readspec(platein,fiber='all',**kwargs):
     """Read SDSS/BOSS spec2d & spec1d files.
@@ -16,9 +17,9 @@ def readspec(platein,fiber='all',**kwargs):
     """
     import os
     import os.path
-    import pyfits
+    from astropy.io import fits as pyfits
     import numpy as np
-    from pydlspec2d.spec1d import number_of_fibers, latest_mjd, spec_path, spec_append
+    from . import number_of_fibers, latest_mjd, spec_path, spec_append
     try:
         nplate = len(platein)
         plate = platein
@@ -78,20 +79,25 @@ def readspec(platein,fiber='all',**kwargs):
     #
     pmjd = ((np.array(platevec,dtype='u8') << 16) +
         np.array(mjdvec,dtype='u8'))
+    #print(pmjd)
+    upmjd = np.unique(pmjd)
+    zupmjd = zip(upmjd>>16,upmjd&((1<<16)-1))
+    #print(zupmjd)
     spplate_data = dict()
     hdunames = ('flux','invvar','andmask','ormask','disp','plugmap','sky','loglam',)
-    for p in np.unique(pmjd):
-        thisplate = int(p>>16)
-        thismjd = int(np.bitwise_and(p,(1<<16)-1))
+    for thisplate,thismjd in zupmjd:
+        #thisplate = int(p>>16)
+        #thismjd = int(np.bitwise_and(p,(1<<16)-1))
         pmjdindex = ((platevec==thisplate) & (mjdvec==thismjd)).nonzero()[0]
         thisfiber = fibervec[pmjdindex]
-        pmjdstr = "%04d-%05d" % (thisplate,thismjd)
+        #print(type(thisplate),type(thismjd))
+        pmjdstr = "{0:04d}-{1:05d}".format(int(thisplate),int(thismjd))
         if 'path' in kwargs:
             sppath = [ kwargs['path'] ]
         else:
-            sppath = spec_path(thisplate,**kwargs)
-        spfile = os.path.join(sppath[0],"spPlate-%s.fits" % pmjdstr)
-        print spfile
+            sppath = spec_path(thisplate,run2d=run2d)
+        spfile = os.path.join(sppath[0],"spPlate-{0}.fits".format(pmjdstr))
+        print(spfile)
         spplate = pyfits.open(spfile)
         #
         # Get wavelength coefficients from primary header
@@ -158,14 +164,14 @@ def readspec(platein,fiber='all',**kwargs):
         #
         # Read photoPlate information, if available
         #
-        photofile = os.path.join(sppath[0],"photoPlate-%s.fits" % pmjdstr)
+        photofile = os.path.join(sppath[0],"photoPlate-{0}.fits".format(pmjdstr))
         if not os.path.exists(photofile):
             #
             # Hmm, maybe this is an SDSS-I,II plate
             #
             photofile = os.path.join(os.getenv('SPECTRO_MATCH'),run2d,
-                os.path.basename(os.getenv('PHOTO_RESOLVE')),"%04d" % thisplate,
-                "photoPlate-%s.fits" % pmjdstr)
+                os.path.basename(os.getenv('PHOTO_RESOLVE')),"{0:04d}".format(int(thisplate)),
+                "photoPlate-{0}.fits".format(pmjdstr))
         if os.path.exists(photofile):
             photop = pyfits.open(photofile)
             tmp = photop[1].data[thisfiber-1]
@@ -183,9 +189,9 @@ def readspec(platein,fiber='all',**kwargs):
         # Read redshift information, if available.
         #
         if 'znum' in kwargs:
-            zfile = os.path.join(sppath[0],run1d,"spZall-%s.fits" % pmjdstr)
+            zfile = os.path.join(sppath[0],run1d,"spZall-{0}.fits".format(pmjdstr))
         else:
-            zfile = os.path.join(sppath[0],run1d,"spZbest-%s.fits" % pmjdstr)
+            zfile = os.path.join(sppath[0],run1d,"spZbest-{0}.fits".format(pmjdstr))
         if os.path.exists(zfile):
             spz = pyfits.open(zfile)
             if 'znum' in kwargs:

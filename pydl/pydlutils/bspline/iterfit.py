@@ -109,14 +109,14 @@ def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs)
                     else:
                         sset.mask[goodbk[ileft]] = False
             error,yfit = sset.fit(xwork,ywork, invwork*maskwork,
-                x2=x2work, **kwargs)
+                x2=x2work)
         iiter += 1
         inmask = maskwork
         if error == -2:
             return (sset,outmask)
         elif error == 0:
             maskwork,qdone = djs_reject(ywork, yfit, invvar=invwork, inmask=inmask,
-                outmask=maskwork, upper=upper, lower=lower, **kwargs)
+                outmask=maskwork, upper=upper, lower=lower)
         else:
             pass
     outmask[xsort] = maskwork

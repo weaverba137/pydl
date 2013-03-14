@@ -1,32 +1,44 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
-# $Id$
-#
-def spec_path(plate,**kwargs):
-    """Return the path to spPlate files
+def spec_path(plate,path=None,topdir=None,run2d=None):
+    """Return the path to spPlate files.
+
+    Parameters
+    ----------
+    plate : int or ndarray
+        The plate(s) to examine.
+    path : str, optional
+        If set, `path` becomes the full path for every plate. In other words,
+        it completely short-circuits this function.
+    topdir : str, optional
+        Used to override the value of BOSS_SPECTRO_REDUX.
+    run2d : str, optional
+        Used to override the value of RUN2D.
+
+    Returns
+    -------
+    spec_path : list
+        A list of paths, one for each plate.
     """
-    import os
-    import numpy as np
-    if isinstance(plate,int) or isinstance(plate,long):
-        platevec = np.zeros(1,dtype='i4') + plate
+    from os import getenv
+    from os.path import join
+    from numpy import array
+    if isinstance(plate,int) or isinstance(plate,long) or plate.shape == ():
+        platevec = array([plate],dtype='i4')
     else:
         platevec = plate
-    if 'path' in kwargs:
-        platepath = True
-    else:
-        platepath = False
-        if 'topdir' in kwargs:
-            topdir = kwargs['topdir']
-        else:
-            topdir = os.getenv('BOSS_SPECTRO_REDUX')
-        if 'run2d' in kwargs:
-            run2d = kwargs['run2d']
-        else:
-            run2d = os.getenv('RUN2D')
+    if path is None:
+        if topdir is None:
+            topdir = getenv('BOSS_SPECTRO_REDUX')
+        if run2d is None:
+            run2d = getenv('RUN2D')
     paths = list()
     for p in platevec:
-        if platepath:
-            paths.append(kwargs['path'])
+        if path is not None:
+            paths.append(path)
         else:
-            paths.append("%s/%s/%04d" % (topdir,run2d,p))
+            paths.append(join(topdir,run2d,str(p)))
     return paths
 

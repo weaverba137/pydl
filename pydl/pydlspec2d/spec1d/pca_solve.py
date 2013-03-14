@@ -1,15 +1,16 @@
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
 def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
     """Replacement for idlspec2d pca_solve.pro
     """
     import time
     import numpy as np
-    import pydlspec2d.spec1d
-    import pydlspec2d.spec2d
-    from pydl import pcomp
-    from pydlutils.math import computechi2, djs_reject
+    import pydl.pydlspec2d.spec1d
+    import pydl.pydlspec2d.spec2d
+    from ... import pcomp
+    from ...pydlutils.math import computechi2, djs_reject
     if 'maxiter' in kwargs:
         maxiter = kwargs['maxiter']
     else:
@@ -31,7 +32,7 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
         npix = flux.shape[0]
     else:
         nobj, npix = flux.shape
-    print "Building PCA from %d object spectra." % nobj
+    print("Building PCA from {0:d} object spectra.".format(nobj))
     #
     # The redshift of each object in pixels would be logshift/objdloglam.
     #
@@ -60,7 +61,7 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
                 logmin = max(logmin, np.log10(wavemin))
             if 'wavemax' in kwargs:
                 logmax = min(logmax,np.log10(wavemax))
-            fullloglam = pydlspec2d.spec1d.wavevector(logmin,logmax,binsz=dloglam)
+            fullloglam = pydl.pydlspec2d.spec1d.wavevector(logmin,logmax,binsz=dloglam)
         nnew = fullloglam.size
         fullflux = np.zeros((nobj,nnew),dtype='d')
         fullivar = np.zeros((nobj,nnew),dtype='d')
@@ -71,13 +72,13 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
             indx = loglam > 0
             rowloglam = loglam[indx]
         for iobj in range(nobj):
-            print "OBJECT %5d" % iobj
+            print("OBJECT {0:5d}".format(iobj))
             if loglam.ndim > 1:
                 if loglam.shape[0] != nobj:
                     raise ValueError('Wrong number of dimensions for loglam.')
                 indx = loglam[iobj,:] > 0
                 rowloglam = loglam[iobj,indx]
-            flux1,ivar1 = pydlspec2d.spec2d.combine1fiber(rowloglam-logshift[iobj],flux[iobj,indx],
+            flux1,ivar1 = pydl.pydlspec2d.spec2d.combine1fiber(rowloglam-logshift[iobj],flux[iobj,indx],
                 ivar[iobj,indx],newloglam=fullloglam,binsz=dloglam,aesthetics='mean') # ,verbose=True)
             fullflux[iobj,:] = flux1
             fullivar[iobj,:] = ivar1
@@ -136,7 +137,7 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
         # print 'starting djs_reject'
         outmask,qdone = djs_reject(newflux,ymodel,
             inmask=inmask,outmask=outmask,
-            invvar=newivar,**kwargs)
+            invvar=newivar)
         # print 'finished with djs_reject'
         #
         # Iteratively do the PCA solution
@@ -170,10 +171,10 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
                 out = computechi2(newflux[iobj,:], sqivar[iobj,:],
                     pres[:,0:nkeep])
                 filtflux[iobj,:] = (maskivar[iobj,:] * newflux[iobj,:] +
-                    synwvec*out['yfit']) / (maskivar[iobj,:] + synwvec)
-                acoeff[iobj,:] = out['acoeff']
+                    synwvec*out.yfit) / (maskivar[iobj,:] + synwvec)
+                acoeff[iobj,:] = out.acoeff
             if 'quiet' not in kwargs:
-                print "The elapsed time for iteration #%2d is %6.2f s." % (ipiter+1,time.time()-t0)
+                print("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(ipiter+1,time.time()-t0))
         #
         # Now set ymodel for rejecting points.
         #

@@ -122,7 +122,7 @@ class bspline(object):
         -------
         fit
         """
-        from pydlutils.bspline import cholesky_band, cholesky_solve
+        from . import cholesky_band, cholesky_solve
         goodbk = self.mask[self.nord:]
         nn = goodbk.sum()
         if nn < self.nord:
