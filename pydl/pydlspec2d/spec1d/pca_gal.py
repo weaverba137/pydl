@@ -18,7 +18,7 @@ def pca_gal(**kwargs):
         Maximum wavelength for the template.  If not specified 10000 Å will be used.
     niter : int, optional
         Number of iterations.  The default is 10.
-    dump : bool, optional
+    dump : str, optional
         If set, save input data in a Python pickle file.
     flux : bool, optional
         If set to ``True`` make some additional QA plots of the input spectra.
@@ -258,7 +258,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__,prog=os.path.basename(sys.argv[0]))
     parser.add_argument('-F', '--flux', action='store_true', dest='flux',
         help='Plot input spectra.')
-    parser.add_argument('-d', '--dump', action='store_true', dest='dump',
+    parser.add_argument('-d', '--dump', action='store', dest='dump',
+        metavar='FILE', default=os.path.join(os.getenv('HOME'),'scratch','eigeninput_gal.dump'),
         help='Dump data to a pickle file.')
     #parser.add_argument('-n', '--nonnegative', action='store_true', dest='nonnegative',
     #    help='Use non-negative HMF method.')
