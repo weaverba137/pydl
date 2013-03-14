@@ -128,8 +128,8 @@ def hmf_gal(**kwargs):
         if missing.any():
             imissing = missing.nonzero()[0]
             for k in imissing:
-                print "Missing plate=%d mjd=%d fiber=%d" % (plate[k],mjd[k],fiber[k])
-            raise ValueError("%d missing object(s)." % missing.sum())
+                print("Missing plate={0:d} mjd={1:d} fiber={2:d}".format(plate[k],mjd[k],fiber[k]))
+            raise ValueError("{0:d} missing object(s).".format(missing.sum()))
         #
         # Do not fit where the spectrum may be dominated by sky-sub residuals.
         #
@@ -170,7 +170,7 @@ def hmf_gal(**kwargs):
             indx = spplate['loglam'] > 0
             rowloglam = loglam[indx]
         for iobj in range(nobj):
-            print "OBJECT %5d" % iobj
+            print("OBJECT {0:5d}".format(iobj))
             if spplate['loglam'].ndim > 1:
                 if spplate['loglam'].shape[0] != nobj:
                     raise ValueError('Wrong number of dimensions for loglam.')
