@@ -1,5 +1,6 @@
-#
-# $Id$
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
 class chunks(object):
     """chunks class
@@ -8,7 +9,7 @@ class chunks(object):
     as methods on this class.
     """
     import numpy as np
-    from pydlutils import PydlutilsException
+    from .. import PydlutilsException
     def __init__(self, ra, dec, minSize):
         """Init creates an object whose attributes are similar those created
         by the setchunks() function in the spheregroup library.
@@ -45,7 +46,7 @@ class chunks(object):
         else:
             cosDecMin = self.np.cos(self.np.deg2rad(self.decBounds[0]))
         if cosDecMin <= 0.0:
-            raise self.PydlutilsException("cosDecMin=%f not positive in setchunks()." % cosDecMin)
+            raise self.PydlutilsException("cosDecMin={0:f} not positive in setchunks().".format(cosDecMin))
         self.raRange, self.raOffset = self.rarange(ra,minSize/cosDecMin)
         self.raMin, self.raMax = self.getraminmax(ra,self.raOffset)
         #
@@ -67,7 +68,7 @@ class chunks(object):
             else:
                 cosDecMin = self.np.cos(self.np.deg2rad(self.decBounds[i+1]))
             if cosDecMin <= 0.0:
-                raise PydlutilsException("cosDecMin=%f not positive in setchunks()." % cosDecMin)
+                raise self.PydlutilsException("cosDecMin={0:f} not positive in setchunks().".format(cosDecMin))
             #
             # Get raBounds array for this declination array, leave an extra
             # cell on each end
@@ -136,7 +137,7 @@ class chunks(object):
         to it.
         """
         if marginSize >= self.minSize:
-            raise self.PydlutilsException("marginSize>=minSize (%f>=%f) in chunks.assign()." % (marginSize,self.minSize))
+            raise self.PydlutilsException("marginSize>=minSize ({0:f}={1:f}) in chunks.assign().".format(marginSize,self.minSize))
         chunkDone = [[False for j in range(self.nRa[i])] for i in range(self.nDec)]
         for i in range(ra.size):
             currRa = self.np.fmod(ra[i]+self.raOffset,360.0)
@@ -309,7 +310,7 @@ class chunks(object):
                 else:
                     mapGroups[i] = mapGroups[mapGroups[i]]
             else:
-                raise self.PydlutilsException("MapGroups[%d]=%d in chunks.friendsoffriends()." % (i,mapGroups[i]))
+                raise self.PydlutilsException("MapGroups[{0:d}]={1:d} in chunks.friendsoffriends().".format(i,mapGroups[i]))
         for i in range(nPoints):
             inGroup[i] = mapGroups[inGroup[i]]
         firstGroup = self.np.zeros(nPoints,dtype='i4') - 1
@@ -328,7 +329,7 @@ class chunks(object):
         """Does friends-of-friends on the ra, dec that are defined by
         chunkList.
         """
-        from pydlutils.spheregroup import groups
+        from . import groups
         #
         # Convert ra, dec into something that can be digested by the
         # groups object.

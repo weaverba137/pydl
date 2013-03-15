@@ -1,24 +1,31 @@
-#
-#
-#
-def set_use_caps(x,cm,polygon_use_caps,**kwargs):
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+def set_use_caps(x,cm,polygon_use_caps,add=False,tol=1.0e-10,allow_doubles=False,allow_neg_doubles=False):
     """Set the bits in use_caps for a polygon.
+
+    Parameters
+    ----------
+    x
+    cm
+    polygon_use_caps
+    add
+    tol
+    allow_doubles
+    allow_neg_doubles
+
+    Returns
+    -------
+
     """
     import numpy as np
-    from pydlutils.mangle import is_cap_used
-    if 'add' in kwargs:
+    from . import is_cap_used
+    if add:
         use_caps = long(polygon_use_caps)
     else:
         use_caps = 0L
-    if 'tol' not in kwargs:
-        kwargs['tol'] = 1.0e-10
-    if 'allow_neg_doubles' in kwargs:
-        nd = kwargs['allow_neg_doubles']
-    else:
-        nd = False
-    t2 = kwargs['tol']**2
+    t2 = tol**2
     use_caps |= 2L**len(cm) - 1L
-    if 'allow_doubles' not in kwargs:
+    if not allow_doubles:
         #
         # Check for doubles
         #
@@ -27,8 +34,8 @@ def set_use_caps(x,cm,polygon_use_caps,**kwargs):
                 for j in range(i+1,len(cm)):
                     if is_cap_used(use_caps,j):
                         if np.sum(x[i]-x[j])**2 < t2:
-                            if ((np.absolute(cm[i]-cm[j]) < kwargs['tol']) or
-                                ((cm[i] + cm[j]) < kwargs['tol'] and not nd)):
+                            if ((np.absolute(cm[i]-cm[j]) < tol) or
+                                ((cm[i] + cm[j]) < tol and not allow_neg_doubles)):
                                 #
                                 # Don't use
                                 #

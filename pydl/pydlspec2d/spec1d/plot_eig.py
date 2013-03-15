@@ -1,16 +1,27 @@
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 #
-#
-def plot_eig(filename,**kwargs):
-    import pyfits
+def plot_eig(filename,title='Unknown'):
+    """Plot spectra from an eigenspectra/template file.
+
+    Parameters
+    ----------
+    filename : str
+        Name of a FITS file containing eigenspectra/templates.
+    title : str, optional
+        Title to put on the plot.
+
+    Returns
+    -------
+    None
+    """
+    from astropy.io import fits as pyfits
     import pylab
-    if 'title' in kwargs:
-        title = kwargs['title']
-    else:
-        #
-        # Set title based on filename
-        #
+    #
+    # Set title based on filename
+    #
+    if title == 'Unknown':
         if filename.find('Gal') > 0:
             title = 'Galaxies: Eigenspectra'
         elif filename.find('QSO') > 0:
@@ -20,8 +31,7 @@ def plot_eig(filename,**kwargs):
         elif filename.find('CVstar') > 0:
             title = 'CV Stars: Eigenspectra'
         else:
-            print 'Unknown template type!'
-            title = 'Unknown'
+            print('Unknown template type!')
     base,ext = filename.split('.')
     spectrum = pyfits.open(filename)
     newloglam0 = spectrum[0].header['COEFF0']

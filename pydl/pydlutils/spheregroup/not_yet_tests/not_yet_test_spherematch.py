@@ -1,6 +1,5 @@
-#
-# $Id$
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def test_spherematch(save=False):
     import numpy as np
     import os

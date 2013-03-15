@@ -1,19 +1,26 @@
-#
-# $Id$
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
 def findspec(*args,**kwargs):
-    """Find SDSS/BOSS spectra that match a given RA, Dec
+    """Find SDSS/BOSS spectra that match a given RA, Dec.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
     """
     import os
     import os.path
     import glob
-    import pyfits
+    from astropy.io import fits as pyfits
     import numpy as np
-    from pydl import uniq
-    from pydlutils.misc import djs_readcol, struct_print
-    from pydlutils.spheregroup import spherematch
-    from pydlspec2d import Pydlspec2dException
-    import pydlspec2d.spec1d # get the findspec_cache dictionary
+    from ... import uniq
+    from ...pydlutils.misc import djs_readcol, struct_print
+    from ...pydlutils.spheregroup import spherematch
+    from .. import Pydlspec2dException
+    import pydl.pydlspec2d.spec1d # get the findspec_cache dictionary
     #
     # Set up default values
     #
@@ -34,14 +41,14 @@ def findspec(*args,**kwargs):
             run1d = str(kwargs['run1d'])
         else:
             run1d = os.getenv('RUN1D')
-    if pydlspec2d.spec1d.findspec_cache is None:
-        pydlspec2d.spec1d.findspec_cache = { 'lasttopdir':topdir,
+    if pydl.pydlspec2d.spec1d.findspec_cache is None:
+        pydl.pydlspec2d.spec1d.findspec_cache = { 'lasttopdir':topdir,
             'plist':None }
-    if (pydlspec2d.spec1d.findspec_cache['plist'] is None or
-        topdir != pydlspec2d.spec1d.findspec_cache['lasttopdir']):
-        pydlspec2d.spec1d.findspec_cache['lasttopdir'] = topdir
-        platelist_file = "%s/platelist.fits" % topdir
-        plates_files = glob.glob("%s/plates-*.fits" % topdir)
+    if (pydl.pydlspec2d.spec1d.findspec_cache['plist'] is None or
+        topdir != pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir']):
+        pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir'] = topdir
+        platelist_file = os.path.join(topdir,"platelist.fits")
+        plates_files = glob.glob(os.path.join(topdir,"plates-*.fits"))
         plist = None
         if os.path.exists(platelist_file):
             platelist = pyfits.open(platelist_file)
@@ -52,9 +59,9 @@ def findspec(*args,**kwargs):
             plist = plates[1].data
             plates.close()
         if plist is None:
-            raise Pydlspec2dException("Plate list (platelist.fits or plates-*.fits) not found in %s." % topdir)
+            raise Pydlspec2dException("Plate list (platelist.fits or plates-*.fits) not found in {0}.".format(topdir))
         else:
-            pydlspec2d.spec1d.findspec_cache['plist'] = plist
+            pydl.pydlspec2d.spec1d.findspec_cache['plist'] = plist
     qdone = plist.field('STATUS1D') == 'Done'
     qdone2d = plist.field('RUN2D').strip() == run2d
     if run1d == '':
@@ -63,7 +70,7 @@ def findspec(*args,**kwargs):
         qdone1d = plist.field('RUN1D').strip() == run1d
     qfinal = qdone & qdone2d & qdone1d
     if not qfinal.any():
-        print "No reduced plates!"
+        print("No reduced plates!")
         return None
     idone = np.arange(plist.size)[qfinal]
     #
@@ -108,7 +115,7 @@ def findspec(*args,**kwargs):
         dtype=[('PLATE','i4'),('MJD','i4'),('FIBERID','i4'),
         ('RA','d'),('DEC','d')])
     for i in range(iplate.size):
-        spplate = pydlspec2d.spec1d.readspec(plist[iplate[i]].field('PLATE'),mjd=plist[iplate[i]].field('MJD'),
+        spplate = pydl.pydlspec2d.spec1d.readspec(plist[iplate[i]].field('PLATE'),mjd=plist[iplate[i]].field('MJD'),
             topdir=topdir,run2d=run2d,run1d=run1d)
         index_to = i0 + np.arange(n_total[iplate[i]],dtype='i4')
         plugmap['PLATE'][index_to] = plist[iplate[i]].field('PLATE')
@@ -125,7 +132,7 @@ def findspec(*args,**kwargs):
         # Return only best match per object
         #
         slist = np.zeros(ra.size,dtype=slist_type)
-        spplate = pydlspec2d.spec1d.readspec(plugmap[i2]['PLATE'],plugmap[i2]['FIBERID'],
+        spplate = pydl.pydlspec2d.spec1d.readspec(plugmap[i2]['PLATE'],plugmap[i2]['FIBERID'],
             mjd=plugmap[i2]['MJD'],topdir=topdir, run2d=run2d, run1d=run1d)
         sn = spplate['zans']['SN_MEDIAN']
         isort = (i1 + np.where(sn > 0, sn, 0)/(sn+1.0).max()).argsort()

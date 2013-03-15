@@ -14,18 +14,19 @@ class PydlutilsException(Exception):
 #
 # Import subpackages
 #
-#import bspline
+import bspline
 import cooling
 #import coord
 #import fits
-#import image
-#import mangle
+import image
+import mangle
 import math
 import misc
 import sdss
-#import spheregroup
+import spheregroup
 import yanny
 #
 # Set __all__
 #
-__all__ = ['PydlutilsException', 'cooling', 'math', 'misc', 'sdss', 'yanny']
+__all__ = ['PydlutilsException', 'bspline', 'cooling', 'image', 'mangle',
+    'math', 'misc', 'sdss', 'yanny']

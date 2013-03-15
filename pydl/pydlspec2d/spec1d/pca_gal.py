@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 """
-Create template files.
+Create galaxy template files.
 """
 from __future__ import print_function
 #

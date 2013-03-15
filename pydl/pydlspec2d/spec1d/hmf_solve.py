@@ -1,3 +1,7 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+#
 import numpy as np
 #
 #
@@ -204,4 +208,3 @@ def hmf_solve(spectra,invvar,K=4,nonnegative=False,epsilon=None):
         a = (a.T*np.repeat(norm,N).reshape(K,N)).T
         # print(badness(a,g,spectra,invvar,epsilon))
     return (a,g)
-

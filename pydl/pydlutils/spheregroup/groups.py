@@ -1,12 +1,13 @@
-#
-# $Id$
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
 class groups(object):
     """Group a set of objects (a list of coordinates in some space) based on
     a friends-of-friends algorithm
     """
     import numpy as np
-    from pydlutils import PydlutilsException
+    from .. import PydlutilsException
     @staticmethod
     def euclid(x1,x2):
         """Pythagorean theorem in Euclidean space with arbitrary number
@@ -19,14 +20,8 @@ class groups(object):
         longitude-latitude or right ascension-declination form.  Assumes
         everything is already in radians.
         """
-        if abs(x1[1]-x2[1]) + abs(x1[0]-x2[0]) > 1.0e-03:
-            sep = self.np.arccos(self.np.cos(x1[1])*self.np.cos(x2[1])*
-                self.np.cos(x1[0]-x2[0]) +
-                self.np.sin(x1[1])*self.np.sin(x2[1]))
-        else:
-            sep = self.np.sqrt(self.np.cos(x1[1])*self.np.cos(x2[1])*
-                (x1[0]-x2[0])*(x1[0]-x2[0]) + (x1[1]-x2[1])*(x1[1]-x2[1]))
-        return sep
+        from ...goddard.astro import gcirc
+        return gcirc(x1[0],x1[1],x2[0],x2[1],units=0)
     def __init__(self,coordinates,distance,separation='euclid'):
         """Init creates an object and performs the friends-of-friends
         algorithm.  The coordinates can have arbitrary dimensions, with each
@@ -39,12 +34,12 @@ class groups(object):
         if callable(separation):
             self.separation = separation
         elif isinstance(separation,str):
-            if 'separation' == 'euclid':
+            if separation == 'euclid':
                 self.separation = self.euclid
-            elif 'separation' == 'sphereradec':
+            elif separation == 'sphereradec':
                 self.separation = self.sphereradec
             else:
-                raise self.PydlutilsException("Unknown separation function: %s." % separation)
+                raise self.PydlutilsException("Unknown separation function: {0}.".format(separation))
         else:
             raise self.PydlutilsException("Improper type for separation!")
         #

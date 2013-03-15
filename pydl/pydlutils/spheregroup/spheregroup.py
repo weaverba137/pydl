@@ -1,19 +1,30 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+from __future__ import print_function
 #
-# $Id$
-#
-def spheregroup(ra,dec,linklength,**kwargs):
+def spheregroup(ra,dec,linklength,chunksize=None,debug=False):
     """Perform friends-of-friends grouping given ra/dec coordinates
+
+    Parameters
+    ----------
+    ra, dec : ndarray
+        Arrays of coordinates to group.
+    linklength : float
+    chunksize : float
+    debug : bool
+
+    Returns
+    -------
+    spheregroup : tuple
     """
     npoints = ra.size
     #
     # Define the chunksize
     #
-    if 'chunksize' in kwargs:
-        if kwargs['chunksize'] < 4.0*linklength:
+    if chunksize is not None:
+        if chunksize < 4.0*linklength:
             chunksize = 4.0*linklength
-            print "chunksize changed to %f." % chunksize
-        else:
-            chunksize = kwargs['chunksize']
+            print("chunksize changed to {0:.2f}.".format(chunksize))
     else:
         chunksize = max(4.0*linklength,0.1)
     #
@@ -21,11 +32,11 @@ def spheregroup(ra,dec,linklength,**kwargs):
     #
     chunk = chunks(ra,dec,chunksize)
     chunk.assign(ra,dec,linklength)
-    if 'debug' in kwargs:
-        print "raOffset = %7.3f." % chunk.raOffset
-        print chunk.raBounds
-        print chunk.decBounds
-        print chunk.chunkList
+    if debug:
+        print("raOffset = {0:7.3f}.".format(chunk.raOffset))
+        print(chunk.raBounds)
+        print(chunk.decBounds)
+        print(chunk.chunkList)
     #
     # Run friends-of-friends
     #

@@ -1,3 +1,8 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+"""
+This subpackage corresponds to the spec1d directory of idlspec2d.
+"""
 from findspec import findspec
 from hmf_gal import hmf_gal
 from hmf_solve import hmf_solve
@@ -13,5 +18,7 @@ from skymask import skymask
 from spec_append import spec_append
 from spec_path import spec_path
 from wavevector import wavevector
-
+#
+# Used by findspec
+#
 findspec_cache = None

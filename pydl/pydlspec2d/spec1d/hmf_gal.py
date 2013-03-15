@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 """
-Create template files with HMF.
+Create galaxy template files with HMF.
 """
 from __future__ import print_function
 #

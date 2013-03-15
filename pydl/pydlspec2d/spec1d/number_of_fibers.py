@@ -1,14 +1,26 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def number_of_fibers(plate,**kwargs):
     """Returns the total number of fibers per plate.
+
+    Parameters
+    ----------
+    plate : int or ndarray
+        The plate(s) to examine.
+
+    Returns
+    -------
+    number_of_fibers : ndarray
+        The number of fibers on each plate.
     """
     import os
     import os.path
-    import pyfits
+    from astropy.io import fits as pyfits
     import numpy as np
-    from pydlspec2d.spec1d import latest_mjd
+    from . import latest_mjd
+    #
+    # Get mjd values
+    #
     mjd = latest_mjd(plate,**kwargs)
     nfiber = np.zeros(mjd.size,dtype='i4')
     #
@@ -16,7 +28,7 @@ def number_of_fibers(plate,**kwargs):
     #
     nfiber[mjd < 55025] = 640
     #
-    # Short circuit the case where
+    # Short circuit if we're done.
     #
     if (nfiber == 640).all():
         return nfiber
