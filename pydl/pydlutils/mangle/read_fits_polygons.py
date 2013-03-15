@@ -1,6 +1,5 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def read_fits_polygons(filename):
     """Read a "polygon" format FITS file.
 
