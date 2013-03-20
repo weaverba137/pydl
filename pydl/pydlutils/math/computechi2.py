@@ -6,7 +6,7 @@ from astropy.utils import lazyproperty
 class computechi2(object):
     """Solve the linear set of equations Ax=b using SVD.
 
-    The attributes of this class are all implemented as read-only properties.
+    The attributes of this class are all implemented as read-only (lazy)properties.
 
     Parameters
     ----------
@@ -46,7 +46,7 @@ class computechi2(object):
         #
         # Save the inputs
         #
-        self.bvec = bvec
+        #self.bvec = bvec
         self.sqivar = sqivar
         self.amatrix = amatrix
         if len(amatrix.shape) > 1:
