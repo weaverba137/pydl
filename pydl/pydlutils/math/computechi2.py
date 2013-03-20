@@ -1,6 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
+from astropy.utils import lazyproperty
 #
 class computechi2(object):
     """Solve the linear set of equations Ax=b using SVD.
@@ -61,7 +62,7 @@ class computechi2(object):
     #
     #
     #
-    @property
+    @lazyproperty
     def acoeff(self):
         """Computes the x values in Ax=b.
         """
@@ -69,7 +70,7 @@ class computechi2(object):
     #
     #
     #
-    @property
+    @lazyproperty
     def chi2(self):
         """Computes the chi**2 value.
         """
@@ -77,7 +78,7 @@ class computechi2(object):
     #
     #
     #
-    @property
+    @lazyproperty
     def yfit(self):
         """Computes the best fit.
         """
@@ -85,7 +86,7 @@ class computechi2(object):
     #
     #
     #
-    @property
+    @lazyproperty
     def dof(self):
         """Computes the degrees of freedom.
         """
@@ -93,7 +94,7 @@ class computechi2(object):
     #
     #
     #
-    @property
+    @lazyproperty
     def covar(self):
         """Computes the covariance matrix.
         """
@@ -108,7 +109,7 @@ class computechi2(object):
     #
     #
     #
-    @property
+    @lazyproperty
     def var(self):
         """Computes the variances of the fit parameters.
         """
