@@ -29,4 +29,4 @@ import yanny
 # Set __all__
 #
 __all__ = ['PydlutilsException', 'bspline', 'cooling', 'image', 'mangle',
-    'math', 'misc', 'sdss', 'yanny']
+    'math', 'misc', 'sdss', 'spheregroup', 'yanny']

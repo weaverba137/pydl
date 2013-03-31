@@ -7,9 +7,9 @@ This subpackage implements functions from the photoop package.
 # Define this early on so that submodules can use it
 #
 #from .. import PydlException
-#class PyhotoopException(PydlException):
+#class PhotoopException(PydlException):
 #    pass
-class PyhotoopException(Exception):
+class PhotoopException(Exception):
     pass
 #
 # Import subpackages
@@ -18,4 +18,4 @@ class PyhotoopException(Exception):
 #
 # Set __all__
 #
-#__all__ = ['PyhotoopException', 'photoobj' ]
+#__all__ = ['PhotoopException', 'photoobj' ]

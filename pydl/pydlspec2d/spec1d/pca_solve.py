@@ -157,14 +157,14 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
             goodobj = totflux > 0
             if goodobj.all():
                 tmp = pcomp(filtflux.T) # ,standardize=True)
-                pres = tmp['derived']
-                eigenval = tmp['eigenvalues']
+                pres = tmp.derived
+                eigenval = tmp.eigenvalues
             else:
                 tmp = pcomp(filtflux[goodobj,:].T) # ,standardize=True)
                 pres = np.zeros((nobj,nnew),dtype='d')
-                pres[goodobj,:] = tmp['derived']
+                pres[goodobj,:] = tmp.derived
                 eigenval = np.zeros((nobj,),dtype='d')
-                eigenval[goodobj] = tmp['eigenvalues']
+                eigenval[goodobj] = tmp.eigenvalues
             maskivar = newivar * outmask
             sqivar = np.sqrt(maskivar)
             for iobj in range(nobj):
