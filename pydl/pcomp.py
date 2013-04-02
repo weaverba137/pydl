@@ -74,7 +74,7 @@ class pcomp(object):
     #
     @lazyproperty
     def coefficients(self):
-        return self._evecs * np.tile(np.sqrt(self._evals,self._nv).reshape(self._nv,self._nv)
+        return self._evecs * np.tile(np.sqrt(self._evals),self._nv).reshape(self._nv,self._nv)
     #
     #
     #
