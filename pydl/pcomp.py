@@ -50,14 +50,14 @@ class pcomp(object):
             self._xstd = None
         self._standardize = standardize
         if covariance:
-            self._c = np.cov(array,rowvar=0)
+            self._c = np.cov(self._array,rowvar=0)
         else:
-            self._c = np.corrcoef(array,rowvar=0)
+            self._c = np.corrcoef(self._array,rowvar=0)
         self._covariance = covariance
         #
         # eigh is used for symmetric matrices
         #
-        evals, evecs = eigh(c)
+        evals, evecs = eigh(self._c)
         #
         # Sort eigenvalues in descending order
         #

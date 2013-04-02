@@ -81,10 +81,10 @@ class bspline(object):
         nshortbkpt = bkpt.size
         fullbkpt = bkpt.copy()
         if nshortbkpt == 1:
-            bkspace = bkspread
+            bkspace = self.np.float32(bkspread)
         else:
-            bkspace = (bkpt[1] - bkpt[0]) * bkspread
-        for i in range(1,nord):
+            bkspace = (bkpt[1] - bkpt[0]) * self.np.float32(bkspread)
+        for i in self.np.arange(1,nord,dtype=self.np.float32):
             fullbkpt = self.np.insert(fullbkpt,0,bkpt[0]-bkspace*i)
             fullbkpt = self.np.insert(fullbkpt,fullbkpt.shape[0],
                 bkpt[nshortbkpt-1] + bkspace*i)
