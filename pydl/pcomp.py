@@ -9,20 +9,26 @@ class pcomp(object):
     Parameters
     ----------
     x : array_like
-        A 2-D arrray.
+        A 2-D array with N rows and M columns.
     standardize : bool, optional
-        If set to ``True``, The input data will have its mean subtracted off
-        and will be scaled to uint standard deviation.
+        If set to ``True``, the input data will have its mean subtracted off
+        and will be scaled to unit variance.
     covariance : bool, optional.
         If set to ``True``, the covariance matrix of the data will be used for
         the computation.  Otherwise the correlation matrix will be used.
 
     Attributes
     ----------
-    coefficients
-    derived
-    variance
-    eigenvalues
+    coefficients : array_like
+        The principal components.  These are the coefficients of `derived`.
+        Basically, they are a re-scaling of the eigenvectors.
+    derived : array_like
+        An N x M array containing the derived variables.
+    variance : array_like
+        An array of the M variances of each derived variable.
+    eigenvalues : array_like
+        An array of the M eigenvalues that correspond to the principal
+        components.
 
     Notes
     -----

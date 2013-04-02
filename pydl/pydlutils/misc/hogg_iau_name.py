@@ -61,12 +61,23 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
         print(desformat)
     ded = ded.astype(np.int32)
     dem = dem.astype(np.int32)
-    adformat = "{{0:02d}}{{1:02d}}{0}{{3:s}}{{4:02d}}{{5:02d}}{1}".format(rasformat,desformat)
+    adformat = "{{0:02d}}{{1:02d}}{ras}{{3:s}}{{4:02d}}{{5:02d}}{des}".format(ras=rasformat,des=desformat)
     if debug:
         print(adformat)
         print(rah, ram, ras, desgn, ded, dem, des)
-    adstr = map(lambda a,b,c,d,e,f,g: adformat.format(a,b,c,d,e,f,g),
-        rah, ram, ras, desgn, ded, dem, des)
+        print(rah.dtype, ram.dtype, ras.dtype, desgn.dtype, ded.dtype, dem.dtype, des.dtype)
+    #
+    # The easy way doesn't work if numpy version is less than 1.7.0.  Prior to this
+    # version, numpy scalars didn't support __format__.  See
+    # http://projects.scipy.org/numpy/ticket/1675
+    #
+    try:
+        adstr = map(lambda a,b,c,d,e,f,g: adformat.format(a,b,c,d,e,f,g),
+            rah, ram, ras, desgn, ded, dem, des)
+    except ValueError:
+        adstr = map(lambda a,b,c,d,e,f,g: adformat.format(a,b,c,d,e,f,g),
+            rah.tolist(), ram.tolist(), ras.tolist(), desgn.tolist(),
+            ded.tolist(), dem.tolist(), des.tolist())
     if prefix == '':
         jstr = 'J'
     else:
@@ -85,7 +96,7 @@ def main():
     parser.add_argument('-d', '--debug', dest='debug', action='store_true',
         help='Print extra debug information.')
     parser.add_argument('-P', '--precision', dest='precision', action='store',
-        metavar='N', default=1, type=int, help='Time the Fibonacci generator.')
+        metavar='N', default=1, type=int, help='Digits of precision to add to the declination.')
     parser.add_argument('-p', '--prefix', dest='prefix', action='store',
         metavar='STR', default='SDSS', help='Add this prefix to the name.')
     parser.add_argument('ra', metavar='RA', type=float,
