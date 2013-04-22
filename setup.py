@@ -46,7 +46,7 @@ LICENSE = 'BSD'
 URL = 'http://github.com/weaverba137/pydl'
 
 # VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
-VERSION = '0.2.dev'
+VERSION = '0.2.1'
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -109,7 +109,7 @@ setup(name=PACKAGENAME,
       cmdclass=cmdclassd,
       zip_safe=False,
       use_2to3=True,
-      classifiers = [ 'Development Status :: 2 - Pre-Alpha',
+      classifiers = [ 'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
