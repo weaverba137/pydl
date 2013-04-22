@@ -17,7 +17,7 @@ There are four astronomical IDL libraries targeted:
 * idlspec2d_ : tools for working with SDSS/BOSS spectroscopic data
 * photoop_ : tools for working with SDSS imaging data
 
-The current goal is to get this package affiliated with the astropy_ project.
+This package affiliated with the astropy_ project and is registered with PyPI_.
 
 History
 -------
@@ -32,6 +32,7 @@ the repository is http://github.com/weaverba137/pydl .
 .. _idlspec2d: http://www.sdss3.org/svn/repo/idlspec2d/trunk/
 .. _photoop: http://www.sdss3.org/svn/repo/photoop/trunk/
 .. _astropy: http://www.astropy.org/
+.. _PyPI: https://pypi.python.org/pypi/pydl/
 .. _SDSS-III: http://www.sdss3.org/
 .. _`svn repository`: http://www.sdss3.org/dr9/software/products.php
 .. _GitHub: http://github.com/

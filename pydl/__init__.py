@@ -1,7 +1,16 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 """
-This docstring is supplied to the long description in setup.py.
+====
+pydl
+====
+
+Python replacements for functions that are part of the IDL_ built-in library, or
+part of astronomical IDL libraries.  The emphasis is on reproducing results of
+the astronomical library functions.  Only the bare minimum of IDL_ built-in
+functions are implemented to support this.
+
+.. _IDL: http://www.exelisvis.com/language/en-us/productsservices/idl.aspx
 """
 #from __future__ import print_function, division
 
