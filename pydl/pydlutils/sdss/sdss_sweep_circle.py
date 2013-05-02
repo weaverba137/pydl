@@ -96,7 +96,7 @@ def sdss_sweep_circle(ra,dec,radius,stype='star',allobj=False):
             # Read in the rows of that file
             #
             swfile = join(getenv('PHOTO_SWEEP'),rerun,
-                'calibObj-{0:06d}-{1:1d}-{2}.fits.gz'.format(run,camcol,stype))
+                'calibObj-{0:06d}-{1:1d}-{2}.fits.gz'.format(int(run),int(camcol),stype))
             with fits.open(swfile) as f:
                 tmp_objs = f[1].data[ist:ind]
             if tmp_objs.size > 0:
