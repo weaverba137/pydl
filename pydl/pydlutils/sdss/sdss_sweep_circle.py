@@ -31,7 +31,7 @@ def sdss_sweep_circle(ra,dec,radius,stype='star',allobj=False):
     from ... import uniq
     from .. import PydlutilsException
     from ..spheregroup import spherematch
-    from . import sweep_cache
+    from . import sweep_cache, sdss_flagval
     #
     # Check values
     #
@@ -51,7 +51,9 @@ def sdss_sweep_circle(ra,dec,radius,stype='star',allobj=False):
     #
     # Match
     #
-    m1,m2,d12 = spherematch(np.array([ra]),np.array([dec]),index['RA'],index['DEC'],radius+0.36,maxmatch=0)
+    ira = np.array([ra])
+    idec = np.array([dec])
+    m1,m2,d12 = spherematch(ira,idec,index['RA'],index['DEC'],radius+0.36,maxmatch=0)
     if len(m2) == 0:
         return None
     if not allobj:
@@ -75,4 +77,51 @@ def sdss_sweep_circle(ra,dec,radius,stype='star',allobj=False):
     isort = rc.argsort()
     iuniq = uniq(rc[isort])
     istart = 0
-    return iuniq
+    objs = None
+    nobjs = 0
+    for i in range(len(iuniq)):
+        iend=iuniq[i]
+        icurr=isort[istart:iend]
+        #
+        # Determine which file and range of rows
+        #
+        run = index['RUN'][m2[icurr[0]]]
+        camcol = index['CAMCOL'][m2[icurr[0]]]
+        rerun = index['RERUN'][m2[icurr[0]]]
+        fields = index[m2[icurr]]
+        ist = fields['ISTART'].min()
+        ind = fields['IEND'].max()
+        if ind >= ist:
+            #
+            # Read in the rows of that file
+            #
+            swfile = join(getenv('PHOTO_SWEEP'),rerun,
+                'calibObj-{0:06d}-{1:1d}-{2}.fits.gz'.format(run,camcol,stype))
+            with fits.open(swfile) as f:
+                tmp_objs = f[1].data[ist:ind]
+            if tmp_objs.size > 0:
+                #
+                # Keep only objects within the desired radius
+                #
+                tm1,tm2,d12 = spherematch(ira,idec,tmp_objs['RA'],tmp_objs['DEC'],radius,maxmatch=0)
+                if len(tm2) > 0:
+                    tmp_objs=tmp_objs[tm2]
+                    #
+                    # Keep only SURVEY_PRIMARY objects by default
+                    #
+                    if not allobj:
+                        w = (tmp_objs['RESOLVE_STATUS'] & sdss_flagval('RESOLVE_STATUS','SURVEY_PRIMARY')) > 0
+                        if w.any():
+                            tmp_objs = tmp_objs[w]
+                        else:
+                            tmp_objs = None
+                    if tmp_objs is not None:
+                        if objs is None:
+                            objs = np.zeros(ntot,dtype=tmp_objs.dtype)
+                        objs[nobjs:nobjs+tmp_objs.size] = tmp_objs
+                        nobjs += tmp_objs.size
+        istart=iend+1
+    if nobjs > 0:
+        return objs[0:nobjs]
+    else:
+        return None
