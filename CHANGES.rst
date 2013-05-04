@@ -6,6 +6,7 @@ Changes
 -------------------------------
 
 * Added sdss_sweep_circle.
+* Added first few photoop functions.
 
 0.2.0 (2013-04-22)
 ------------------
