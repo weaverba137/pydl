@@ -2,10 +2,16 @@
 Changes
 =======
 
-astropy branch (a.k.a. 0.2.dev, unreleased)
--------------------------------------------
+0.2.1 branch (currently active)
+-------------------------------
+
+* Added sdss_sweep_circle.
+
+0.2.0 (2013-04-22)
+------------------
 
 * Using the astropy package-template_ to bring pydl into astropy-compatible form.
+* Some but not all tests are re-implemented.
 
 0.1.1 (2013-03-06)
 ------------------
