@@ -12,8 +12,8 @@ functions are implemented to support this.
 
 There are four astronomical IDL libraries targeted:
 
-* idlutils_
-* `Goddard utilities`_ (which are distributed with idlutils)
+* idlutils_ : a general suite of tools heavily used by SDSS
+* `Goddard utilities`_ : The IDL Astronomy User's Libary, maintained by Wayne Landsman and distributed with idlutils.
 * idlspec2d_ : tools for working with SDSS/BOSS spectroscopic data
 * photoop_ : tools for working with SDSS imaging data
 

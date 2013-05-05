@@ -14,8 +14,9 @@ class PhotoopException(Exception):
 #
 # Import subpackages
 #
+import photoobj
 import sdssio
 #
 # Set __all__
 #
-__all__ = ['PhotoopException', 'sdssio' ]
+__all__ = ['PhotoopException', 'photoobj', 'sdssio' ]
