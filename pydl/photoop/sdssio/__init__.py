@@ -5,3 +5,4 @@ This subpackage corresponds to the sdssio directory of photoop.
 """
 from filtername import filtername
 from filternum import filternum
+from sdssflux2ab import sdssflux2ab
