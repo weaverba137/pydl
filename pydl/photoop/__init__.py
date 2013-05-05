@@ -18,4 +18,4 @@ import sdssio
 #
 # Set __all__
 #
-#__all__ = ['PhotoopException', 'photoobj' ]
+__all__ = ['PhotoopException', 'sdssio' ]
