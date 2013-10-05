@@ -112,10 +112,13 @@ class chunks(object):
         for j in range(NRA):
             raMin,raMax = self.getraminmax(ra, 360.0*float(j)/float(NRA))
             raRange = raMax-raMin
+            # print(minSize,raMin,raMax, raRange, raRangeMin)
             if (2.0*(raRange-raRangeMin)/(raRange+raRangeMin) < -EPS and
                 raMin > minSize and raMax < 360.0 - minSize):
+                # print(j)
                 raRangeMin = raRange
                 raOffset = 360.0*float(j)/float(NRA)
+        # print(raRangeMin, raOffset)
         return (raRangeMin, raOffset)
     def getraminmax(self,ra,raOffset):
         """Utility function used by rarange.

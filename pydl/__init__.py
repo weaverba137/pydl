@@ -144,7 +144,9 @@ from pcomp import pcomp
 from smooth import smooth
 from uniq import uniq
 import goddard
+import photoop
 import pydlutils
+import pydlspec2d
 
 class PydlException(Exception):
     pass
