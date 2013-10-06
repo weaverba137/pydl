@@ -2,11 +2,12 @@
 Changes
 =======
 
-0.2.1 branch (currently active)
--------------------------------
+0.2.1 (2013-10-06)
+------------------
 
 * Added sdss_sweep_circle.
 * Added first few photoop functions.
+* Clean up some import statements.
 
 0.2.0 (2013-04-22)
 ------------------
