@@ -30,7 +30,12 @@ def read_ds_cooling(fname,logT=None):
 
     Examples
     --------
-    >>> pydl.pydlutils.cooling.read_ds_cooling('m-15.cie')
+    >>> from pydl.pydlutils.cooling import read_ds_cooling
+    >>> logT, loglambda = read_ds_cooling('m-15.cie')
+    >>> logT[0:5]
+    array([ 4.  ,  4.05,  4.1 ,  4.15,  4.2 ])
+    >>> loglambda[0:5]
+    array([-26.  , -24.66, -23.52, -22.62, -22.11])
     """
     from astropy.utils.data import download_file
     from numpy import interp

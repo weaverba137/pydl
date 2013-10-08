@@ -29,8 +29,10 @@ def file_lines(path,compress=False):
 
     Examples
     --------
-    >>> pydl.file_lines('my-one-line-file.txt')
-    1
+    >>> from pydl import file_lines
+    >>> from os.path import dirname
+    >>> file_lines(dirname(__file__) + '/tests/t/this-file-contains-42-lines.txt')
+    42
     """
     scalar = False
     if isinstance(path, str):

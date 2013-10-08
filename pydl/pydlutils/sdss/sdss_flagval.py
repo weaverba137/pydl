@@ -25,7 +25,8 @@ def sdss_flagval(flagname,bitname):
 
     Examples
     --------
-    >>> pydl.pydlutils.sdss.sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL'])
+    >>> from pydl.pydlutils.sdss import sdss_flagval
+    >>> sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL'])
     2310346608843161600L
     """
     from . import maskbits

@@ -43,7 +43,8 @@ def sdss_objid(run,camcol,field,objnum,rerun=301,skyversion=None):
 
     Examples
     --------
-    >>> pydl.pydlutils.sdss.sdss_objid(3704,3,91,146)
+    >>> from pydl.pydlutils.sdss import sdss_objid
+    >>> sdss_objid(3704,3,91,146)
     array([1237661382772195474])
     """
     from . import default_skyversion

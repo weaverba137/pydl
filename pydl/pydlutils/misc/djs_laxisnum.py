@@ -24,7 +24,8 @@ def djs_laxisnum(dims,iaxis=0):
 
     Examples
     --------
-    >>> pydl.pydlutils.misc.djs_laxisnum([4,4])
+    >>> from pydl.pydlutils.misc import djs_laxisnum
+    >>> djs_laxisnum([4,4])
     array([[0, 0, 0, 0],
            [1, 1, 1, 1],
            [2, 2, 2, 2],

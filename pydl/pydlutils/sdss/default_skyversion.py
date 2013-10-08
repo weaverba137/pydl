@@ -14,7 +14,8 @@ def default_skyversion():
 
     Examples
     --------
-    >>> pydl.pydlutils.sdss.default_skyversion()
+    >>> from pydl.pydlutils.sdss import default_skyversion
+    >>> default_skyversion()
     2
     """
     return 2

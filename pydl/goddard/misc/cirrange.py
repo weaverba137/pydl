@@ -18,7 +18,8 @@ def cirrange(ang,radians=False):
 
     Examples
     --------
-    >>> pydl.goddard.misc.cirrange(-270.0)
+    >>> from pydl.goddard.misc import cirrange
+    >>> cirrange(-270.0)
     90.0
     """
     from math import pi

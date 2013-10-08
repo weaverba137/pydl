@@ -16,8 +16,10 @@ def find_contiguous(x):
 
     Examples
     --------
-    >>> pydl.pydlutils.math.find_contiguous(np.array([0,1,1,1,0,1,1,0,1]))
-    [1,2,3]
+    >>> import numpy as np
+    >>> from pydl.pydlutils.math import find_contiguous
+    >>> find_contiguous(np.array([0,1,1,1,0,1,1,0,1]))
+    [1, 2, 3]
     """
     contig = list()
     for k in range(x.size):

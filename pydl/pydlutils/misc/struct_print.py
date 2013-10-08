@@ -3,7 +3,7 @@
 from __future__ import print_function
 #
 def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit=7,
-    html=False,no_head=False,debug=False):
+    html=False,no_head=False,debug=False,silent=False):
     """Print a NumPy record array (analogous to an IDL structure) in a nice way.
 
     Parameters
@@ -26,7 +26,8 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
         If ``True``, *don't* print a header line.
     debug : bool, optional
         If ``True``, print some extra debugging information.
-
+    silent : bool, optional
+        If ``True``, do not print the table, just return it.
     Returns
     -------
     struct_print : tuple
@@ -35,13 +36,10 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
 
     Examples
     --------
-    >>> pydl.pydlutils.misc.struct_print(np.array([(1,2.34,'five'),(2,3.456,'seven'),(3,4.5678,'nine')],dtype=[('a','i4'),('bb','f4'),('ccc','S5')]))
-    (['a bb          ccc  ',
-      '- ----------- -----',
-      '1        2.34 five ',
-      '2       3.456 seven',
-      '3      4.5678 nine '],
-     [])
+    >>> import numpy as np
+    >>> from pydl.pydlutils.misc import struct_print
+    >>> struct_print(np.array([(1,2.34,'five'),(2,3.456,'seven'),(3,4.5678,'nine')],dtype=[('a','i4'),('bb','f4'),('ccc','S5')]),silent=True)
+    (['a bb          ccc  ', '- ----------- -----', '1        2.34 five ', '2       3.456 seven', '3      4.5678 nine '], [])
     """
     import numpy as np
     from .. import PydlutilsException
@@ -161,7 +159,8 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
     if html:
         lines.append('</table>')
     if f is None:
-        print("\n".join(lines)+"\n")
+        if not silent:
+            print("\n".join(lines)+"\n")
     else:
         f.write("\n".join(lines)+"\n")
         f.close()

@@ -32,7 +32,9 @@ def uniq(x,index=None):
 
     Examples
     --------
-    >>> pydl.uniq(np.sort(np.array([ 1, 2, 3, 1, 5, 6, 1, 7, 3, 2, 5, 9, 11, 1 ])))
+    >>> import numpy as np
+    >>> from pydl import uniq
+    >>> uniq(np.sort(np.array([ 1, 2, 3, 1, 5, 6, 1, 7, 3, 2, 5, 9, 11, 1 ])))
     array([ 3,  5,  7,  9, 10, 11, 12, 13])
     """
     from numpy import array, roll
