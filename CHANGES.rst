@@ -2,6 +2,11 @@
 Changes
 =======
 
+0.2.2 (Current development branch)
+----------------------------------
+
+* Fixed failing yanny file test.
+
 0.2.1 (2013-10-06)
 ------------------
 
