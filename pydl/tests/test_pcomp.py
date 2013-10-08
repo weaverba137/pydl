@@ -3,7 +3,10 @@
 def test_pcomp():
     from ..pcomp import pcomp
     from numpy import array, tile
-    from astropy.tests.compat import assert_allclose
+    try:
+        from astropy.tests.compat import assert_allclose
+    except ImportError:
+        from numpy.testing.utils import assert_allclose
     pcomp_data = array([
         [19.5, 43.1, 29.1, 11.9],
         [24.7, 49.8, 28.2, 22.8],

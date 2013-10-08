@@ -6,6 +6,7 @@ Changes
 ----------------------------------
 
 * Fixed failing yanny file test.
+* Improve test infrastructure.
 
 0.2.1 (2013-10-06)
 ------------------
