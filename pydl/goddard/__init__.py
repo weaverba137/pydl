@@ -21,4 +21,4 @@ import misc
 #
 # Set __all__
 #
-__all__ = ['GoddardException', 'astro', 'math', 'misc']
+__all__ = ['astro', 'math', 'misc']
