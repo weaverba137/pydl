@@ -100,8 +100,9 @@ class yanny(dict):
 
         Examples
         --------
-        >>> pydl.pydlutils.yanny.yanny.get_token("The quick brown fox")
-        ('The','quick brown fox')
+        >>> from pydl.pydlutils.yanny import yanny
+        >>> yanny.get_token("The quick brown fox")
+        ('The', 'quick brown fox')
         """
         if string[0] == '"':
             (word, remainder) = re.search(r'^"([^"]*)"\s*(.*)',
@@ -138,7 +139,8 @@ class yanny(dict):
 
         Examples
         --------
-        >>> yanny.yanny.protect('This string contains whitespace.')
+        >>> from pydl.pydlutils.yanny import yanny
+        >>> yanny.protect('This string contains whitespace.')
         '"This string contains whitespace."'
         """
         s = str(x)
@@ -676,7 +678,7 @@ class yanny(dict):
         If the yanny object instance is set up for NumPy record arrays, then
         a single row can be obtained with::
 
-            >>> row0 = par['TABLE'][0]
+            row0 = par['TABLE'][0]
 
         Parameters
         ----------
@@ -708,7 +710,7 @@ class yanny(dict):
         If the yanny object instance is set up for NumPy record arrays, then
         the same functionality can be obtained with::
 
-            >>> foo = par['TABLE'][0]['column']
+            foo = par['TABLE'][0]['column']
 
         Parameters
         ----------
@@ -748,7 +750,10 @@ class yanny(dict):
 
         Read a yanny file and return only the pairs::
 
-            >>> new_dict = yanny.yanny(file).new_dict_from_pairs()
+            >>> from os.path import dirname
+            >>> from pydl.pydlutils.yanny import yanny
+            >>> yanny(dirname(__file__)+'/tests/t/test.par').new_dict_from_pairs()
+            {'mjd': '54579', 'alpha': 'beta gamma delta'}
 
         added: Demitri Muna, NYU 2009-04-28
         """
