@@ -17,19 +17,6 @@ class pcomp(object):
         If set to ``True``, the covariance matrix of the data will be used for
         the computation.  Otherwise the correlation matrix will be used.
 
-    Attributes
-    ----------
-    coefficients : array_like
-        The principal components.  These are the coefficients of `derived`.
-        Basically, they are a re-scaling of the eigenvectors.
-    derived : array_like
-        An N x M array containing the derived variables.
-    variance : array_like
-        An array of the M variances of each derived variable.
-    eigenvalues : array_like
-        An array of the M eigenvalues that correspond to the principal
-        components.
-
     Notes
     -----
 
@@ -80,12 +67,16 @@ class pcomp(object):
     #
     @lazyproperty
     def coefficients(self):
+        """The principal components.  These are the coefficients of `derived`.
+        Basically, they are a re-scaling of the eigenvectors.
+        """
         return self._evecs * np.tile(np.sqrt(self._evals),self._nv).reshape(self._nv,self._nv)
     #
     #
     #
     @lazyproperty
     def derived(self):
+        """An N x M array containing the derived variables."""
         derived_data = np.dot(self._array,self.coefficients)
         if self._standardize:
             derived_data += self._xstd
@@ -95,10 +86,14 @@ class pcomp(object):
     #
     @lazyproperty
     def variance(self):
+        """An array of the M variances of each derived variable."""
         return self._evals/self._c.trace()
     #
     #
     #
     @lazyproperty
     def eigenvalues(self):
+        """An array of the M eigenvalues that correspond to the principal
+        components.
+        """
         return self._evals
