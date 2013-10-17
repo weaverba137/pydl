@@ -152,7 +152,7 @@ class yanny(dict):
     #
     #
     @staticmethod
-    def dtype_to_struct(dt,structname='mystruct',enums=dict()):
+    def dtype_to_struct(dt,structname='mystruct',enums=None):
         """Convert a NumPy dtype object describing a record array to
         a typedef struct statement.
 
@@ -183,15 +183,16 @@ class yanny(dict):
         dtmap = {'i2':'short','i4':'int','i8':'long','f4':'float',
             'f8':'double'}
         returnenums = list()
-        for e in enums:
-            lines = list()
-            lines.append('typedef enum {')
-            for n in enums[e][1]:
-                lines.append("    {0},".format(n))
-            lines[-1] = lines[-1].strip(',')
-            lines.append('}} {0};'.format(enums[e][0].upper()))
-            returnenums.append("\n".join(lines))
-            #lines.append('')
+        if enums is not None:
+            for e in enums:
+                lines = list()
+                lines.append('typedef enum {')
+                for n in enums[e][1]:
+                    lines.append("    {0},".format(n))
+                lines[-1] = lines[-1].strip(',')
+                lines.append('}} {0};'.format(enums[e][0].upper()))
+                returnenums.append("\n".join(lines))
+                #lines.append('')
         lines = list()
         lines.append('typedef struct {')
         for c in dt.names:
