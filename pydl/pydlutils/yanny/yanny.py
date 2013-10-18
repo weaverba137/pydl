@@ -765,7 +765,7 @@ class yanny(dict):
     #
     #
     #
-    def write(self,newfile=None):
+    def write(self,newfile=None,comments=None):
         """Write a yanny object to a file.
 
         This assumes that the filename used to create the object was not that
@@ -781,15 +781,26 @@ class yanny(dict):
         ----------
         newfile : str, optional
             The name of the file to write.
+        comments : str or list of str, optional
+            Comments that will be placed at the head of the file.  If a
+            single string is passed, it will be written out verbatim, so it
+            had better contain '#' characters.  If a list of strings is
+            passed, comment characters will be added and the strings
+            will be joined together.
         """
         if newfile is None:
             if len(self.filename) > 0:
                 newfile = self.filename
             else:
                 raise ValueError("No filename specified!")
-        basefile = os.path.basename(newfile)
-        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-        contents = "#\n# {0}\n#\n# Created by yanny.py\n#\n# {1}\n#\n".format(basefile,timestamp)
+        if comments is None:
+            basefile = os.path.basename(newfile)
+            timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            comments = "#\n# {0}\n#\n# Created by pydl.pydlutils.yanny.yanny\n#\n# {1}\n#\n".format(basefile,timestamp)
+        else:
+            if not isinstance(comments, str):
+                comments = "\n".join(["# {0}".format(c) for c in comments]) + "\n"
+        contents = comments
         #
         # Print any key/value pairs
         #

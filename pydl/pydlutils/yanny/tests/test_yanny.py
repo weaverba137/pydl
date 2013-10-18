@@ -78,8 +78,8 @@ def test_yanny():
     assert set(par['symbols']['enum']) == set(enum)
     assert set(par.tables()) == set(struct_dict.keys())
     for t in par.tables():
-        print(par.dtype(t))
-        print(struct_dict[t]['dtype'])
+        #print(par.dtype(t))
+        #print(struct_dict[t]['dtype'])
         assert str(par.dtype(t)) == struct_dict[t]['dtype']
         assert par.size(t) == struct_dict[t]['size']
         assert set(par.columns(t)) == set(struct_dict[t]['columns'].keys())
