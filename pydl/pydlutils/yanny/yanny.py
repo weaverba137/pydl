@@ -265,8 +265,8 @@ class yanny(dict):
                 #
                 # Assume file-like
                 #
-                self.filename = 'in_memory.par'
                 self._contents = filename.read()
+                self.filename = 'in_memory.par'
             self._parse()
         return
     #
@@ -781,9 +781,15 @@ class yanny(dict):
                 newfile = self.filename
             else:
                 raise ValueError("No filename specified!")
-        basefile = os.path.basename(newfile)
+
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-        contents = "#\n# {0}\n#\n# Created by yanny.py\n#\n# {1}\n#\n".format(basefile,timestamp)
+        if type(newfile) == file:
+            contents = ''
+        else:
+            basefile = os.path.basename(newfile)
+            contents = "#\n# {0}\n#\n# Created by yanny.py\n#\n# {1}\n#\n".\
+              format(basefile,timestamp)
+        
         #
         # Print any key/value pairs
         #
@@ -818,7 +824,13 @@ class yanny(dict):
         #
         # Actually write the data to file
         #
-        if os.access(newfile,os.F_OK):
+        if type(newfile) == file:
+            newfile.write(contents)
+            self._contents = contents
+            self.filename = newfile
+            self._parse()
+
+        elif os.access(newfile,os.F_OK):
             print("{0} exists, aborting write!".format(newfile))
             print("For reference, here's what would have been written:")
             print(contents)
