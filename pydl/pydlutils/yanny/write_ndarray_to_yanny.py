@@ -47,7 +47,7 @@ def write_ndarray_to_yanny(filename,datatables,structnames=None,enums=dict(),hdr
 
         struct = par.dtype_to_struct(data.dtype,structname=name,enums=enums)
         par['symbols']['struct'] += struct['struct']
-        par['symbols']['enum'] += struct['enum'] #Yes, this is redundant to do for every struct
+        par['symbols']['enum'] = struct['enum'] #Yes, this is redundant to do for every struct
         par['symbols'][name.upper()] = struct[name.upper()]
         par[name.upper()] = data
 
