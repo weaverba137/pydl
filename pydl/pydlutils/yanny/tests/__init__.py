@@ -16,10 +16,10 @@ from ... import fits
 
 class YannyTestCase(object):
     """Based on astropy.io.fits.tests.FitsTestCase."""
+    save_temp = False
     def setup(self):
         self.data_dir = os.path.join(os.path.dirname(__file__), 't')
         self.temp_dir = tempfile.mkdtemp(prefix='yanny-test-')
-
         # Ignore deprecation warnings--this only affects Python 2.5 and 2.6,
         # since deprecation warnings are ignored by defualt on 2.7
         warnings.simplefilter('ignore')
@@ -27,18 +27,19 @@ class YannyTestCase(object):
 
     def teardown(self):
         warnings.resetwarnings()
-        if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
-            tries = 3
-            while tries:
-                try:
-                    shutil.rmtree(self.temp_dir)
-                    break
-                except OSError:
-                    # Probably couldn't delete the file because for whatever
-                    # reason a handle to it is still open/hasn't been
-                    # garbage-collected
-                    time.sleep(0.5)
-                    tries -= 1
+        if not self.save_temp:
+            if hasattr(self, 'temp_dir') and os.path.exists(self.temp_dir):
+                tries = 3
+                while tries:
+                    try:
+                        shutil.rmtree(self.temp_dir)
+                        break
+                    except OSError:
+                        # Probably couldn't delete the file because for whatever
+                        # reason a handle to it is still open/hasn't been
+                        # garbage-collected
+                        time.sleep(0.5)
+                        tries -= 1
 
     def copy_file(self, filename):
         """Copies a backup of a test data file to the temp dir and sets its

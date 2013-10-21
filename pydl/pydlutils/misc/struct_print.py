@@ -155,7 +155,10 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
     rowformat = colstart + colsep.join([formatcodes[tag] for tag in array.dtype.names]) + colend
     if debug:
         print(rowformat)
-    lines += [rowformat.format(*array[k]) for k in range(array.size)]
+    if float('.'.join(np.__version__.split('.')[0:2])) < 1.7:
+        lines += [rowformat.format(*(array[k].tolist())) for k in range(array.size)]
+    else:
+        lines += [rowformat.format(*array[k]) for k in range(array.size)]
     if html:
         lines.append('</table>')
     if f is None:

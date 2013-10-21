@@ -5,6 +5,7 @@ def test_yanny():
     """
     import os
     from .. import yanny
+    from numpy import dtype
     #from pydl.pydlutils.yanny import yanny
     #
     # Describe what should be in the object
@@ -12,17 +13,17 @@ def test_yanny():
     pair_dict = {'mjd':'54579','alpha':'beta gamma delta'}
     struct_dict = {
         'MYSTRUCT':{
-            'dtype':"[('mag', '<f4', (5,)), ('b', 'S33', (5,)), ('foo', 'S25'), ('c', '<f8'), ('flags', '<i4', (2,)), ('new_flag', 'S5')]",
+            'dtype':[('mag', '<f4', (5,)), ('b', 'S33', (5,)), ('foo', 'S25'), ('c', '<f8'), ('flags', '<i4', (2,)), ('new_flag', 'S5')],
             'size':5,
             'columns':{'mag':'float[5]','b':'char[5][]','foo':'char[25]','c':'double','flags':'int[2]','new_flag':'BOOLEAN'},
             },
         'OLD':{
-            'dtype':"[('foo', '<f4', (3,)), ('bar', 'S10')]",
+            'dtype':[('foo', '<f4', (3,)), ('bar', 'S10')],
             'size':2,
             'columns':{'foo':'float[3]','bar':'char[10]'},
             },
         'STATUS_UPDATE':{
-            'dtype':"[('state', 'S10'), ('timestamp', 'S19')]",
+            'dtype':[('state', 'S10'), ('timestamp', 'S19')],
             'size':11,
             'columns':{'state':'STATUS','timestamp':'char[]'},
             },
@@ -78,9 +79,7 @@ def test_yanny():
     assert set(par['symbols']['enum']) == set(enum)
     assert set(par.tables()) == set(struct_dict.keys())
     for t in par.tables():
-        #print(par.dtype(t))
-        #print(struct_dict[t]['dtype'])
-        assert str(par.dtype(t)) == struct_dict[t]['dtype']
+        assert par.dtype(t) == dtype(struct_dict[t]['dtype'])
         assert par.size(t) == struct_dict[t]['size']
         assert set(par.columns(t)) == set(struct_dict[t]['columns'].keys())
         for c in par.columns(t):

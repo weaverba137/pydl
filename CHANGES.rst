@@ -5,6 +5,8 @@ Changes
 0.2.2 (Current development branch)
 ----------------------------------
 
+* Added ability to `write multiple ndarray to yanny files`_.
+* Fixed struct_print test for older Numpy versions.
 * Fixed failing yanny file test.
 * Improve test infrastructure.
 
@@ -35,3 +37,4 @@ Changes
 
 .. _package-template: https://github.com/astropy/package-template
 .. _`git repository`: https://github.com/weaverba137/pydl
+.. _`write multiple ndarray to yanny files`: https://github.com/weaverba137/pydl/pull/3
