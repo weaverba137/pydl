@@ -7,7 +7,7 @@ from .. import yanny
 from .. import write_ndarray_to_yanny
 from . import YannyTestCase
 
-class WriteNdarrayTestCase(YannyTestCase):
+class TestWriteNdarray(YannyTestCase):
     """Test class for ndarray to yanny conversions."""
     def test_write_ndarray_to_yanny(self):
         """Test the write_ndarray_to_yanny function."""
