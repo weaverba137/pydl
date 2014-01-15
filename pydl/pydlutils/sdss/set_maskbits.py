@@ -39,6 +39,9 @@ def set_maskbits(idlutils_version='v5_5_8'):
             maskbits[maskfile['MASKBITS']['flag'][k]][maskfile['MASKBITS']['label'][k]] = maskfile['MASKBITS']['bit'][k]
         else:
             maskbits[maskfile['MASKBITS']['flag'][k]] = {maskfile['MASKBITS']['label'][k]:maskfile['MASKBITS']['bit'][k]}
+    if 'MASKALIAS' in maskfile:
+        for k in range(maskfile.size('MASKALIAS')):
+            maskbits[maskfile['MASKALIAS']['alias'][k]] = maskbits[maskfile['MASKALIAS']['flag'][k]].copy()
     return maskbits
 
 
