@@ -4,6 +4,7 @@
 This subpackage corresponds to the sdss directory of idlutils.
 """
 from default_skyversion import default_skyversion
+from sdss_astrombad import sdss_astrombad
 from sdss_flagexist import sdss_flagexist
 from sdss_flagname import sdss_flagname
 from sdss_flagval import sdss_flagval
@@ -22,3 +23,7 @@ del set_maskbits
 # Cache the sweep index
 #
 sweep_cache = {'star':None,'gal':None,'sky':None}
+#
+# Cache sdss_astrombad data
+#
+opbadfields = None
