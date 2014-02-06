@@ -1,6 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def sdss_flagexist(flagname, bitname, flagexist=False):
+def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
     """Check for the existence of flags.
 
     Parameters
@@ -9,9 +9,12 @@ def sdss_flagexist(flagname, bitname, flagexist=False):
         The name of a bitmask group. Not case-sensitive.
     bitname : str or list
         The name(s) of the specific bitmask(s) within the `flagname` group.
-    flagexist : bool
+    flagexist : bool, optional
         If flagexist is True, return a tuple with the second component indicating
         whether the binary flag named `flagname` exists, even if `bitname` is wrong.
+    whichexist : bool, optional
+        If whichexist is True, return a list containing existence test results
+        for each individual flag.
 
     Returns
     -------
@@ -22,17 +25,22 @@ def sdss_flagexist(flagname, bitname, flagexist=False):
     #
     # Make sure label is a list
     #
-    #if isinstance(bitname,str):
-    #    bitnames = [bitname.upper()]
-    #else:
-    #    bitnames = [b.upper() for b in bitname]
+    if isinstance(bitname,str):
+        bitnames = [bitname.upper()]
+    else:
+        bitnames = [b.upper() for b in bitname]
     f = False
     l = False
+    which = [False]*len(bitnames)
     if flagname.upper() in maskbits:
         f = True
-        if bitname in maskbits[flagname.upper()]:
-            l = True
-    if flagexist:
+        which = [n in maskbits[flagname.upper()] for n in bitnames]
+        l = sum(which) == len(which)
+    if flagexist and whichexist:
+        return (l,f,which)
+    elif flagexist:
         return (l,f)
+    elif whichexist:
+        return (l,which)
     else:
         return l
