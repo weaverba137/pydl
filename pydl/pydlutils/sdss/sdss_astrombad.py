@@ -32,7 +32,7 @@ def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
     """
     from . import opbadfields
     from ..yanny import yanny
-    from numpy import zeros, bool
+    from numpy import array, bool, int64, zeros
     from astropy.utils.data import download_file
     from os import getenv
     from os.path import join
