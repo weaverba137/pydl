@@ -143,19 +143,19 @@ if not _ASTROPY_SETUP_:
 
     del os, warn, config_dir  # clean up namespace
 
-#
-# pydl stuff starts here
-#
-from .file_lines import file_lines
-from .pcomp import pcomp
-from .smooth import smooth
-from .uniq import uniq
-from . import goddard
-from . import photoop
-from . import pydlutils
-from . import pydlspec2d
+    #
+    # pydl stuff starts here
+    #
+    from .file_lines import file_lines
+    from .pcomp import pcomp
+    from .smooth import smooth
+    from .uniq import uniq
+    from . import goddard
+    from . import photoop
+    from . import pydlutils
+    from . import pydlspec2d
 
-class PydlException(Exception):
-    pass
+    class PydlException(Exception):
+        pass
 
-__all__ = ['file_lines', 'pcomp', 'smooth', 'uniq', 'PydlException']
+    __all__ = ['file_lines', 'pcomp', 'smooth', 'uniq', 'PydlException']
