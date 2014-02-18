@@ -73,17 +73,16 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
     # http://projects.scipy.org/numpy/ticket/1675
     #
     try:
-        adstr = map(lambda a,b,c,d,e,f,g: adformat.format(a,b,c,d,e,f,g),
-            rah, ram, ras, desgn, ded, dem, des)
+        adstr = [adformat.format(*x) for x in zip(rah, ram, ras, desgn, ded, dem, des)]
     except ValueError:
-        adstr = map(lambda a,b,c,d,e,f,g: adformat.format(a,b,c,d,e,f,g),
+        adstr = [adformat.format(*x) for x in zip(
             rah.tolist(), ram.tolist(), ras.tolist(), desgn.tolist(),
-            ded.tolist(), dem.tolist(), des.tolist())
+            ded.tolist(), dem.tolist(), des.tolist())]
     if prefix == '':
         jstr = 'J'
     else:
         jstr = ' J'
-    name = map(lambda x: "{0}{1}{2}".format(prefix, jstr, x), adstr)
+    name = ["{0}{1}{2}".format(prefix, jstr, x) for x in adstr]
     if len(ra) == 1:
         return name[0]
     else:

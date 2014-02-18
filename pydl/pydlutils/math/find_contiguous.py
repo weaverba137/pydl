@@ -31,7 +31,7 @@ def find_contiguous(x):
                     contig[-1].append(k)
                 else:
                     contig.append([k])
-    lengths = map(len,contig)
+    lengths = [len(c) for c in contig]
     longest = contig[lengths.index(max(lengths))]
     return longest
 

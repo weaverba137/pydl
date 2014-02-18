@@ -336,16 +336,6 @@ class yanny(dict):
             return None
         if variable not in self.columns(structure):
             return None
-        defl = filter(lambda x: x.find(structure.lower()) > 0,
-            self['symbols']['struct'])
-        defu = filter(lambda x: x.find(structure.upper()) > 0,
-            self['symbols']['struct'])
-        if len(defl) != 1 and len(defu) != 1:
-            return None
-        elif len(defl) == 1:
-            definition = defl
-        else:
-            definition = defu
         #
         # Added code to cache values to speed up parsing large files.
         # 2009.05.11 / Demitri Muna, NYU
@@ -364,6 +354,14 @@ class yanny(dict):
         except KeyError:
             if self.debug:
                 print(variable)
+            defl = [ x for x in self['symbols']['struct'] if x.find(structure.lower()) > 0 ]
+            defu = [ x for x in self['symbols']['struct'] if x.find(structure.upper()) > 0 ]
+            if len(defl) != 1 and len(defu) != 1:
+                return None
+            elif len(defl) == 1:
+                definition = defl
+            else:
+                definition = defu
             typere = re.compile(r'(\S+)\s+{0}([[<].*[]>]|);'.format(variable))
             (typ,array) = typere.search(definition[0]).groups()
             var_type = typ + array.replace('<','[').replace('>',']')
@@ -516,9 +514,9 @@ class yanny(dict):
             return int(typ[typ.rfind('[')+1:typ.rfind(']')])
         except ValueError:
             if self.isarray(structure,variable):
-                return max([max(map(len,r)) for r in self[structure][variable]])
+                return max([max([len(x) for x in r]) for r in self[structure][variable]])
             else:
-                return max(map(len,self[structure][variable]))
+                return max([len(x) for x in self[structure][variable]])
     #
     #
     #
@@ -545,7 +543,7 @@ class yanny(dict):
             if typ == 'char':
                 d = "S{0:d}".format(self.char_length(structure,c))
             elif self.isenum(structure,c):
-                d = "S{0:d}".format(max(map(len,self._enum_cache[typ])))
+                d = "S{0:d}".format(max([len(x) for x in self._enum_cache[typ]]))
             else:
                 d = dtmap[typ]
             if self.isarray(structure,c):
@@ -585,17 +583,17 @@ class yanny(dict):
         typ = self.basetype(structure,variable)
         if (typ == 'short' or typ == 'int'):
             if self.isarray(structure,variable):
-                return map(int, value)
+                return [int(v) for v in value]
             else:
                 return int(value)
         if typ == 'long':
             if self.isarray(structure,variable):
-                return map(long, value)
+                return [long(v) for v in value]
             else:
                 return long(value)
         if (typ == 'float' or typ == 'double'):
             if self.isarray(structure,variable):
-                return map(float, value)
+                return [float(v) for v in value]
             else:
                 return float(value)
         return value
@@ -827,7 +825,7 @@ class yanny(dict):
                 line.append(sym)
                 for col in columns:
                     if self.isarray(sym,col):
-                        datum = '{' + ' '.join(map(self.protect,self[sym][col][k])) + '}'
+                        datum = '{' + ' '.join([self.protect(x) for x in self[sym][col][k]]) + '}'
                     else:
                         datum = self.protect(self[sym][col][k])
                     line.append(datum)
@@ -891,7 +889,7 @@ class yanny(dict):
                     line.append(sym)
                     for col in columns:
                         if self.isarray(sym,col):
-                            datum = '{' + ' '.join(map(self.protect,datatable[datasym][col][k])) + '}'
+                            datum = '{' + ' '.join([self.protect(x) for x in datatable[datasym][col][k]]) + '}'
                         else:
                             datum = self.protect(datatable[datasym][col][k])
                         line.append(datum)

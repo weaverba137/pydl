@@ -37,7 +37,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     retval = list()
     for bit in bits:
         try:
-            f = filter(lambda x: x[1] == bit,maskbits[flagu].items())
+            f = [ x for x in maskbits[flagu].items() if x[1] == bit ]
         except KeyError:
             raise KeyError("Unknown flag group {0}!".format(flagu))
         if f:
