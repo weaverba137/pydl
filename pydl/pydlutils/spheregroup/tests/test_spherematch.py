@@ -1,13 +1,13 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def test_spherematch(save=False):
+def test_spherematch():
     import numpy as np
-    import os
-    import os.path
-    import pyfits
-    import time
-    from pydlutils.spheregroup import spherematch
-    from pydlutils.misc import djs_readcol
+    from .. import spherematch
+    i1_should_be = np.array([17,  0,  2, 16, 12, 13,  1,  5, 15,  7, 19,  8, 11, 10, 14, 18,  3,
+                              9,  6,  4])
+    i2_should_be = np.array([ 2,  0, 17,  3, 16, 15, 14,  5,  6, 10,  8, 19, 18,  4,  9,  7, 11,
+                              12,  1, 13])
+    np.random.seed(137)
     searchrad = 3.0/3600.0
     n = 20
     ra1 = 360.0*np.random.random((n,))
@@ -17,48 +17,6 @@ def test_spherematch(save=False):
     foo = np.arange(n)
     np.random.shuffle(foo)
     i1, i2, d12 = spherematch(ra1, dec1, ra2[foo], dec2[foo], searchrad, maxmatch=0)
-    print ra1
-    print dec1
-    print ra2[foo]
-    print dec2[foo]
-    print foo
-    print i1
-    print i2
-    print d12
-    if save:
-        np.savetxt('file.out',np.vstack((ra1,dec1,ra2[foo],dec2[foo])).T)
-    ra, dec = djs_readcol('file.in',format='(D,D)')
-    run2d = '26'
-    run1d = None
-    plates = pyfits.open(os.path.join(os.getenv('SPECTRO_REDUX'),'plates-dr8.fits'))
-    plist = plates[1].data
-    plates.close()
-    qdone = plist.field('STATUS1D') == 'Done'
-    qdone2d = plist.field('RUN2D').strip() == run2d
-    if run1d is None:
-        qdone1d = np.ones(plist.size,dtype='bool')
-    else:
-        qdone1d = plist.field('RUN1D').strip() == run1d
-    qfinal = qdone & qdone2d & qdone1d
-    idone = np.arange(plist.size)[qfinal]
-    t0 = time.time()
-    imatch1, itmp, dist12 = spherematch(ra, dec,
-        plist[idone].field('RACEN'), plist[idone].field('DECCEN'),
-        searchrad+1.55,maxmatch=0,debug=True)
-    t1 = time.time()
-    print "Elapsed time = %f s." % (t1-t0)
-    foo = plist[idone]
-    print imatch1
-    print itmp
-    print dist12
-    t2 = time.time()
-    imatch1, itmp, dist12 = spherematch(
-        plist[idone].field('RACEN'), plist[idone].field('DECCEN'), ra, dec,
-        searchrad+1.55,maxmatch=0)
-    t3 = time.time()
-    print "Elapsed time = %f s." % (t3-t2)
-    print imatch1
-    print itmp
-    print dist12
+    assert (i1 == i1_should_be).all()
+    assert (i2 == i2_should_be).all()
 
-    return

@@ -1,9 +1,8 @@
-#
-#
-#
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 def test_iterfit():
     import numpy as np
-    from pydlutils.bspline import iterfit
+    from .. import iterfit
     from pydl import smooth
     y0 = np.array([0.661984, 0.134913, 0.0410350, 0.940134, 0.411034,
         0.484675, 0.169943, 0.325046, 0.269194, 0.552381,
@@ -25,12 +24,14 @@ def test_iterfit():
         0.841774, 0.434161, 0.153123, 0.420066, 0.0499331,
         0.947241, 0.0768818, 0.410540, 0.843788, 0.0640255,
         0.513463, 0.511104, 0.680434, 0.762480, 0.0563867])
+    assert y0.size == 100
     y = smooth(y0,10)
+    assert y.size == 100
     x = np.arange(y0.size,dtype='d')
     sset,outmask = iterfit(x,y,nord=3,maxiter=0,bkspace=10)
+    assert sset.npoly == 1
+    assert sset.funcname == 'legendre'
     # print sset
-    yfit,mask = sset.value(x)
+    # yfit,mask = sset.value(x)
     # print yfit
     # pylab.plot(x,y,'k-',x,yfit,'r-')
-    return (x,y,yfit)
-
