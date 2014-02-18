@@ -14,17 +14,17 @@ class PydlutilsException(Exception):
 #
 # Import subpackages
 #
-import .bspline
-import .cooling
-#import .coord
-#import .fits
-import .image
-import .mangle
-import .math
-import .misc
-import .sdss
-import .spheregroup
-import .yanny
+from . import bspline
+from . import cooling
+#from . import coord
+#from . import fits
+from . import image
+from . import mangle
+from . import math
+from . import misc
+from . import sdss
+from . import spheregroup
+from . import yanny
 #
 # Set __all__
 #

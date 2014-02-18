@@ -14,8 +14,8 @@ class Pydlspec2dException(Exception):
 #
 # Import subpackages
 #
-import .spec1d
-import .spec2d
+from . import spec1d
+from . import spec2d
 #
 # Set __all__
 #

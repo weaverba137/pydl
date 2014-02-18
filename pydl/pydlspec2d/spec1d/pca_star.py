@@ -11,7 +11,7 @@ def pca_star(**kwargs):
     import pylab
     from astropy.io import fits as pyfits
     import numpy as np
-    import ...pydlutils.yanny as yanny
+    import pydl.pydlutils.yanny as yanny
     from matplotlib.font_manager import fontManager, FontProperties
     from ... import uniq
     from ...pydlutils.goddard.astro import get_juldate
