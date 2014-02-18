@@ -9,7 +9,7 @@ Changes
 * Added ability to `write multiple ndarray to yanny files`_.
 * Fixed struct_print test for older Numpy versions.
 * Fixed failing yanny file test.
-* Improve test infrastructure.
+* Improve test infrastructure, including Travis builds.
 
 0.2.1 (2013-10-06)
 ------------------

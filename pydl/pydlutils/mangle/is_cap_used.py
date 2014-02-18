@@ -12,4 +12,4 @@ def is_cap_used(use_caps,i):
     -------
     is_cap_used : bool
     """
-    return (use_caps & 2L**i) > 0
+    return (use_caps & 1 << i) != 0

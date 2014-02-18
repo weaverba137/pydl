@@ -15,7 +15,7 @@ def sdss_flagval(flagname,bitname):
 
     Returns
     -------
-    sdss_flagval : long
+    sdss_flagval : numpy.uint64
         The value of the bitmask name(s).
 
     Raises
@@ -27,9 +27,10 @@ def sdss_flagval(flagname,bitname):
     --------
     >>> from pydl.pydlutils.sdss import sdss_flagval
     >>> sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL'])
-    2310346608843161600L
+    2310346608843161600
     """
     from . import maskbits
+    from numpy import uint64
     #
     # Make sure inlabel is a list
     #
@@ -38,11 +39,11 @@ def sdss_flagval(flagname,bitname):
     else:
         bitnames = [b.upper() for b in bitname]
     flagu = flagname.upper()
-    flagvalue = 0L
+    flagvalue = uint64(0)
     for bit in bitnames:
         if flagu in maskbits:
             if bit in maskbits[flagu]:
-                flagvalue += 2L**maskbits[flagu][bit]
+                flagvalue += uint64(2)**uint64(maskbits[flagu][bit])
             else:
                 raise KeyError("Unknown bit label {0} for flag group {1}!".format(bit, flagu))
         else:

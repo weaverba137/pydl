@@ -22,9 +22,9 @@ def set_use_caps(x,cm,polygon_use_caps,add=False,tol=1.0e-10,allow_doubles=False
     if add:
         use_caps = long(polygon_use_caps)
     else:
-        use_caps = 0L
+        use_caps = long(0)
     t2 = tol**2
-    use_caps |= 2L**len(cm) - 1L
+    use_caps |= long(2)**len(cm) - long(1)
     if not allow_doubles:
         #
         # Check for doubles
@@ -39,6 +39,6 @@ def set_use_caps(x,cm,polygon_use_caps,add=False,tol=1.0e-10,allow_doubles=False
                                 #
                                 # Don't use
                                 #
-                                use_caps -= 2L**j
+                                use_caps -= long(2)**j
     return use_caps
 

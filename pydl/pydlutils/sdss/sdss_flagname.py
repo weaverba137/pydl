@@ -25,24 +25,23 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     Examples
     --------
     >>> from pydl.pydlutils.sdss import sdss_flagname
-    >>> sdss_flagname('ANCILLARY_TARGET1',2310346608843161600L)
+    >>> sdss_flagname('ANCILLARY_TARGET1',2310346608843161600)
     ['BRIGHTGAL', 'BLAZGX', 'ELG']
     """
     from . import maskbits
     flagu = flagname.upper()
-    bitpos = 0
+    bits = list()
+    for bit in range(64):
+        if (flagvalue & (1 << bit)) != 0:
+            bits.append(bit)
     retval = list()
-    while flagvalue > 0:
-        bit = flagvalue % 2
-        if bit > 0:
-            try:
-                f = filter(lambda x: x[1] == bitpos,maskbits[flagu].items())
-            except KeyError:
-                raise KeyError("Unknown flag group {0}!".format(flagu))
-            if len(f) > 0:
-                retval.append(f[0][0])
-        flagvalue >>= 1
-        bitpos += 1
+    for bit in bits:
+        try:
+            f = filter(lambda x: x[1] == bit,maskbits[flagu].items())
+        except KeyError:
+            raise KeyError("Unknown flag group {0}!".format(flagu))
+        if f:
+            retval.append(f[0][0])
     if concat:
         retval = ' '.join(retval)
     return retval
