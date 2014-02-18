@@ -44,8 +44,14 @@ def file_lines(path,compress=False):
     for filename in working_path:
         if compress:
             import gzip
-            with gzip.open(filename) as f:
+            from sys import version_info
+            if version_info[0] == 2 and version_info[1] < 7:
+                f = gzip.open(filename)
                 lines.append(len(f.readlines()))
+                f.close()
+            else:
+                with gzip.open(filename) as f:
+                    lines.append(len(f.readlines()))
         else:
             with open(filename) as f:
                 lines.append(len(f.readlines()))

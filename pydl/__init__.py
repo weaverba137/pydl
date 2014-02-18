@@ -146,14 +146,14 @@ if not _ASTROPY_SETUP_:
 #
 # pydl stuff starts here
 #
-from file_lines import file_lines
-from pcomp import pcomp
-from smooth import smooth
-from uniq import uniq
-import goddard
-import photoop
-import pydlutils
-import pydlspec2d
+from .file_lines import file_lines
+from .pcomp import pcomp
+from .smooth import smooth
+from .uniq import uniq
+import .goddard
+import .photoop
+import .pydlutils
+import .pydlspec2d
 
 class PydlException(Exception):
     pass

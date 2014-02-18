@@ -3,4 +3,4 @@
 """
 This subpackage corresponds to the image directory of idlutils.
 """
-from djs_maskinterp import djs_maskinterp
+from .djs_maskinterp import djs_maskinterp

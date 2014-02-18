@@ -14,10 +14,10 @@ This subpackage contains the Goddard utilities.
 #
 # Import subpackages
 #
-import astro
+import .astro
 #import fits
-import math
-import misc
+import .math
+import .misc
 #
 # Set __all__
 #

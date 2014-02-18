@@ -3,11 +3,11 @@
 """
 This subpackage corresponds to the sdssio directory of photoop.
 """
-from filtername import filtername
-from filternum import filternum
-from sdss_name import sdss_name
-from sdss_path import sdss_path
-from sdssflux2ab import sdssflux2ab
+from .filtername import filtername
+from .filternum import filternum
+from .sdss_name import sdss_name
+from .sdss_path import sdss_path
+from .sdssflux2ab import sdssflux2ab
 #
 # Filename formats used by sdss_name and sdss_path
 #

@@ -3,4 +3,4 @@
 """
 This subpackage corresponds to the photoobj directory of photoop.
 """
-from sdss_calibv import sdss_calibv
+from .sdss_calibv import sdss_calibv

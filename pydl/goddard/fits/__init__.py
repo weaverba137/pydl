@@ -3,4 +3,4 @@
 """
 This subpackage corresponds to the fits directory in the Goddard utilities.
 """
-from mrdfits import mrdfits
+from .mrdfits import mrdfits

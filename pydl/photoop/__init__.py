@@ -14,8 +14,8 @@ class PhotoopException(Exception):
 #
 # Import subpackages
 #
-import photoobj
-import sdssio
+import .photoobj
+import .sdssio
 #
 # Set __all__
 #

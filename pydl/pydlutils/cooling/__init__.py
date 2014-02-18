@@ -3,4 +3,4 @@
 """
 This subpackage corresponds to the cooling directory of idlutils.
 """
-from read_ds_cooling import read_ds_cooling
+from .read_ds_cooling import read_ds_cooling

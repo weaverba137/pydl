@@ -3,5 +3,5 @@
 """
 This subpackage corresponds to the math directory in the Goddard utilities.
 """
-from fchebyshev import fchebyshev
-from flegendre import flegendre
+from .fchebyshev import fchebyshev
+from .flegendre import flegendre

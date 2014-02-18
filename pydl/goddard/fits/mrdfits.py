@@ -8,7 +8,7 @@ def mrdfits(filename,hdu=0,**kwargs):
     Note: this is really a port of hogg_mrdfits, rather than just mrdfits.
     in the future, this may be split into two modules.
     """
-    import pyfits
+    from astropy.io import fits as pyfits
     if 'range' in kwargs and 'rows' in kwargs:
         print "Keywords 'range' and 'rows' are mutually exclusive."
         return None

@@ -1,1 +1,1 @@
-from hogg_mrdfits import hogg_mrdfits
+from .hogg_mrdfits import hogg_mrdfits

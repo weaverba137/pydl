@@ -9,14 +9,14 @@ def pca_star(**kwargs):
     import os.path
     import pickle
     import pylab
-    import pyfits
+    from astropy.io import fits as pyfits
     import numpy as np
-    import yanny
+    import ...pydlutils.yanny as yanny
     from matplotlib.font_manager import fontManager, FontProperties
-    from pydl import uniq
-    from pydlutils.goddard.astro import get_juldate
-    from pydlutils.image import djs_maskinterp
-    from pydlspec2d.spec1d import pca_solve, readspec, skymask
+    from ... import uniq
+    from ...pydlutils.goddard.astro import get_juldate
+    from ...pydlutils.image import djs_maskinterp
+    from . import pca_solve, readspec, skymask
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:

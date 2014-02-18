@@ -3,5 +3,5 @@
 """
 This subpackage corresponds to the spec2d directory of idlspec2d.
 """
-from aesthetics import aesthetics
-from combine1fiber import combine1fiber
+from .aesthetics import aesthetics
+from .combine1fiber import combine1fiber
