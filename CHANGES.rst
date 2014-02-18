@@ -5,6 +5,7 @@ Changes
 0.2.2 (Current development branch)
 ----------------------------------
 
+* Updated to latest package-template_ version.
 * Added ability to `write multiple ndarray to yanny files`_.
 * Fixed struct_print test for older Numpy versions.
 * Fixed failing yanny file test.
