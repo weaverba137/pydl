@@ -77,8 +77,8 @@ def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
         else:
             filename = join(getenv('PHOTOLOG_DIR'),'opfiles','opBadfields.par')
         astrombadfile = yanny(filename,np=True)
-        w = ((astrombadfile['BADFIELDS']['problem'] == 'astrom') |
-            (astrombadfile['BADFIELDS']['problem'] == 'rotator'))
+        w = ((astrombadfile['BADFIELDS']['problem'] == 'astrom'.encode()) |
+            (astrombadfile['BADFIELDS']['problem'] == 'rotator'.encode()))
         opbadfields = astrombadfile['BADFIELDS'][w]
     #
     # opbadfields already has astrom problems selected at this point

@@ -1,5 +1,6 @@
 #
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 #
 #
 def pca_qso(**kwargs):
@@ -41,7 +42,7 @@ def pca_qso(**kwargs):
     # Name the output files.
     #
     jd = get_juldate()
-    outfile = "spEigenQSO-%d" % int(jd - 2400000.5)
+    outfile = "spEigenQSO-{0:d}".format(int(jd - 2400000.5))
     #
     # Read the input spectra
     #
@@ -54,8 +55,8 @@ def pca_qso(**kwargs):
     if missing.any():
         imissing = missing.nonzero()[0]
         for k in imissing:
-            print "Missing plate=%d mjd=%d fiber=%d" % (plate[k],mjd[k],fiber[k])
-        raise ValueError("%d missing object(s)." % missing.sum())
+            print("Missing plate={0:d} mjd={1:d} fiber={2:d}".format(plate[k],mjd[k],fiber[k]))
+        raise ValueError("{0:d} missing object(s).".format(missing.sum()))
     #
     # Do not fit where the spectrum may be dominated by sky-sub residuals.
     #
@@ -87,7 +88,7 @@ def pca_qso(**kwargs):
         objloglam = spplate['loglam'].copy()
         nobj, npix = spplate['flux'].shape
         for ikeep in range(nkeep):
-            print "Solving for eigencomponent #%d of %d" % (ikeep+1,nkeep)
+            print("Solving for eigencomponent #{0:d} of {1:d}".format(ikeep+1,nkeep))
             pcaflux1 = pca_solve(objflux,objinvvar,objloglam,zfit,
                 niter=niter,nkeep=1,newloglam=newloglam,aesthetics='mean')
             if ikeep == 0:

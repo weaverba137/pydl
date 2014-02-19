@@ -143,7 +143,10 @@ class yanny(dict):
         >>> yanny.protect('This string contains whitespace.')
         '"This string contains whitespace."'
         """
-        s = str(x)
+        if isinstance(x,numpy.bytes_):
+            s = x.decode()
+        else:
+            s = str(x)
         if len(s) == 0 or re.search(r'\s+',s) is not None:
             return '"' + s + '"'
         else:
@@ -606,9 +609,10 @@ class yanny(dict):
         This is just the list of keys of the object with the 'internal'
         keys removed.
         """
-        foo = self['symbols'].keys()
-        foo.remove('struct')
-        foo.remove('enum')
+        foo = list()
+        for k in self['symbols'].keys():
+            if k not in ('struct','enum'):
+                foo.append(k)
         return foo
     #
     #
@@ -662,9 +666,8 @@ class yanny(dict):
         p = list()
         foo = self.tables()
         for k in self.keys():
-            if k == 'symbols' or k in foo:
-                continue
-            p.append(k)
+            if k != 'symbols' and k not in foo:
+                p.append(k)
         return p
     #
     #
@@ -751,8 +754,11 @@ class yanny(dict):
 
             >>> from os.path import dirname
             >>> from pydl.pydlutils.yanny import yanny
-            >>> yanny(dirname(__file__)+'/tests/t/test.par').new_dict_from_pairs()
-            {'mjd': '54579', 'alpha': 'beta gamma delta'}
+            >>> new_dict = yanny(dirname(__file__)+'/tests/t/test.par').new_dict_from_pairs()
+            >>> new_dict['mjd']
+            '54579'
+            >>> new_dict['alpha']
+            'beta gamma delta'
 
         added: Demitri Muna, NYU 2009-04-28
         """

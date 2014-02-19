@@ -28,7 +28,7 @@ class TestWriteNdarray(YannyTestCase):
         assert par['symbols']['enum'][0] == 'typedef enum {\n    FALSE,\n    TRUE\n} BOOLEAN;'
         assert par['symbols']['struct'][0] == 'typedef struct {\n    double ra;\n    double dec;\n    float mag[5];\n    int flags;\n    BOOLEAN new_flag;\n} MAGNITUDES;'
         for k,f in enumerate(('FALSE','TRUE','TRUE','FALSE')):
-            assert par['MAGNITUDES']['new_flag'][k] == f
+            assert par['MAGNITUDES']['new_flag'][k].decode() == f
 
     def test_write_multiple_ndarray_to_yanny(self):
         """Test the write_ndarray_to_yanny function."""
@@ -53,4 +53,4 @@ class TestWriteNdarray(YannyTestCase):
         assert 'typedef struct {\n    double ra;\n    double dec;\n    float mag[5];\n    int flags;\n    BOOLEAN new_flag;\n} MAGNITUDES;' in par['symbols']['struct']
         assert 'typedef struct {\n    long timestamp;\n    STATUS state;\n} MY_STATUS;' in par['symbols']['struct']
         for k,f in enumerate(('FALSE','TRUE','TRUE','FALSE')):
-            assert par['MAGNITUDES']['new_flag'][k] == f
+            assert par['MAGNITUDES']['new_flag'][k].decode() == f
