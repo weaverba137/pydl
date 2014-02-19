@@ -1,5 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+#
+__doctest_skip__ = ['read_ds_cooling']
+#
 def read_ds_cooling(fname,logT=None):
     """Read in Dopita & Sutherland 1993 cooling function.
 
