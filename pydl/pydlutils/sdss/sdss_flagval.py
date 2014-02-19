@@ -26,7 +26,7 @@ def sdss_flagval(flagname,bitname):
     Examples
     --------
     >>> from pydl.pydlutils.sdss import sdss_flagval
-    >>> sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL'])
+    >>> sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL']) # doctest: +REMOTE_DATA
     2310346608843161600
     """
     from numpy import uint64

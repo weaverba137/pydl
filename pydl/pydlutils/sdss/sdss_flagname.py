@@ -25,7 +25,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     Examples
     --------
     >>> from pydl.pydlutils.sdss import sdss_flagname
-    >>> sdss_flagname('ANCILLARY_TARGET1',2310346608843161600)
+    >>> sdss_flagname('ANCILLARY_TARGET1',2310346608843161600) # doctest: +REMOTE_DATA
     ['BRIGHTGAL', 'BLAZGX', 'ELG']
     """
     from . import maskbits
