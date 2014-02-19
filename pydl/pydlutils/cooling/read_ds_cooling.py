@@ -17,7 +17,7 @@ def read_ds_cooling(fname,logT=None):
     Returns
     -------
     read_ds_cooling : tuple
-        A tuple containing logT and loglambda, respectively.
+        A tuple containing `logT` and `loglambda`, respectively.
 
     Raises
     ------
@@ -28,8 +28,8 @@ def read_ds_cooling(fname,logT=None):
 
     Notes
     -----
-    Retrieves data from http://www.mso.anu.edu.au/~ralph/data/cool/ rather
-    than storing data locally.
+    Retrieves data from http://www.mso.anu.edu.au/~ralph/data/cool/ and caches
+    the data locally.
 
     Examples
     --------

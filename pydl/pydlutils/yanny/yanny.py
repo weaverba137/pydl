@@ -8,9 +8,10 @@ these specifications_.
 The format of the returned object is similar to that returned by
 ``read_yanny()`` in the efftickle perl package (in the yannytools product).
 
-Currently multidimensional arrays are only supported for type ``char``, but a
+Currently multidimensional arrays are only supported for type ``char``, and a
 close reading of the specifications indicates that multidimensional arrays
-were only ever intended to be supported for type ``char``.
+were only ever intended to be supported for type ``char``.  So no
+multidimensional arrays, sorry.
 
 .. _specifications: http://www.sdss3.org/dr8/software/par.php
 """

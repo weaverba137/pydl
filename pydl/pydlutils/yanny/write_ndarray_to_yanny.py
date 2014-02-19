@@ -16,7 +16,7 @@ def write_ndarray_to_yanny(filename,datatables,structnames=None,
         The name(s) to give the structure(s) in the yanny file.  Defaults to 'MYSTRUCT0'.
     enums : dict, optional
         A dictionary containing enum information.  See the documentation for
-        the dtype_to_struct method of the yanny object.
+        the `dtype_to_struct` method of the yanny object.
     hdr : dict, optional
         A dictionary containing keyword/value pairs for the 'header' of the yanny file.
     comments : str or list of str, optional
@@ -24,8 +24,8 @@ def write_ndarray_to_yanny(filename,datatables,structnames=None,
 
     Returns
     -------
-    par : yanny
-        The yanny object resulting from writing the file.
+    par : pydl.pydlutils.yanny.yanny
+        The `yanny` object resulting from writing the file.
 
     Examples
     --------
