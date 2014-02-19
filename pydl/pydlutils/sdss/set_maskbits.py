@@ -26,7 +26,7 @@ def set_maskbits(idlutils_version='v5_5_8'):
     else:
         iversion = 'tags/'+idlutils_version
     baseurl = 'http://www.sdss3.org/svn/repo/idlutils/{0}/data/sdss/sdssMaskbits.par'.format(iversion)
-    filename = download_file(baseurl,cache=True)
+    filename = download_file(baseurl,cache=True,show_progress=False)
     #par = urlopen(baseurl)
     maskfile = yanny(filename)
     #par.close()
