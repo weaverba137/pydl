@@ -29,8 +29,11 @@ def sdss_flagval(flagname,bitname):
     >>> sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL'])
     2310346608843161600
     """
-    from . import maskbits
     from numpy import uint64
+    from . import maskbits
+    if maskbits is None:
+        from .set_maskbits import set_maskbits
+        maskbits = set_maskbits()
     #
     # Make sure inlabel is a list
     #

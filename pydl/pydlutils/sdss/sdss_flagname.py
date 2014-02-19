@@ -29,6 +29,9 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     ['BRIGHTGAL', 'BLAZGX', 'ELG']
     """
     from . import maskbits
+    if maskbits is None:
+        from .set_maskbits import set_maskbits
+        maskbits = set_maskbits()
     flagu = flagname.upper()
     bits = list()
     for bit in range(64):
