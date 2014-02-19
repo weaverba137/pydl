@@ -42,6 +42,7 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
     (['a bb          ccc  ', '- ----------- -----', '1        2.34 five ', '2       3.456 seven', '3      4.5678 nine '], [])
     """
     import numpy as np
+    from . import decode_mixed
     from .. import PydlutilsException
     f = None # This variable will store a file handle
     if filename is not None:
@@ -155,7 +156,8 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
     rowformat = colstart + colsep.join([formatcodes[tag] for tag in array.dtype.names]) + colend
     if debug:
         print(rowformat)
-    lines += [rowformat.format(*(array[k].tolist())) for k in range(array.size)]
+    for k in range(array.size):
+        lines.append(rowformat.format(*([decode_mixed(l) for l in array[k].tolist()])))
     if html:
         lines.append('</table>')
     if f is None:
