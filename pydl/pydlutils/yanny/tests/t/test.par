@@ -11,6 +11,7 @@
 #
 mjd 54579 # a keyword/value pair
 alpha beta gamma delta # another pair
+semicolon This pair contains a semicolon; # semicolon test
 
 typedef enum {
     FALSE,
@@ -53,6 +54,11 @@ mystruct {17.5 17.446 17.4 16.1 16.0} \
     "" 7.24345567 {123123 0}       TRUE
 mystruct {17.5 17.446 17.4 16.1 16.0} {  this array doesn't contain quotes} \
     "" 7.24345567 {123123 0}       TRUE
+mystruct {19.3 18.2 17.1 16.0 15.9} {this array contains "#hash" characters} \
+    "#hashtag" 2.71828 {321321 54321} FALSE
+mystruct {19.3 18.2 17.1 16.0 15.9} {there is "a comment" "with a #hash" "at the end"} \
+    "#hashtag #hash" 2.71828 {321321 54321} FALSE # this last item should be "FALSE"
+
 status_update INCOMPLETE 2008-06-21T00:27:33
 status_update SUCCESS    2008-06-21T02:27:33
 status_update FAILURE    2008-06-21T03:27:33

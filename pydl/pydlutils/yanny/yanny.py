@@ -143,15 +143,65 @@ class yanny(dict):
         >>> from pydl.pydlutils.yanny import yanny
         >>> yanny.protect('This string contains whitespace.')
         '"This string contains whitespace."'
+        >>> yanny.protect('This string contains a #hashtag.')
+        '"This string contains a #hashtag."'
         """
         if isinstance(x,numpy.bytes_):
             s = x.decode()
         else:
             s = str(x)
-        if len(s) == 0 or re.search(r'\s+',s) is not None:
+        if len(s) == 0 or s.find('#') >= 0 or re.search(r'\s+',s) is not None:
             return '"' + s + '"'
         else:
             return s
+    #
+    #
+    #
+    @staticmethod
+    def trailing_comment(line):
+        """Identify a trailing comment and strip it.
+
+        This routine works on the theory that a properly quoted comment mark
+        will be surrounted by an odd number of double quotes, & we can
+        skip to searching for the last one in the line.
+
+        Parameters
+        ----------
+        line : str
+            A line from a yanny file potentially containing trailing comments.
+
+        Returns
+        -------
+        trailing_comment : str
+            The line with any trailing comment and any residual white space
+            trimmed off.
+
+        Bugs
+        ----
+        This may fail in certain pathological cases, for example if a
+        real trailing comment contains a single double-quote::
+
+            # a 'pathological" trailing comment
+
+        Examples
+        --------
+        >>> from pydl.pydlutils.yanny import yanny
+        >>> yanny.trailing_comment('mystruct 1234 "#hashtag" # a comment.')
+        'mystruct 1234 "#hashtag"'
+        >>> yanny.trailing_comment('mystruct 1234 "#hashtag" # a "comment".')
+        'mystruct 1234 "#hashtag"'
+        """
+        lastmark = line.rfind('#')
+        if lastmark >= 0:
+            #
+            # Count the number of double quotes in the remainder of the line
+            #
+            if (len([c for c in line[lastmark:] if c == '"']) % 2) == 0:
+                #
+                # Even number of quotes
+                #
+                return line[0:lastmark].rstrip()
+        return line
     #
     #
     #
@@ -996,7 +1046,11 @@ class yanny(dict):
                 self[name.upper()][column] = list()
         comments = re.compile(r'^\s*#') # Remove lines containing only comments
         blanks = re.compile(r'^\s*$') # Remove lines containing only whitespace
-        trailing_comments = re.compile(r'\s*\#.*$') # Remove trailing comments
+        #
+        # Remove trailing comments, but not if they are enclosed in quotes.
+        #
+        #trailing_comments = re.compile(r'\s*\#.*$')
+        #trailing_comments = re.compile(r'\s*\#[^"]+$')
         double_braces = re.compile(r'\{\s*\{\s*\}\s*\}') # Double empty braces get replaced with empty quotes
         if len(lines) > 0:
             for line in lines.split('\n'):
@@ -1012,7 +1066,8 @@ class yanny(dict):
                 # Remove leading & trailing blanks & comments
                 #
                 line = line.strip()
-                line = trailing_comments.sub('',line)
+                line = self.trailing_comment(line)
+                #line = trailing_comments.sub('',line)
                 line = double_braces.sub('""',line)
                 #
                 # Now if the first word on the line does not match a

@@ -10,11 +10,11 @@ def test_yanny():
     #
     # Describe what should be in the object
     #
-    pair_dict = {'mjd':'54579','alpha':'beta gamma delta'}
+    pair_dict = {'mjd':'54579','alpha':'beta gamma delta','semicolon':'This pair contains a semicolon;'}
     struct_dict = {
         'MYSTRUCT':{
             'dtype':[('mag', '<f4', (5,)), ('b', 'S33', (5,)), ('foo', 'S25'), ('c', '<f8'), ('flags', '<i4', (2,)), ('new_flag', 'S5')],
-            'size':5,
+            'size':7,
             'columns':{'mag':'float[5]','b':'char[5][]','foo':'char[25]','c':'double','flags':'int[2]','new_flag':'BOOLEAN'},
             },
         'OLD':{
