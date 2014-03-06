@@ -183,6 +183,10 @@ class yanny(dict):
 
             # a 'pathological" trailing comment
 
+        or if someone is over-enthusiastically commenting::
+
+            # # # # # I like # characters.
+
         Examples
         --------
         >>> from pydl.pydlutils.yanny import yanny

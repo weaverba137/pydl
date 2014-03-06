@@ -10,6 +10,7 @@ Changes
 * Fixed struct_print test for older Numpy versions.
 * Fixed failing yanny file test.
 * Improve test infrastructure, including Travis builds.
+* Allow comment characters inside quoted strings in yanny files.
 
 0.2.1 (2013-10-06)
 ------------------
