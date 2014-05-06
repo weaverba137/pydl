@@ -20,6 +20,10 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1,debug=Fa
 
     Returns
     -------
+    spherematch : tuple
+        A tuple containing the indices into the first set of points, the
+        indices into the second set of points and the match distance in
+        decimal degrees.
     """
     import numpy as np
     from . import chunks
