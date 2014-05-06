@@ -17,6 +17,8 @@ def spheregroup(ra,dec,linklength,chunksize=None,debug=False):
     -------
     spheregroup : tuple
     """
+    from . import chunks
+    from numpy import zeros
     npoints = ra.size
     #
     # Define the chunksize
@@ -44,7 +46,7 @@ def spheregroup(ra,dec,linklength,chunksize=None,debug=False):
     #
     # Renumber the groups in order of appearance
     #
-    renumbered = self.np.zeros(npoints,dtype='bool')
+    renumbered = zeros(npoints,dtype='bool')
     iclump = 0
     for i in range(npoints):
         if not renumbered[i]:

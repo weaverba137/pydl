@@ -11,6 +11,8 @@ __pycache__
 
 # Other generated files
 */version.py
+htmlcov
+.coverage
 pydl/pydl.cfg
 
 # Sphinx
@@ -21,6 +23,7 @@ _generated
 # Packages/installer info
 *.egg
 *.egg-info
+api
 dist
 build
 eggs
