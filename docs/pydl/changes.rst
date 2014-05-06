@@ -2,8 +2,11 @@
 Changes
 =======
 
-0.2.2 (Current development branch)
+0.2.3 (Current development branch)
 ----------------------------------
+
+0.2.2 (2014-05-07)
+------------------
 
 * Updated to latest package-template_ version.
 * Added ability to `write multiple ndarray to yanny files`_.
