@@ -10,5 +10,4 @@ Introduction
 This is a placeholder for Goddard misc package documentation.
 
 .. automodapi:: pydl.goddard.misc
-  :members:
-  :no-inheritance-diagram:
+   :no-inheritance-diagram:

@@ -9,13 +9,16 @@ This is the documentation for pydl.
 
 Components
 ----------
-.. toctree::
-  :maxdepth: 1
 
-  goddard.rst
-  photoop.rst
-  pydlspec2d.rst
-  pydlutils.rst
+Most of the functionality of pydl is in sub-packages.
+
+.. toctree::
+   :maxdepth: 1
+
+   goddard.rst
+   photoop.rst
+   pydlspec2d.rst
+   pydlutils.rst
 
 Other Notes
 -----------
@@ -30,5 +33,4 @@ API
 ---
 
 .. automodapi:: pydl
-  :members:
-  :no-inheritance-diagram:
+   :no-inheritance-diagram:

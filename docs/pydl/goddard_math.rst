@@ -10,5 +10,4 @@ Introduction
 This is a placeholder for Goddard math package documentation.
 
 .. automodapi:: pydl.goddard.math
-  :members:
-  :no-inheritance-diagram:
+   :no-inheritance-diagram:

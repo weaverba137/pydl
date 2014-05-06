@@ -10,5 +10,4 @@ Introduction
 This is a placeholder for pydlutils documentation.
 
 .. automodapi:: pydl.pydlutils
-  :members:
-  :no-inheritance-diagram:
+   :no-inheritance-diagram:

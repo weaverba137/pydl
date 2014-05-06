@@ -13,12 +13,11 @@ Components
 ----------
 
 .. toctree::
-  :maxdepth: 1
+   :maxdepth: 1
 
-  goddard_astro.rst
-  goddard_math.rst
-  goddard_misc.rst
+   goddard_astro.rst
+   goddard_math.rst
+   goddard_misc.rst
 
 .. automodapi:: pydl.goddard
-  :members:
-  :no-inheritance-diagram:
+   :no-inheritance-diagram:
