@@ -6,3 +6,6 @@ def get_package_data():
     return {
         'pydl.tests': ['t/*',]
     }
+
+#def requires_2to3():
+#    return False

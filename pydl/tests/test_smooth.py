@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-import numpy as np
-
+from __future__ import absolute_import, division, print_function, unicode_literals
+#
 def test_smooth():
     from ..smooth import smooth
     from numpy import arange, array, sin
