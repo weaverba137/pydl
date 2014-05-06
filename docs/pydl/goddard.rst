@@ -20,4 +20,5 @@ Components
   goddard_misc.rst
 
 .. automodapi:: pydl.goddard
+  :members:
   :no-inheritance-diagram:

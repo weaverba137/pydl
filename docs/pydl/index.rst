@@ -17,6 +17,18 @@ Components
   pydlspec2d.rst
   pydlutils.rst
 
+Other Notes
+-----------
+
+.. toctree::
+   :maxdepth: 1
+
+   changes.rst
+   todo.rst
+
+API
+---
 
 .. automodapi:: pydl
+  :members:
   :no-inheritance-diagram:

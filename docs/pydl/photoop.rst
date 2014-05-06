@@ -10,4 +10,5 @@ Introduction
 This is a placeholder for photoop documentation.
 
 .. automodapi:: pydl.photoop
+  :members:
   :no-inheritance-diagram:
