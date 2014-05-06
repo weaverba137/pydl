@@ -170,7 +170,7 @@ def pca_qso(**kwargs):
             for l in range(istart,iend+1):
                 p = ax.plot(10.0**pcaflux['newloglam'],pcaflux['newflux'][l,:]+separation*(l%nfluxes),
                     '%s-'%colorvec[l%len(colorvec)],linewidth=1)
-            ax.set_xlabel(u'Wavelength [Å]')
+            ax.set_xlabel(r'Wavelength [$\AA$]')
             ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')
             ax.set_title('QSOs: Input Spectra %4d-%4d' % (istart+1,iend+1))
             ax.set_ylim(pcaflux['newflux'][istart,:].min(),pcaflux['newflux'][iend-1,:].max()+separation*(nfluxes-1))
@@ -179,7 +179,7 @@ def pca_qso(**kwargs):
     fig = pylab.figure(dpi=100)
     ax = fig.add_subplot(111)
     p = ax.plot(10.0**pcaflux['newloglam'],(pcaflux['newivar'] == 0).sum(0)/float(nspectra),'k-')
-    ax.set_xlabel(u'Wavelength [Å]')
+    ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Fraction of spectra with missing data')
     ax.set_title('Missing Data')
     fig.savefig(outfile+'.missing.png')

@@ -160,7 +160,7 @@ def pca_star(**kwargs):
             # print(plotflux.shape)
             ax.plot(10.0**pcaflux['newloglam'],plotflux,"{0}-".format(colorvec[isub%len(colorvec)]),linewidth=1)
             if isub == 0:
-                ax.set_xlabel(u'Wavelength [Å]')
+                ax.set_xlabel(r'Wavelength [$\AA$]')
                 ax.set_ylabel('Flux [arbitrary units]')
                 ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
             t = ax.text(10.0**pcaflux['newloglam'][-1],plotflux[-1],subclasslist[isub],

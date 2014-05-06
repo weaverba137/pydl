@@ -46,7 +46,7 @@ def plot_eig(filename,title='Unknown'):
     colorvec = ['k','r','g','b','m','c']
     for l in range(neig):
         p = ax.plot(lam,spectro_data[l,:],'%s-'%colorvec[l%len(colorvec)],linewidth=1)
-    ax.set_xlabel(u'Wavelength [Å]')
+    ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Flux [Arbitrary Units]')
     ax.set_title(title)
     # ax.set_xlim([3500.0,10000.0])
