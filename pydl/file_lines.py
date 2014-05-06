@@ -32,12 +32,12 @@ def file_lines(path,compress=False):
     Examples
     --------
     >>> from pydl import file_lines
-    >>> from os.path import dirname
-    >>> file_lines(dirname(__file__) + '/tests/t/this-file-contains-42-lines.txt')
+    >>> from os.path import dirname, join
+    >>> file_lines(join(dirname(__file__),'tests','t','this-file-contains-42-lines.txt'))
     42
     """
     scalar = False
-    if isinstance(path, str):
+    if isinstance(path, str) or isinstance(path, unicode):
         working_path = [path]
         scalar = True
     else:
