@@ -36,9 +36,9 @@ def smooth(signal,owidth,edge_truncate=False):
     if width < 3:
         return signal
     n = signal.size
-    istart = (width-1)/2
-    iend = n - (width+1)/2
-    w2 = width/2
+    istart = int((width-1)/2)
+    iend = n - int((width+1)/2)
+    w2 = int(width/2)
     s = signal.copy()
     for i in range(n):
         if i < istart:
