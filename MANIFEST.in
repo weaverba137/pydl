@@ -1,8 +1,8 @@
 include README.rst
 include CHANGES.rst
 
-include distribute_setup.py
-recursive-include pydl *.pyx *.c
+include ez_setup.py
+include setuptools_bootstrap.py
 
 recursive-include docs *
 recursive-include licenses *
