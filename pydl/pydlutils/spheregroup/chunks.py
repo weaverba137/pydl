@@ -337,7 +337,7 @@ class chunks(object):
         # Convert ra, dec into something that can be digested by the
         # groups object.
         #
-        x = self.np.deg2rad(self.np.vstack(ra[chunkList],dec[chunkList]))
+        x = self.np.deg2rad(self.np.vstack((ra[chunkList],dec[chunkList])))
         radLinkSep = self.np.deg2rad(linkSep)
         group = groups(x,radLinkSep,'sphereradec')
         return group
