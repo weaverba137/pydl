@@ -20,7 +20,7 @@ def mrdfits(filename,hdu=0,**kwargs):
         except IOError:
             return None
     fits_cols = fits[hdu].columns.names
-    fits_hdr = fits[hdu].header.ascardlist()
+    fits_hdr = fits[hdu].header
     data = dict()
     if 'columns' in kwargs:
         cols = kwargs['columns']
