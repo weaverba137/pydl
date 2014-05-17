@@ -8,7 +8,7 @@ def window_read(**kwargs):
     from . import window_score
     from .. import PhotoopException
     from ...goddard.fits import mrdfits
-    from ...pytlutils.mangle import set_use_caps
+    from ...pydlutils.mangle import set_use_caps
     import numpy as np
     resolve_dir = getenv('PHOTO_RESOLVE')
     if resolve_dir is None:

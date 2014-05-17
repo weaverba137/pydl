@@ -10,7 +10,7 @@ def mrdfits(filename,hdu=0,**kwargs):
     """
     from astropy.io import fits as pyfits
     if 'range' in kwargs and 'rows' in kwargs:
-        print "Keywords 'range' and 'rows' are mutually exclusive."
+        print("Keywords 'range' and 'rows' are mutually exclusive.")
         return None
     try:
         fits = pyfits.open(filename)
@@ -30,7 +30,7 @@ def mrdfits(filename,hdu=0,**kwargs):
         rowdata = fits[hdu].data[kwargs['rows']]
         for col in cols:
             if col not in fits_cols:
-                print "Invalid column: %s!" % col
+                print("Invalid column: {0}!".format(col))
             else:
                 data[col] = rowdata[col]
     else:
@@ -46,7 +46,7 @@ def mrdfits(filename,hdu=0,**kwargs):
             r = (0,0)
         for col in cols:
             if col not in fits_cols:
-                print "Invalid column: %s!" % col
+                print("Invalid column: {0}!".format(col))
             else:
                 if r[1] > 0:
                     data[col] = fits[hdu].data.field(col)[r[0]:r[1]]
