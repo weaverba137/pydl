@@ -5,6 +5,8 @@ Changes
 0.2.3 (Current development branch)
 ----------------------------------
 
+* Added unwrap_objid.
+
 0.2.2 (2014-05-07)
 ------------------
 
