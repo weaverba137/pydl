@@ -1,5 +1,13 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+from astropy.extern import six
+
+if six.PY3:
+    # This works, but wouldn't `int` intead of `long` be OK to use here?
+    # http://python3porting.com/differences.html#long
+    long = int
+
+
 def set_use_caps(x,cm,polygon_use_caps,add=False,tol=1.0e-10,allow_doubles=False,allow_neg_doubles=False):
     """Set the bits in use_caps for a polygon.
 

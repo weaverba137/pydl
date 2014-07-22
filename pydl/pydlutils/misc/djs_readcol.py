@@ -114,7 +114,7 @@ def djs_readcol(name,**kwargs):
                         # Error, bad format, skip this line
                         #
                         if not silent:
-                            print('Skipping line {0}'.format(skip+nread+1)
+                            print('Skipping line {0}'.format(skip+nread+1))
                         continue
                 else:
                     print("Whoops, bad format! How did that happen?")

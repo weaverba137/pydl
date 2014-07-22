@@ -1,7 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
-#
+from astropy.extern import six
+
+
 def file_lines(path,compress=False):
     """Replicates the IDL FILE_LINES() function.
 
@@ -37,7 +39,7 @@ def file_lines(path,compress=False):
     42
     """
     scalar = False
-    if isinstance(path, str) or isinstance(path, unicode):
+    if isinstance(path, six.string_types):
         working_path = [path]
         scalar = True
     else:

@@ -19,7 +19,7 @@ def filternum(filt='foo'):
     1
     """
     if filt == 'foo':
-        return range(5)
+        return list(range(5))
     else:
         filters = { 'u':0, 'g':1, 'r':2, 'i':3, 'z':4 }
         return filters[filt]

@@ -24,6 +24,11 @@ import os
 import os.path
 import datetime
 import numpy
+from astropy.extern import six
+
+if six.PY3:
+    long = int
+
 #
 # Classes
 #
@@ -317,7 +322,7 @@ class yanny(dict):
             #
             # Handle file-like objects
             #
-            if isinstance(filename,str) or isinstance(filename,unicode):
+            if isinstance(filename, six.string_types):
                 if os.access(filename,os.R_OK):
                     self.filename = filename
                     with open(filename,'r') as f:
@@ -364,12 +369,18 @@ class yanny(dict):
     #
     #
     #
-    def __nonzero__(self):
+    def __bool__(self):
         """Give a yanny object a definite truth value.
 
         A yanny object is considered ``True`` if its contents are non-zero.
         """
         return len(self._contents) > 0
+
+    # `__nonzero__` is needed for Python 2.
+    # Python 3 uses `__bool__`.
+    # http://stackoverflow.com/a/2233850/498873
+    __nonzero__=__bool__
+
     #
     #
     #

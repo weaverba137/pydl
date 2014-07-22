@@ -73,8 +73,8 @@ def test_yanny():
     #
     # Test the structure of the object
     #
-    assert set(par.keys()) == set(pair_dict.keys()+struct_dict.keys()+['symbols'])
-    assert set(par['symbols'].keys()) == set(struct_dict.keys()+['struct','enum'])
+    assert set(par.keys()) == set(list(pair_dict.keys()) + list(struct_dict.keys()) + ['symbols'])
+    assert set(par['symbols'].keys()) == set(list(struct_dict.keys()) + ['struct','enum'])
     assert set(par['symbols']['struct']) == set(symbols)
     assert set(par['symbols']['enum']) == set(enum)
     assert set(par.tables()) == set(struct_dict.keys())

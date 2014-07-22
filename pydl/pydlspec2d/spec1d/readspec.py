@@ -81,7 +81,7 @@ def readspec(platein,fiber='all',**kwargs):
         np.array(mjdvec,dtype='u8'))
     #print(pmjd)
     upmjd = np.unique(pmjd)
-    zupmjd = zip(upmjd>>16,upmjd&((1<<16)-1))
+    zupmjd = list(zip(upmjd>>16,upmjd&((1<<16)-1)))
     #print(zupmjd)
     spplate_data = dict()
     hdunames = ('flux','invvar','andmask','ormask','disp','plugmap','sky','loglam',)

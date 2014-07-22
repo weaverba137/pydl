@@ -39,5 +39,10 @@ distribute-*.tar.gz
 .*.swp
 *~
 
+# Ignore Eclipse IDE files
+.project
+.pydevproject
+.settings
+
 # Mac OSX
 .DS_Store
