@@ -13,6 +13,7 @@ Changes
 * Added photoop/window.
 * Added stub photoop/sdssio/sdss_calib, updated sdss_score.
 * Added photoop/photoobj/unwrap_objid.
+* Merged pull request #4, fixing some Python3 issues.
 
 0.2.2 (2014-05-07)
 ------------------
