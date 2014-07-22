@@ -9,6 +9,8 @@ Changes
 * Added stub photoop/sdssio/sdss_calib, updated sdss_score.
 * Added photoop/photoobj/unwrap_objid.
 
+* Added unwrap_objid.
+
 0.2.2 (2014-05-07)
 ------------------
 
