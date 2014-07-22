@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+from astropy.extern import six
+
 def latest_mjd(plate,**kwargs):
     """Find the most recent MJD associated with a plate
 
@@ -17,7 +19,7 @@ def latest_mjd(plate,**kwargs):
     import re
     import numpy as np
     from . import spec_path
-    if isinstance(plate,int) or isinstance(plate,long) or plate.shape == ():
+    if isinstance(plate, six.integer_types) or plate.shape == ():
         platevec = np.array([plate],dtype='i4')
     else:
         platevec = plate

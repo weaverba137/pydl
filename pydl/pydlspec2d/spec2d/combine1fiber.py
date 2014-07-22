@@ -222,9 +222,9 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     # Grow regions where 3 or more pixels are rejected together ???
     #
-    # print newivar
+    # print(newivar)
     foo = smooth(newivar,3)
-    # print foo
+    # print(foo)
     # sys.exit(1)
     badregion = np.absolute(foo) < EPS
     if badregion.any():

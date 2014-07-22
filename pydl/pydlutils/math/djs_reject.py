@@ -228,9 +228,9 @@ def djs_reject(data,model,outmask=None,inmask=None,sigma=None,invvar=None,
     # Now modify outmask, rejecting points specified by inmask=0, outmask=0
     # if sticky is set, or badness > 0.
     #
-    # print badness
+    # print(badness)
     newmask = badness == 0
-    # print newmask
+    # print(newmask)
     if grow > 0:
         rejects = newmask==0
         if rejects.any():

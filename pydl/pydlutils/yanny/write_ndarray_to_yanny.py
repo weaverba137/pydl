@@ -1,5 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+from astropy.extern import six
+
+
 def write_ndarray_to_yanny(filename,datatables,structnames=None,
                            enums=None,hdr=None,comments=None):
     """Converts a NumPy record array into a new FTCL/yanny file.
@@ -43,7 +46,7 @@ def write_ndarray_to_yanny(filename,datatables,structnames=None,
         datatables = (datatables,)
     if structnames is None:
         structnames = ["MYSTRUCT{0:d}".format(k) for k in range(len(datatables))]
-    if isinstance(structnames,str) or isinstance(structnames,unicode):
+    if isinstance(structnames, six.string_types):
         structnames = (structnames,)
     if len(datatables) != len(structnames):
         raise PydlutilsException("The data tables and their names do not match!")

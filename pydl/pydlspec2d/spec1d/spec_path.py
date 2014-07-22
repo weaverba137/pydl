@@ -1,7 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
+from astropy.extern import six
+
+
 def spec_path(plate,path=None,topdir=None,run2d=None):
     """Return the path to spPlate files.
 
@@ -25,7 +27,7 @@ def spec_path(plate,path=None,topdir=None,run2d=None):
     from os import getenv
     from os.path import join
     from numpy import array
-    if isinstance(plate,int) or isinstance(plate,long) or plate.shape == ():
+    if isinstance(plate, six.integer_types) or plate.shape == ():
         platevec = array([plate],dtype='i4')
     else:
         platevec = plate
