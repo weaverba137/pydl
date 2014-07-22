@@ -37,7 +37,7 @@ def djs_readcol(name,**kwargs):
     else:
         debug = False
     if debug:
-        print "%s contains %d lines." % (name,nlines)
+        print("{0} contains {1} lines.".format(name, nlines))
     if 'skip' in kwargs:
         skip = kwargs['skip']
     else:
@@ -57,13 +57,13 @@ def djs_readcol(name,**kwargs):
     ncol = len(basecols)
     if 'format' in kwargs:
         if re.match(r'^\(?[ABDFILX, ]+\)?$',kwargs['format'],re.IGNORECASE) is None:
-            print "Invalid format string!"
+            print("Invalid format string!")
             return None
         format = kwargs['format'].replace(' ','').upper().lstrip('(').rstrip(')').split(',')
         saveformat = [f for f in format if f != 'X']
         if len(format) < ncol:
             if not silent:
-                print 'Format string has fewer columns than the file.'
+                print('Format string has fewer columns than the file.')
             ncol = len(format)
     else:
         #
@@ -72,16 +72,16 @@ def djs_readcol(name,**kwargs):
         format = list('F'*ncol)
         saveformat = format
     if debug:
-        print ','.join(format)
+        print(','.join(format))
     nread = 0
     goodlist = list()
     for l in lines[skip:nlines]:
         nread += 1
         if debug:
-            print l
+            print(l)
         if len(l) < ncol or l[0] == '#':
             if not silent:
-                print 'Skipping line %d' % (skip+nread+1,)
+                print('Skipping line {0}'.format(skip+nread+1))
             continue
         #
         # Split the line
@@ -104,7 +104,7 @@ def djs_readcol(name,**kwargs):
                         # Error, bad format, skip this line
                         #
                         if not silent:
-                            print 'Skipping line %d' % skip+nread+1
+                            print('Skipping line {0}'.format(skip+nread+1))
                         continue
                 elif saveformat[k] == 'F' or saveformat[k] == 'D':
                     try:
@@ -114,27 +114,27 @@ def djs_readcol(name,**kwargs):
                         # Error, bad format, skip this line
                         #
                         if not silent:
-                            print 'Skipping line %d' % skip+nread+1
+                            print('Skipping line {0}'.format(skip+nread+1)
                         continue
                 else:
-                    print "Whoops, bad format! How did that happen?"
+                    print("Whoops, bad format! How did that happen?")
                     continue
                 savelist.append(saved)
             if len(savelist) != len(saveformat):
                 if not silent:
-                    print "Skipping line %d" % skip+nread+1
+                    print("Skipping line {0}".format(skip+nread+1))
         else:
             #
             # Error, not enough columns
             #
             if not silent:
-                print "Skipping line %d" % skip+nread+1
+                print("Skipping line {0}".format(skip+nread+1))
             continue
         goodlist.append(savelist)
     if len(goodlist) == 0:
         raise IOError('No valid lines found for specified format')
     if not silent:
-        print "%d valid lines read." % len(goodlist)
+        print("{0} valid lines read.".format(len(goodlist)))
     #
     # Zip the good list
     #

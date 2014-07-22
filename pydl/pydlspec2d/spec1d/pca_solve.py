@@ -134,11 +134,11 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
     # fluxdict['emevecs'] = emevecs
     # fluxdict['emevals'] = emeveals
     while qdone == 0 and iiter <= maxiter:
-        # print 'starting djs_reject'
+        # print('starting djs_reject')
         outmask,qdone = djs_reject(newflux,ymodel,
             inmask=inmask,outmask=outmask,
             invvar=newivar)
-        # print 'finished with djs_reject'
+        # print('finished with djs_reject')
         #
         # Iteratively do the PCA solution
         #

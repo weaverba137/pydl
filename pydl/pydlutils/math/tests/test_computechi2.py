@@ -28,10 +28,10 @@ def test_computechi2():
     # matrix
     #
     assert (chi2.var == np.diag(chi2.covar)).all()
-    #print chi2.chi2
-    #print chi2.acoeff
-    #print chi2.covar
-    #print chi2.yfit
+    #print(chi2.chi2)
+    #print(chi2.acoeff)
+    #print(chi2.covar)
+    #print(chi2.yfit)
 #
 #if __name__ == '__main__':
 #    test_computechi2()

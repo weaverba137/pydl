@@ -7,5 +7,5 @@ def current_mjd():
     return mjd
 
 if __name__ == '__main__':
-    print current_mjd()
+    print(current_mjd())
 

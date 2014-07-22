@@ -5,6 +5,6 @@ def test_findspec():
     from .. import findspec
     #slist = findspec(infile='file.in',sdss=True)
     #if slist is not None:
-    #    print slist
+    #    print(slist)
     assert True
     return

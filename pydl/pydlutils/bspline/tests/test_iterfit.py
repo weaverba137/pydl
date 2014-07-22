@@ -31,7 +31,7 @@ def test_iterfit():
     sset,outmask = iterfit(x,y,nord=3,maxiter=0,bkspace=10)
     assert sset.npoly == 1
     assert sset.funcname == 'legendre'
-    # print sset
+    # print(sset)
     # yfit,mask = sset.value(x)
-    # print yfit
+    # print(yfit)
     # pylab.plot(x,y,'k-',x,yfit,'r-')
