@@ -2,8 +2,12 @@
 Changes
 =======
 
-0.2.3 (Current development branch)
-----------------------------------
+0.2.3 (2014-07-22)
+------------------
+
+* Added photoop/window.
+* Added stub photoop/sdssio/sdss_calib, updated sdss_score.
+* Added photoop/photoobj/unwrap_objid.
 
 0.2.2 (2014-05-07)
 ------------------
