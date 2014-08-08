@@ -6,6 +6,8 @@ Changes
 ----------------
 
 * When released, this tag will be compatible with tag XXX of package-template.
+* Avoided (but did not fix) a bug in chunks.py that occurs when operating on
+  a list of coordinates of length 1.
 
 0.2.3 (2014-07-22)
 ------------------

@@ -104,6 +104,11 @@ class chunks(object):
         return
     def rarange(self,ra,minSize):
         """Finds the offset which yields the smallest raRange & returns both.
+
+        Notes
+        -----
+
+        .. warning:: This is not (yet) well-defined for the case of only one point.
         """
         NRA = 6
         raRangeMin = 361.0

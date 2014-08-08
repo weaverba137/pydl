@@ -2,20 +2,30 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 #
-def spheregroup(ra,dec,linklength,chunksize=None,debug=False):
-    """Perform friends-of-friends grouping given ra/dec coordinates
+def spheregroup(ra,dec,linklength,chunksize=None):
+    """Perform friends-of-friends grouping given ra/dec coordinates.
 
     Parameters
     ----------
     ra, dec : ndarray
-        Arrays of coordinates to group.
+        Arrays of coordinates to group in decimal degrees.
     linklength : float
-    chunksize : float
-    debug : bool
+        Linking length for the groups in decimal degrees.
+    chunksize : float, optional
+        Break up the sphere into chunks of this size in decimal degrees.
 
     Returns
     -------
     spheregroup : tuple
+        A tuple containing the group number of each object, the multiplicity
+        of each group, the first member of each group, and the next
+        member of the group for each object.
+
+    Notes
+    -----
+    It is important that `chunksize` >= 4 * `linklength`.  This is enforced.
+    
+    .. warning:: Behavior at the poles is not well tested.
     """
     from . import chunks
     from numpy import zeros
@@ -34,11 +44,6 @@ def spheregroup(ra,dec,linklength,chunksize=None,debug=False):
     #
     chunk = chunks(ra,dec,chunksize)
     chunk.assign(ra,dec,linklength)
-    if debug:
-        print("raOffset = {0:7.3f}.".format(chunk.raOffset))
-        print(chunk.raBounds)
-        print(chunk.decBounds)
-        print(chunk.chunkList)
     #
     # Run friends-of-friends
     #

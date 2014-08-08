@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 #
-def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1,debug=False):
+def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1):
     """Match points on a sphere.
 
     Parameters
@@ -16,7 +16,6 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1,debug=Fa
     maxmatch : int, optional
         Allow up to `maxmatch` matches per coordinate.  Default 1. If set to zero,
         All possible matches will be returned.
-    debug : bool, optional
 
     Returns
     -------
@@ -24,6 +23,14 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1,debug=Fa
         A tuple containing the indices into the first set of points, the
         indices into the second set of points and the match distance in
         decimal degrees.
+
+    Notes
+    -----
+    If you have sets of coordinates that differ in size, call this function
+    with the larger list first.  This exploits the inherent asymmetry in the
+    underlying code to reduce memory use.
+
+    .. warning:: Behavior at the poles is not well tested.
     """
     import numpy as np
     from . import chunks
@@ -38,11 +45,6 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1,debug=Fa
     #
     chunk = chunks(ra1,dec1,chunksize)
     chunk.assign(ra2,dec2,matchlength)
-    if debug:
-        print("raOffset = {0:7.3f}.".format(chunk.raOffset))
-        print(chunk.raBounds)
-        print(chunk.decBounds)
-        print(chunk.chunkList)
     #
     # Create return arrays
     #
