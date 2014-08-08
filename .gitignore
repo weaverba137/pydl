@@ -11,19 +11,22 @@ __pycache__
 
 # Other generated files
 */version.py
+*/cython_version.py
 htmlcov
 .coverage
-pydl/pydl.cfg
 
 # Sphinx
-_build
-_static
-_generated
+docs/api
+docs/_build
+
+# Eclipse editor project files
+.project
+.pydevproject
+.settings
 
 # Packages/installer info
 *.egg
 *.egg-info
-api
 dist
 build
 eggs
@@ -38,11 +41,6 @@ distribute-*.tar.gz
 # Other
 .*.swp
 *~
-
-# Ignore Eclipse IDE files
-.project
-.pydevproject
-.settings
 
 # Mac OSX
 .DS_Store
