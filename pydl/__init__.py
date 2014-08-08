@@ -19,17 +19,16 @@ functions are implemented to support this.
 from ._astropy_init import *
 # ----------------------------------------------------------------------------
 
-#
-# pydl stuff starts here
-#
-from .file_lines import file_lines
-from .pcomp import pcomp
-from .smooth import smooth
-from .uniq import uniq
-from . import goddard
-from . import photoop
-from . import pydlutils
-from . import pydlspec2d
+# For egg_info test builds to pass, put package imports here.
+if not _ASTROPY_SETUP_:
+    from .file_lines import file_lines
+    from .pcomp import pcomp
+    from .smooth import smooth
+    from .uniq import uniq
+    from . import goddard
+    from . import photoop
+    from . import pydlutils
+    from . import pydlspec2d
 
 class PydlException(Exception):
     pass
