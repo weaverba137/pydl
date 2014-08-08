@@ -20,7 +20,6 @@ env:
         - PIP_WHEEL_COMMAND="pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel --use-mirrors"
     matrix:
         - SETUP_CMD='egg_info'
-        - ASTROPY_VERSION=stable NUMPY_VERSION=1.8.1 SCIPY_VERSION=0.13.3 SETUP_CMD='test'
 
 matrix:
     include:
