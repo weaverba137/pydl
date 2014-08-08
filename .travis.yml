@@ -13,11 +13,10 @@ env:
         # overidden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
         - NUMPY_VERSION=1.8
-        - SCIPY_VERSION=0.13.3
+        - SCIPY_VERSION=0.13
         - ASTROPY_VERSION=stable
         - CONDA_INSTALL='conda install -c astropy-ci-extras --yes'
         - PIP_INSTALL='pip install'
-        - PIP_WHEEL_COMMAND="pip install --find-links http://wheels.astropy.org/ --find-links http://wheels2.astropy.org/ --use-wheel --use-mirrors"
     matrix:
         - SETUP_CMD='egg_info'
 
@@ -52,11 +51,11 @@ matrix:
 
         # Try older numpy versions
         - python: 3.2
-          env: NUMPY_VERSION=1.7 SCIPY_VERSION=0.12.1 SETUP_CMD='test'
+          env: NUMPY_VERSION=1.6 SCIPY_VERSION=0.12 SETUP_CMD='test'
         - python: 2.7
-          env: NUMPY_VERSION=1.7 SCIPY_VERSION=0.12.1 SETUP_CMD='test'
-        #- python: 2.7
-        #  env: NUMPY_VERSION=1.6 SETUP_CMD='test'
+          env: NUMPY_VERSION=1.7 SCIPY_VERSION=0.12 SETUP_CMD='test'
+        - python: 2.7
+          env: NUMPY_VERSION=1.6 SCIPY_VERSION=0.12 SETUP_CMD='test'
         #- python: 2.7
         #  env: NUMPY_VERSION=1.5 SETUP_CMD='test'
 
