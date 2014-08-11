@@ -13,7 +13,7 @@ env:
         # overidden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
         - NUMPY_VERSION=1.8
-        - SCIPY_VERSION=0.13
+        - SCIPY_VERSION=0.14
         - ASTROPY_VERSION=stable
         - CONDA_INSTALL='conda install -c astropy-ci-extras --yes'
         - PIP_INSTALL='pip install'
@@ -43,9 +43,8 @@ matrix:
           env: SETUP_CMD='test'
         - python: 2.7
           env: SETUP_CMD='test'
-        # temporarily disabled due to scipy incompatibility
-        #- python: 3.2
-        #  env: SETUP_CMD='test'
+        - python: 3.2
+          env: SETUP_CMD='test'
         - python: 3.3
           env: SETUP_CMD='test'
         - python: 3.4
