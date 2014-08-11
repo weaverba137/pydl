@@ -12,6 +12,7 @@ __pycache__
 # Other generated files
 */version.py
 */cython_version.py
+pydl/pydl.cfg
 htmlcov
 .coverage
 
