@@ -12,6 +12,10 @@ This subpackage implements functions from the idlutils package.
 class PydlutilsException(Exception):
     pass
 #
+from astropy.utils.exceptions import AstropyUserWarning
+class PydlutilsUserWarning(AstropyUserWarning):
+    pass
+#
 # Import subpackages
 #
 from . import bspline

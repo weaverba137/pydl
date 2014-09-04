@@ -34,12 +34,18 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1):
     """
     import numpy as np
     from . import chunks
+    from .. import PydlutilsException
     from ...goddard.astro import gcirc
     #
     # Set default values
     #
     if chunksize is None:
         chunksize = max(4.0*matchlength,0.1)
+    #
+    # Check input size
+    #
+    if ra1.size == 1:
+        raise PydlutilsException("Change the order of the sets of coordinates!")
     #
     # Initialize chunks
     #

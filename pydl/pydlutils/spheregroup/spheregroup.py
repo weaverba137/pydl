@@ -21,22 +21,32 @@ def spheregroup(ra,dec,linklength,chunksize=None):
         of each group, the first member of each group, and the next
         member of the group for each object.
 
+    Raises
+    ------
+    PydlutilsException
+        If the array of coordinates only contains one point.
+
     Notes
     -----
     It is important that `chunksize` >= 4 * `linklength`.  This is enforced.
-    
+
     .. warning:: Behavior at the poles is not well tested.
     """
     from . import chunks
+    from .. import PydlutilsException
+    from .. import PydlutilsUserWarning
     from numpy import zeros
+    from warning import warn
     npoints = ra.size
+    if npoints == 1:
+        raise PydlutilsException("Cannot group only one point!")
     #
     # Define the chunksize
     #
     if chunksize is not None:
         if chunksize < 4.0*linklength:
             chunksize = 4.0*linklength
-            print("chunksize changed to {0:.2f}.".format(chunksize))
+            warn("chunksize changed to {0:.2f}.".format(chunksize),PydlutilsUserWarning)
     else:
         chunksize = max(4.0*linklength,0.1)
     #
