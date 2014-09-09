@@ -5,7 +5,7 @@ Changes
 0.3.0 (next tag)
 ----------------
 
-* When released, this tag will be compatible with tag XXX of package-template.
+* Use `astropy_helpers`_/v0.4.1.
 * Avoided (but did not fix) a bug in chunks.py that occurs when operating on
   a list of coordinates of length 1.
 
@@ -52,6 +52,7 @@ Changes
 * Initial tag (made in svn, not visible in git).  Visible at
   http://www.sdss3.org/svn/repo/pydl/tags/0.1 .
 
+.. _`astropy_helpers`: https://github.com/astropy/astropy-helpers
 .. _package-template: https://github.com/astropy/package-template
 .. _`git repository`: https://github.com/weaverba137/pydl
 .. _`write multiple ndarray to yanny files`: https://github.com/weaverba137/pydl/pull/3
