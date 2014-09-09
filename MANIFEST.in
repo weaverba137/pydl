@@ -3,6 +3,7 @@ include README.rst
 include ez_setup.py
 include ah_bootstrap.py
 include setup.cfg
+include pydl/tests/coveragerc
 
 recursive-include docs *
 recursive-include licenses *
