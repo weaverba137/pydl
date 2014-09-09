@@ -19,12 +19,24 @@ There are four astronomical libraries targeted:
 
 This package affiliated with the astropy_ project and is registered with PyPI_.
 
+.. image:: https://pypip.in/v/pydl/badge.png
+    :target: https://pypi.python.org/pypi/pydl
+
+.. image:: https://pypip.in/d/pydl/badge.png
+    :target: https://pypi.python.org/pypi/pydl
+
 History
 -------
 
 This package was initially developed on the SDSS-III_ `svn repository`_.  It was
 moved to the new GitHub_ repository on 2013-03-06.  The present location of
 the repository is http://github.com/weaverba137/pydl .
+
+Travis Build Status
+-------------------
+
+.. image:: https://travis-ci.org/weaverba137/pydl.png
+    :target: https://travis-ci.org/weaverba137/pydl
 
 Legal
 -----
