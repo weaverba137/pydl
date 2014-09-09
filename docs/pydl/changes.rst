@@ -5,7 +5,7 @@ Changes
 0.3.0 (next tag)
 ----------------
 
-* Use `astropy_helpers`_/v0.4.1.
+* Use `astropy_helpers`_/v0.4.x.
 * Avoided (but did not fix) a bug in chunks.py that occurs when operating on
   a list of coordinates of length 1.
 
