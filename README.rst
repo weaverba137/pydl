@@ -38,6 +38,13 @@ Travis Build Status
 .. image:: https://travis-ci.org/weaverba137/pydl.png
     :target: https://travis-ci.org/weaverba137/pydl
 
+
+Test Coverage Status
+--------------------
+
+.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.png
+    :target: https://coveralls.io/r/weaverba137/pydl
+
 Legal
 -----
 
