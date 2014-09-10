@@ -11,15 +11,16 @@ def test_uniq():
     #
     # Test pre-sorted array.
     #
-    u = uniq(items_sorted)
-    equality = u == array([ 3,  5,  7,  9, 10, 11, 12, 13])
+    u1 = uniq(items_sorted)
+    equality = u1 == array([ 3,  5,  7,  9, 10, 11, 12, 13])
     assert equality.all()
     #
     # Test arg-sorted array.
     #
-    u = uniq(items,items_argsorted)
-    equality = u == array([ 3,  5,  7,  9, 10, 11, 12, 13])
+    u2 = uniq(items,items_argsorted)
+    equality = u2 == array([ 13,  9,  8,  10, 5, 7, 11, 12])
     assert equality.all()
+    assert (items_sorted[u1] == items[u2]).all()
     #
     # Test degenerate case of all identical items.
     #
