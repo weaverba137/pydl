@@ -50,6 +50,6 @@ def uniq(x,index=None):
         q = x[index]
         indicies = (q != roll(q,-1)).nonzero()[0]
         if indicies.size > 0:
-            return index[indicies]
+            return indicies
         else:
             return array([q.size - 1,],dtype=index.dtype)

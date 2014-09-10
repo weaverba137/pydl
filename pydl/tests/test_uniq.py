@@ -4,7 +4,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 #
 def test_uniq():
     from ..uniq import uniq
-    from numpy import array, sort, argsort, ones
+    from numpy import array, sort, argsort, ones, arange
     items = array([ 1, 2, 3, 1, 5, 6, 1, 7, 3, 2, 5, 9, 11, 1 ])
     items_sorted = sort(items)
     items_argsorted = argsort(items)
@@ -27,3 +27,4 @@ def test_uniq():
     u = uniq(identical_items)
     equality = u == array([9])
     assert equality.all()
+    u = uniq(identical_items,arange(10,dtype=items.dtype))
