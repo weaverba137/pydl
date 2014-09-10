@@ -7,7 +7,7 @@ def test_hogg_iau_name():
     assert hogg_iau_name(354.120375,-0.544777778,prefix='2MASS') == '2MASS J233628.89-003241.2'
     assert hogg_iau_name(354.120375,-0.544777778,prefix='') == 'J233628.89-003241.2'
     assert hogg_iau_name(354.120375,-0.544777778,precision=0) == 'SDSS J233628.8-003241'
-    assert hogg_iau_name(354.120375,-0.544777778,precision=0) == 'SDSS J233628.890-003241.20'
+    assert hogg_iau_name(354.120375,-0.544777778,precision=2) == 'SDSS J233628.890-003241.20'
     ra = array([354.120375,7.89439,36.31915,110.44730])
     dec = array([-0.544777778,-0.35157,0.47505,39.35352])
     names = hogg_iau_name(ra,dec)
