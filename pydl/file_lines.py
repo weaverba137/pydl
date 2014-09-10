@@ -47,15 +47,13 @@ def file_lines(path,compress=False):
     lines = list()
     for filename in working_path:
         if compress:
+            #
+            # gzip in Python 2.6 can't use a context manager.
+            #
             import gzip
-            from sys import version_info
-            if version_info[0] == 2 and version_info[1] < 7:
-                f = gzip.open(filename)
-                lines.append(len(f.readlines()))
-                f.close()
-            else:
-                with gzip.open(filename) as f:
-                    lines.append(len(f.readlines()))
+            f = gzip.open(filename)
+            lines.append(len(f.readlines()))
+            f.close()
         else:
             with open(filename) as f:
                 lines.append(len(f.readlines()))

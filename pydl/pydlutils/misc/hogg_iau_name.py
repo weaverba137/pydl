@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 #
-def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
+def hogg_iau_name(ra,dec,prefix='SDSS',precision=1):
     """Properly format astronomical source names to the IAU convention.
 
     Parameters
@@ -15,8 +15,6 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
         Add this prefix to the string, defaults to 'SDSS'.
     precision : int, optional
         Display this many digits of precision on seconds, default 1.
-    debug : bool, optional
-        If ``True``, print some extra debug information.
 
     Returns
     -------
@@ -43,8 +41,6 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
     ras = 60.0*(60.0*(h-rah) - ram)
     ras = np.floor(ras*10.0**(precision+1))/10.0**(precision+1)
     rasformat = "{{2:0{0:d}.{1:d}f}}".format(precision+4, precision+1)
-    if debug:
-        print(rasformat)
     rah = rah.astype(np.int32)
     ram = ram.astype(np.int32)
     desgn = np.array(list('+'*len(dec)))
@@ -58,15 +54,9 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
     if precision == 0:
         desformat = "{6:02d}"
         des = des.astype(np.int32)
-    if debug:
-        print(desformat)
     ded = ded.astype(np.int32)
     dem = dem.astype(np.int32)
     adformat = "{{0:02d}}{{1:02d}}{ras}{{3:s}}{{4:02d}}{{5:02d}}{des}".format(ras=rasformat,des=desformat)
-    if debug:
-        print(adformat)
-        print(rah, ram, ras, desgn, ded, dem, des)
-        print(rah.dtype, ram.dtype, ras.dtype, desgn.dtype, ded.dtype, dem.dtype, des.dtype)
     #
     # The easy way doesn't work if numpy version is less than 1.7.0.  Prior to this
     # version, numpy scalars didn't support __format__.  See
@@ -93,8 +83,6 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1,debug=False):
 def main():
     from astropy.utils.compat import argparse
     parser = argparse.ArgumentParser(description='Properly format astronomical source names to the IAU convention.')
-    parser.add_argument('-d', '--debug', dest='debug', action='store_true',
-        help='Print extra debug information.')
     parser.add_argument('-P', '--precision', dest='precision', action='store',
         metavar='N', default=1, type=int, help='Digits of precision to add to the declination.')
     parser.add_argument('-p', '--prefix', dest='prefix', action='store',
@@ -105,5 +93,5 @@ def main():
         help='Declination.')
     options = parser.parse_args()
     print(hogg_iau_name(options.ra,options.dec,
-        prefix=options.prefix,precision=options.precision,debug=options.debug))
+        prefix=options.prefix,precision=options.precision))
     return

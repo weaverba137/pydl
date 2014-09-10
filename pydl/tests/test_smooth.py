@@ -38,3 +38,5 @@ def test_smooth():
     assert s.shape == (100,)
     s_edge = smooth(y,5,True)
     assert s_edge.shape == (100,)
+    s_w = smooth(y,1)
+    assert (s_w == y).all()
