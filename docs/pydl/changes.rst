@@ -1,14 +1,15 @@
-=======
-Changes
-=======
+==============
+pydl Changelog
+==============
 
-0.3.0 (next tag)
-----------------
+0.3.0 (unreleased)
+------------------
 
-* Use `astropy_helpers`_/v0.4.x.
+* Use `astropy_helpers`_/v0.4.2.
 * Avoided (but did not fix) a bug in chunks.py that occurs when operating on
   a list of coordinates of length 1.
 * Fixed a typo in bspline.py, added documentation.
+* Simplify documentation files.
 
 0.2.3 (2014-07-22)
 ------------------

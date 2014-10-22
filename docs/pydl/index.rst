@@ -29,8 +29,8 @@ Other Notes
    changes.rst
    todo.rst
 
-API
----
+Base API
+--------
 
 .. automodapi:: pydl
    :no-inheritance-diagram:

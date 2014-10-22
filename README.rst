@@ -21,9 +21,21 @@ This package affiliated with the astropy_ project and is registered with PyPI_.
 
 .. image:: https://pypip.in/v/pydl/badge.png
     :target: https://pypi.python.org/pypi/pydl
+    :alt: PyPI Badge
 
 .. image:: https://pypip.in/d/pydl/badge.png
     :target: https://pypi.python.org/pypi/pydl
+    :alt: PyPI Downloads
+
+Full Documentation
+------------------
+
+Please visit `pydl on Read the Docs`_
+
+.. image:: https://readthedocs.org/projects/pydl/badge/?version=latest
+    :target: http://pydl.readthedocs.org/en/latest/
+    :alt: Documentation Status
+
 
 History
 -------
@@ -37,6 +49,7 @@ Travis Build Status
 
 .. image:: https://travis-ci.org/weaverba137/pydl.png
     :target: https://travis-ci.org/weaverba137/pydl
+    :alt: Travis Build Status
 
 
 Test Coverage Status
@@ -44,6 +57,7 @@ Test Coverage Status
 
 .. image:: https://coveralls.io/repos/weaverba137/pydl/badge.png
     :target: https://coveralls.io/r/weaverba137/pydl
+    :alt: Test Coverage Status
 
 Legal
 -----
@@ -60,6 +74,7 @@ Legal
 .. _photoop: http://www.sdss3.org/svn/repo/photoop/trunk/
 .. _astropy: http://www.astropy.org
 .. _PyPI: https://pypi.python.org/pypi/pydl/
+.. _`pydl on Read the Docs`: http://pydl.readthedocs.org/en/latest/
 .. _SDSS-III: http://www.sdss3.org
 .. _`svn repository`: http://www.sdss3.org/dr10/software/products.php
 .. _GitHub: http://github.com

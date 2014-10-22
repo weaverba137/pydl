@@ -5,12 +5,16 @@ def cholesky_solve(a,bb):
 
     Parameters
     ----------
-    a
-    bb
+    a : ndarray
+        A in Ax=b.
+    bb : ndarray
+        b in Ax=b
 
     Returns
     -------
-    cholesky_solve :
+    cholesky_solve : tuple
+        A tuple containing the status and the result of the solution.  The
+        status is always -1.
     """
     import numpy as np
     b = bb.copy()
@@ -25,4 +29,3 @@ def cholesky_solve(a,bb):
     for j in range(n-1,-1,-1):
         b[j] = (b[j] - np.sum(a[spot,j] * b[j+spot]))/a[0,j]
     return (-1,b)
-
