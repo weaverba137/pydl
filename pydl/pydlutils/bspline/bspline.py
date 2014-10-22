@@ -155,11 +155,16 @@ class bspline(object):
             a = errb[1]
         else:
             yfit,foo = self.value(xdata,x2=x2,action=a1,upper=upper,lower=lower)
-            return (self.maskpoints(errb),yfit)
+            return (self.maskpoints(errb[0]),yfit)
         errs  = cholesky_solve(a,beta)
         if isinstance(errs[0],int) and errs[0] == -1:
             sol = errs[1]
         else:
+            #
+            # It is not possible for this to get called, because cholesky_solve
+            # has only one return statement, & that statement guarantees that
+            # errs[0] == -1
+            #
             yfit,foo = self.value(xdata,x2=x2,action=a1,upper=upper,lower=lower)
             return (self.maskpoints(errs),yfit)
         if self.npoly > 1:
