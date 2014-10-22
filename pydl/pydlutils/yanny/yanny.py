@@ -181,8 +181,8 @@ class yanny(dict):
             The line with any trailing comment and any residual white space
             trimmed off.
 
-        Bugs
-        ----
+        Notes
+        -----
         This may fail in certain pathological cases, for example if a
         real trailing comment contains a single double-quote::
 
@@ -813,8 +813,8 @@ class yanny(dict):
         * the key 'symbols' that is part of the yanny object will not be present
         * a simple yanny file can be read with no further processing
 
-        Example
-        -------
+        Examples
+        --------
 
         Read a yanny file and return only the pairs::
 

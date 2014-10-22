@@ -8,8 +8,8 @@ from __future__ import print_function
 def hmf_gal(**kwargs):
     """Wrapper on hmf_solve analogous to pca_gal and pca_solve.
 
-    Keyword Parameters
-    ------------------
+    Parameters
+    ----------
     inputfile : str, optional
         The list of spectra to use.  If not specified, $IDLSPEC2D_DIR/tempates/eigeninput_gal.dat will be used.
     wavemin : float, optional
@@ -30,13 +30,11 @@ def hmf_gal(**kwargs):
     -------
     None
 
-    Side Effects
-    ------------
+    Notes
+    -----
     Creates spEigenGal-MJD.fits and some associated QA plots.  These files
     will be created in the same directory as the inputfile (see above).
 
-    Notes
-    -----
     The ``$RUN2D`` environment variable must be set.  This routine will search
     for a pickle file of the form ``eigeninput_gal_$RUN2D.dump``.  If this file
     is not found, it will be created.
@@ -363,4 +361,3 @@ def main():
     hmf_gal(inputfile=options.inputfile,dump=options.dump,K=options.K,epsilon=options.epsilon,
         nonnegative=options.nonnegative,flux=options.flux)
     return
-

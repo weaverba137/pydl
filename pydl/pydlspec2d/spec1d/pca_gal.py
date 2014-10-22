@@ -8,8 +8,8 @@ from __future__ import print_function
 def pca_gal(**kwargs):
     """Wrapper on pca_solve to handle galaxy eigenspectra.
 
-    Keyword Parameters
-    ------------------
+    Parameters
+    ----------
     inputfile : str, optional
         The list of spectra to use.  If not specified, $IDLSPEC2D_DIR/tempates/eigeninput_gal.dat will be used.
     wavemin : float, optional
@@ -28,8 +28,8 @@ def pca_gal(**kwargs):
     -------
     None
 
-    Side Effects
-    ------------
+    Notes
+    -----
     Creates spEigenGal-MJD.fits and some associated QA plots.
     """
     import os

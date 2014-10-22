@@ -18,8 +18,8 @@ def unwrap_objid(objid):
         A record array with the same length as objid, with the columns
         'run', 'camcol', 'field', 'id', 'rerun', 'skyversion'.
 
-    Note
-    ----
+    Notes
+    -----
     For historical reasons, the inverse of this function,
     pydl.pydlutils.sdss.sdss_objid() is not in the same namespace as this
     function.
@@ -29,7 +29,7 @@ def unwrap_objid(objid):
     >>> from numpy import array
     >>> from pydl.photoop.photoobj import unwrap_objid
     >>> unwrap_objid(array([1237661382772195474]))
-    rec.array([(2, 301, 3704, 3, 91, 146)], 
+    rec.array([(2, 301, 3704, 3, 91, 146)],
           dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('field', '<i4'), ('id', '<i4')])
     """
     from numpy import bitwise_and, int64, recarray, string_
