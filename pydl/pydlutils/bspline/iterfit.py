@@ -3,21 +3,31 @@
 from __future__ import print_function
 #
 def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs):
-    """Iteratively fit a bspline set to data.
+    """Iteratively fit a b-spline set to data, with rejection.
 
     Parameters
     ----------
-    xdata
-    ydata
-    invvar
-    upper
-    lower
-    x2
-    maxiter
+    xdata : ndarray
+        Independent variable.
+    ydata : ndarray
+        Dependent variable.
+    invvar : ndarray
+        Inverse variance of `ydata`.  If not set, it will be calculated based
+        on the standard deviation.
+    upper : int or float
+        Upper rejection threshold in units of sigma, defaults to 5 sigma.
+    lower : int or float
+        Lower rejection threshold in units of sigma, defaults to 5 sigma.
+    x2 : ndarray, optional
+        Orthogonal dependent variable for 2d fits.
+    maxiter : int, optional
+        Maximum number of rejection iterations, default 10.  Set this to
+        zero to disable rejection.
 
     Returns
     -------
     iterfit : tuple
+        A tuple containing the fitted bspline object and an output mask.
     """
     import numpy as np
     from .bspline import bspline
@@ -123,4 +133,3 @@ def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs)
     temp = yfit
     yfit[xsort] = temp
     return (sset,outmask)
-

@@ -8,7 +8,7 @@ Changes
 * Use `astropy_helpers`_/v0.4.x.
 * Avoided (but did not fix) a bug in chunks.py that occurs when operating on
   a list of coordinates of length 1.
-* Fixed a typo in bspline.py.
+* Fixed a typo in bspline.py, added documentation.
 
 0.2.3 (2014-07-22)
 ------------------

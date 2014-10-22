@@ -110,17 +110,30 @@ class bspline(object):
     #
     #
     def fit(self,xdata,ydata,invvar,x2=None):
-        """
+        """Calculate a B-spline in the least-squares sense.
+
+        Fit is based on two variables: x which is sorted and spans a large range
+        where bkpts are required y which can be described with a low order
+        polynomial.
+
         Parameters
         ----------
-        xdata
-        ydata
-        invvar
-        x2
+        xdata : ndarray
+            Independent variable.
+        ydata : ndarray
+            Dependent variable.
+        invvar : ndarray
+            Inverse variance of `ydata`.
+        x2 : ndarray, optional
+            Orthogonal dependent variable for 2d fits.
 
         Returns
         -------
-        fit
+        fit : tuple
+            A tuple containing an integer error code, and the evaluation of the
+            b-spline at the input values.  An error code of -2 is a failure,
+            -1 indicates dropped breakpoints, 0 is success, and positive
+            integers indicate ill-conditioned breakpoints.
         """
         from . import cholesky_band, cholesky_solve
         goodbk = self.mask[self.nord:]
@@ -166,7 +179,7 @@ class bspline(object):
             # errs[0] == -1
             #
             yfit,foo = self.value(xdata,x2=x2,action=a1,upper=upper,lower=lower)
-            return (self.maskpoints(errs),yfit)
+            return (self.maskpoints(errs[0]),yfit)
         if self.npoly > 1:
             self.icoeff[:,goodbk] = np.array(a[0,0:nfull].reshape(self.npoly,nn),dtype=a.dtype)
             self.coeff[:,goodbk] = np.array(sol[0:nfull].reshape(self.npoly,nn),dtype=sol.dtype)
@@ -179,15 +192,22 @@ class bspline(object):
     #
     #
     def action(self,x,x2=None):
-        """
+        """Construct banded bspline matrix, with dimensions [ndata, bandwidth].
+
         Parameters
         ----------
-        x
-        x2
+        x : ndarray
+            Independent variable.
+        x2 : ndarray, optional
+            Orthogonal dependent variable for 2d fits.
 
         Returns
         -------
-        action
+        action : tuple
+            A tuple containing the b-spline action matrix; the 'lower' parameter,
+            a list of pixel positions, each corresponding to the first
+            occurence of position greater than breakpoint indx; and 'upper',
+            Same as lower, but denotes the upper pixel positions.
         """
         from ... import uniq
         from ...goddard.math import fchebyshev, flegendre
@@ -237,14 +257,20 @@ class bspline(object):
     #
     #
     def intrv(self,x):
-        """
+        """Find the segment between breakpoints which contain each value in the array x.
+
+        The minimum breakpoint is nbkptord -1, and the maximum
+        is nbkpt - nbkptord - 1.
+
         Parameters
         ----------
-        x
+        x : ndarray
+            Data values, assumed to be monotonically increasing.
 
         Returns
         -------
-        intrv
+        intrv : ndarray
+            Position of array elements with respect to breakpoints.
         """
         gb = self.breakpoints[self.mask]
         n = gb.size - self.nord
@@ -292,18 +318,28 @@ class bspline(object):
     #
     #
     def value(self,x,x2=None,action=None,lower=None,upper=None):
-        """
+        """Evaluate a bspline at specified values.
+
         Parameters
         ----------
-        x
-        x2
-        action
-        lower
-        upper
+        x : ndarray
+            Independent variable.
+        x2 : ndarray, optional
+            Orthogonal dependent variable for 2d fits.
+        action : ndarray, optional
+            Action matrix to use.  If not supplied it is calculated.
+        lower : ndarray, optional
+            If the action parameter is supplied, this parameter must also
+            be supplied.
+        upper : ndarray, optional
+            If the action parameter is supplied, this parameter must also
+            be supplied.
 
         Returns
         -------
-        value
+        value : tuple
+            A tuple containing the results of the bspline evaluation and a
+            mask indicating where the evaluation was good.
         """
         xsort = x.argsort()
         xwork = x[xsort]
@@ -351,14 +387,24 @@ class bspline(object):
     #
     #
     def maskpoints(self,err):
-        """
+        """Perform simple logic of which breakpoints to mask.
+
         Parameters
         ----------
-        err
+        err : ndarray
+            The list of indexes returned by the cholesky routines.
 
         Returns
         -------
-        maskpoints
+        maskpoints : int
+            An integer indicating the results of the masking.  -1 indicates
+            that the error points were successfully masked.  -2 indicates
+            failure; the calculation should be aborted.
+
+        Notes
+        -----
+        The mask attribute is modified, assuming it is possible to create the
+        mask.
         """
         nbkpt = self.mask.sum()
         if nbkpt <= 2*self.nord:
