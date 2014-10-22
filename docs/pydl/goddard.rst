@@ -5,18 +5,18 @@ Goddard Utilities (`pydl.goddard`)
 ==================================
 
 Introduction
-------------
+++++++++++++
 
 This is a placeholder for Goddard Utilities documentation.
 
 Base API
---------
+++++++++
 
 .. automodapi:: pydl.goddard
    :no-inheritance-diagram:
 
 Components
-----------
+++++++++++
 
 .. _pydl.goddard.astro:
 

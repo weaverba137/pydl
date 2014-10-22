@@ -5,18 +5,18 @@ SDSS Imaging Data  (`pydl.photoop`)
 ===================================
 
 Introduction
-------------
+++++++++++++
 
 This is a placeholder for photoop documentation.
 
 Base API
---------
+++++++++
 
 .. automodapi:: pydl.photoop
     :no-inheritance-diagram:
 
 Components
-----------
+++++++++++
 
 .. _pydl.photoop.photoobj:
 

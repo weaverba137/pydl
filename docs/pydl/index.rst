@@ -3,12 +3,12 @@ pydl
 ====
 
 Introduction
-------------
+++++++++++++
 
 This is the documentation for pydl.
 
 Components
-----------
+++++++++++
 
 Most of the functionality of pydl is in sub-packages.
 
@@ -21,7 +21,7 @@ Most of the functionality of pydl is in sub-packages.
    pydlutils.rst
 
 Other Notes
------------
++++++++++++
 
 .. toctree::
    :maxdepth: 1
@@ -30,7 +30,7 @@ Other Notes
    todo.rst
 
 Base API
---------
+++++++++
 
 .. automodapi:: pydl
    :no-inheritance-diagram:

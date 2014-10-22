@@ -5,19 +5,19 @@ SDSS Utilities (`pydl.pydlutils`)
 =================================
 
 Introduction
-------------
+++++++++++++
 
 This is a placeholder for pydlutils documentation.
 
 
 Base API
---------
+++++++++
 
 .. automodapi:: pydl.pydlutils
     :no-inheritance-diagram:
 
 Components
-----------
+++++++++++
 
 .. _pydl.pydlutils.bspline:
 
