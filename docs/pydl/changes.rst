@@ -5,7 +5,7 @@ pydl Changelog
 0.3.0 (unreleased)
 ------------------
 
-* Use `astropy_helpers`_/v0.4.2.
+* Use `astropy_helpers`_/v0.4.3, package-template_/v0.4.1.
 * Avoided (but did not fix) a bug in chunks.py that occurs when operating on
   a list of coordinates of length 1.
 * Fixed a typo in bspline.py, added documentation.
