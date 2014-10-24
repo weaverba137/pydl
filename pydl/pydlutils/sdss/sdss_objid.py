@@ -52,35 +52,38 @@ def sdss_objid(run,camcol,field,objnum,rerun=301,skyversion=None):
     if skyversion is None:
         skyversion = default_skyversion()
     if isinstance(run,int):
-        #
-        # Assume all inputs are integers & promote to arrays.
-        #
         run = array([run],dtype=int64)
+    if isinstance(camcol,int):
         camcol = array([camcol],dtype=int64)
+    if isinstance(field,int):
         field = array([field],dtype=int64)
+    if isinstance(objnum,int):
         objnum = array([objnum],dtype=int64)
-        rerun = array([rerun],dtype=int64)
-        skyversion = array([skyversion],dtype=int64)
-        firstfield = array([0],dtype=int64)
-    else:
-        #
-        # Check that all inputs have the same shape.
-        #
+    if isinstance(rerun,int):
         if rerun == 301:
             rerun = zeros(run.shape,dtype=int64) + 301
+        else:
+            rerun = array([rerun],dtype=int64)
+    if isinstance(skyversion,int):
         if skyversion == default_skyversion():
             skyversion = zeros(run.shape,dtype=int64) + default_skyversion()
-        firstfield = zeros(run.shape,dtype=int64)
-        if run.shape != camcol.shape:
-            raise ValueError("camcol.shape does not match run.shape!")
-        if run.shape != field.shape:
-            raise ValueError("field.shape does not match run.shape!")
-        if run.shape != objnum.shape:
-            raise ValueError("id.shape does not match run.shape!")
-        if run.shape != rerun.shape:
-            raise ValueError("id.shape does not match run.shape!")
-        if run.shape != skyversion.shape:
-            raise ValueError("id.shape does not match run.shape!")
+        else:
+            skyversion = array([skyversion],dtype=int64)
+
+    #
+    # Check that all inputs have the same shape.
+    #
+    firstfield = zeros(run.shape,dtype=int64)
+    if run.shape != camcol.shape:
+        raise ValueError("camcol.shape does not match run.shape!")
+    if run.shape != field.shape:
+        raise ValueError("field.shape does not match run.shape!")
+    if run.shape != objnum.shape:
+        raise ValueError("objnum.shape does not match run.shape!")
+    if run.shape != rerun.shape:
+        raise ValueError("rerun.shape does not match run.shape!")
+    if run.shape != skyversion.shape:
+        raise ValueError("skyversion.shape does not match run.shape!")
     #
     # Check ranges of parameters
     #

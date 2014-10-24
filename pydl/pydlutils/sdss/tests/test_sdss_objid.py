@@ -14,6 +14,18 @@ def test_sdss_objid():
     # Exceptions
     #
     with raises(ValueError):
+        objid = sdss_objid(run,3,91,146)
+    with raises(ValueError):
+        objid = sdss_objid(3704,camcol,91,146)
+    with raises(ValueError):
+        objid = sdss_objid(3704,3,field,146)
+    with raises(ValueError):
+        objid = sdss_objid(3704,3,91,obj)
+    with raises(ValueError):
+        objid = sdss_objid(3704,3,91,146,rerun=array([137,301]))
+    with raises(ValueError):
+        objid = sdss_objid(3704,3,91,146,skyversion=array([2,3]))
+    with raises(ValueError):
         objid = sdss_objid(3704,3,91,146,skyversion=-2)
     with raises(ValueError):
         objid = sdss_objid(3704,3,91,146,skyversion=16)
