@@ -3,7 +3,6 @@
 def test_computechi2():
     import numpy as np
     from .. import computechi2
-    #from pydl.pydlutils.math import computechi2
     x = np.arange(20)
     y = np.array([6.6198438, 1.3491303, 0.41035045, 9.4013375, 4.1103360,
         4.3522868, 4.6338078, 4.7400367, 5.1860726, 5.1082748,
