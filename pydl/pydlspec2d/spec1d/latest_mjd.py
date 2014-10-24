@@ -3,7 +3,7 @@
 from astropy.extern import six
 
 def latest_mjd(plate,**kwargs):
-    """Find the most recent MJD associated with a plate
+    """Find the most recent MJD associated with a plate.
 
     Parameters
     ----------

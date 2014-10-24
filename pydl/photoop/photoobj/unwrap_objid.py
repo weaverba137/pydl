@@ -35,8 +35,8 @@ def unwrap_objid(objid):
     rec.array([(2, 301, 3704, 3, 91, 146)],
           dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('frame', '<i4'), ('id', '<i4')])
     """
-    from numpy import bitwise_and, int64, recarray, string_
-    if objid.dtype.type is string_:
+    from numpy import bitwise_and, int64, recarray, string_, unicode_
+    if objid.dtype.type is string_ or objid.dtype.type is unicode_:
         tempobjid = objid.astype(int64)
     elif objid.dtype.type is int64:
         tempobjid = objid.copy()
