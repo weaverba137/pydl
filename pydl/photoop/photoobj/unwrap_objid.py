@@ -16,7 +16,7 @@ def unwrap_objid(objid):
     -------
     unwrap_objid : numpy.recarray
         A record array with the same length as objid, with the columns
-        'run', 'camcol', 'field', 'id', 'rerun', 'skyversion'.
+        'run', 'camcol', 'frame', 'id', 'rerun', 'skyversion'.
 
     Notes
     -----
@@ -24,13 +24,16 @@ def unwrap_objid(objid):
     pydl.pydlutils.sdss.sdss_objid() is not in the same namespace as this
     function.
 
+    'frame' is used instead of 'field' because record arrays have a method
+    of the same name.
+
     Examples
     --------
     >>> from numpy import array
     >>> from pydl.photoop.photoobj import unwrap_objid
     >>> unwrap_objid(array([1237661382772195474]))
     rec.array([(2, 301, 3704, 3, 91, 146)],
-          dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('field', '<i4'), ('id', '<i4')])
+          dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('frame', '<i4'), ('id', '<i4')])
     """
     from numpy import bitwise_and, int64, recarray, string_
     if objid.dtype.type is string_:
@@ -40,12 +43,12 @@ def unwrap_objid(objid):
     else:
         raise ValueError('Unrecognized type for objid!')
     unwrap = recarray(objid.shape,dtype=[('skyversion','i4'),('rerun','i4'),('run','i4'),
-        ('camcol','i4'),('field','i4'),('id','i4')])
+        ('camcol','i4'),('frame','i4'),('id','i4')])
     unwrap.skyversion = bitwise_and(tempobjid >> 59, 2**4 - 1)
     unwrap.rerun = bitwise_and(tempobjid >> 48, 2**11 - 1)
     unwrap.run = bitwise_and(tempobjid >> 32, 2**16 - 1)
     unwrap.camcol = bitwise_and(tempobjid >> 29, 2**3 - 1)
     # unwrap.firstfield = bitwise_and(tempobjid >> 28, 2**1 - 1)
-    unwrap.field = bitwise_and(tempobjid >> 16, 2**12 - 1)
+    unwrap.frame = bitwise_and(tempobjid >> 16, 2**12 - 1)
     unwrap.id = bitwise_and(tempobjid, 2**16 - 1)
     return unwrap
