@@ -64,8 +64,8 @@ def test_djs_median():
     # Degenerate cases that fall back on numpy.median().
     #
     assert_allclose(median(data),djs_median(data))
-    assert_allclose(median(data2,axis=0),djs_median(data,dimension=0))
-    assert_allclose(median(data2,axis=1),djs_median(data,dimension=1))
+    assert_allclose(median(data2,axis=0),djs_median(data2,dimension=0))
+    assert_allclose(median(data2,axis=1),djs_median(data2,dimension=1))
     #
     # Test widths.
     #
