@@ -29,14 +29,14 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     ['BRIGHTGAL', 'BLAZGX', 'ELG']
     """
     from . import maskbits
+    from numpy import uint64
     if maskbits is None:
         from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     flagu = flagname.upper()
-    bits = list()
-    for bit in range(64):
-        if (flagvalue & (1 << bit)) != 0:
-            bits.append(bit)
+    flagvaluint = uint64(flagvalue)
+    one = uint64(1)
+    bits = [bit for bit in range(64) if (flagvaluint & (one << uint64(bit))) != 0]
     retval = list()
     for bit in bits:
         try:
@@ -48,4 +48,3 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     if concat:
         retval = ' '.join(retval)
     return retval
-

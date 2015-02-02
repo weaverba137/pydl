@@ -10,6 +10,7 @@ pydl Changelog
   a list of coordinates of length 1.
 * Fixed a typo in bspline.py, added documentation.
 * Simplify documentation files.
+* sdss_flagname now accepts more types of numeric input.
 
 0.2.3 (2014-07-22)
 ------------------
