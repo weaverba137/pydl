@@ -2,7 +2,7 @@
 pydl Changelog
 ==============
 
-0.3.0 (unreleased)
+0.3.0 (2015-02-20)
 ------------------
 
 * Use `astropy_helpers`_/v0.4.3, package-template_/v0.4.1.
@@ -11,6 +11,7 @@ pydl Changelog
 * Fixed a typo in bspline.py, added documentation.
 * Simplify documentation files.
 * sdss_flagname now accepts more types of numeric input.
+* Added credits file.
 
 0.2.3 (2014-07-22)
 ------------------
