@@ -59,6 +59,12 @@ Test Coverage Status
     :target: https://coveralls.io/r/weaverba137/pydl
     :alt: Test Coverage Status
 
+License
+-------
+
+Pydl is free software licensed under a 3-clause BSD-style license. For details see
+the ``licenses/LICENSE.rst`` file.
+
 Legal
 -----
 

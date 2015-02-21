@@ -28,6 +28,7 @@ Other Notes
 
    changes.rst
    todo.rst
+   credits.rst
 
 Base API
 ++++++++
