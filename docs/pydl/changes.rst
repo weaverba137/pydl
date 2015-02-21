@@ -2,6 +2,11 @@
 pydl Changelog
 ==============
 
+0.3.1 (unreleased)
+------------------
+
+* Placeholder for next tag.
+
 0.3.0 (2015-02-20)
 ------------------
 
