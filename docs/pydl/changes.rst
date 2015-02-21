@@ -5,7 +5,7 @@ pydl Changelog
 0.3.1 (unreleased)
 ------------------
 
-* Placeholder for next tag.
+* Remove Python/3.2 tests.
 
 0.3.0 (2015-02-20)
 ------------------
