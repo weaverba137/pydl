@@ -4,11 +4,11 @@ def window_read(**kwargs):
     """Read window files in $PHOTO_RESOLVE.
     """
     from os import getenv
-    from os.path import join
+    from os.path import exists, join
     from . import window_score
     from .. import PhotoopException
-    from ...goddard.fits import mrdfits
     from ...pydlutils.mangle import set_use_caps
+    from astropy.io import fits
     import numpy as np
     resolve_dir = getenv('PHOTO_RESOLVE')
     if resolve_dir is None:
@@ -18,31 +18,39 @@ def window_read(**kwargs):
     r = dict()
     if 'flist' in kwargs:
         if 'rescore' in kwargs:
-            flist,h = mrdfits(join(resolve_dir,'window_flist_rescore.fits'),1,**kwargs)
-            if flist is None:
+            flist_file = join(resolve_dir,'window_flist_rescore.fits')
+            if not exists(rescore_file):
                 #
                 # This will be called if window_flist_rescore.fits doesn't exist.
                 #
                 window_score()
-                flist,h = mrdfits(join(resolve_dir,'window_flist_rescore.fits'),1,**kwargs)
         else:
-            flist,h = mrdfits(join(resolve_dir,'window_flist.fits'),1,**kwargs)
-        r['flist'] = flist
+            flist_file = join(resolve_dir,'window_flist.fits')
+        with fits.open(rescore_file) as fit:
+            r['flist'] = fit[1].data
     if 'blist' in kwargs or 'balkans' in kwargs:
-        r['blist'],h = mrdfits(join(resolve_dir,'window_blist.fits'),1,**kwargs)
+        blist_file = join(resolve_dir,'window_blist.fits')
+        with fits.open(balkan_file) as fit:
+            r['blist'] = fit[1].data
     if 'bcaps' in kwargs or 'balkans' in kwargs:
-        r['bcaps'],h = mrdfits(join(resolve_dir,'window_bcaps.fits'),1,**kwargs)
+        bcaps_file = join(resolve_dir,'window_bcaps.fits')
+        with fits.open(bcaps_file) as fit:
+            r['bcaps'] = fit[1].data
     if 'findx' in kwargs:
-        r['findx'],h = mrdfits(join(resolve_dir,'window_findx.fits'),1,**kwargs)
+        findx_file = join(resolve_dir,'window_findx.fits')
+        with fits.open(findx_file) as fit:
+            r['findx'] = fit[1].data
     if 'bindx' in kwargs:
-        r['bindx'],h = mrdfits(join(resolve_dir,'window_bindx.fits'),1,**kwargs)
+        bindx_file = join(resolve_dir,'window_bindx.fits')
+        with fits.open(bindx_file) as fit:
+            r['bindx'] = fit[1].data
     if 'balkans' in kwargs:
         #
         # Copy blist data to balkans
         #
         r['balkans'] = r['blist'].copy()
         r['balkans']['caps'] = { 'X':list(), 'CM':list() }
-        r['balkans']['use_caps'] = pylab.zeros(r['balkans']['ICAP'].shape,dtype=pylab.uint64)
+        r['balkans']['use_caps'] = np.zeros(r['balkans']['ICAP'].shape,dtype=np.uint64)
         if 'blist' not in kwargs:
             del r['blist']
         #

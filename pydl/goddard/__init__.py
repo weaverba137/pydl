@@ -15,7 +15,6 @@ This subpackage contains the Goddard utilities.
 # Import subpackages
 #
 from . import astro
-#from . import fits
 from . import math
 from . import misc
 #
