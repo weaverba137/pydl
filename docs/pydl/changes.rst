@@ -2,10 +2,13 @@
 pydl Changelog
 ==============
 
-0.3.1 (unreleased)
+0.4.0 (unreleased)
 ------------------
 
+* Use `astropy_helpers`_/v1.0.2, package-template_/v1.0.
+* Remove some old FITS code that ``astropy.io.fits`` makes moot.
 * Remove Python/3.2 tests.
+
 
 0.3.0 (2015-02-20)
 ------------------
