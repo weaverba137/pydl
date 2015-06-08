@@ -11,9 +11,6 @@ import tempfile
 import time
 import warnings
 
-from ... import fits
-
-
 class YannyTestCase(object):
     """Based on astropy.io.fits.tests.FitsTestCase."""
     save_temp = False
