@@ -35,9 +35,9 @@ def get_juldate(seconds=None):
 #
 #
 #
-def main(args=None):
+def get_juldate_main():
     """Allow this module to be run in scripts.
     """
     jd = get_juldate()
     print(jd)
-    return
+    return 0
