@@ -242,7 +242,7 @@ def pca_gal(**kwargs):
 #
 #
 #
-def pca_gal_main():
+def pca_gal_main(): # pragma: no cover
     """Gets called when the script is executed.
 
     Parameters

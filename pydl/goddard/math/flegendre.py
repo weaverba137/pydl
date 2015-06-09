@@ -1,12 +1,14 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 def flegendre(x,m):
-    """Compute a Legendre polynomial.
+    """Compute the first `m` Legendre polynomials.
 
     Parameters
     ----------
     x : array_like
     m : int
+        The number of Legendre polynomials to compute.  For example, if
+        ``m = 3``, P_0(x), P_1(x) and P_2(x) will be computed.
 
     Returns
     -------
@@ -19,7 +21,7 @@ def flegendre(x,m):
     else:
         n = 1
     if m < 1:
-        raise ValueError('Order of Legendre polynomial must be at least 1.')
+        raise ValueError('Number of Legendre polynomials must be at least 1.')
     leg = np.ones((m,n),dtype='d')
     if m >= 2:
         leg[1,:] = x
@@ -27,4 +29,3 @@ def flegendre(x,m):
         for k in range(2,m):
             leg[k,:] = np.polyval(legendre(k),x)
     return leg
-

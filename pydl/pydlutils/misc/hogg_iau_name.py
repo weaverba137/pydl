@@ -80,7 +80,7 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1):
 #
 #
 #
-def hogg_iau_name_main():
+def hogg_iau_name_main(): # pragma: no cover
     from astropy.utils.compat import argparse
     parser = argparse.ArgumentParser(description='Properly format astronomical source names to the IAU convention.')
     parser.add_argument('-P', '--precision', dest='precision', action='store',
