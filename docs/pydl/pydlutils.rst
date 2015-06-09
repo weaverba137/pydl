@@ -25,9 +25,6 @@ API
 .. automodapi:: pydl.pydlutils.coord
     :no-inheritance-diagram:
 
-.. automodapi:: pydl.pydlutils.fits
-    :no-inheritance-diagram:
-
 .. automodapi:: pydl.pydlutils.image
     :no-inheritance-diagram:
 
