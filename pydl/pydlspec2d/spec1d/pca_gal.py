@@ -242,7 +242,7 @@ def pca_gal(**kwargs):
 #
 #
 #
-def main():
+def pca_gal_main():
     """Gets called when the script is executed.
 
     Parameters
@@ -288,4 +288,4 @@ def main():
     options = parser.parse_args()
     pca_gal(inputfile=options.inputfile,dump=options.dump,
         flux=options.flux)
-    return
+    return 0

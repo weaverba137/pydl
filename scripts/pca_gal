@@ -1,7 +1,0 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""An example command-line script. Simply calls pca_gal()."""
-#
-from pydl.pydlspec2d.spec1d.pca_gal import main
-#
-main()
