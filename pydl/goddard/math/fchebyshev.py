@@ -8,7 +8,7 @@ def fchebyshev(x,m):
     x : array_like
     m : int
         The number of Chebyshev polynomials to compute.  For example, if
-        ``m = 3``, T_0(x), T_1(x) and The_2(x) will be computed.
+        ``m = 3``, T_0(x), T_1(x) and T_2(x) will be computed.
 
     Returns
     -------
