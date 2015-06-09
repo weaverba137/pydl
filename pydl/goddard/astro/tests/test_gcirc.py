@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+import pytest
+#
 def test_gcirc():
     from .. import gcirc
     import numpy as np
@@ -17,9 +19,24 @@ def test_gcirc():
     delra2 =  (ra2-ra1)/2.0
     sindis = np.sqrt( np.sin(deldec2)*np.sin(deldec2) +
         np.cos(dec1)*np.cos(dec2)*np.sin(delra2)*np.sin(delra2) )
-    dis = 2.0*arcsin(sindis)
+    dis = 2.0*np.arcsin(sindis)
     #
     # units = 0
     #
     d0 = gcirc(ra1,dec1,ra2,dec2,units=0)
     assert np.allclose(d0,dis)
+    #
+    # units = 2
+    #
+    d0 = gcirc(np.rad2deg(ra1)/15.0,np.rad2deg(dec1),np.rad2deg(ra2)/15.0,np.rad2deg(dec2),units=1)
+    assert np.allclose(d0,np.rad2deg(dis)*3600.0)
+    #
+    # units = 2
+    #
+    d0 = gcirc(np.rad2deg(ra1),np.rad2deg(dec1),np.rad2deg(ra2),np.rad2deg(dec2),units=2)
+    assert np.allclose(d0,np.rad2deg(dis)*3600.0)
+    #
+    # Units = whatever
+    #
+    with pytest.raises(ValueError):
+        d0 = gcirc(ra1,dec1,ra2,dec2,units=5)

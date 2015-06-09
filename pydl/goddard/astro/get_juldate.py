@@ -35,7 +35,7 @@ def get_juldate(seconds=None):
 #
 #
 #
-def get_juldate_main():
+def get_juldate_main(): # pragma: no cover
     """Allow this module to be run in scripts.
     """
     jd = get_juldate()
