@@ -4,8 +4,5 @@ def get_package_data():
     # Installs the testing data files.  Unable to get package_data
     # to deal with a directory hierarchy of files, so just explicitly list.
     return {
-        'pydl.tests': ['t/*',],
+        'pydl.pydlutils.sdss.tests': ['t/*',]
     }
-
-#def requires_2to3():
-#    return False
