@@ -25,7 +25,7 @@ def wavevector(minfullwave,maxfullwave,zeropoint=3.5,binsz=1.0e-4,wavemin=None,w
         array could be interpreted as an array of wavelengths or an array of
         log(wavelength).
     """
-    import numpy as np
+    from numpy import arange
     if wavemin is not None:
         spotmin = 0
         if wavemax is not None:
@@ -39,5 +39,5 @@ def wavevector(minfullwave,maxfullwave,zeropoint=3.5,binsz=1.0e-4,wavemin=None,w
         wavemin = spotmin * binsz + zeropoint
         wavemax = spotmax * binsz + zeropoint
     nfinalpix = spotmax - spotmin + 1
-    finalwave = np.arange(nfinalpix,dtype='d') *binsz + wavemin
+    finalwave = arange(nfinalpix,dtype='d') *binsz + wavemin
     return finalwave
