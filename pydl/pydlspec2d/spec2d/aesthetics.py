@@ -50,8 +50,7 @@ def aesthetics(flux,invvar,method='traditional'):
         elif method == 'nothing':
             newflux = flux.copy()
         else:
-            raise Pydlspec2dException("Unknown method: %s" % method)
+            raise Pydlspec2dException("Unknown method: {0}".format(method))
         return newflux
     else:
         return flux
-
