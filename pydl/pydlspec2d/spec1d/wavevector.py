@@ -1,24 +1,34 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-#
-def wavevector(minfullwave,maxfullwave,**kwargs):
-    """Simply return an array of wavelengths.
+def wavevector(minfullwave,maxfullwave,zeropoint=3.5,binsz=1.0e-4,wavemin=None,wavemax=None):
+    """Return an array of wavelengths.
+
+    Parameters
+    ----------
+    minfullwave : float
+        Minimum wavelength.
+    maxfullwave : float
+        Maximum wavelength.
+    zeropoint : float, optional
+        Offset of the input wavelength values.
+    binsz : float, optional
+        Separation between wavelength values.
+    wavemin : float, optional
+        If this is set the values of `minfullwave` and `zeropoint` are ignored.
+    wavemax : float, optional
+        If this is set the value of `maxfullwave` is ignored.
+
+    Returns
+    -------
+    wavevector : numpy.ndarray
+        Depending on the values of `minfullwave`, `binsz`, etc., the resulting
+        array could be interpreted as an array of wavelengths or an array of
+        log(wavelength).
     """
     import numpy as np
-    if 'zeropoint' in kwargs:
-        zeropoint = kwargs['zeropoint']
-    else:
-        zeropoint = 3.5
-    if 'binsz' in kwargs:
-        binsz = kwargs['binsz']
-    else:
-        binsz = 1.0e-4
-    if 'wavemin' in kwargs:
-        wavemin = kwargs['wavemin']
+    if wavemin is not None:
         spotmin = 0
-        if 'wavemax' in kwargs:
-            wavemax = kwargs['wavemax']
+        if wavemax is not None:
             spotmax = int((wavemax - wavemin)/binsz)
         else:
             spotmax = int((maxfullwave - wavemin)/binsz)
@@ -31,4 +41,3 @@ def wavevector(minfullwave,maxfullwave,**kwargs):
     nfinalpix = spotmax - spotmin + 1
     finalwave = np.arange(nfinalpix,dtype='d') *binsz + wavemin
     return finalwave
-
