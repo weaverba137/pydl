@@ -22,7 +22,7 @@ def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
         A boolean value or a tuple of bool.
     """
     from . import maskbits
-    if maskbits is None:
+    if maskbits is None: # pragma: no cover
         from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     #

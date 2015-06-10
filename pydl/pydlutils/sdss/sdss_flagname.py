@@ -30,7 +30,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     """
     from . import maskbits
     from numpy import uint64
-    if maskbits is None:
+    if maskbits is None: # pragma: no cover
         from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     flagu = flagname.upper()

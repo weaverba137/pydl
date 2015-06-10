@@ -31,7 +31,7 @@ def sdss_flagval(flagname,bitname):
     """
     from numpy import uint64
     from . import maskbits
-    if maskbits is None:
+    if maskbits is None: # pragma: no cover
         from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     #
