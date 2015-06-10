@@ -1,3 +1,9 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+"""
+This subpackage corresponds to the coord directory of idlutils.
+"""
+from .SDSSMuNuFrame import SDSSMuNuFrame
 from .angles_to_xyz import angles_to_xyz
 from .current_mjd import current_mjd
 from .munu_to_radec import munu_to_radec
