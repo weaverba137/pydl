@@ -1,13 +1,14 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 #
-from astropy.coordinates import frame_transform_graph, FuntionTransform, ICRS
+from astropy.coordinates import Angle, frame_transform_graph, FunctionTransform, ICRS
 from . import SDSSMuNu
 #
 @frame_transform_graph.transform(FunctionTransform, ICRS, SDSSMuNu)
 def radec_to_munu(icrs_frame,munu):
     """Convert from equatorial coordinates to SDSS great circle coordinates.
     """
+    from astropy import units as u
     import numpy as np
     # from pydlutils.coord import stripe_to_eta
     # from pydlutils.goddard.misc import cirrange
@@ -45,4 +46,4 @@ def radec_to_munu(icrs_frame,munu):
     #     return (ra,dec,phi)
     # else:
     #     return (ra,dec)
-    return SDSSMuNuFrame(mu=mu,nu=nu,stripe=munu.stripe)
+    return SDSSMuNu(mu=mu,nu=nu,stripe=munu.stripe)

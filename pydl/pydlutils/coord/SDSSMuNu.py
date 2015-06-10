@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 #
 from astropy import units as u
-from astropy.coordinates import (BaseCoordinateFrame, FrameAttribute,
+from astropy.coordinates import (Angle, BaseCoordinateFrame, FrameAttribute,
     SphericalRepresentation, QuantityFrameAttribute,
     RepresentationMapping)
-from . import stripe_to_incl
+from .stripe_to_incl import stripe_to_incl
 #
 class SDSSMuNu(BaseCoordinateFrame):
     """SDSS Great Circle Coordinates
