@@ -1,12 +1,15 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def set_maskbits(idlutils_version='v5_5_8'):
+def set_maskbits(idlutils_version='v5_5_8',maskbits_file=None):
     """Populate the maskbits cache.
 
     Parameters
     ----------
     idlutils_version : str, optional
         Fetch the sdssMaskbits.par file corresponding to this idlutils version.
+    maskbits_file : str, optional
+        Use an explicit file instead of downloading the official version.
+        This should only be used for tests.
 
     Returns
     -------
@@ -19,17 +22,17 @@ def set_maskbits(idlutils_version='v5_5_8'):
         If the data file could not be retrieved.
     """
     from ..yanny import yanny
-    #from urllib2 import urlopen
     from astropy.utils.data import download_file
-    if idlutils_version == 'trunk' or idlutils_version.startswith('branches/'):
-        iversion = idlutils_version
+    if maskbits_file is None: # pragma: no cover
+        if idlutils_version == 'trunk' or idlutils_version.startswith('branches/'):
+            iversion = idlutils_version
+        else:
+            iversion = 'tags/'+idlutils_version
+        baseurl = 'http://www.sdss3.org/svn/repo/idlutils/{0}/data/sdss/sdssMaskbits.par'.format(iversion)
+        filename = download_file(baseurl,cache=True,show_progress=False)
     else:
-        iversion = 'tags/'+idlutils_version
-    baseurl = 'http://www.sdss3.org/svn/repo/idlutils/{0}/data/sdss/sdssMaskbits.par'.format(iversion)
-    filename = download_file(baseurl,cache=True,show_progress=False)
-    #par = urlopen(baseurl)
+        filename = maskbits_file
     maskfile = yanny(filename)
-    #par.close()
     #
     # Parse the file & cache the results in maskbits
     #
@@ -43,5 +46,3 @@ def set_maskbits(idlutils_version='v5_5_8'):
         for k in range(maskfile.size('MASKALIAS')):
             maskbits[maskfile['MASKALIAS']['alias'][k]] = maskbits[maskfile['MASKALIAS']['flag'][k]].copy()
     return maskbits
-
-

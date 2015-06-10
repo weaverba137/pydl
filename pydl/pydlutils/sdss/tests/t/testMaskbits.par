@@ -1,0 +1,213 @@
+#
+# testMaskbits.par
+#
+typedef struct {
+    char flag[20]; # Flag name
+    short bit; # Bit number, 0-indexed
+    char label[30]; # Bit label
+    char description[100]; # text description
+} maskbits;
+
+typedef struct {
+    char flag[20]; # Flag name
+    short datatype; # Data type {8, 16, 32, 64}
+    char description[100]; # text description
+} masktype;
+
+typedef struct {
+    char flag[20]; # Flag (real) name
+    char alias[20]; # Alias
+    char description[100]; # text description
+} maskalias;
+
+#
+#------------------------------------------------------------------------------
+masktype TARGET 32 "Primary target mask bits in SDSS-I, -II (for LEGACY_TARGET1 or PRIMTARGET)."
+maskbits TARGET  0 QSO_HIZ    "High-redshift (griz) QSO target"
+maskbits TARGET  1 QSO_CAP    "ugri-selected quasar at high Galactic latitude"
+maskbits TARGET  2 QSO_SKIRT    "ugri-selected quasar at low Galactic latitude"
+maskbits TARGET  3 QSO_FIRST_CAP    "FIRST source with stellar colors at high Galactic latitude"
+maskbits TARGET  4 QSO_FIRST_SKIRT    "FIRST source with stellar colors at low Galactic latitude"
+maskbits TARGET  5 GALAXY_RED    "Luminous Red Galaxy target (any criteria)"
+maskbits TARGET  6 GALAXY    "Main sample galaxy"
+maskbits TARGET  7 GALAXY_BIG    "Low-surface brightness main sample galaxy (mu50>23 in r-band)"
+maskbits TARGET  8 GALAXY_BRIGHT_CORE    "Galaxy targets who fail all the surface brightness selection limits but have r-band fiber magnitudes brighter than 19"
+maskbits TARGET  9 ROSAT_A    "ROSAT All-Sky Survey match, also a radio source"
+maskbits TARGET 10 ROSAT_B    "ROSAT All-Sky Survey match, have SDSS colors of AGNs or quasars"
+maskbits TARGET 11 ROSAT_C    "ROSAT All-Sky Survey match, fall in a broad intermediate category that includes stars that are bright, moderately blue, or both"
+maskbits TARGET 12 ROSAT_D    "ROSAT All-Sky Survey match, are otherwise bright enough for SDSS spectroscopy"
+maskbits TARGET 13 STAR_BHB    "blue horizontal-branch stars"
+maskbits TARGET 14 STAR_CARBON    "dwarf and giant carbon stars"
+maskbits TARGET 15 STAR_BROWN_DWARF    "brown dwarfs (note this sample is tiled)"
+maskbits TARGET 16 STAR_SUB_DWARF    "low-luminosity subdwarfs"
+maskbits TARGET 17 STAR_CATY_VAR    "cataclysmic variables"
+maskbits TARGET 18 STAR_RED_DWARF    "red dwarfs"
+maskbits TARGET 19 STAR_WHITE_DWARF    "hot white dwarfs"
+maskbits TARGET 20 SERENDIP_BLUE    "lying outside the stellar locus in color space"
+maskbits TARGET 21 SERENDIP_FIRST    "coincident with FIRST sources but fainter than the equivalent in quasar target selection (also includes non-PSF sources"
+maskbits TARGET 22 SERENDIP_RED    "lying outside the stellar locus in color space"
+maskbits TARGET 23 SERENDIP_DISTANT    "lying outside the stellar locus in color space"
+maskbits TARGET 24 SERENDIP_MANUAL    "manual serendipity flag"
+maskbits TARGET 25 QSO_MAG_OUTLIER    "Stellar outlier; too faint or too bright to be targeted"
+maskbits TARGET 26 GALAXY_RED_II    "Luminous Red Galaxy target (Cut II criteria)"
+maskbits TARGET 27 ROSAT_E    "ROSAT All-Sky Survey match, but too faint or too bright for SDSS spectroscopy"
+maskbits TARGET 28 STAR_PN    "central stars of planetary nebulae"
+maskbits TARGET 29 QSO_REJECT    "Object in explicitly excluded region of color space, therefore not targeted at QSO"
+maskbits TARGET 31 SOUTHERN_SURVEY    "Set in primtarget if this is a special program target"
+
+maskalias TARGET PRIMTARGET "PRIMTARGET is a synonym for TARGET."
+maskalias TARGET LEGACY_TARGET1 "LEGACY_TARGET1 is a synonym for TARGET."
+#
+#------------------------------------------------------------------------------
+masktype TTARGET 32 "Secondary target mask bits in SDSS-I, -II (for LEGACY_TARGET2, SPECIAL_TARGET2 or SECTARGET)."
+maskbits TTARGET  0 LIGHT_TRAP    "hole drilled for bright star, to avoid scattered light"
+maskbits TTARGET  1 REDDEN_STD    "reddening standard star"
+maskbits TTARGET  2 TEST_TARGET    "a test target"
+maskbits TTARGET  3 QA    "quality assurance target"
+maskbits TTARGET  4 SKY    "sky target"
+maskbits TTARGET  5 SPECTROPHOTO_STD    "spectrophotometry standard (typically an F-star)"
+maskbits TTARGET  6 GUIDE_STAR    "guide star hole"
+maskbits TTARGET  7 BUNDLE_HOLE    "fiber bundle hole"
+maskbits TTARGET  8 QUALITY_HOLE    "hole drilled for plate shop quality measurements"
+maskbits TTARGET  9 HOT_STD    "hot standard star"
+maskbits TTARGET 31 SOUTHERN_SURVEY    "a segue or southern survey target"
+
+maskalias TTARGET SECTARGET "SECTARGET is identical to TTARGET."
+maskalias TTARGET LEGACY_TARGET2 "LEGACY_TARGET2 is identical to TTARGET."
+maskalias TTARGET SPECIAL_TARGET2 "SPECIAL_TARGET2 is identical to TTARGET."
+#
+#------------------------------------------------------------------------------
+masktype ZWARNING 32 "Warnings for SDSS spectra."
+maskbits ZWARNING  0 SKY    "sky fiber"
+maskbits ZWARNING  1 LITTLE_COVERAGE    "too little wavelength coverage (WCOVERAGE < 0.18)"
+maskbits ZWARNING  2 SMALL_DELTA_CHI2    "chi-squared of best fit is too close to that of second best (<0.01 in reduced chi-sqaured)"
+maskbits ZWARNING  3 NEGATIVE_MODEL    "synthetic spectrum is negative (only set for stars and QSOs)"
+maskbits ZWARNING  4 MANY_OUTLIERS    "fraction of points more than 5 sigma away from best model is too large (>0.05)"
+maskbits ZWARNING  5 Z_FITLIMIT    "chi-squared minimum at edge of the redshift fitting range (Z_ERR set to -1)"
+maskbits ZWARNING  6 NEGATIVE_EMISSION    "a QSO line exhibits negative emission, triggered only in QSO spectra, if  C_IV, C_III, Mg_II, H_beta, or H_alpha has LINEAREA + 3 * LINEAREA_ERR < 0"
+maskbits ZWARNING  7 UNPLUGGED    "the fiber was unplugged, so no spectrum obtained"
+maskbits ZWARNING  8 BAD_TARGET    "catastrophically bad targeting data (e.g. ASTROMBAD in CALIB_STATUS)"
+maskbits ZWARNING  9 NODATA    "No data for this fiber, e.g. because spectrograph was broken during this exposure (ivar=0 for all pixels)"
+#
+#------------------------------------------------------------------------------
+masktype FLUXMATCH_STATUS 16 "Flags from flux-based matching to SDSS photometry"
+maskbits FLUXMATCH_STATUS 0 ORIGINAL_FLUXMATCH "used the original positional match (which exists)"
+maskbits FLUXMATCH_STATUS 1 FIBER_FLUXMATCH "flagged due to fiberflux/aperflux issue"
+maskbits FLUXMATCH_STATUS 2 NONMATCH_FLUXMATCH "flagged due to non-match"
+maskbits FLUXMATCH_STATUS 3 NOPARENT_FLUXMATCH "no overlapping parent in primary field"
+maskbits FLUXMATCH_STATUS 4 PARENT_FLUXMATCH "overlapping parent has no children, so used it"
+maskbits FLUXMATCH_STATUS 5 BRIGHTEST_FLUXMATCH "picked the brightest child"
+#
+#------------------------------------------------------------------------------
+#----------- boss target selection flags
+masktype BOSS_TARGET1 64 "BOSS survey primary target selection flags"
+# galaxies
+maskbits BOSS_TARGET1  0 GAL_LOZ             "low-z lrgs"
+maskbits BOSS_TARGET1  1 GAL_CMASS           "dperp > 0.55, color-mag cut "
+maskbits BOSS_TARGET1  2 GAL_CMASS_COMM      "dperp > 0.55, commissioning color-mag cut"
+maskbits BOSS_TARGET1  3 GAL_CMASS_SPARSE    "GAL_CMASS_COMM & (!GAL_CMASS) & (i < 19.9) sparsely sampled"
+maskbits BOSS_TARGET1  6 SDSS_KNOWN    "Matches a known SDSS spectra"
+maskbits BOSS_TARGET1  7 GAL_CMASS_ALL       "GAL_CMASS and the entire sparsely sampled region"
+maskbits BOSS_TARGET1  8 GAL_IFIBER2_FAINT  "ifiber2 > 21.5, extinction corrected.  Used after Nov 2010"
+
+# galaxies deprecated
+#maskbits BOSS_TARGET1 3 GAL_GRRED          "red in g-r"
+#maskbits BOSS_TARGET1 4 GAL_TRIANGLE       "GAL_HIZ and !GAL_CMASS"
+# part of galaxies deprecated, but some spectra actually have this bit set.
+maskbits BOSS_TARGET1 5 GAL_LODPERP_DEPRECATED  "(DEPRECATED) Same as hiz but between dperp00 and dperp0"
+
+# qsos
+maskbits BOSS_TARGET1 10 QSO_CORE           "restrictive qso selection: commissioning only"
+maskbits BOSS_TARGET1 11 QSO_BONUS          "permissive qso selection:  commissioning only"
+maskbits BOSS_TARGET1 12 QSO_KNOWN_MIDZ     "known qso between [2.2,9.99]"
+maskbits BOSS_TARGET1 13 QSO_KNOWN_LOHIZ    "known qso outside of miz range. never target"
+maskbits BOSS_TARGET1 14 QSO_NN             "Neural Net that match to sweeps/pass cuts"
+maskbits BOSS_TARGET1 15 QSO_UKIDSS         "UKIDSS stars that match sweeps/pass flag cuts"
+maskbits BOSS_TARGET1 16 QSO_KDE_COADD      "kde targets from the stripe82 coadd "
+maskbits BOSS_TARGET1 17 QSO_LIKE           "likelihood method"
+maskbits BOSS_TARGET1 18 QSO_FIRST_BOSS     "FIRST radio match"
+maskbits BOSS_TARGET1 19 QSO_KDE            "selected by kde+chi2"
+maskbits BOSS_TARGET1 40 QSO_CORE_MAIN      "Main survey core sample"
+maskbits BOSS_TARGET1 41 QSO_BONUS_MAIN     "Main survey bonus sample"
+maskbits BOSS_TARGET1 42 QSO_CORE_ED        "Extreme Deconvolution in Core"
+maskbits BOSS_TARGET1 43 QSO_CORE_LIKE      "Likelihood that make it into core"
+maskbits BOSS_TARGET1 44 QSO_KNOWN_SUPPZ    "known qso between [1.8,2.15]"
+
+# standards
+maskbits BOSS_TARGET1 20 STD_FSTAR          "standard f-stars"
+maskbits BOSS_TARGET1 21 STD_WD             "white dwarfs"
+maskbits BOSS_TARGET1 22 STD_QSO            "qso"
+
+# template stars
+maskbits BOSS_TARGET1 32 TEMPLATE_GAL_PHOTO     "galaxy templates "
+maskbits BOSS_TARGET1 33 TEMPLATE_QSO_SDSS1     "QSO templates "
+maskbits BOSS_TARGET1 34 TEMPLATE_STAR_PHOTO    "stellar templates "
+maskbits BOSS_TARGET1 35 TEMPLATE_STAR_SPECTRO  "stellar templates (spectroscopically known)"
+#
+#------------------------------------------------------------------------------
+#------------ ancillary target selection flags
+masktype ANCILLARY_TARGET1 64 "BOSS survey target flags for ancillary programs"
+maskbits ANCILLARY_TARGET1  0 AMC        "defined in blake_boss_v2.descr"
+maskbits ANCILLARY_TARGET1  1 FLARE1     "defined in blake_boss_v2.descr"
+maskbits ANCILLARY_TARGET1  2 FLARE2     "defined in blake_boss_v2.descr"
+maskbits ANCILLARY_TARGET1  3 HPM        "defined in blake_boss_v2.descr"
+maskbits ANCILLARY_TARGET1  4 LOW_MET    "defined in blake_boss_v2.descr"
+maskbits ANCILLARY_TARGET1  5 VARS       "defined in blake_boss_v2.descr"
+maskbits ANCILLARY_TARGET1  6 BLAZGVAR   "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1  7 BLAZR      "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1  8 BLAZXR     "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1  9 BLAZXRSAM  "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1 10 BLAZXRVAR  "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1 11 XMMBRIGHT  "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1 12 XMMGRIZ  "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1 13 XMMHR    "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1 14 XMMRED   "defined in brandtxmm-andersonblazar-merged.descr "
+maskbits ANCILLARY_TARGET1 15 FBQSBAL  "defined in master-BAL-targets.descr"
+maskbits ANCILLARY_TARGET1 16 LBQSBAL  "defined in master-BAL-targets.descr"
+maskbits ANCILLARY_TARGET1 17 ODDBAL   "defined in master-BAL-targets.descr"
+maskbits ANCILLARY_TARGET1 18 OTBAL    "defined in master-BAL-targets.descr"
+maskbits ANCILLARY_TARGET1 19 PREVBAL  "defined in master-BAL-targets.descr"
+maskbits ANCILLARY_TARGET1 20 VARBAL   "defined in master-BAL-targets.descr"
+maskbits ANCILLARY_TARGET1 21 BRIGHTGAL          "defined in bright_gal_v3.descr"
+maskbits ANCILLARY_TARGET1 22 QSO_AAL         "defined in qsoals_v2.descr "
+maskbits ANCILLARY_TARGET1 23 QSO_AALS        "defined in qsoals_v2.descr "
+maskbits ANCILLARY_TARGET1 24 QSO_IAL         "defined in qsoals_v2.descr "
+maskbits ANCILLARY_TARGET1 25 QSO_RADIO       "defined in qsoals_v2.descr "
+maskbits ANCILLARY_TARGET1 26 QSO_RADIO_AAL   "defined in qsoals_v2.descr "
+maskbits ANCILLARY_TARGET1 27 QSO_RADIO_IAL   "defined in qsoals_v2.descr "
+maskbits ANCILLARY_TARGET1 28 QSO_NOAALS      "defined in qsoals_v2.descr "
+maskbits ANCILLARY_TARGET1 29 QSO_GRI         "defined in sdss3_fan.descr "
+maskbits ANCILLARY_TARGET1 30 QSO_HIZ         "defined in sdss3_fan.descr "
+maskbits ANCILLARY_TARGET1 31 QSO_RIZ         "defined in sdss3_fan.descr "
+maskbits ANCILLARY_TARGET1 32 RQSS_SF         "defined in rqss090630.descr"
+maskbits ANCILLARY_TARGET1 33 RQSS_SFC        "defined in rqss090630.descr"
+maskbits ANCILLARY_TARGET1 34 RQSS_STM        "defined in rqss090630.descr"
+maskbits ANCILLARY_TARGET1 35 RQSS_STMC       "defined in rqss090630.descr"
+maskbits ANCILLARY_TARGET1 36 SN_GAL1   "defined in ancillary_supernova_hosts_v5.descr"
+maskbits ANCILLARY_TARGET1 37 SN_GAL2  "defined in ancillary_supernova_hosts_v5.descr"
+maskbits ANCILLARY_TARGET1 38 SN_GAL3  "defined in ancillary_supernova_hosts_v5.descr"
+maskbits ANCILLARY_TARGET1 39 SN_LOC   "defined in ancillary_supernova_hosts_v5.descr"
+maskbits ANCILLARY_TARGET1 40 SPEC_SN    "defined in ancillary_supernova_hosts_v5.descr"
+maskbits ANCILLARY_TARGET1 41 SPOKE      "defined in BOSS_slowpokes_v2.descr"
+maskbits ANCILLARY_TARGET1 42 WHITEDWARF_NEW  "defined in WDv5_eisenste_fixed.descr"
+maskbits ANCILLARY_TARGET1 43 WHITEDWARF_SDSS "defined in WDv5_eisenste_fixed.descr"
+maskbits ANCILLARY_TARGET1 44 BRIGHTERL   "defined in sd3targets_final.descr"
+maskbits ANCILLARY_TARGET1 45 BRIGHTERM   "defined in sd3targets_final.descr"
+maskbits ANCILLARY_TARGET1 46 FAINTERL     "defined in sd3targets_final.descr"
+maskbits ANCILLARY_TARGET1 47 FAINTERM   "defined in sd3targets_final.descr"
+maskbits ANCILLARY_TARGET1 48 RED_KG        "defined in redkg.descr"
+maskbits ANCILLARY_TARGET1 49 RVTEST        "defined in redkg.descr"
+maskbits ANCILLARY_TARGET1 50 BLAZGRFLAT                "defined in      anderson-blazar.par"
+maskbits ANCILLARY_TARGET1 51 BLAZGRQSO             "defined in anderson-blazar.par "
+maskbits ANCILLARY_TARGET1 52 BLAZGX                        "defined in anderson-blazar.par"
+maskbits ANCILLARY_TARGET1 53 BLAZGXQSO             "defined in anderson-blazar.par"
+maskbits ANCILLARY_TARGET1 54 BLAZGXR                   "defined in anderson-blazar.par"
+#maskbits ANCILLARY_TARGET1 55 BLAZXR                       "defined in anderson-blazar.par"
+maskbits ANCILLARY_TARGET1 56 BLUE_RADIO                "defined in tremonti-blue-radio.fits.gz"
+maskbits ANCILLARY_TARGET1 57 CHANDRAV1             "defined in haggard-sf-accrete.fits"
+maskbits ANCILLARY_TARGET1 58 CXOBRIGHT             "defined in brandt-xray.par"
+maskbits ANCILLARY_TARGET1 59 CXOGRIZ                   "defined in brandt-xray.par"
+maskbits ANCILLARY_TARGET1 60 CXORED                        "defined in brandt-xray.par"
+maskbits ANCILLARY_TARGET1 61 ELG                           "defined in kneib-cfht-elg.fits"
+maskbits ANCILLARY_TARGET1 62 GAL_NEAR_QSO          "defined in weiner-qso-sightline.fits"
+maskbits ANCILLARY_TARGET1 63 MTEMP                     "defined in blake-transient-v3.fits"
