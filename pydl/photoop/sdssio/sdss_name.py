@@ -34,9 +34,9 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',no_path=False)
     """
     from os import getenv
     from os.path import join
-    from . import _name_formats, sdss_path
-    cname = ('u','g','r','i','z')
-    camrow = (3,5,1,2,4)
+    from . import _name_formats, sdss_path, filtername
+    # cname = ('u','g','r','i','z')
+    # camrow = (3,5,1,2,4)
     if ftype == 'reObj':
         if getenv('PHOTO_RESOLVE') is None:
             myftype = 'reObjRun'
@@ -46,14 +46,14 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',no_path=False)
         myftype = ftype
     thisfilter = filtername(thisfilter)
     indict = {
-        'ftype':ftype, 'run':run, 'camcol':camcol, 'field':field,
+        'ftype':myftype, 'run':run, 'camcol':camcol, 'field':field,
         'filter':thisfilter, 'rerun':rerun
         }
     try:
-        fullname = _name_formats[ftype].format(**indict)
+        fullname = _name_formats[myftype].format(**indict)
     except KeyError:
-        raise KeyError("Unknown FTYPE = {0}".format(ftype))
+        raise KeyError("Unknown FTYPE = {0}".format(myftype))
     if not no_path:
-        datadir = sdss_path(ftype, run, camcol, rerun)
+        datadir = sdss_path(myftype, run, camcol, rerun)
         fullname = join(datadir, fullname)
     return fullname

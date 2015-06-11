@@ -21,6 +21,7 @@ class YannyTestCase(object):
         # since deprecation warnings are ignored by defualt on 2.7
         warnings.simplefilter('ignore')
         warnings.simplefilter('always', UserWarning)
+        # raise ValueError("I am setting up a subclass of YannyTestCase!")
 
     def teardown(self):
         warnings.resetwarnings()
@@ -37,6 +38,7 @@ class YannyTestCase(object):
                         # garbage-collected
                         time.sleep(0.5)
                         tries -= 1
+        # raise ValueError("I am tearing down up a subclass of YannyTestCase!")
 
     def copy_file(self, filename):
         """Copies a backup of a test data file to the temp dir and sets its
