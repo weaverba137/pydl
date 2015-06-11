@@ -34,14 +34,15 @@ def sdssflux2ab(flux,magnitude=False,ivar=False):
     # Correction vector, adjust this as necessary
     #
     correction = np.array([-0.042, 0.036, 0.015, 0.013, -0.002])
+    rows, cols = flux.shape
     abflux = flux.copy()
     if magnitude:
-        for i in range(5):
-            abflux[:,i] += correction[i]
+        for i in range(rows):
+            abflux[i,:] += correction
     else:
-        factor = np.exp(-correction/2.5 * np.log(10))
+        factor = 10.0**(-correction/2.5)
         if ivar:
             factor = 1.0/factor**2
-        for i in range(5):
-            abflux[:,i] *= factor[i]
+        for i in range(rows):
+            abflux[i,:] *= factor
     return abflux
