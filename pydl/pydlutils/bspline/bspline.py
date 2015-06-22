@@ -210,7 +210,8 @@ class bspline(object):
             Same as lower, but denotes the upper pixel positions.
         """
         from ... import uniq
-        from ...goddard.math import fchebyshev, flegendre
+        from ...goddard.math import flegendre
+        from ..trace import fchebyshev
         nx = x.size
         nbkpt = self.mask.sum()
         if nbkpt < 2*self.nord:

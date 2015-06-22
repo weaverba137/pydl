@@ -27,9 +27,10 @@ from . import math
 from . import misc
 from . import sdss
 from . import spheregroup
+from . import trace
 from . import yanny
 #
 # Set __all__
 #
 __all__ = ['PydlutilsException', 'bspline', 'cooling', 'image', 'mangle',
-    'math', 'misc', 'sdss', 'spheregroup', 'yanny']
+    'math', 'misc', 'sdss', 'spheregroup', 'trace', 'yanny']
