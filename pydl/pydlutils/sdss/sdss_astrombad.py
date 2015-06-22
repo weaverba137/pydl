@@ -66,7 +66,7 @@ def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
     #
     # Read the file
     #
-    if opbadfields is None:
+    if opbadfields is None: # pragma: no cover
         if getenv('PHOTOLOG_DIR') is None:
             if photolog_version == 'trunk' or photolog_version.startswith('branches/'):
                 iversion = photolog_version
