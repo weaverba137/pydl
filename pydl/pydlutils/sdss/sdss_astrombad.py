@@ -9,7 +9,7 @@ def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
         Run, camcol and field.  If arrays are passed,
         all must have the same length.
     photolog_version : str, optional
-        Use this version of photolog to obtain the sdssMaskbits.par file,
+        Use this version of photolog to obtain the obBadfields.par file,
         if $PHOTOLOG_DIR is not set.
 
     Returns

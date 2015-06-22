@@ -3,8 +3,12 @@
 #
 from astropy.tests.helper import remote_data
 #
+# def test_sdss_astrombad():
+#     from .. import sdss_astrombad
+#     assert sdss_astrombad(77,1,20,test_mode=True) == False
+#
 @remote_data
-def test_sdss_astrombad():
+def test_sdss_astrombad_remote():
     from .. import sdss_astrombad
     assert sdss_astrombad(77,1,20) == False
     assert sdss_astrombad(77,3,35) == True
