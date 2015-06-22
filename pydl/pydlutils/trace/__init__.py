@@ -4,3 +4,4 @@
 This subpackage corresponds to the trace directory of idlutils.
 """
 from .fchebyshev import fchebyshev
+from .fpoly import fpoly
