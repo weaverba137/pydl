@@ -40,5 +40,8 @@ API
 .. automodapi:: pydl.pydlutils.spheregroup
     :no-inheritance-diagram:
 
+.. automodapi:: pydl.pydlutils.trace
+    :no-inheritance-diagram:
+
 .. automodapi:: pydl.pydlutils.yanny
     :no-inheritance-diagram:
