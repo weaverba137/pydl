@@ -1,6 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def fchebyshev(x,m):
+def fchebyshev_split(x,m):
     """Compute the first `m` Chebyshev polynomials, but modified to allow a
     split in the baseline at ``x=0``.  The intent is to allow a model fit where
     a constant term is different for positive and negative `x`.
@@ -24,10 +24,13 @@ def fchebyshev(x,m):
     if m < 2:
         raise ValueError('Order of polynomial must be at least 2.')
     leg = np.ones((m,n),dtype='d')
-    leg[0,:] = (x >= 0).astype(x.dtype)
-    if m >= 3:
+    try:
+        leg[0,:] = (x >= 0).astype(x.dtype)
+    except AttributeError:
+        leg[0,:] = np.double(x >= 0)
+    if m > 2:
         leg[2,:] = x
-        for k in range(2,m):
-            leg[k,:] = leg[k-1,:]*x
+    if m > 3:
+        for k in range(3,m):
             leg[k,:] = 2.0 * x * leg[k-1,:] - leg[k-2,:]
     return leg

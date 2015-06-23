@@ -40,7 +40,7 @@ def test_fchebyshev_split():
     #
     # m = 5
     #
-    f = fchebyshev(x,5)
+    f = fchebyshev_split(x,5)
     foo = np.ones((5,x.size),dtype='d')
     foo[0,:] = (x >= 0).astype(x.dtype)
     foo[2,:] = x
