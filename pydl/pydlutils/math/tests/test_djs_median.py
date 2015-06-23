@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 def test_djs_median():
     from numpy import array, median
-    from numpy.testing import assert_allclose
+    from numpy.testing import allclose
     from numpy.random import random, seed
     from astropy.tests.helper import raises
     from .. import djs_median
@@ -63,21 +63,21 @@ def test_djs_median():
     #
     # Degenerate cases that fall back on numpy.median().
     #
-    assert_allclose(median(data),djs_median(data))
-    assert_allclose(median(data2,axis=0),djs_median(data2,dimension=0))
-    assert_allclose(median(data2,axis=1),djs_median(data2,dimension=1))
+    assert allclose(median(data),djs_median(data))
+    assert allclose(median(data2,axis=0),djs_median(data2,dimension=0))
+    assert allclose(median(data2,axis=1),djs_median(data2,dimension=1))
     #
     # Test widths.
     #
-    assert_allclose(data,djs_median(data,width=1))
+    assert allclose(data,djs_median(data,width=1))
     # assert_allclose(data_width_5,djs_median(data,width=5))
     # assert_allclose(data_width_5_reflect,djs_median(data,width=5,boundary='reflect'))
     #
     # Exceptions
     #
-    with raises(NotImplementedError):
+    with raises(ValueError):
         foo = djs_median(data,width=5,boundary='nearest')
-    with raises(NotImplementedError):
+    with raises(ValueError):
         foo = djs_median(data,width=5,boundary='wrap')
     with raises(ValueError):
         foo = djs_median(data,width=5,boundary='foobar')

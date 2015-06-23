@@ -18,9 +18,8 @@ def djs_laxisnum(dims,iaxis=0):
     Raises
     ------
     ValueError
-        If `iaxis` is greater than or equal to the number of dimensions.
-    NotImplementedError
-        If the number of dimensions is greater than three.
+        If `iaxis` is greater than or equal to the number of dimensions, or
+        if number of dimensions is greater than three.
 
     Examples
     --------
@@ -58,6 +57,5 @@ def djs_laxisnum(dims,iaxis=0):
         else:
             raise ValueError("Bad value for iaxis: {0:d}".format(iaxis))
     else:
-        raise NotImplementedError("{0:d} dimensions not supported.".format(ndimen))
+        raise ValueError("{0:d} dimensions not supported.".format(ndimen))
     return result
-

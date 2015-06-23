@@ -19,12 +19,10 @@ def djs_laxisgen(dims,iaxis=0):
     ------
     ValueError
         If `iaxis` is greater than or equal to the number of dimensions.
-    NotImplementedError
-        If the number of dimensions is greater than three.
 
     Notes
     -----
-    For two dimensions, there is no difference between this routine and
+    For two or more dimensions, there is no difference between this routine and
     djs_laxisnum.
 
     Examples
@@ -41,7 +39,4 @@ def djs_laxisgen(dims,iaxis=0):
     ndimen = len(dims)
     if ndimen == 1:
         return arange(dims[0],dtype='i4')
-    elif ndimen == 2 or ndimen == 3:
-        return djs_laxisnum(dims,iaxis)
-    else:
-        raise NotImplementedError("{0:d} dimensions not supported.".format(ndimen))
+    return djs_laxisnum(dims,iaxis)

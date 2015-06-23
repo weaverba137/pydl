@@ -107,9 +107,9 @@ def djs_median(array,dimension=None,width=None,boundary='none'):
             else:
                 raise ValueError('Unsupported number of dimensions with this boundary condition.')
         elif boundary == 'nearest':
-            raise NotImplementedError('This boundary condition not implemented')
+            raise ValueError('This boundary condition not implemented')
         elif boundary == 'wrap':
-            raise NotImplementedError('This boundary condition not implemented')
+            raise ValueError('This boundary condition not implemented')
         else:
             raise ValueError('Unknown boundary condition.')
     else:

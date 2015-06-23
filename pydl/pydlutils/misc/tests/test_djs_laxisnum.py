@@ -32,5 +32,5 @@ def test_djs_laxisnum():
     #
     # More d
     #
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError):
         foo = djs_laxisnum((4,4,4,4))

@@ -32,5 +32,5 @@ def test_djs_laxisgen():
     #
     # More d
     #
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError):
         foo = djs_laxisgen((4,4,4,4))
