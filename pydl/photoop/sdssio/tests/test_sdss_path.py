@@ -3,7 +3,7 @@
 #
 from .. import sdss_path
 from os import environ
-from pytest import raises
+from astropy.tests.helper import raises
 from .PathTestCase import PathTestCase
 #
 class TestSdssPath(PathTestCase):

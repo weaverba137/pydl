@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 def test_djs_median():
     from numpy import array, median
-    from numpy.testing import allclose
+    from numpy import allclose
     from numpy.random import random, seed
     from astropy.tests.helper import raises
     from .. import djs_median

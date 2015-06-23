@@ -1,15 +1,14 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-import pytest
-#
 def test_flegendre():
     from .. import flegendre
     import numpy as np
+    from astropy.tests.helper import raises
     x = np.array([-1,-0.5,0,0.5,1],dtype='d')
     #
     # Test order
     #
-    with pytest.raises(ValueError):
+    with raises(ValueError):
         f = flegendre(x,0)
     #
     # m = 1

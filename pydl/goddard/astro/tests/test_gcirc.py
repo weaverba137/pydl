@@ -1,10 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-import pytest
-#
 def test_gcirc():
     from .. import gcirc
     import numpy as np
+    from astropy.tests.helper import raises
     np.random.seed(137)
     #
     # Start in radians
@@ -38,5 +37,5 @@ def test_gcirc():
     #
     # Units = whatever
     #
-    with pytest.raises(ValueError):
+    with raises(ValueError):
         d0 = gcirc(ra1,dec1,ra2,dec2,units=5)

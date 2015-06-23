@@ -1,17 +1,16 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-import pytest
-#
 def test_fchebyshev_split():
     from .. import fchebyshev_split
     import numpy as np
+    from astropy.tests.helper import raises
     x = np.array([-1,-0.5,0,0.5,1],dtype='d')
     #
     # Test order
     #
-    with pytest.raises(ValueError):
+    with raises(ValueError):
         f = fchebyshev_split(x,0)
-    with pytest.raises(ValueError):
+    with raises(ValueError):
         f = fchebyshev_split(x,1)
     #
     # m = 2

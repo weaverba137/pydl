@@ -4,7 +4,7 @@
 from .. import sdss_name
 from os import environ
 from os.path import join
-from pytest import raises
+from astropy.tests.helper import raises
 from .PathTestCase import PathTestCase
 #
 class TestSdssName(PathTestCase):
