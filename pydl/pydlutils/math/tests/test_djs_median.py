@@ -1,8 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 def test_djs_median():
-    from numpy import array, median
-    from numpy import allclose
+    from numpy import allclose, array, median
     from numpy.random import random, seed
     from astropy.tests.helper import raises
     from .. import djs_median
@@ -70,8 +69,8 @@ def test_djs_median():
     # Test widths.
     #
     assert allclose(data,djs_median(data,width=1))
-    # assert_allclose(data_width_5,djs_median(data,width=5))
-    # assert_allclose(data_width_5_reflect,djs_median(data,width=5,boundary='reflect'))
+    assert allclose(data_width_5,djs_median(data,width=5))
+    # assert allclose(data_width_5_reflect,djs_median(data,width=5,boundary='reflect'))
     #
     # Exceptions
     #

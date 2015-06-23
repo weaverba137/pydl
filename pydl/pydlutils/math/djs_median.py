@@ -1,5 +1,20 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+def fix_medfilt(array,width):
+    """Wrap medfilt so that the results more closely resemble IDL MEDIAN().
+    """
+    from numpy import arange
+    from scipy.signal import medfilt
+    medarray = medfilt(array,min(width,array.size))
+    istart = int((width-1)/2)
+    iend = array.size - int((width+1)/2)
+    i = arange(array.size)
+    w = (i < istart) | (i > iend)
+    medarray[w] = array[w]
+    return medarray
+#
+#
+#
 def djs_median(array,dimension=None,width=None,boundary='none'):
     """Compute the median of an array.
 
@@ -41,17 +56,7 @@ def djs_median(array,dimension=None,width=None,boundary='none'):
             return array
         if boundary == 'none':
             if array.ndim == 1:
-                medarray = medfilt(array,min(width,array.size))
-                #
-                # medfilt doesn't handle edges the same way as IDL, so we
-                # have to fix them up
-                #
-                istart = int((width-1)/2)
-                iend = array.size - int((width+1)/2)
-                i = np.arange(array.size)
-                w = (i < istart) | (i > iend)
-                medarray[w] = array[w]
-                return medarray
+                return fix_medfilt(array,width)
             elif array.ndim == 2:
                 medarray = medfilt2(array,min(width,array.size))
                 istart = int((width-1)/2)
@@ -70,12 +75,7 @@ def djs_median(array,dimension=None,width=None,boundary='none'):
                 bigarr[padsize:padsize+array.shape[0]] = array
                 bigarr[0:padsize] = array[0:padsize][::-1]
                 bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = array[array.shape[0]-padsize:array.shape[0]][::-1]
-                f = medfilt(bigarr,min(width,array.size))
-                istart = int((width-1)/2)
-                iend = array.size - int((width+1)/2)
-                i = np.arange(array.size)
-                w = (i < istart) | (i > iend)
-                f[w] = array[w]
+                f = fix_medfilt(bigarr,width)
                 medarray = f[padsize:padsize+array.shape[0]]
                 return medarray
             elif array.ndim == 2:
