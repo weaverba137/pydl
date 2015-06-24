@@ -87,14 +87,17 @@ def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=No
         else:
             finalarr = legarr
             ysub = y
-        extra2 = finalarr * np.outer(np.ones((nparams,),dtype=x.dtype),(invvar > 0))
+        # extra2 = finalarr * np.outer(np.ones((nparams,),dtype=x.dtype),(invvar > 0))
+        extra2 = finalarr * np.outer(np.ones((nparams,),dtype=x.dtype),invvar)
         alpha = np.dot(finalarr,extra2.T)
         if nparams > 1:
-            beta = np.dot(ysub * (invvar > 0), finalarr.T)
+            # beta = np.dot(ysub * (invvar > 0), finalarr.T)
+            beta = np.dot(ysub * invvar, finalarr.T)
             # uu,ww,vv = np.linalg.svd(alpha,full_matrices=False)
             res[nonfix] = np.linalg.solve(alpha,beta)
         else:
-            res[0] = (ysub * invvar * finalarr).sum()/alpha
+            # res[nonfix] = (ysub * (invvar > 0) * finalarr).sum()/alpha
+            res[nonfix] = (ysub * invvar * finalarr).sum()/alpha
         if len(fixed) > 0:
             res[fixed] = inputans[fixed]
         yfit = np.dot(legarr.T,res[0:ncfit])

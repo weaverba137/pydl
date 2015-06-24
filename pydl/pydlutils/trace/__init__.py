@@ -7,3 +7,5 @@ from .fchebyshev import fchebyshev
 from .fchebyshev_split import fchebyshev_split
 from .fpoly import fpoly
 from .func_fit import func_fit
+from .TraceSet import TraceSet
+from .traceset2xy import traceset2xy
