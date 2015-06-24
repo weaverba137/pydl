@@ -5,7 +5,7 @@ def test_func_fit():
     import numpy as np
     from astropy.tests.helper import raises
     np.random.seed(137)
-    x = np.linspace(-5,5,50,dtype='d')
+    x = np.linspace(-5,5,50)
     y = x**2 + 2*x + 1 + 0.05*np.random.randn(50)
     #
     # Bad inputs
