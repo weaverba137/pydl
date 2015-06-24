@@ -1,6 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=None):
+def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=None,inputfunc=None):
     """Fit X, Y positions to a functional form.
 
     Parameters
@@ -21,6 +21,8 @@ def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=No
     inputans : array-like, optional
         An array of values of length `ncoeff` specifying the values of
         the fixed parameters.
+    inputfunc : array-like, optional
+        Multiply the function fit by these values.
 
     Returns
     -------
@@ -46,7 +48,7 @@ def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=No
     # Select unmasked points
     #
     igood = (invvar > 0).nonzero()[0]
-    ngood = igood.sum()
+    ngood = len(igood)
     res = np.zeros((ncoeff,),dtype=x.dtype)
     yfit = np.zeros(x.shape,dtype=x.dtype)
     if ngood == 0:
@@ -55,5 +57,45 @@ def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=No
         res[0] = y[igood[0]]
         yfit += y[igood[0]]
     else:
-        pass
+        ncfit = min(ngood,ncoeff)
+        function_map = {
+            'legendre':flegendre,
+            'flegendre':flegendre,
+            'chebyshev':fchebyshev,
+            'fchebyshev':fchebyshev,
+            'chebyshev_split':fchebyshev_split,
+            'fchebyshev_split':fchebyshev_split,
+            'poly':fpoly,
+            'fpoly':fpoly
+            }
+        try:
+            legarr = function_map[function_name](x,ncfit)
+        except KeyError:
+            raise KeyError('Unknown function type: {0}'.format(function_name))
+        if inputfunc is not None:
+            if inputfunc.shape != x.shape:
+                raise ValueError('Dimensions of X and inputfunc do not agree!')
+            legarr *= np.tile(inputfunc,ncfit).reshape(ncfit,x.shape[0])
+        yfix = np.zeros(x.shape,dtype=x.dtype)
+        nonfix = ia[0:ncfit].nonzero()[0]
+        nparams = len(nonfix)
+        fixed = (~ia[0:ncfit]).nonzero()[0]
+        if len(fixed) > 0:
+            yfix = np.dot(legarr.T,inputans * (1 - ia))
+            ysub = y - yfix
+            finalarr = legarr[nonfix,:]
+        else:
+            finalarr = legarr
+            ysub = y
+        extra2 = finalarr * np.outer(np.ones((nparams,),dtype=x.dtype),(invvar > 0))
+        alpha = np.dot(finalarr,extra2.T)
+        if nparams > 1:
+            beta = np.dot(ysub * (invvar > 0), finalarr.T)
+            # uu,ww,vv = np.linalg.svd(alpha,full_matrices=False)
+            res[nonfix] = np.linalg.solve(alpha,beta)
+        else:
+            res[0] = (ysub * invvar * finalarr).sum()/alpha
+        if len(fixed) > 0:
+            res[fixed] = inputans[fixed]
+        yfit = np.dot(legarr.T,res[0:ncfit])
     return (res,yfit)
