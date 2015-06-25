@@ -1,7 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
+from astropy.io.fits.fitsrec import FITS_rec
 from . import fpoly, fchebyshev
+from .. import PydlutilsException
 from ..misc import djs_laxisgen
 from ...goddard.math import flegendre
 #
@@ -12,43 +14,130 @@ class TraceSet(object):
     ----------
     func : str
         Name of function type used to fit the trace set.
+    xmin : float-like
+        Minimum x value.
+    xmax : float-like
+        Maximum x value.
+    coeff : array-like
+        Coefficients of the trace set fit.
+    nTrace : int
+        Number of traces in the object.
     ncoeff : int
-        Number of coefficients to fit.
+        Number of coefficients of the trace set fit.
+    xjumplo : float-like
+        Jump value, for BOSS readouts.
+    xjumphi : float-like
+        Jump value, for BOSS readouts.
+    xjumpval : float-like
+        Jump value, for BOSS readouts.
+    outmask : array-like.
+        When initialized with x,y positions, this contains the rejected points.
+    yfit : array-like.
+        When initialized with x,y positions, this contains the fitted y values.
     """
     _func_map = {'poly':fpoly,'legendre':flegendre,'chebyshev':fchebyshev}
     #
     #
     #
-    def __init__(self,xpos,ypos,invvar=None,func='legendre',ncoeff=3,
-        xmin=None,xmax=None,maxiter=10,inmask=None,
-        ia=None,inputans=None,inputfunc=None,
-        xjumplo=None,xjumphi=None,xjumpval=None):
-        #
-        # Capture inputs.
-        #
-        self.func = func
-        self.ncoeff = ncoeff
-        if xmin is None:
-            self.xmin = xpos.min()
+    def __init__(self,*args,**kwargs):
+        """This class can be initialized either with a set of xy positions,
+        or with a trace set HDU from a FITS file.
+        """
+        if len(args) == 1 and isinstance(args[0],FITS_rec):
+            #
+            # Initialize with FITS data
+            #
+            self.func = args[0]['FUNC'][0]
+            self.xmin = args[0]['XMIN'][0]
+            self.xmax = args[0]['XMAX'][0]
+            self.coeff = args[0]['COEFF'][0]
+            self.nTrace = self.coeff.shape[0]
+            self.ncoeff = self.coeff.shape[1]
+            if 'XJUMPLO' in r1_trace.dtype.names:
+                self.xjumplo = args[0]['XJUMPLO'][0]
+                self.xjumphi = args[0]['XJUMPHI'][0]
+                self.xjumpval = args[0]['XJUMPVAL'][0]
+            else:
+                self.xjumplo = None
+                self.xjumphi = None
+                self.xjumpval = None
+            self.outmask = None
+            self.yfit = None
+        elif len(args) == 2:
+            #
+            # Initialize with x, y positions.
+            #
+            xpos = args[0]
+            ypos = args[1]
+            self.nTrace = xpos.shape[0]
+            if 'invvar' in kwargs:
+                invvar = kwargs['invvar']
+            else:
+                invvar = np.ones(xpos.shape,dtype=xpos.dtype)
+            if 'func' in kwargs:
+                self.func = kwargs['func']
+            else:
+                self.func = 'legendre'
+            if 'ncoeff' in kwargs:
+                self.ncoeff = int(kwargs['ncoeff'])
+            else:
+                self.ncoeff = 3
+            if 'xmin' in kwargs:
+                self.xmin = np.float64(kwargs['xmin'])
+            else:
+                self.xmin = xpos.min()
+            if 'xmax' in kwargs:
+                self.xmax = np.float64(kwargs['xmax'])
+            else:
+                self.xmax = xpos.xmax()
+            if 'maxiter' in kwargs:
+                maxiter = int(kwargs['maxiter'])
+            else:
+                maxiter = 10
+            if 'inmask' in kwargs:
+                inmask = kwargs['inmask']
+            else:
+                inmask = np.ones(xpos.shape,dtype=np.bool)
+            do_jump = False
+            if 'xjumplo' in kwargs:
+                do_jump = True
+                self.xjumplo = np.float64(kwargs['xjumplo'])
+            else:
+                self.xjumplo = None
+            if 'xjumphi' in kwargs:
+                self.xjumphi = np.float64(kwargs['xjumphi'])
+            else:
+                self.xjumphi = None
+            if 'xjumpval' in kwargs:
+                self.xjumpval = np.float64(kwargs['xjumpval'])
+            else:
+                self.xjumpval = None
+            self.coeff = np.zeros((self.nTrace,self.ncoeff),dtype=xpos.dtype)
+            self.outmask = np.zeros(xpos.shape,dtype=np.bool)
+            self.yfit = np.zeros(xpos.shape,dtype=xpos.dtype)
+            for iTrace in range(nTrace):
+                xinput = xpos[iTrace,:]
+                if do_jump:
+                    jfrac = np.minimum(np.maximum(((xinput - self.xjumplo) / (self.xjumphi - self.xjumplo)),0.),1.)
+                    xnatural = xinput + jfrac * self.xjumpval
+                else:
+                    xnatural = xinput
+                xnorm = 2.0 * (xnatural - self.xmid)/self.xRange
+                iIter = 0
+                qdone = Fals
+                ycurfit = None
+                tempivar = invvar[iTrace,:] * inmask[iTrace,:].astype(invvar.dtype)
+                thismask = tempivar > 0
+                while (not qdone) and (iIter <= maxiter):
+                    res,ycurfit = func_fit(xnorm, ypos[iTrace,:], self.ncoeff,
+                        invvar=tempinvar, function_name=self.func)
+                    thismask,qdone = djs_reject(ypos[iTrace,:],ycurfit,invvar=tempivar)
+                    iIter += 1
+                self.yfit[iTrace,:] = ycurfit
+                self.coeff[iTrace,:] = res
+                self.outmask[iTrace,:] = thismask
         else:
-            self.xmin = xmin
-        if xmax is None:
-            self.xmax = xpos.max()
-        else:
-            self.xmax = xmax
-        self.maxiter = maxiter
-        self.inmask = inmask
-        self.xjumplo = xjumplo
-        self.xjumphi = xjumphi
-        self.xjumpval = xjumpval
-        self.ndim = len(ypos.shape)
-        self.nx = ypos.shape[0]
-        try:
-            self.nTrace = ypos.shape[1]
-        except IndexError:
-            self.nTrace = 1
-        self.outmask = np.zeros((self.nx,self.nTrace),dtype=np.bool)
-        return
+            raise PydlutilsException("Wrong number of arguments to TraceSet!")
     #
     #
     #
@@ -68,15 +157,12 @@ class TraceSet(object):
         xy : tuple of array-like
             The x, y positions.
         """
-        do_jump = (self.xjumpval is not None) and (not ignore_jump)
-        xRange = self.xmax - self.xmin
-        nx = int(xRange + 1)
-        xmid = 0.5 * (self.xmin + self.xmax)
+        do_jump = self.has_jump and (not ignore_jump)
         if xpos is None:
-            xpos = djs_laxisgen([nx, self.nTrace], iaxis=0) + self.xmin
+            xpos = djs_laxisgen([self.nTrace,self.nx], iaxis=0) + self.xmin
         ypos = np.zeros(xpos.shape,dtype=xpos.dtype)
         for iTrace in range(self.nTrace):
-            xinput = xpos[:,iTrace]
+            xinput = xpos[iTrace,:]
             if do_jump:
                 # Vector specifying what fraction of the jump has passed:
                 jfrac = np.minimum(np.maximum(((xinput - self.xjumplo) / (self.xjumphi - self.xjumplo)),0.),1.)
@@ -84,7 +170,31 @@ class TraceSet(object):
                 xnatural = xinput + jfrac * self.xjumpval
             else:
                 xnatural = xinput
-            xvec = 2.0 * (xnatural-xmid)/xRange
-            legarr = self._func_map[self.func](xvec,ncoeff)
-            ypos[:,iTrace] = np.dot(legarr,self.coeff[:,iTrace])
+            xvec = 2.0 * (xnatural-self.xmid)/self.xRange
+            legarr = self._func_map[self.func](xvec,self.ncoeff)
+            ypos[iTrace:] = np.dot(legarr,self.coeff[iTrace,:])
         return (xpos,ypos)
+    #
+    #
+    #
+    @property
+    def has_jump(self):
+        return self.xjumplo is not None
+    #
+    #
+    #
+    @property
+    def xRange(self):
+        return self.xmax - self.xmin
+    #
+    #
+    #
+    @property
+    def nx(self):
+        return int(self.xRange + 1)
+    #
+    #
+    #
+    @property
+    def xmid(self):
+        return 0.5 * (self.xmin + self.xmax)

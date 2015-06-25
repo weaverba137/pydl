@@ -1,9 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def xy2traceset(xpos,ypos,invvar=None,func='legendre',ncoeff=3,
-    xmin=None,xmax=None,maxiter=10,inmask=None,
-    ia=None,inputans=None,inputfunc=None,
-    xjumplo=None,xjumphi=None,xjumpval=None):
+def xy2traceset(xpos,ypos,**kwargs):
     """Convert from x,y positions to a trace set.
 
     Parameters
@@ -42,4 +39,4 @@ def xy2traceset(xpos,ypos,invvar=None,func='legendre',ncoeff=3,
     xy2traceset : TraceSet
         A :class:`TraceSet` object.
     """
-    return TraceSet(xpos,ypos)
+    return TraceSet(xpos,ypos,**kwargs)
