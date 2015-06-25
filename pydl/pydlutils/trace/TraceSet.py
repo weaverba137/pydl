@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from astropy.io.fits.fitsrec import FITS_rec
-from . import fpoly, fchebyshev
+from . import fpoly, fchebyshev, func_fit
 from .. import PydlutilsException
+from ..math import djs_reject
 from ..misc import djs_laxisgen
 from ...goddard.math import flegendre
 #
@@ -53,7 +54,7 @@ class TraceSet(object):
             self.coeff = args[0]['COEFF'][0]
             self.nTrace = self.coeff.shape[0]
             self.ncoeff = self.coeff.shape[1]
-            if 'XJUMPLO' in r1_trace.dtype.names:
+            if 'XJUMPLO' in args[0].dtype.names:
                 self.xjumplo = args[0]['XJUMPLO'][0]
                 self.xjumphi = args[0]['XJUMPHI'][0]
                 self.xjumpval = args[0]['XJUMPVAL'][0]
@@ -89,7 +90,7 @@ class TraceSet(object):
             if 'xmax' in kwargs:
                 self.xmax = np.float64(kwargs['xmax'])
             else:
-                self.xmax = xpos.xmax()
+                self.xmax = xpos.max()
             if 'maxiter' in kwargs:
                 maxiter = int(kwargs['maxiter'])
             else:
@@ -115,22 +116,15 @@ class TraceSet(object):
             self.coeff = np.zeros((self.nTrace,self.ncoeff),dtype=xpos.dtype)
             self.outmask = np.zeros(xpos.shape,dtype=np.bool)
             self.yfit = np.zeros(xpos.shape,dtype=xpos.dtype)
-            for iTrace in range(nTrace):
-                xinput = xpos[iTrace,:]
-                if do_jump:
-                    jfrac = np.minimum(np.maximum(((xinput - self.xjumplo) / (self.xjumphi - self.xjumplo)),0.),1.)
-                    xnatural = xinput + jfrac * self.xjumpval
-                else:
-                    xnatural = xinput
-                xnorm = 2.0 * (xnatural - self.xmid)/self.xRange
+            for iTrace in range(self.nTrace):
+                xvec = self.xnorm(xpos[iTrace,:],do_jump)
                 iIter = 0
-                qdone = Fals
-                ycurfit = None
+                qdone = False
                 tempivar = invvar[iTrace,:] * inmask[iTrace,:].astype(invvar.dtype)
                 thismask = tempivar > 0
                 while (not qdone) and (iIter <= maxiter):
-                    res,ycurfit = func_fit(xnorm, ypos[iTrace,:], self.ncoeff,
-                        invvar=tempinvar, function_name=self.func)
+                    res,ycurfit = func_fit(xvec, ypos[iTrace,:], self.ncoeff,
+                        invvar=tempivar, function_name=self.func)
                     thismask,qdone = djs_reject(ypos[iTrace,:],ycurfit,invvar=tempivar)
                     iIter += 1
                 self.yfit[iTrace,:] = ycurfit
@@ -159,20 +153,12 @@ class TraceSet(object):
         """
         do_jump = self.has_jump and (not ignore_jump)
         if xpos is None:
-            xpos = djs_laxisgen([self.nTrace,self.nx], iaxis=0) + self.xmin
+            xpos = djs_laxisgen([self.nTrace,self.nx], iaxis=1) + self.xmin
         ypos = np.zeros(xpos.shape,dtype=xpos.dtype)
         for iTrace in range(self.nTrace):
-            xinput = xpos[iTrace,:]
-            if do_jump:
-                # Vector specifying what fraction of the jump has passed:
-                jfrac = np.minimum(np.maximum(((xinput - self.xjumplo) / (self.xjumphi - self.xjumplo)),0.),1.)
-                # Conversion to "natural" x baseline:
-                xnatural = xinput + jfrac * self.xjumpval
-            else:
-                xnatural = xinput
-            xvec = 2.0 * (xnatural-self.xmid)/self.xRange
+            xvec = self.xnorm(xpos[iTrace,:],do_jump)
             legarr = self._func_map[self.func](xvec,self.ncoeff)
-            ypos[iTrace:] = np.dot(legarr,self.coeff[iTrace,:])
+            ypos[iTrace:] = np.dot(legarr.T,self.coeff[iTrace,:])
         return (xpos,ypos)
     #
     #
@@ -198,3 +184,18 @@ class TraceSet(object):
     @property
     def xmid(self):
         return 0.5 * (self.xmin + self.xmax)
+    #
+    #
+    #
+    def xnorm(self,xinput,jump):
+        """Convert input x coordinates to normalized coordinates suitable
+        for input to special polynomials.
+        """
+        if jump:
+            # Vector specifying what fraction of the jump has passed:
+            jfrac = np.minimum(np.maximum(((xinput - self.xjumplo) / (self.xjumphi - self.xjumplo)),0.),1.)
+            # Conversion to "natural" x baseline:
+            xnatural = xinput + jfrac * self.xjumpval
+        else:
+            xnatural = xinput
+        return 2.0 * (xnatural-self.xmid)/self.xRange

@@ -39,4 +39,5 @@ def xy2traceset(xpos,ypos,**kwargs):
     xy2traceset : TraceSet
         A :class:`TraceSet` object.
     """
+    from . import TraceSet
     return TraceSet(xpos,ypos,**kwargs)
