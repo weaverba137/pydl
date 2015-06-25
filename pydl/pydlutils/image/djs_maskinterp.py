@@ -134,5 +134,5 @@ def djs_maskinterp(yval,mask,xval=None,axis=None,const=False):
                         for j in range(yval.shape[2]):
                             ynew[:,i,j] = djs_maskinterp1(yval[:,i,j],mask[:,i,j],xval[i,j,:],const=const)
         else:
-            raise NotImplementedError('Unsupported number of dimensions.')
+            raise ValueError('Unsupported number of dimensions.')
     return ynew
