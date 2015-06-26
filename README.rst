@@ -23,7 +23,7 @@ There are four astronomical libraries targeted:
 
 This package affiliated with the astropy_ project and is registered with PyPI_.
 
-.. image:: https://img.shields.io/pypi/dm/pydl.svg
+.. image:: https://img.shields.io/pypi/v/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
     :alt: PyPI Badge
 
