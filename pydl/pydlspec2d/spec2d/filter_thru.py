@@ -33,9 +33,9 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
     from ...pydlutils.image import djs_maskinterp
     from ...pydlutils.trace import traceset2xy, xy2traceset
     nTrace,nx = flux.shape
-
+    if filter_prefix != 'sdss_jun2001':
+        raise ValueError("Filters other than {0} are not available!".format('sdss_jun2001'))
     ffiles = [(join(dirname(__file__),'..','..','pydlutils','data','filters','{0}_{1}_atm.dat'.format(filter_prefix,f))) for f in 'ugriz']
-
     if waveimg is None and wset is None:
         raise ValueError("Either waveimg or wset must be specified!")
     if waveimg is None:
@@ -45,17 +45,14 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
         newwaveimg = vactoair(waveimg)
     else:
         newwaveimg = waveimg
-
     logwave = np.log10(newwaveimg)
     diffx = np.outer(np.ones((nTrace,),dtype=flux.dtype),np.arange(nx-1,dtype=flux.dtype))
     diffy = logwave[:,1:] - logwave[:,0:nx-1]
     diffset = xy2traceset(diffx,diffy,ncoeff=4,xmin=0,xmax=nx-1)
     pixnorm, logdiff = traceset2xy(diffset)
     logdiff = np.absolute(logdiff)
-
     if mask is not None:
         flux_interp = djs_maskinterp(flux, mask, iaxis=0)
-
     res = np.zeros((nTrace,len(ffiles)),dtype=flux.dtype)
     for i,f in enumerate(ffiles):
         filter_data = ascii.read(f,comment='#.*',

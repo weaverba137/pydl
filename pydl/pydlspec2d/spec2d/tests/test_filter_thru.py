@@ -6,6 +6,7 @@ def test_filter_thru():
     import numpy as np
     from os.path import dirname, join
     from astropy.io import fits
+    from astropy.tests.helper import raises
     # with fits.open(join('pydl','pydlspec2d','spec2d','tests','t','spPlate-4055-55359-0020.fits')) as hdulist:
     with fits.open(join(dirname(__file__),'t','spPlate-4055-55359-0020.fits')) as hdulist:
         flux = hdulist[0].data
@@ -27,6 +28,13 @@ def test_filter_thru():
         ],dtype=np.float32).T
     assert f.shape == (20,5)
     assert np.allclose(f,idl_data,atol=1.0e-7)
+    #
+    # Test bad input.
+    #
+    with raises(ValueError):
+        f = filter_thru(flux)
+    with raises(ValueError):
+        f = filter_thru(flux,waveimg=waveimg,filter_prefix='sdss')
     return
 #
 #
