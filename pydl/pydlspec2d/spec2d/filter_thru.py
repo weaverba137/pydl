@@ -25,15 +25,16 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
         Integrated flux in the filter bands.
     """
     from os import getenv
-    from os.path import join
+    from os.path import dirname,join
     import numpy as np
     from astropy.io import ascii
+    from astropy.utils.data import get_pkg_data_filename
     from ...goddard.astro import vactoair
     from ...pydlutils.image import djs_maskinterp
     from ...pydlutils.trace import traceset2xy, xy2traceset
     nTrace,nx = flux.shape
 
-    ffiles = [join(getenv('IDLUTILS_DIR'),'data','filters','{0}_{1}_atm.dat'.format(filter_prefix,f)) for f in 'ugriz']
+    ffiles = [(join(dirname(__file__),'..','..','pydlutils','data','filters','{0}_{1}_atm.dat'.format(filter_prefix,f))) for f in 'ugriz']
 
     if waveimg is None and wset is None:
         raise ValueError("Either waveimg or wset must be specified!")
