@@ -28,9 +28,9 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
     from os.path import join
     import numpy as np
     from astropy.io import ascii
-    from ..goddard.astro import vactoair
-    from ..pydlutils.image import djs_maskinterp
-    from ..pydlutils.trace import traceset2xy, xy2traceset
+    from ...goddard.astro import vactoair
+    from ...pydlutils.image import djs_maskinterp
+    from ...pydlutils.trace import traceset2xy, xy2traceset
     nTrace,nx = flux.shape
 
     ffiles = [join(getenv('IDLUTILS_DIR'),'data','filters','{0}_{1}_atm.dat'.format(filter_prefix,f)) for f in 'ugriz']
@@ -59,7 +59,7 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
     for i,f in enumerate(ffiles):
         filter_data = ascii.read(f,comment='#.*',
             names=('lam', 'respt', 'resbig', 'resnoa', 'xatm'))
-        filtimg = (logdiff * np.interp(newwaveimg.flatten(),filter_data['lam'].data,filter_data['respt'].data)).reshape(flux.shape)
+        filtimg = logdiff * np.interp(newwaveimg.flatten(),filter_data['lam'].data,filter_data['respt'].data).reshape(logdiff.shape)
         if mask is not None:
             res[:,i] = (flux_interp * filtimg).sum(1)
         else:
