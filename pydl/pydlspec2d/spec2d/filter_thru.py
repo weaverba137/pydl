@@ -24,9 +24,17 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
     filter_thru : array-like
         Integrated flux in the filter bands.
     """
+    from os import getenv
+    from os.path import join
     import numpy as np
+    from astropy.io import ascii
     from ..goddard.astro import vactoair
+    from ..pydlutils.image import djs_maskinterp
     from ..pydlutils.trace import traceset2xy, xy2traceset
+    nTrace,nx = flux.shape
+
+    ffiles = [join(getenv('IDLUTILS_DIR'),'data','filters','{0}_{1}_atm.dat'.format(filter_prefix,f)) for f in 'ugriz']
+
     if waveimg is None and wset is None:
         raise ValueError("Either waveimg or wset must be specified!")
     if waveimg is None:
@@ -36,6 +44,26 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
         newwaveimg = vactoair(waveimg)
     else:
         newwaveimg = waveimg
+
     logwave = np.log10(newwaveimg)
-    
-    return
+    diffx = np.outer(np.ones((nTrace,),dtype=flux.dtype),np.arange(nx-1,dtype=flux.dtype))
+    diffy = logwave[:,1:] - logwave[:,0:nx-1]
+    diffset = xy2traceset(diffx,diffy,ncoeff=4,xmin=0,xmax=nx-1)
+    pixnorm, logdiff = traceset2xy(diffset)
+    logdiff = np.absolute(logdiff)
+
+    if mask is not None:
+        flux_interp = djs_maskinterp(flux, mask, iaxis=0)
+
+    res = np.zeros((nTrace,len(ffiles)),dtype=flux.dtype)
+    for i,f in enumerate(ffiles):
+        filter_data = ascii.read(f,comment='#.*',
+            names=('lam', 'respt', 'resbig', 'resnoa', 'xatm'))
+        filtimg = (logdiff * np.interp(newwaveimg.flatten(),filter_data['lam'].data,filter_data['respt'].data)).reshape(flux.shape)
+        if mask is not None:
+            res[:,i] = (flux_interp * filtimg).sum(1)
+        else:
+            res[:,i] = (flux * filtimg).sum(1)
+        sumfilt = filtimg.sum(1)
+        res[:,i] = res[:,i] / (sumfilt + (sumfilt <= 0).astype(sumfilt.dtype))
+    return res
