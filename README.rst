@@ -23,11 +23,11 @@ There are four astronomical libraries targeted:
 
 This package affiliated with the astropy_ project and is registered with PyPI_.
 
-.. image:: https://pypip.in/v/pydl/badge.png
+.. image:: https://img.shields.io/pypi/dm/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
     :alt: PyPI Badge
 
-.. image:: https://pypip.in/d/pydl/badge.png
+.. image:: https://img.shields.io/pypi/dm/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
     :alt: PyPI Downloads
 
@@ -51,7 +51,7 @@ the repository is http://github.com/weaverba137/pydl .
 Travis Build Status
 -------------------
 
-.. image:: https://travis-ci.org/weaverba137/pydl.png
+.. image:: https://img.shields.io/travis/weaverba137/pydl.svg
     :target: https://travis-ci.org/weaverba137/pydl
     :alt: Travis Build Status
 
@@ -59,12 +59,15 @@ Travis Build Status
 Test Coverage Status
 --------------------
 
-.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.png
+.. image:: https://img.shields.io/coveralls/weaverba137/pydl.svg
     :target: https://coveralls.io/r/weaverba137/pydl
     :alt: Test Coverage Status
 
 License
 -------
+.. image:: https://img.shields.io/pypi/l/pydl.svg
+    :target: https://pypi.python.org/pypi/pydl
+    :alt: License
 
 Pydl is free software licensed under a 3-clause BSD-style license. For details see
 the ``licenses/LICENSE.rst`` file.
