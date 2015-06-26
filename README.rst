@@ -79,7 +79,7 @@ Legal
 
 .. _Python: http://python.org
 .. _`IDL®`: http://www.exelisvis.com/language/en-us/productsservices/idl.aspx
-.. _idlutils: http://www.sdss3.org/dr10/software/idlutils.php
+.. _idlutils: http://www.sdss.org/dr12/software/idlutils/
 .. _SDSS: http://www.sdss.org
 .. _`Goddard utilities`: http://idlastro.gsfc.nasa.gov/
 .. _idlspec2d: http://www.sdss3.org/svn/repo/idlspec2d/trunk/
@@ -89,6 +89,6 @@ Legal
 .. _PyPI: https://pypi.python.org/pypi/pydl/
 .. _`pydl on Read the Docs`: http://pydl.readthedocs.org/en/latest/
 .. _SDSS-III: http://www.sdss3.org
-.. _`svn repository`: http://www.sdss3.org/dr10/software/products.php
+.. _`svn repository`: http://www.sdss.org/dr12/software/products/
 .. _GitHub: http://github.com
 .. _`Exelis Visual Information Solutions`: http://www.exelisvis.com
