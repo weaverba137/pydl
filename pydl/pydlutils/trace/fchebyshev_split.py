@@ -23,7 +23,11 @@ def fchebyshev_split(x,m):
         n = 1
     if m < 2:
         raise ValueError('Order of polynomial must be at least 2.')
-    leg = np.ones((m,n),dtype='d')
+    try:
+        dt = x.dtype
+    except AttributeError:
+        dt = np.float64
+    leg = np.ones((m,n),dtype=dt)
     try:
         leg[0,:] = (x >= 0).astype(x.dtype)
     except AttributeError:

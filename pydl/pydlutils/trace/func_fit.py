@@ -90,9 +90,11 @@ def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=No
         # extra2 = finalarr * np.outer(np.ones((nparams,),dtype=x.dtype),(invvar > 0))
         extra2 = finalarr * np.outer(np.ones((nparams,),dtype=x.dtype),invvar)
         alpha = np.dot(finalarr,extra2.T)
+        # assert alpha.dtype == x.dtype
         if nparams > 1:
             # beta = np.dot(ysub * (invvar > 0), finalarr.T)
             beta = np.dot(ysub * invvar, finalarr.T)
+            assert beta.dtype == x.dtype
             # uu,ww,vv = np.linalg.svd(alpha,full_matrices=False)
             res[nonfix] = np.linalg.solve(alpha,beta)
         else:

@@ -22,7 +22,11 @@ def flegendre(x,m):
         n = 1
     if m < 1:
         raise ValueError('Number of Legendre polynomials must be at least 1.')
-    leg = np.ones((m,n),dtype='d')
+    try:
+        dt = x.dtype
+    except AttributeError:
+        dt = np.float64
+    leg = np.ones((m,n),dtype=dt)
     if m >= 2:
         leg[1,:] = x
     if m >= 3:
