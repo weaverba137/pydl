@@ -6,6 +6,7 @@ pydl
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
+
 Description
 -----------
 
@@ -31,6 +32,7 @@ This package affiliated with the astropy_ project and is registered with PyPI_.
     :target: https://pypi.python.org/pypi/pydl
     :alt: PyPI Downloads
 
+
 Full Documentation
 ------------------
 
@@ -48,6 +50,7 @@ This package was initially developed on the SDSS-III_ `svn repository`_.  It was
 moved to the new GitHub_ repository on 2013-03-06.  The present location of
 the repository is http://github.com/weaverba137/pydl .
 
+
 Travis Build Status
 -------------------
 
@@ -59,9 +62,10 @@ Travis Build Status
 Test Coverage Status
 --------------------
 
-.. image:: https://img.shields.io/coveralls/weaverba137/pydl.svg
-    :target: https://coveralls.io/r/weaverba137/pydl
+.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/weaverba137/pydl?branch=master
     :alt: Test Coverage Status
+
 
 License
 -------
@@ -71,6 +75,7 @@ License
 
 Pydl is free software licensed under a 3-clause BSD-style license. For details see
 the ``licenses/LICENSE.rst`` file.
+
 
 Legal
 -----
