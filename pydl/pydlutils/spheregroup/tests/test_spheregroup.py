@@ -28,4 +28,4 @@ def test_spheregroup():
     phi = np.degrees(np.arctan2(y,x))
     ra = np.where(phi < 0, phi + 360.0,phi)
     dec = 90.0 - theta
-    group = spheregroup(ra,dec,5.0)
+    # group = spheregroup(ra,dec,5.0)
