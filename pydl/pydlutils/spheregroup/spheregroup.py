@@ -81,6 +81,7 @@ def spheregroup(ra,dec,linklength,chunksize=None):
     #
     # Reset the multiplicities
     #
+    multgroup[:] = 0
     for i in range(ngroups):
         j = firstgroup[i]
         while j != -1:

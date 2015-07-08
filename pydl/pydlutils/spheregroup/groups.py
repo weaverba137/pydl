@@ -46,7 +46,7 @@ class groups(object):
         # Save information about the coordinates.
         #
         nGroups = 0
-        nTargets = coordinates.shape[0]
+        nTargets = coordinates.shape[1]
         multGroup = self.np.zeros(nTargets,dtype='i4')
         firstGroup = self.np.zeros(nTargets,dtype='i4') -1
         nextGroup = self.np.zeros(nTargets,dtype='i4') -1
@@ -58,7 +58,7 @@ class groups(object):
             nTmp = 0
             minGroup = nGroups
             for j in range(nTargets):
-                sep = self.separation(coordinates[i,:],coordinates[j,:])
+                sep = self.separation(coordinates[:,i],coordinates[:,j])
                 if sep <= distance:
                     multGroup[nTmp] = j
                     minGroup = min(minGroup,inGroup[j])
