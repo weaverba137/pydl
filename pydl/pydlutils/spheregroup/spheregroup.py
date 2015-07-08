@@ -36,7 +36,7 @@ def spheregroup(ra,dec,linklength,chunksize=None):
     from .. import PydlutilsException
     from .. import PydlutilsUserWarning
     from numpy import zeros
-    from warning import warn
+    from warnings import warn
     npoints = ra.size
     if npoints == 1:
         raise PydlutilsException("Cannot group only one point!")

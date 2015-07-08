@@ -86,7 +86,7 @@ class groups(object):
         #
         # Renumber to get rid of the numbers which were skipped
         #
-        renumber = self.np.zeros(nTargets,dtype='bool')
+        renumbered = self.np.zeros(nTargets,dtype='bool')
         nTmp = nGroups
         nGroups = 0
         for i in range(nTargets):
@@ -123,12 +123,3 @@ class groups(object):
         self.firstGroup = firstGroup
         self.nextGroup = nextGroup
         return
-    def inGroup(self,i):
-        return self.inGroup[i]
-    def multGroup(self,i):
-        return self.multGroup[i]
-    def firstGroup(self,i):
-        return self.firstGroup[i]
-    def nextGroup(self,i):
-        return self.nextGroup[i]
-

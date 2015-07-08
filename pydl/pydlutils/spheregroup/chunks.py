@@ -278,33 +278,34 @@ class chunks(object):
         nMapGroups = 0
         for i in range(self.nDec):
             for j in range(self.nRa[i]):
-                chunkGroup = self.chunkfriendsoffriends(ra,dec,self.chunkList[i][j],linkSep)
-                for k in range(chunkGroup.nGroups):
-                    minEarly = 9*nPoints
-                    l = chunkGroup.firstGroup(k)
-                    while l != -1:
-                        if inGroup[self.chunkList[i][j][l]] != -1:
-                            checkEarly = inGroup[self.chunkList[i][j][l]]
-                            while mapGroups[checkEarly] != checkEarly:
-                                checkEarly=mapGroups[checkEarly]
-                            minEarly = min(minEarly,checkEarly)
-                        else:
-                            inGroup[self.chunkList[i][j][l]] = nMapGroups
-                        l = chunkGroup.nextGroup(l)
-                    if minEarly == 9*nPoints:
-                        mapGroups[nMapGroups] = nMapGroups
-                    else:
-                        mapGroups[nMapGroups] = minEarly
-                        l = chunkGroup.firstGroup(k)
+                if len(self.chunkList[i][j]) > 0:
+                    chunkGroup = self.chunkfriendsoffriends(ra,dec,self.chunkList[i][j],linkSep)
+                    for k in range(chunkGroup.nGroups):
+                        minEarly = 9*nPoints
+                        l = chunkGroup.firstGroup[k]
                         while l != -1:
-                            checkEarly = inGroup[self.chunkList[i][j][l]]
-                            while mapGroups[checkEarly] != checkEarly:
-                                tmpEarly=mapGroups[checkEarly]
+                            if inGroup[self.chunkList[i][j][l]] != -1:
+                                checkEarly = inGroup[self.chunkList[i][j][l]]
+                                while mapGroups[checkEarly] != checkEarly:
+                                    checkEarly=mapGroups[checkEarly]
+                                minEarly = min(minEarly,checkEarly)
+                            else:
+                                inGroup[self.chunkList[i][j][l]] = nMapGroups
+                            l = chunkGroup.nextGroup[l]
+                        if minEarly == 9*nPoints:
+                            mapGroups[nMapGroups] = nMapGroups
+                        else:
+                            mapGroups[nMapGroups] = minEarly
+                            l = chunkGroup.firstGroup[k]
+                            while l != -1:
+                                checkEarly = inGroup[self.chunkList[i][j][l]]
+                                while mapGroups[checkEarly] != checkEarly:
+                                    tmpEarly=mapGroups[checkEarly]
+                                    mapGroups[checkEarly]=minEarly
+                                    checkEarly=tmpEarly
                                 mapGroups[checkEarly]=minEarly
-                                checkEarly=tmpEarly
-                            mapGroups[checkEarly]=minEarly
-                            l=chunkGroup.nextGroup(l)
-                    nMapGroups += 1
+                                l=chunkGroup.nextGroup[l]
+                        nMapGroups += 1
         #
         # Now all groups which are mapped to themselves are the real groups
         # Make sure the mappings are set up to go all the way down.
