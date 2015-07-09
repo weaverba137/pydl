@@ -1,12 +1,14 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 def is_cap_used(use_caps,i):
-    """Returns True if a cap is used.
+    """Returns ``True`` if a cap is used.
 
     Parameters
     ----------
-    use_caps :
+    use_caps : int
+        Bit mask indicating which cap is used.
     i : int
+        Number indicating which cap we are interested in.
 
     Returns
     -------
