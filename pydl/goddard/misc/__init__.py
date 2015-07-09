@@ -4,4 +4,3 @@
 This subpackage corresponds to the misc directory in the Goddard utilities.
 """
 from .cirrange import cirrange
-from .readcol import readcol
