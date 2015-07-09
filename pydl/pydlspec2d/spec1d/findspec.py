@@ -14,10 +14,10 @@ def findspec(*args,**kwargs):
     import os
     import os.path
     import glob
-    from astropy.io import fits as pyfits
+    from astropy.io import ascii, fits
     import numpy as np
     from ... import uniq
-    from ...pydlutils.misc import djs_readcol, struct_print
+    from ...pydlutils.misc import struct_print
     from ...pydlutils.spheregroup import spherematch
     from .. import Pydlspec2dException
     import pydl.pydlspec2d.spec1d # get the findspec_cache dictionary
@@ -51,11 +51,11 @@ def findspec(*args,**kwargs):
         plates_files = glob.glob(os.path.join(topdir,"plates-*.fits"))
         plist = None
         if os.path.exists(platelist_file):
-            platelist = pyfits.open(platelist_file)
+            platelist = fits.open(platelist_file)
             plist = platelist[1].data
             platelist.close()
         if len(plates_files) > 0:
-            plates = pyfits.open(plates_files[0])
+            plates = fits.open(plates_files[0])
             plist = plates[1].data
             plates.close()
         if plist is None:
@@ -83,7 +83,9 @@ def findspec(*args,**kwargs):
     # Read RA, Dec from infile if set
     #
     if 'infile' in kwargs:
-        ra, dec = djs_readcol(kwargs['infile'],format='(D,D)')
+        infile_data = ascii.read(kwargs['infile'],names=['ra','dec'])
+        ra = infile_data["ra"].data
+        dec = infile_data["dec"].data
     if 'searchrad' in kwargs:
         searchrad = float(kwargs['searchrad'])
     else:

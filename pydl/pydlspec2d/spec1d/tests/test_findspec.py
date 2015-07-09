@@ -3,8 +3,5 @@
 def test_findspec():
     """This is just a placeholder for now."""
     from .. import findspec
-    #slist = findspec(infile='file.in',sdss=True)
-    #if slist is not None:
-    #    print(slist)
+    # slist = findspec(infile='file.in',sdss=True)
     assert True
-    return

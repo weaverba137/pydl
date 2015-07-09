@@ -38,14 +38,12 @@ def pca_gal(**kwargs):
     import matplotlib
     matplotlib.use('Agg') # Non-interactive back-end
     import pylab
-    from astropy.io import fits as pyfits
+    from astropy.io import ascii, fits
     import numpy as np
     from matplotlib.font_manager import fontManager, FontProperties
     from ...goddard.astro import get_juldate
     from ...pydlutils.image import djs_maskinterp
     from ...pydlutils.math import djs_median
-    #from ...pydlutils.misc import djs_readcol
-    from astropy.io import ascii
     from . import pca_solve, plot_eig, readspec, skymask, wavevector
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
@@ -75,7 +73,6 @@ def pca_gal(**kwargs):
     #
     # Read the input spectra
     #
-    #plate,mjd,fiber,zfit = djs_readcol(inputfile,format='(L,L,L,D)')
     converters = {'plate': [ascii.convert_numpy(np.int32)],
         'mjd': [ascii.convert_numpy(np.int32)],
         'fiber': [ascii.convert_numpy(np.int32)] }
@@ -219,13 +216,13 @@ def pca_gal(**kwargs):
     #
     if os.path.exists(outfile+'.fits'):
         os.remove(outfile+'.fits')
-    hdu0 = pyfits.PrimaryHDU(pcaflux['flux'])
-    hdu1 = pyfits.new_table(pyfits.ColDefs([
-        pyfits.Column(name='plate',format='J',array=plate),
-        pyfits.Column(name='mjd',format='J',array=mjd),
-        pyfits.Column(name='fiber',format='J',array=fiber),
-        pyfits.Column(name='redshift',format='D',array=zfit)]))
-    hdulist = pyfits.HDUList([hdu0,hdu1])
+    hdu0 = fits.PrimaryHDU(pcaflux['flux'])
+    hdu1 = fits.new_table(fits.ColDefs([
+        fits.Column(name='plate',format='J',array=plate),
+        fits.Column(name='mjd',format='J',array=mjd),
+        fits.Column(name='fiber',format='J',array=fiber),
+        fits.Column(name='redshift',format='D',array=zfit)]))
+    hdulist = fits.HDUList([hdu0,hdu1])
     hdulist[0].header.update('OBJECT','GALAXY')
     hdulist[0].header.update('COEFF0',pcaflux['newloglam'][0])
     hdulist[0].header.update('COEFF1',pcaflux['newloglam'][1]-pcaflux['newloglam'][0])
