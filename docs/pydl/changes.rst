@@ -11,6 +11,7 @@ pydl Changelog
   "entry_point" method.
 * Remove Python/3.2 tests.
 * Improved test coverage.
+* Fixed problem with the spheregroup code.
 * Removed some code that is 100% redundant with astropy (*e.g.* ``angles_to_xyz``).
 
 
