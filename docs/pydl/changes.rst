@@ -13,7 +13,7 @@ pydl Changelog
 * Improved test coverage.
 * Fixed problem with the spheregroup code.
 * Removed some code that is 100% redundant with astropy (*e.g.* ``angles_to_xyz``).
-
+* Fixed bug in set_use_caps that was discovered on the IDL side.
 
 0.3.0 (2015-02-20)
 ------------------
