@@ -2,7 +2,7 @@
 pydl Changelog
 ==============
 
-0.4.1 (unreleased)
+0.4.1 (2015-09-22)
 ------------------
 
 * No changes at all from 0.4.0.  This tag only exists because of a botched
