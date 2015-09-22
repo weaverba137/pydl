@@ -4,10 +4,10 @@ Authors and Credits
 
 If we have neglected to include you, please let us know right away!
 
-* Kyle Barbary
-* Larry Bradley
-* Christoph Deil
-* Demitri Muna
-* Thomas Robitaille
-* Erik Tollerud
-* Benjamin Alan Weaver
+* `Kyle Barbary <https://github.com/kbarbary>`_
+* `Larry Bradley <https://github.com/larrybradley>`_
+* `Christoph Deil <https://github.com/cdeil>`_
+* `Demitri Muna <https://github.com/demitri>`_
+* `Thomas Robitaille <https://github.com/astrofrog>`_
+* `Erik Tollerud <https://github.com/eteq>`_
+* `Benjamin Alan Weaver <https://github.com/weaverba137>`_
