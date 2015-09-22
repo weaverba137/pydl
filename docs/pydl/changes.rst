@@ -5,7 +5,8 @@ pydl Changelog
 0.4.1 (unreleased)
 ------------------
 
-* No changes yet.
+* No changes at all from 0.4.0.  This tag only exists because of a botched
+  PyPI upload.
 
 0.4.0 (2015-09-22)
 ------------------
