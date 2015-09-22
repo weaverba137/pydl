@@ -2,7 +2,7 @@
 pydl Changelog
 ==============
 
-0.4.0 (unreleased)
+0.4.0 (2015-09-22)
 ------------------
 
 * Use `astropy_helpers`_/v1.0.3, package-template_/v1.0.
