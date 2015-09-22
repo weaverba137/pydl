@@ -7,18 +7,18 @@ def hogg_iau_name(ra,dec,prefix='SDSS',precision=1):
 
     Parameters
     ----------
-    ra : float or ndarray
+    ra : :class:`float` or :class:`numpy.ndarray`
         Right ascencion in decimal degrees
-    dec : float or ndarray
+    dec : :class:`float` or :class:`numpy.ndarray`
         Declination in decimal degrees.
-    prefix : str, optional
+    prefix : :class:`str`, optional
         Add this prefix to the string, defaults to 'SDSS'.
-    precision : int, optional
+    precision : :class:`int`, optional
         Display this many digits of precision on seconds, default 1.
 
     Returns
     -------
-    hogg_iau_name : str or list
+    hogg_iau_name : :class:`str` or :class:`list`
         The IAU name for the coordinates.
 
     Examples

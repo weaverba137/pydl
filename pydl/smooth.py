@@ -7,18 +7,18 @@ def smooth(signal,owidth,edge_truncate=False):
 
     Parameters
     ----------
-    signal : array_like
+    signal : array-like
         The array to be smoothed.
-    owidth : int or array_like
+    owidth : :class:`int` or array-like
         Width of the smoothing window.  Can be a scalar or an array with length
         equal to the number of dimensions of `signal`.
-    edge_truncate : bool, optional
+    edge_truncate : :class:`bool`, optional
         Set `edge_truncate` to ``True`` to apply smoothing to all points.  Points
         near the edge are normally excluded from smoothing.
 
     Returns
     -------
-    smooth : array_like
+    smooth : array-like
         A smoothed array with the same dimesions and type as `signal`.
 
     Notes
@@ -52,4 +52,3 @@ def smooth(signal,owidth,edge_truncate=False):
         else:
             s[i] = signal[i-w2:i+w2+1].sum()/float(width)
     return s
-

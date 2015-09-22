@@ -38,12 +38,12 @@ def djs_median(array,dimension=None,width=None,boundary='none'):
 
     Parameters
     ----------
-    array : ndarray
+    array : :class:`numpy.ndarray`
         input array
-    dimension : int, optional
+    dimension : :class:`int`, optional
         Compute the median over this dimension. It is an error to specify both
         `dimension` and `width`.
-    width : int, optional
+    width : :class:`int`, optional
         Width of the median window. In general, this should be an odd
         integer.  It is an error to specify both `dimension` and `width`.
     boundary : { 'none', 'reflect', 'nearest', 'wrap' }, optional
@@ -55,7 +55,7 @@ def djs_median(array,dimension=None,width=None,boundary='none'):
 
     Returns
     -------
-    djs_median : ndarray
+    djs_median : :class:`numpy.ndarray`
         The output.  If neither `dimension` nor `width` are set, this is a scalar
         value, just the output of ``numpy.median()``.  If `dimension` is set,
         then the result simply ``numpy.median(array,dimension)``.

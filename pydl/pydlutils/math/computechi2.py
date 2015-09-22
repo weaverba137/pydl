@@ -10,29 +10,29 @@ class computechi2(object):
 
     Parameters
     ----------
-    bvec : ndarray
+    bvec : :class:`numpy.ndarray`
         The b vector in Ax=b. This vector has length N.
-    sqivar : ndarray
+    sqivar : :class:`numpy.ndarray`
         The reciprocal of the errors in `b`.  The name comes from the square
         root of the inverse variance, which is what this is.
-    amatrix : ndarray
+    amatrix : :class:`numpy.ndarray`
         The matrix A in Ax=b.  The shape of this matrix is (N,M).
 
     Attributes
     ----------
-    chi2 : float
+    chi2 : :class:`float`
         The chi**2 value of the fit.
-    acoeff : ndarray
+    acoeff : :class:`numpy.ndarray`
         The fit parameters, x, in Ax=b.  This vector has length M.
-    yfit : ndarray
+    yfit : :class:`numpy.ndarray`
         The evaluated best-fit at each point.  This vector has length N.
-    dof : int
+    dof : :class:`int`
         The degrees of freedom of the fit.  This is the number of values of `bvec`
         that have `sqivar` > 0 minus the number of fit paramaters, which is
         equal to M.
-    covar : ndarray
+    covar : :class:`numpy.ndarray`
         The covariance matrix.  The shape of this matrix is (M,M).
-    var : ndarray
+    var : :class:`numpy.ndarray`
         The variances of the fit.  This is identical to the diagonal of the
         covariance matrix.  This vector has length M.
     """

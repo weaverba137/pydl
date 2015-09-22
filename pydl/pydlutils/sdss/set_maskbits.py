@@ -5,15 +5,15 @@ def set_maskbits(idlutils_version='v5_5_8',maskbits_file=None):
 
     Parameters
     ----------
-    idlutils_version : str, optional
+    idlutils_version : :class:`str`, optional
         Fetch the sdssMaskbits.par file corresponding to this idlutils version.
-    maskbits_file : str, optional
+    maskbits_file : :class:`str`, optional
         Use an explicit file instead of downloading the official version.
         This should only be used for tests.
 
     Returns
     -------
-    set_maskbits : dict
+    set_maskbits : :class:`dict`
         A dictionary of bitmasks suitable for caching.
 
     Raises

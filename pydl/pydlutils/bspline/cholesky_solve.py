@@ -5,14 +5,14 @@ def cholesky_solve(a,bb):
 
     Parameters
     ----------
-    a : ndarray
-        A in Ax=b.
-    bb : ndarray
-        b in Ax=b
+    a : :class:`numpy.ndarray`
+        :math:`A` in :math:`A x = b`.
+    bb : :class:`numpy.ndarray`
+        :math:`b` in :math:`A x = b`.
 
     Returns
     -------
-    cholesky_solve : tuple
+    cholesky_solve : :func:`tuple`
         A tuple containing the status and the result of the solution.  The
         status is always -1.
     """

@@ -31,6 +31,9 @@ API
 .. automodapi:: pydl.pydlutils.mangle
     :no-inheritance-diagram:
 
+.. automodapi:: pydl.pydlutils.math
+    :no-inheritance-diagram:
+
 .. automodapi:: pydl.pydlutils.misc
     :no-inheritance-diagram:
 

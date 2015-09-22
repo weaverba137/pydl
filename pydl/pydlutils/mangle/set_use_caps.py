@@ -17,23 +17,23 @@ def set_use_caps(x,cm,polygon_use_caps,add=False,tol=1.0e-10,allow_doubles=False
         Polygon `x` value.
     cm : array-like
         Polygon `cm` value.
-    polygon_use_caps : int
+    polygon_use_caps : :class:`int`
         Input value of use_caps.
-    add : bool, optional
+    add : :class:`bool`, optional
         If ``True``, don't initialize the use_caps value to zero, use the value of
         `polygon_use_caps` instead.
-    tol : float, optional
+    tol : :class:`float`, optional
         Tolerance used to determine whether two caps are identical.
-    allow_doubles : bool, optional
+    allow_doubles : :class:`bool`, optional
         Normally, this routine automatically sets use_caps such that no
         two caps with use_caps set are identical.
-    allow_neg_doubles : bool, optional
+    allow_neg_doubles : :class:`bool`, optional
         Normally, two caps that are identical except for the sign of `cm`
         would be set unused.  This inhibits that behaviour.
 
     Returns
     -------
-    set_use_caps : long
+    set_use_caps : :class:`long`
         Value of use_caps.
     """
     import numpy as np

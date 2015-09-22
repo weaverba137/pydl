@@ -5,14 +5,14 @@ def djs_laxisgen(dims,iaxis=0):
 
     Parameters
     ----------
-    dims : list
+    dims : :class:`list`
         Dimensions of the array to return.
-    iaxis : int, optional
+    iaxis : :class:`int`, optional
         Index along this dimension.
 
     Returns
     -------
-    djs_laxisgen : ndarray
+    djs_laxisgen : :class:`numpy.ndarray`
         An array of indexes with ``dtype=int32``.
 
     Raises
@@ -23,7 +23,7 @@ def djs_laxisgen(dims,iaxis=0):
     Notes
     -----
     For two or more dimensions, there is no difference between this routine and
-    djs_laxisnum.
+    :func:`~pydl.pydlutils.misc.djs_laxisnum`.
 
     Examples
     --------

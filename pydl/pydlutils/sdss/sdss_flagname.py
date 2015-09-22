@@ -5,16 +5,16 @@ def sdss_flagname(flagname, flagvalue, concat=False):
 
     Parameters
     ----------
-    flagname : str
+    flagname : :class:`str`
         The name of a bitmask group. Not case-sensitive.
-    flagvalue : long
+    flagvalue : :class:`long`
         The value to be converted into bitmask names.
-    concat : bool, optional
+    concat : :class:`bool`, optional
         If set to ``True``, the list of names is converted to a space-separated string.
 
     Returns
     -------
-    sdss_flagname : str or list
+    sdss_flagname : :class:`str` or :class:`list`
         The names of the bitmasks encoded in `flagvalue`.
 
     Raises

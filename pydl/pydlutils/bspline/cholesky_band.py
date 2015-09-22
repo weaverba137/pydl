@@ -7,17 +7,17 @@ def cholesky_band(l,mininf=0.0,verbose=False):
 
     Parameters
     ----------
-    l : ndarray
+    l : :class:`numpy.ndarray`
         A matrix on which to perform the Cholesky decomposition.
-    mininf : float, optional
+    mininf : :class:`float`, optional
         Entries in the `l` matrix are considered negative if they are less
         than this value (default 0.0).
-    verbose : bool, optional
+    verbose : :class:`bool`, optional
         If set to ``True``, print some debugging information.
 
     Returns
     -------
-    cholesky_band : tuple
+    cholesky_band : :func:`tuple`
         If problems were detected, the first item will be the index or
         indexes where the problem was detected, and the second item will simply
         be the input matrix.  If no problems were detected, the first item

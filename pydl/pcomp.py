@@ -10,12 +10,12 @@ class pcomp(object):
 
     Parameters
     ----------
-    x : array_like
+    x : array-like
         A 2-D array with N rows and M columns.
-    standardize : bool, optional
+    standardize : :class:`bool`, optional
         If set to ``True``, the input data will have its mean subtracted off
         and will be scaled to unit variance.
-    covariance : bool, optional.
+    covariance : :class:`bool`, optional.
         If set to ``True``, the covariance matrix of the data will be used for
         the computation.  Otherwise the correlation matrix will be used.
 

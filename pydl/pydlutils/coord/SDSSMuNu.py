@@ -26,9 +26,9 @@ class SDSSMuNu(BaseCoordinateFrame):
 
     Parameters
     ----------
-    mu : Angle
+    mu : :class:`~astropy.coordinates.Angle`
         Angle corresponding to longitude measured along a stripe.
-    nu : Angle
+    nu : :class:`~astropy.coordinates.Angle`
         Angle corresponding to latitude measured perpendicular to a stripe.
 
     Notes

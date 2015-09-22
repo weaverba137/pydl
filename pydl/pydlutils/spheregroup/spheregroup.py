@@ -7,16 +7,16 @@ def spheregroup(ra,dec,linklength,chunksize=None):
 
     Parameters
     ----------
-    ra, dec : ndarray
+    ra, dec : :class:`numpy.ndarray`
         Arrays of coordinates to group in decimal degrees.
-    linklength : float
+    linklength : :class:`float`
         Linking length for the groups in decimal degrees.
-    chunksize : float, optional
+    chunksize : :class:`float`, optional
         Break up the sphere into chunks of this size in decimal degrees.
 
     Returns
     -------
-    spheregroup : tuple
+    spheregroup : :func:`tuple`
         A tuple containing the group number of each object, the multiplicity
         of each group, the first member of each group, and the next
         member of the group for each object.

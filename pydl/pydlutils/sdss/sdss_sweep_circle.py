@@ -5,23 +5,23 @@ def sdss_sweep_circle(ra,dec,radius,stype='star',allobj=False):
 
     Parameters
     ----------
-    ra, dec : float
+    ra, dec : :class:`float`
         The sky location to search, J2000 degrees.
-    radius : float
+    radius : :class:`float`
         The radius around `ra`, `dec` to search.
-    stype : str, optional
+    stype : :class:`str`, optional
         The type of object to search, 'star', 'gal' or 'sky'.  The default is 'star'.
-    allobj : bool, optional
+    allobj : :class:`bool`, optional
         If set to ``True``, return all objects found, not just SURVEY_PRIMARY.
 
     Returns
     -------
-    sdss_sweep_circle : object
-        The value of the bitmask name(s).
+    sdss_sweep_circle : `numpy.ndarray`
+        The data extracted from the sweep files.
 
     Notes
     -----
-    Assumes that the sweep files exist in ``$PHOTO_SWEEP`` and that index files
+    Assumes that the sweep files exist in :envvar:`PHOTO_SWEEP` and that index files
     have been created.
     """
     import numpy as np

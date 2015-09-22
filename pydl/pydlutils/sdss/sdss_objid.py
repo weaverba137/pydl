@@ -20,16 +20,16 @@ def sdss_objid(run,camcol,field,objnum,rerun=301,skyversion=None):
 
     Parameters
     ----------
-    run, camcol, field, objnum : int or array of int
+    run, camcol, field, objnum : :class:`int` or array of int
         Run, camcol, field and object number within field.  If arrays are passed,
         all must have the same length.
-    rerun, skyversion : int or array of int, optional
+    rerun, skyversion : :class:`int` or array of int, optional
         Rerun and skyversion usually don't change very much.  If supplied, make
         sure the size matches all the other values.
 
     Returns
     -------
-    sdss_objid : ndarray of int64
+    sdss_objid : :class:`numpy.ndarray` of :class:`numpy.int64`
         The ObjIDs of the objects.
 
     Raises

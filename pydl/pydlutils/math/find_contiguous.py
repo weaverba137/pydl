@@ -5,13 +5,13 @@ def find_contiguous(x):
 
     Parameters
     ----------
-    x : ndarray
+    x : :class:`numpy.ndarray`
         A 1d array. A dtype of bool is preferred although any dtype where the
         operation ``if x[k]:`` is well-defined should work.
 
     Returns
     -------
-    find_contiguous : list
+    find_contiguous : :class:`list`
         A list of indices of the longest contiguous non-zero sequence.
 
     Examples
@@ -34,4 +34,3 @@ def find_contiguous(x):
     lengths = [len(c) for c in contig]
     longest = contig[lengths.index(max(lengths))]
     return longest
-

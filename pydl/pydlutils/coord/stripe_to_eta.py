@@ -5,12 +5,12 @@ def stripe_to_eta(stripe):
 
     Parameters
     ----------
-    stripe : int or numpy.ndarray
+    stripe : :class:`int` or :class:`numpy.ndarray`
         SDSS Stripe number.
 
     Returns
     -------
-    stripe_to_eta : float or numpy.ndarray
+    stripe_to_eta : :class:`float` or :class:`numpy.ndarray`
         The eta value in the SDSS (lambda,eta) coordinate system.
     """
     stripe_sep = 2.5

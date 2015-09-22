@@ -5,19 +5,19 @@ def djs_maskinterp1(yval,mask,xval=None,const=False):
 
     Parameters
     ----------
-    yval : ndarray
+    yval : :class:`numpy.ndarray`
         The input values
-    mask : ndarray
+    mask : :class:`numpy.ndarray`
         The mask
-    xval : ndarray, optional
+    xval : :class:`numpy.ndarray`, optional
         If set, use these x values, otherwise use an array
-    const : bool, optional
+    const : :class:`bool`, optional
         If set to ``True``, bad values around the edges of the array will be
         set to a constant value.
 
     Returns
     -------
-    djs_maskinterp1 : ndarray
+    djs_maskinterp1 : :class:`numpy.ndarray`
     """
     import numpy as np
     good = mask == 0
@@ -58,23 +58,23 @@ def djs_maskinterp(yval,mask,xval=None,axis=None,const=False):
 
     Parameters
     ----------
-    yval : ndarray
+    yval : :class:`numpy.ndarray`
         The input values
-    mask : ndarray
+    mask : :class:`numpy.ndarray`
         The mask
-    xval : ndarray, optional
+    xval : :class:`numpy.ndarray`, optional
         If set, use these x values, otherwise use an array
-    axis : int, optional
+    axis : :class:`int`, optional
         Must be set if yval has more than one dimension. If set to zero,
         interpolate along the first axis of the array, if set to one,
         interpolate along the second axis of the array, and so on.
-    const : bool, optional
+    const : :class:`bool`, optional
         This value is passed to a helper function, djs_maskinterp1.
 
     Returns
     -------
-    djs_maskinterp : ndarray
-
+    djs_maskinterp : :class:`numpy.ndarray`
+        The interpolated array.
     """
     import numpy as np
     if mask.shape != yval.shape:

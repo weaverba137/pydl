@@ -7,6 +7,16 @@ from . import SDSSMuNu
 @frame_transform_graph.transform(FunctionTransform, ICRS, SDSSMuNu)
 def radec_to_munu(icrs_frame,munu):
     """Convert from equatorial coordinates to SDSS great circle coordinates.
+
+    Parameters
+    ----------
+    icrs_frame : :class:`~astropy.coordinates.ICRS`
+        Equatorial coordinates (RA, Dec).
+
+    Returns
+    -------
+    radec_to_munu : :class:`~pydl.pydlutils.coord.SDSSMuNu`
+        SDSS great circle coordinates (mu, nu).
     """
     from astropy import units as u
     import numpy as np

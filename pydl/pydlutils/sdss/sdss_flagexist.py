@@ -5,20 +5,20 @@ def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
 
     Parameters
     ----------
-    flagname : str
+    flagname : :class:`str`
         The name of a bitmask group. Not case-sensitive.
-    bitname : str or list
+    bitname : :class:`str` or :class:`list`
         The name(s) of the specific bitmask(s) within the `flagname` group.
-    flagexist : bool, optional
+    flagexist : :class:`bool`, optional
         If flagexist is True, return a tuple with the second component indicating
         whether the binary flag named `flagname` exists, even if `bitname` is wrong.
-    whichexist : bool, optional
+    whichexist : :class:`bool`, optional
         If whichexist is True, return a list containing existence test results
         for each individual flag.
 
     Returns
     -------
-    sdss_flagexist : bool or tuple
+    sdss_flagexist : :class:`bool` or :func:`tuple`
         A boolean value or a tuple of bool.
     """
     from . import maskbits

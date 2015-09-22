@@ -7,19 +7,19 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1):
 
     Parameters
     ----------
-    ra1, dec1, ra2, dec2 : ndarray
+    ra1, dec1, ra2, dec2 : :class:`numpy.ndarray`
         The sets of coordinates to match.  Assumed to be in decimal degrees
-    matchlength : float
+    matchlength : :class:`float`
         Two points closer than this separation are matched. Assumed to be in decimal degrees.
-    chunksize : float, optional
+    chunksize : :class:`float`, optional
         Value to pass to chunk assignment.
-    maxmatch : int, optional
+    maxmatch : :class:`int`, optional
         Allow up to `maxmatch` matches per coordinate.  Default 1. If set to zero,
         All possible matches will be returned.
 
     Returns
     -------
-    spherematch : tuple
+    spherematch : :func:`tuple`
         A tuple containing the indices into the first set of points, the
         indices into the second set of points and the match distance in
         decimal degrees.

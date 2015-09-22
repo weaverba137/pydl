@@ -12,14 +12,14 @@ def file_lines(path,compress=False):
 
     Parameters
     ----------
-    path : str or list of str
+    path : :class:`str` or :class:`list` of :class:`str`
         Path to a file.  Can be a list of paths.
-    compress : bool, optional
+    compress : :class:`bool`, optional
         If set to ``True``, assumes that all files in `path` are GZIP compressed.
 
     Returns
     -------
-    file_lines : int or list of int
+    file_lines : :class:`int` or :class:`list` of :class:`int`
         The number of lines in `path`.  Returns a list of lengths if a list of
         files is supplied.
 

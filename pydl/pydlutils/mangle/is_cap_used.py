@@ -5,13 +5,13 @@ def is_cap_used(use_caps,i):
 
     Parameters
     ----------
-    use_caps : int
+    use_caps : :class:`int`
         Bit mask indicating which cap is used.
-    i : int
+    i : :class:`int`
         Number indicating which cap we are interested in.
 
     Returns
     -------
-    is_cap_used : bool
+    is_cap_used : :class:`bool`
     """
     return (use_caps & 1 << i) != 0

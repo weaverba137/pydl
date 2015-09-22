@@ -5,7 +5,7 @@ def default_skyversion():
 
     Returns
     -------
-    default_skyversion : int
+    default_skyversion : :class:`int`
         The default skyversion number.
 
     Notes

@@ -15,6 +15,7 @@ pydl Changelog
 * Removed some code that is 100% redundant with astropy (*e.g.* ``angles_to_xyz()``).
 * Fixed bug in :func:`~pydl.pydlutils.mangle.set_use_caps` that was discovered on the IDL side.
 * Updated documentation of :func:`~pydl.pydlutils.mangle.read_fits_polygons`.
+* Added cross-references to classes, functions, etc.
 
 0.3.0 (2015-02-20)
 ------------------

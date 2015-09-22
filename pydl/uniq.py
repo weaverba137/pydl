@@ -12,14 +12,14 @@ def uniq(x,index=None):
 
     Parameters
     ----------
-    x : array_like
+    x : array-like
         Search this array for unique items.
-    index : array_like, optional
+    index : array-like, optional
         This array provides the array subscripts that sort `x`.
 
     Returns
     -------
-    uniq : array_like
+    uniq : array-like
         The subscripts of `x` that are the unique elements of `x`.
 
     Notes

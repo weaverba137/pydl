@@ -8,29 +8,29 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
 
     Parameters
     ----------
-    array : ndarray
+    array : :class:`numpy.ndarray`
         A record array to print.
-    filename : str or file-like, optional
+    filename : :class:`str` or file-like, optional
         If supplied, write to this file.
-    formatcodes : dict, optional
+    formatcodes : :class:`dict`, optional
         If supplied, use explicit format for certain columns.
-    alias : dict, optional
+    alias : :class:`dict`, optional
         If supplied, use this mapping of record array column names to printed column names.
-    fdigit : int, optional
+    fdigit : :class:`int`, optional
         Width of 32-bit floating point columns, default 5.
-    ddigit : int, optional
+    ddigit : :class:`int`, optional
         Width of 64-bit floating point columns, default 7.
-    html : bool, optional
+    html : :class:`bool`, optional
         If ``True``, print an html table.
-    no_head : bool, optional
+    no_head : :class:`bool`, optional
         If ``True``, *don't* print a header line.
-    debug : bool, optional
+    debug : :class:`bool`, optional
         If ``True``, print some extra debugging information.
-    silent : bool, optional
+    silent : :class:`bool`, optional
         If ``True``, do not print the table, just return it.
     Returns
     -------
-    struct_print : tuple
+    struct_print : :func:`tuple`
         A tuple containing a list of the lines in the table.  If `html` is ``True``,
         also returns a list of lines of CSS for formatting the table.
 

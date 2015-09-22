@@ -11,24 +11,39 @@ class bspline(object):
 
     Parameters
     ----------
-    x
-    nord
-    npoly
-    bkpt
-    bkspread
-    verbose
+    x : :class:`numpy.ndarray`
+        The data.
+    nord : :class:`int`, optional
+        To be documented.
+    npoly : :class:`int`, optional
+        To be documented.
+    bkpt : :class:`numpy.ndarray`, optional
+        To be documented.
+    bkspread : :class:`float`, optional
+        To be documented.
+    verbose : :class:`bool`, optional.
+        If ``True`` print extra information.
 
     Attributes
     ----------
     breakpoints
+        To be documented.
     nord
+        To be documented.
     npoly
+        To be documented.
     mask
+        To be documented.
     coeff
+        To be documented.
     icoeff
+        To be documented.
     xmin
+        To be documented.
     xmax
+        To be documented.
     funcname
+        To be documented.
     """
     def __init__(self,x,nord=4,npoly=1,bkpt=None,bkspread=1.0,verbose=False,**kwargs):
         """Init creates an object whose attributes are similar to the
@@ -118,18 +133,18 @@ class bspline(object):
 
         Parameters
         ----------
-        xdata : ndarray
+        xdata : :class:`numpy.ndarray`
             Independent variable.
-        ydata : ndarray
+        ydata : :class:`numpy.ndarray`
             Dependent variable.
-        invvar : ndarray
+        invvar : :class:`numpy.ndarray`
             Inverse variance of `ydata`.
-        x2 : ndarray, optional
+        x2 : :class:`numpy.ndarray`, optional
             Orthogonal dependent variable for 2d fits.
 
         Returns
         -------
-        fit : tuple
+        fit : :func:`tuple`
             A tuple containing an integer error code, and the evaluation of the
             b-spline at the input values.  An error code of -2 is a failure,
             -1 indicates dropped breakpoints, 0 is success, and positive
@@ -196,14 +211,14 @@ class bspline(object):
 
         Parameters
         ----------
-        x : ndarray
+        x : :class:`numpy.ndarray`
             Independent variable.
-        x2 : ndarray, optional
+        x2 : :class:`numpy.ndarray`, optional
             Orthogonal dependent variable for 2d fits.
 
         Returns
         -------
-        action : tuple
+        action : :func:`tuple`
             A tuple containing the b-spline action matrix; the 'lower' parameter,
             a list of pixel positions, each corresponding to the first
             occurence of position greater than breakpoint indx; and 'upper',
@@ -265,12 +280,12 @@ class bspline(object):
 
         Parameters
         ----------
-        x : ndarray
+        x : :class:`numpy.ndarray`
             Data values, assumed to be monotonically increasing.
 
         Returns
         -------
-        intrv : ndarray
+        intrv : :class:`numpy.ndarray`
             Position of array elements with respect to breakpoints.
         """
         gb = self.breakpoints[self.mask]
@@ -286,15 +301,19 @@ class bspline(object):
     #
     #
     def bsplvn(self,x,ileft):
-        """
+        """To be documented.
+
         Parameters
         ----------
-        x
-        ileft
+        x : :class:`numpy.ndarray`
+            To be documented.
+        ileft : :class:`int`
+            To be documented
 
         Returns
         -------
-        bsplvn
+        bsplvn : :class:`numpy.ndarray`
+            To be documented.
         """
         bkpt = self.breakpoints[self.mask]
         vnikx = np.zeros((x.size,self.nord),dtype=x.dtype)
@@ -323,22 +342,22 @@ class bspline(object):
 
         Parameters
         ----------
-        x : ndarray
+        x : :class:`numpy.ndarray`
             Independent variable.
-        x2 : ndarray, optional
+        x2 : :class:`numpy.ndarray`, optional
             Orthogonal dependent variable for 2d fits.
-        action : ndarray, optional
+        action : :class:`numpy.ndarray`, optional
             Action matrix to use.  If not supplied it is calculated.
-        lower : ndarray, optional
+        lower : :class:`numpy.ndarray`, optional
             If the action parameter is supplied, this parameter must also
             be supplied.
-        upper : ndarray, optional
+        upper : :class:`numpy.ndarray`, optional
             If the action parameter is supplied, this parameter must also
             be supplied.
 
         Returns
         -------
-        value : tuple
+        value : :func:`tuple`
             A tuple containing the results of the bspline evaluation and a
             mask indicating where the evaluation was good.
         """
@@ -392,12 +411,12 @@ class bspline(object):
 
         Parameters
         ----------
-        err : ndarray
+        err : :class:`numpy.ndarray`
             The list of indexes returned by the cholesky routines.
 
         Returns
         -------
-        maskpoints : int
+        maskpoints : :class:`int`
             An integer indicating the results of the masking.  -1 indicates
             that the error points were successfully masked.  -2 indicates
             failure; the calculation should be aborted.

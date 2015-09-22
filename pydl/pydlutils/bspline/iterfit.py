@@ -7,26 +7,26 @@ def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs)
 
     Parameters
     ----------
-    xdata : ndarray
+    xdata : :class:`numpy.ndarray`
         Independent variable.
-    ydata : ndarray
+    ydata : :class:`numpy.ndarray`
         Dependent variable.
-    invvar : ndarray
+    invvar : :class:`numpy.ndarray`
         Inverse variance of `ydata`.  If not set, it will be calculated based
         on the standard deviation.
-    upper : int or float
+    upper : :class:`int` or :class:`float`
         Upper rejection threshold in units of sigma, defaults to 5 sigma.
-    lower : int or float
+    lower : :class:`int` or :class:`float`
         Lower rejection threshold in units of sigma, defaults to 5 sigma.
-    x2 : ndarray, optional
+    x2 : :class:`numpy.ndarray`, optional
         Orthogonal dependent variable for 2d fits.
-    maxiter : int, optional
+    maxiter : :class:`int`, optional
         Maximum number of rejection iterations, default 10.  Set this to
         zero to disable rejection.
 
     Returns
     -------
-    iterfit : tuple
+    iterfit : :func:`tuple`
         A tuple containing the fitted bspline object and an output mask.
     """
     import numpy as np

@@ -8,13 +8,12 @@ def read_fits_polygons(filename):
 
     Parameters
     ----------
-    filename : str
+    filename : :class:`str`
         Name of FITS file to read.
-
 
     Returns
     -------
-    read_fits_polygons : FITS_rec
+    read_fits_polygons : :class:`~astropy.io.fits.FITS_rec`
         The data contained in HDU 1 of the FITS file.
     """
     from astropy.io import fits

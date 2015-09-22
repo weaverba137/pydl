@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+from astropy.extern import six
+
 def sdss_flagval(flagname,bitname):
     """Convert bitmask names into values.
 
@@ -8,14 +10,14 @@ def sdss_flagval(flagname,bitname):
 
     Parameters
     ----------
-    flagname : str
+    flagname : :class:`str`
         The name of a bitmask group.
-    bitname : str or list
+    bitname : :class:`str` or :class:`list`
         The name(s) of the specific bitmask(s) within the `flagname` group.
 
     Returns
     -------
-    sdss_flagval : numpy.uint64
+    sdss_flagval : :class:`numpy.uint64`
         The value of the bitmask name(s).
 
     Raises
@@ -37,7 +39,7 @@ def sdss_flagval(flagname,bitname):
     #
     # Make sure inlabel is a list
     #
-    if isinstance(bitname,str):
+    if isinstance(bitname,six.string_types):
         bitnames = [bitname.upper()]
     else:
         bitnames = [b.upper() for b in bitname]

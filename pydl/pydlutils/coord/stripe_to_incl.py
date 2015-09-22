@@ -5,12 +5,12 @@ def stripe_to_incl(stripe):
 
     Parameters
     ----------
-    stripe : int or numpy.ndarray
+    stripe : :class:`int` or :class:`numpy.ndarray`
         SDSS Stripe number.
 
     Returns
     -------
-    stripe_to_incl : float or numpy.ndarray
+    stripe_to_incl : :class:`float` or :class:`numpy.ndarray`
         Inclination of the stripe relative to the equator (Dec = 0).
     """
     from . import stripe_to_eta
