@@ -5,32 +5,31 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',no_path=False)
 
     Parameters
     ----------
-    ftype : str
+    ftype : :class:`str`
         The general type of the file, for example ``'reObj'``
-    run : int
+    run : :class:`int`
         The run number.
-    camcol : int
+    camcol : :class:`int`
         The camcol number.
-    field : int
+    field : :class:`int`
         The field number
-    rerun : str, optional
+    rerun : :class:`str`, optional
         If necessary, set the rerun name using this argument.
-    thisfilter : int or str, optional
+    thisfilter : :class:`int` or :class:`str`, optional
         If necessary, set the filter using this argument.
-    no_path : bool, optional
+    no_path : :class:`bool`, optional
         Normally, sdss_name returns the full path.  If `no_path` is ``True``, only
         the basename of the file is returned.
 
     Returns
     -------
-    sdss_name : str
+    sdss_name : :class:`str`
         The full file name, normally including the full path.
 
     Raises
     ------
     KeyError
         If the file type is unknown.
-
     """
     from os import getenv
     from os.path import join

@@ -5,18 +5,18 @@ def sdss_path(ftype, run, camcol=0, rerun=''):
 
     Parameters
     ----------
-    ftype : str
+    ftype : :class:`str`
         The general type of the file, for example ``'reObj'``
-    run : int
+    run : :class:`int`
         The run number.
-    camcol : int, optional
+    camcol : :class:`int`, optional
         If necessary, set the camcol number using this argument.
-    rerun : str, optional
+    rerun : :class:`str`, optional
         If necessary, set the rerun name using this argument.
 
     Returns
     -------
-    sdss_name : str
+    sdss_name : :class:`str`
         The directory in which file `ftype` lives.
 
     Raises

@@ -5,12 +5,12 @@ def filternum(filt='foo'):
 
     Parameters
     ----------
-    filt : str
+    filt : :class:`str`
         The filter name.
 
     Returns
     -------
-    filternum : int
+    filternum : :class:`int`
         The corresponding filter number
 
     Examples

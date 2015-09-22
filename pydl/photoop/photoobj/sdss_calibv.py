@@ -3,13 +3,9 @@
 def sdss_calibv():
     """Return calibration for velocities from pix/frame to deg/day.
 
-    Parameters
-    ----------
-    None
-
     Returns
     -------
-    sdss_calibv : float
+    sdss_calibv : :class:`float`
         The conversion from pixels per frame to degrees per day
 
     Notes

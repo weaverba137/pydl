@@ -5,18 +5,18 @@ def sdss_calib(run,camcol,field,rerun='',**kwargs):
 
     Parameters
     ----------
-    run : int
+    run : :class:`int`
         Photo run number
-    camcol : int
+    camcol : :class:`int`
         Camcol number
-    field : int
+    field : :class:`int`
         Field number
-    rerun : str, optional
+    rerun : :class:`str`, optional
         Photometric reduction number, as a string.
 
     Returns
     -------
-    sdss_calib : dict
+    sdss_calib : :class:`dict`
         A dictionary containing the 'NMGYPERCOUNT' keyword.
 
     Notes

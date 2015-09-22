@@ -5,14 +5,15 @@ def flegendre(x,m):
 
     Parameters
     ----------
-    x : array_like
-    m : int
+    x : array-like
+        Compute the Legendre polynomials at these abscissa values.
+    m : :class:`int`
         The number of Legendre polynomials to compute.  For example, if
-        ``m = 3``, P_0(x), P_1(x) and P_2(x) will be computed.
+        :math:`m = 3`, :math:`P_0 (x)`, :math:`P_1 (x)` and :math:`P_2 (x)` will be computed.
 
     Returns
     -------
-    flegendre : array_like
+    flegendre : :class:`numpy.ndarray`
     """
     import numpy as np
     from scipy.special import legendre

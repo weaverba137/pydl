@@ -15,8 +15,8 @@ def airtovac(air):
 
     Notes
     -----
-    * Formula from Ciddor 1996  Applied Optics , 35, 1566.
-    * Values of wavelength below 2000 A are not converted.
+    * Formula from `P. E. Ciddor, Applied Optics, 35, 1566 (1996) <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
+    * Values of wavelength below 2000 Å are not converted.
     """
     from numpy import zeros
     try:

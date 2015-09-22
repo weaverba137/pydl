@@ -1,7 +1,5 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from astropy.extern import six
-
 def sdss_flagval(flagname,bitname):
     """Convert bitmask names into values.
 
@@ -31,6 +29,7 @@ def sdss_flagval(flagname,bitname):
     >>> sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL']) # doctest: +REMOTE_DATA
     2310346608843161600
     """
+    from astropy.extern.six import string_types
     from numpy import uint64
     from . import maskbits
     if maskbits is None: # pragma: no cover
@@ -39,7 +38,7 @@ def sdss_flagval(flagname,bitname):
     #
     # Make sure inlabel is a list
     #
-    if isinstance(bitname,six.string_types):
+    if isinstance(bitname,string_types):
         bitnames = [bitname.upper()]
     else:
         bitnames = [b.upper() for b in bitname]

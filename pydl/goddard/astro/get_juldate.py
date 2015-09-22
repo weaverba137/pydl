@@ -11,13 +11,13 @@ def get_juldate(seconds=None):
 
     Parameters
     ----------
-    seconds : int or float, optional
+    seconds : :class:`int` or :class:`float`, optional
         Time in seconds since the UNIX epoch.  This should only be used
         for testing.
 
     Returns
     -------
-    get_juldate : float
+    get_juldate : :class:`float`
         The Julian Day number as a floating point number.
 
     Notes

@@ -5,7 +5,7 @@ def gcirc(ra1,dec1,ra2,dec2,units=2):
 
     Parameters
     ----------
-    ra1, dec1, ra2, dec2 : float or array_like
+    ra1, dec1, ra2, dec2 : :class:`float` or array-like
         RA and Dec of two points.
     units : { 0, 1, 2 }, optional
         * units = 0: everything is already in radians
@@ -14,7 +14,7 @@ def gcirc(ra1,dec1,ra2,dec2,units=2):
 
     Returns
     -------
-    gcirc : float or array_like
+    gcirc : :class:`float` or array-like
         The angular distance.  Units of the value returned depend on the
         input value of `units`.
 
@@ -51,4 +51,3 @@ def gcirc(ra1,dec1,ra2,dec2,units=2):
         return dis
     else:
         return rad2deg(dis)*3600.0
-

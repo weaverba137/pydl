@@ -5,15 +5,15 @@ def cirrange(ang,radians=False):
 
     Parameters
     ----------
-    ang : float or array_like
+    ang : :class:`float` or array-like
         Angle to convert.  If the angle is in radians, the `radians` argument should be set.
-    radians : bool
-        If true, the input angle is in radians, and the output will be between
-        zero and 2*pi.
+    radians : class:`bool`, optional
+        If ``True``, the input angle is in radians, and the output will be between
+        zero and 2π.
 
     Returns
     -------
-    cirrange : float or array_like
+    cirrange : :class:`float` or array-like
         Angle in the restricted range.
 
     Examples

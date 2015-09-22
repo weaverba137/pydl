@@ -8,20 +8,20 @@ def unwrap_objid(objid):
 
     Parameters
     ----------
-    objid : numpy.ndarray
+    objid : :class:`numpy.ndarray`
         An array containing 64-bit integers or strings.  If strings are passed,
         they will be converted to integers internally.
 
     Returns
     -------
-    unwrap_objid : numpy.recarray
+    unwrap_objid : :class:`numpy.recarray`
         A record array with the same length as objid, with the columns
         'run', 'camcol', 'frame', 'id', 'rerun', 'skyversion'.
 
     Notes
     -----
     For historical reasons, the inverse of this function,
-    pydl.pydlutils.sdss.sdss_objid() is not in the same namespace as this
+    :func:`~pydl.pydlutils.sdss.sdss_objid` is not in the same namespace as this
     function.
 
     'frame' is used instead of 'field' because record arrays have a method

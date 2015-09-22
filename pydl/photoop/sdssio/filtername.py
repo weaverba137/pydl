@@ -5,12 +5,12 @@ def filtername(f):
 
     Parameters
     ----------
-    f : int
+    f : :class:`int`
         The filter number.
 
     Returns
     -------
-    filtername : str
+    filtername : :class:`str`
         The corresponding filter name.
 
     Examples
@@ -18,7 +18,8 @@ def filtername(f):
     >>> filtername(0)
     'u'
     """
-    if isinstance(f,str):
+    from astropy.extern.six import string_types
+    if isinstance(f,string_types):
         return f
     fname = ('u','g','r','i','z')
     return fname[f]

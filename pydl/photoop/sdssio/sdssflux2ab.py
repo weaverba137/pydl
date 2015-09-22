@@ -5,18 +5,18 @@ def sdssflux2ab(flux,magnitude=False,ivar=False):
 
     Parameters
     ----------
-    flux : ndarray
+    flux : :class:`numpy.ndarray`
         Array of calibrated fluxes or SDSS magnitudes with 5 columns,
         corresponding to the 5 filters u,g,r,i,z
-    magnitude : bool, optional
+    magnitude : :class:`bool`, optional
         If set to ``True``, then assume `flux` are SDSS magnitudes instead of linear
         flux units
-    ivar : ndarray, optional
+    ivar : :class:`numpy.ndarray`, optional
         If set, the input fluxes are actually inverse variances.
 
     Returns
     -------
-    sdssflux2ab : ndarray
+    sdssflux2ab : :class:`numpy.ndarray`
         Array of fluxes or magnitudes on the AB system.
 
     Notes
