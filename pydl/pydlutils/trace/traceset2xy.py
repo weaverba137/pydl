@@ -5,7 +5,7 @@ def traceset2xy(tset,xpos=None,ignore_jump=False):
 
     Parameters
     ----------
-    tset : TraceSet
+    tset : :class:`TraceSet`
         A :class:`TraceSet` object.
     xpos : array-like, optional
         If provided, evaluate the trace set at these positions.  Otherwise
@@ -15,7 +15,7 @@ def traceset2xy(tset,xpos=None,ignore_jump=False):
 
     Returns
     -------
-    traceset2xy : tuple of array-like
+    traceset2xy : :func:`tuple` of array-like
         The x, y positions.
     """
     return tset.xy(xpos,ignore_jump)

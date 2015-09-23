@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=None,inputfunc=None):
-    """Fit X, Y positions to a functional form.
+    """Fit `x`, `y` positions to a functional form.
 
     Parameters
     ----------
@@ -9,11 +9,11 @@ def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=No
         X values (independent variable).
     y : array-like
         Y values (dependent variable).
-    ncoeff : int
+    ncoeff : :class:`int`
         Number of coefficients to fit.
     invvar : array-like, optional
         Weight values; inverse variance.
-    function_name : str, optional
+    function_name : :class:`str`, optional
         Function name, default 'legendre'.
     ia : array-like, optional
         An array of bool of length `ncoeff` specifying free (``True``) and
@@ -26,8 +26,15 @@ def func_fit(x,y,ncoeff,invvar=None,function_name='legendre',ia=None,inputans=No
 
     Returns
     -------
-    func_fit : tuple of array-like
+    func_fit : :func:`tuple` of array-like
         Fit coefficients, length `ncoeff`; fitted values.
+
+    Raises
+    ------
+    KeyError
+        If an invalid function type is selected.
+    ValueError
+        If input dimensions do not agree.
     """
     import numpy as np
     from . import fchebyshev, fchebyshev_split, fpoly

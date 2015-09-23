@@ -5,14 +5,15 @@ def fpoly(x,m):
 
     Parameters
     ----------
-    x : array_like
-    m : int
+    x : array-like
+        Compute the simple polynomials at these abscissa values.
+    m : :class:`int`
         The number of simple polynomials to compute.  For example, if
-        ``m = 3``, x**0, x**1 and x**2 will be computed.
+        :math:`m = 3`, :math:`x^0`, :math:`x^1` and :math:`x^2` will be computed.
 
     Returns
     -------
-    fpoly : array_like
+    fpoly : :class:`numpy.ndarray`
     """
     import numpy as np
     if isinstance(x,np.ndarray):

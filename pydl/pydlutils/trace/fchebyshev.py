@@ -5,14 +5,15 @@ def fchebyshev(x,m):
 
     Parameters
     ----------
-    x : array_like
-    m : int
+    x : array-like
+        Compute the Chebyshev polynomials at these abscissa values.
+    m : :class:`int`
         The number of Chebyshev polynomials to compute.  For example, if
-        ``m = 3``, T_0(x), T_1(x) and T_2(x) will be computed.
+        :math:`m = 3`, :math:`T_0 (x)`, :math:`T_1 (x)` and :math:`T_2 (x)` will be computed.
 
     Returns
     -------
-    fchebyshev : array_like
+    fchebyshev : :class:`numpy.ndarray`
     """
     import numpy as np
     from scipy.special import chebyt

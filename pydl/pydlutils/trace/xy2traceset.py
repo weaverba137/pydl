@@ -9,14 +9,14 @@ def xy2traceset(xpos,ypos,**kwargs):
         X,Y positions corresponding as [nx,Ntrace] arrays.
     invvar : array-like, optional
         Inverse variances for fitting.
-    func : str, optional
+    func : :class:`str`, optional
         Function type for fitting; defaults to 'legendre'.
-    ncoeff : int, optional
+    ncoeff : :int:`int`, optional
         Number of coefficients to fit.  Defaults to 3.
-    xmin, xmax : float, optional
+    xmin, xmax : :class:`float`, optional
         Explicitly set minimum and maximum values, instead of computing
         them from `xpos`.
-    maxiter : int, optional
+    maxiter : :class:`int`, optional
         Maximum number of rejection iterations; set to 0 for no rejection;
         default to 10.
     inmask : array-like, optional
@@ -26,17 +26,17 @@ def xy2traceset(xpos,ypos,**kwargs):
         and will also be marked as rejected in the outmask attribute.
     ia, inputans, inputfunc : array-like, optional
         These arguments will be passed to :func:`func_fit`.
-    xjumplo : float, optional
+    xjumplo : :class:`float`, optional
         x position locating start of an x discontinuity
-    xjumphi : float, optional
+    xjumphi : :class:`float`, optional
         x position locating end of that x discontinuity
-    xjumpval : float, optional
+    xjumpval : :class:`float`, optional
         magnitude of the discontinuity "jump" between those bounds
         (previous 3 keywords motivated by BOSS 2-phase readout)
 
     Returns
     -------
-    xy2traceset : TraceSet
+    xy2traceset : :class:`TraceSet`
         A :class:`TraceSet` object.
     """
     from . import TraceSet
