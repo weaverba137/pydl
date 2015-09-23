@@ -13,7 +13,7 @@ class TraceSet(object):
 
     Attributes
     ----------
-    func : str
+    func : :class:`str`
         Name of function type used to fit the trace set.
     xmin : float-like
         Minimum x value.
@@ -21,9 +21,9 @@ class TraceSet(object):
         Maximum x value.
     coeff : array-like
         Coefficients of the trace set fit.
-    nTrace : int
+    nTrace : :class:`int`
         Number of traces in the object.
-    ncoeff : int
+    ncoeff : :class:`int`
         Number of coefficients of the trace set fit.
     xjumplo : float-like
         Jump value, for BOSS readouts.
@@ -31,9 +31,9 @@ class TraceSet(object):
         Jump value, for BOSS readouts.
     xjumpval : float-like
         Jump value, for BOSS readouts.
-    outmask : array-like.
+    outmask : array-like
         When initialized with x,y positions, this contains the rejected points.
-    yfit : array-like.
+    yfit : array-like
         When initialized with x,y positions, this contains the fitted y values.
     """
     _func_map = {'poly':fpoly,'legendre':flegendre,'chebyshev':fchebyshev}
@@ -143,12 +143,12 @@ class TraceSet(object):
         xpos : array-like, optional
             If provided, evaluate the trace set at these positions.  Otherwise
             the positions will be constructed from the trace set object iself.
-        ignore_jump : bool, optional
+        ignore_jump : :class:`bool`, optional
             If ``True``, ignore any jump information in the `tset` object
 
         Returns
         -------
-        xy : tuple of array-like
+        xy : :func:`tuple` of array-like
             The x, y positions.
         """
         do_jump = self.has_jump and (not ignore_jump)
@@ -165,24 +165,32 @@ class TraceSet(object):
     #
     @property
     def has_jump(self):
+        """``True`` if jump conditions are set.
+        """
         return self.xjumplo is not None
     #
     #
     #
     @property
     def xRange(self):
+        """Range of x values.
+        """
         return self.xmax - self.xmin
     #
     #
     #
     @property
     def nx(self):
+        """Number of x values.
+        """
         return int(self.xRange + 1)
     #
     #
     #
     @property
     def xmid(self):
+        """Midpoint of x values.
+        """
         return 0.5 * (self.xmin + self.xmax)
     #
     #
@@ -190,6 +198,18 @@ class TraceSet(object):
     def xnorm(self,xinput,jump):
         """Convert input x coordinates to normalized coordinates suitable
         for input to special polynomials.
+
+        Parameters
+        ----------
+        xinput : array-like
+            Input coordinates.
+        jump : :class:`bool`
+            Set to ``True`` if there is a jump.
+
+        Returns
+        -------
+        xnorm : array-like
+            Normalized coordinates.
         """
         if jump:
             # Vector specifying what fraction of the jump has passed:

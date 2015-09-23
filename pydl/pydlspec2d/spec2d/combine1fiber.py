@@ -4,6 +4,20 @@ from __future__ import print_function
 #
 def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     """Combine several spectra of the same object, or resample a single spectrum.
+
+    Parameters
+    ----------
+    inloglam : :class:`numpy.ndarray`
+        Vector of log wavelength.
+    objflux : :class:`numpy.ndarray`
+        Input flux.
+    objivar : :class:`numpy.ndarray`, optional
+        Inverse variance of the flux.
+
+    Returns
+    -------
+    combine1fiber : :func:`tuple` of :class:`numpy.ndarray`
+        The resulting flux and inverse variance.
     """
     import numpy as np
     import pydl.pydlutils.bspline
@@ -271,4 +285,3 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     andmask |= ormask & pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
     return (newflux,newivar)
-

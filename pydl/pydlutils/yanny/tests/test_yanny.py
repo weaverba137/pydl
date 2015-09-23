@@ -5,8 +5,9 @@ def test_yanny():
     """
     import os
     from .. import yanny
-    from numpy import dtype
-    #from pydl.pydlutils.yanny import yanny
+    from ... import PydlutilsException
+    from numpy import allclose, array, dtype
+    from astropy.tests.helper import raises
     #
     # Describe what should be in the object
     #
@@ -88,16 +89,28 @@ def test_yanny():
     assert par.isenum('MYSTRUCT','new_flag')
     assert par._enum_cache['BOOLEAN'] == ['FALSE','TRUE']
     assert par._enum_cache['STATUS'] == ['FAILURE','INCOMPLETE','SUCCESS']
-    #par.write() # This should fail, since test.par already exists.
-    #datatable = {'status_update': {'state':['SUCCESS', 'SUCCESS'],
-    #    'timestamp':['2008-06-22 01:27:33','2008-06-22 01:27:36']},
-    #    'new_keyword':'new_value'}
-    #par.filename = os.path.join(os.path.dirname(__file__),'t','test_append.par')
-    #par.append(datatable) # This should also fail, because test_append.par does not exist
+    #
+    # Test values
+    #
+    assert allclose(par['MYSTRUCT'].mag[0], array([17.5, 17.546, 17.4, 16.1, 16.0]))
+    assert allclose(par['MYSTRUCT'].mag[5], array([19.3, 18.2, 17.1, 16.0, 15.9]))
+    assert par['MYSTRUCT'].foo[1] == "My dog has no nose."
+    assert allclose(par['MYSTRUCT'].c[2], 7.24345567)
+    assert (par['MYSTRUCT']['flags'][2] == array([123123, 0])).all()
+    #
+    # Test expected write failures.
+    #
+    with raises(PydlutilsException):
+        par.write() # This should fail, since test.par already exists.
+    datatable = {'status_update': {'state':['SUCCESS', 'SUCCESS'],
+        'timestamp':['2008-06-22 01:27:33','2008-06-22 01:27:36']},
+        'new_keyword':'new_value'}
+    par.filename = os.path.join(os.path.dirname(__file__),'t','test_append.par')
+    with raises(PydlutilsException):
+        par.append(datatable) # This should also fail, because test_append.par does not exist
     return
 #
 # Testing purposes
 #
 if __name__ == '__main__':
     test_yanny()
-

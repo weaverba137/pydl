@@ -2,18 +2,34 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 #
-def readspec(platein,fiber='all',**kwargs):
+def readspec(platein,mjd=None,fiber='all',**kwargs):
     """Read SDSS/BOSS spec2d & spec1d files.
 
-    INPUTS:
-        plate - Plate number(s)
-    OPTIONAL INPUTS:
-        topdir - Override the value of $BOSS_SPECTRO_REDUX.
-        run2d  - Override the value of $RUN2D.
-        run1d  - Override the value of $RUN1D
-        path   - Override all path information with this directory name.
-        align  - If set, align all the spectra in wavelength.
-        znum   - If set, return the znum-th best fit reshift fit, instead of the best
+    Parameters
+    ----------
+    platein : :class:`int` or :class:`numpy.ndarray`
+        Plate number(s).
+    mjd : :class:`int` or :class:`numpy.ndarray`, optional
+        MJD numbers.  If not provided, they will be calculated by :func:`latest_mjd`.
+    fiber : array-like, optional
+        Fibers to read.  If not set, all fibers from all plates will be returned.
+    topdir : :class:`str`, optional
+        Override the value of :envvar:`BOSS_SPECTRO_REDUX`.
+    run2d : :class:`str`, optional
+        Override the value of :envvar:`RUN2D`.
+    run1d : :class:`str`, optional
+        Override the value of :envvar:`RUN1D`.
+    path : :class:`str`, optional
+        Override all path information with this directory name.
+    align : :class:`bool`, optional
+        If set, align all the spectra in wavelength.
+    znum : :class:`int`, optional
+        If set, return the znum-th best fit reshift fit, instead of the best.
+
+    Returns
+    -------
+    readspec : :class:`dict`
+        A dictionary containing the data read.
     """
     import os
     import os.path
@@ -26,13 +42,6 @@ def readspec(platein,fiber='all',**kwargs):
     except TypeError:
         nplate = 1
         plate = np.array([platein],dtype='i4')
-    if 'mjd' in kwargs:
-        try:
-            nmjd = len(kwargs['mjd'])
-        except TypeError:
-            nmjd = 1
-        if nmjd != nplate:
-            raise TypeError("Plate & MJD must have the same length!")
     if 'run2d' in kwargs:
         run2d = kwargs['run2d']
     else:
@@ -70,10 +79,16 @@ def readspec(platein,fiber='all',**kwargs):
             fibervec = np.array(fiber,dtype='i4')
         else:
             fibervec = np.zeros(nplate,dtype='i4') + fiber
-    if 'mjd' in kwargs:
-        mjdvec = np.zeros(nplate,dtype='i4') + kwargs['mjd']
-    else:
+    if 'mjd' is None:
         mjdvec = latest_mjd(platevec,**kwargs)
+    else:
+        try:
+            nmjd = len(mjd)
+        except TypeError:
+            nmjd = 1
+        if nmjd != nplate:
+            raise TypeError("Plate & MJD must have the same length!")
+        mjdvec = np.zeros(nplate,dtype='i4') + mjd
     #
     # Now select unique plate-mjd combinations & read them
     #
@@ -234,4 +249,3 @@ def readspec(platein,fiber='all',**kwargs):
         loglam0 = allcoeff0[0] + allcoeff1[1]*np.arange(npixmax,dtype='d')
         spplate_data['loglam'] = np.resize(loglam0,(nfibers,npixmax))
     return spplate_data
-

@@ -1,20 +1,23 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-#
 def plot_eig(filename,title='Unknown'):
     """Plot spectra from an eigenspectra/template file.
 
     Parameters
     ----------
-    filename : str
+    filename : :class:`str`
         Name of a FITS file containing eigenspectra/templates.
-    title : str, optional
+    title : :class:`str`, optional
         Title to put on the plot.
 
     Returns
     -------
     None
+
+    Raises
+    ------
+    ValueError
+        If an unknown template type was input in `filename`.
     """
     from astropy.io import fits as pyfits
     import pylab
@@ -31,7 +34,7 @@ def plot_eig(filename,title='Unknown'):
         elif filename.find('CVstar') > 0:
             title = 'CV Stars: Eigenspectra'
         else:
-            print('Unknown template type!')
+            raise ValueError('Unknown template type!')
     base,ext = filename.split('.')
     spectrum = pyfits.open(filename)
     newloglam0 = spectrum[0].header['COEFF0']

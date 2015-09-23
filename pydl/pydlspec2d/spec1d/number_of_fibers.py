@@ -5,22 +5,27 @@ def number_of_fibers(plate,**kwargs):
 
     Parameters
     ----------
-    plate : int or ndarray
+    plate : :class:`int` or :class:`numpy.ndarray`
         The plate(s) to examine.
 
     Returns
     -------
-    number_of_fibers : ndarray
+    number_of_fibers : :class:`numpy.ndarray`
         The number of fibers on each plate.
     """
     import os
     import os.path
     from astropy.io import fits as pyfits
+    from astropy.extern.six import integer_types
     import numpy as np
     from . import latest_mjd
     #
     # Get mjd values
     #
+    if isinstance(plate, integer_types) or plate.shape == ():
+        platevec = np.array([plate],dtype='i4')
+    else:
+        platevec = plate
     mjd = latest_mjd(plate,**kwargs)
     nfiber = np.zeros(mjd.size,dtype='i4')
     #
@@ -55,6 +60,6 @@ def number_of_fibers(plate,**kwargs):
     else:
         run1d = os.getenv('RUN1D')
     for k in range(mjd.size):
-        nfiber[k] = platentotal[(plateplate==plate[k]) & (platemjd==mjd[k]) &
+        nfiber[k] = platentotal[(plateplate==platevec[k]) & (platemjd==mjd[k]) &
         (platerun2d==run2d) & (platerun1d==run1d)]
     return nfiber

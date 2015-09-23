@@ -5,22 +5,22 @@ def wavevector(minfullwave,maxfullwave,zeropoint=3.5,binsz=1.0e-4,wavemin=None,w
 
     Parameters
     ----------
-    minfullwave : float
+    minfullwave : :class:`float`
         Minimum wavelength.
-    maxfullwave : float
+    maxfullwave : :class:`float`
         Maximum wavelength.
-    zeropoint : float, optional
+    zeropoint : :class:`float`, optional
         Offset of the input wavelength values.
-    binsz : float, optional
+    binsz : :class:`float`, optional
         Separation between wavelength values.
-    wavemin : float, optional
+    wavemin : :class:`float`, optional
         If this is set the values of `minfullwave` and `zeropoint` are ignored.
-    wavemax : float, optional
+    wavemax : :class:`float`, optional
         If this is set the value of `maxfullwave` is ignored.
 
     Returns
     -------
-    wavevector : numpy.ndarray
+    wavevector : :class:`numpy.ndarray`
         Depending on the values of `minfullwave`, `binsz`, etc., the resulting
         array could be interpreted as an array of wavelengths or an array of
         log(wavelength).

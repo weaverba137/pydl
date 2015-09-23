@@ -1,25 +1,24 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from astropy.extern import six
-
 def latest_mjd(plate,**kwargs):
     """Find the most recent MJD associated with a plate.
 
     Parameters
     ----------
-    plate : int or ndarray
+    plate : :class:`int` or :class:`numpy.ndarray`
         The plate(s) to examine.
 
     Returns
     -------
-    latest_mjd : ndarray
-        An array of MJD values for each plate
+    latest_mjd : :class:`numpy.ndarray`
+        An array of MJD values for each plate.
     """
     import glob
     import re
     import numpy as np
+    from astropy.extern.six import integer_types
     from . import spec_path
-    if isinstance(plate, six.integer_types) or plate.shape == ():
+    if isinstance(plate, integer_types) or plate.shape == ():
         platevec = np.array([plate],dtype='i4')
     else:
         platevec = plate

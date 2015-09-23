@@ -137,20 +137,20 @@ def hmf_solve(spectra,invvar,K=4,nonnegative=False,epsilon=None):
 
     Parameters
     ----------
-    spectra : numpy.array
+    spectra : :class:`numpy.ndarray`
         The training spectra.
-    invvar : numpy.array
+    invvar : :class:`numpy.ndarray`
         The inverse variance for each pixel in the spectra.
-    K : int, optional
+    K : :class:`int`, optional
         The number of dimensions of the factorization (default 4).
-    nonnegative : bool, optional
+    nonnegative : :class:`bool`, optional
         Set this to ``True`` to perform nonnegative HMF.
-    epsilon : float, optional
+    epsilon : :class:`float`, optional
         Regularization parameter.  Set to any non-zero float value to turn it on.
 
     Returns
     -------
-    a,g : tuple of numpy.array
+    a,g : :func:`tuple` of :class:`numpy.ndarray`
         The fitting coefficients and fitted functions, respectively.
     """
     from scipy.cluster.vq import kmeans, whiten

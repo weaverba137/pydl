@@ -8,17 +8,17 @@ def spec_append(spec1, spec2, pixshift=0):
 
     Parameters
     ----------
-    spec1, spec2 : ndarray
+    spec1, spec2 : :class:`numpy.ndarray`
         Append `spec2` to `spec1`.
-    pixshift : int, optional
+    pixshift : :class:`int`, optional
         If `pixshift` is set to a positive integer, `spec2` will be padded with
         `pixshift` zeros on the left size.  If `pixshift` is set to a
-        negative integer, `spec1` will be padded with abs(`pixshift`) zeros on
+        negative integer, `spec1` will be padded with ``abs(pixshift)`` zeros on
         the left side.  If not set, all zeros will be padded on the right side.
 
     Returns
     -------
-    spec_append : ndarray
+    spec_append : :class:`numpy.ndarray`
         A new array containing both `spec1` and `spec2`.
     """
     from numpy import zeros

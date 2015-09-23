@@ -11,7 +11,7 @@ def xy2traceset(xpos,ypos,**kwargs):
         Inverse variances for fitting.
     func : :class:`str`, optional
         Function type for fitting; defaults to 'legendre'.
-    ncoeff : :int:`int`, optional
+    ncoeff : :class:`int`, optional
         Number of coefficients to fit.  Defaults to 3.
     xmin, xmax : :class:`float`, optional
         Explicitly set minimum and maximum values, instead of computing

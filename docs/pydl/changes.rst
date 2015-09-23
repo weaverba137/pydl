@@ -5,7 +5,12 @@ pydl Changelog
 0.4.2 (unreleased)
 ------------------
 
-* No changes yet.
+* Ongoing review and upgrade of docstrings.
+* Yanny files can now be converted into *genuine* NumPy
+  :class:`record arrays <numpy.recarray>`, previously, the conversion was only
+  to :class:`numpy.ndarray` with named columns, which is a slightly different
+  thing.
+* Added additional tests on :class:`~pydl.pydlutils.yanny.yanny` objects.
 
 0.4.1 (2015-09-22)
 ------------------

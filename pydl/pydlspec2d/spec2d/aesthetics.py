@@ -7,16 +7,16 @@ def aesthetics(flux,invvar,method='traditional'):
 
     Parameters
     ----------
-    flux : ndarray
+    flux : :class:`numpy.ndarray`
         The spectrum to clean up.
-    invvar : ndarray
+    invvar : :class:`numpy.ndarray`
         Inverse variance of the spectrum.
     method : { 'traditional', 'noconst', 'mean', 'damp', 'nothing' }, optional
         Apply this method to clean up the spectrum.  Default is 'traditional'.
 
     Returns
     -------
-    aesthetics : ndarray
+    aesthetics : :class:`numpy.ndarray`
         A cleaned-up spectrum.
     """
     import numpy as np

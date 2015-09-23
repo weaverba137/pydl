@@ -25,6 +25,7 @@ import os.path
 import datetime
 import numpy
 from astropy.extern import six
+from .. import PydlutilsException
 
 if six.PY3:
     long = int
@@ -45,38 +46,38 @@ class yanny(dict):
 
     Parameters
     ----------
-    filename : str or file-like, optional
+    filename : :class:`str` or file-like, optional
         The name of a yanny file or a file-like object representing a yanny file.
-    np : bool, optional
-        If ``True``, data in a yanny file will be converted into a NumPy record
-        array. Default is ``False``.
-    debug : bool, optional
+    np : :class:`bool`, optional
+        If ``True``, data in a yanny file will be converted into a NumPy
+        :class:`record array <numpy.recarray>`. Default is ``False``.
+    debug : :class:`bool`, optional
         If ``True``, some simple debugging statements will be turned on. Default
         is ``False``.
 
     Attributes
     ----------
-    np : bool
-        If True, data in a yanny file will be converted into a NumPy record
-        array.
-    debug : bool
-        If True, some simple debugging statements will be turned on.
-    filename : str
+    np : :class:`bool`
+        If ``True``, data in a yanny file will be converted into a NumPy
+        :class:`record array <numpy.recarray>`.
+    debug : :class:`bool`
+        If ``True``, some simple debugging statements will be turned on.
+    filename : :class:`str`
         The name of a yanny parameter file.  If a file-like object was used
         to initialize the object, this will have the value 'in_memory.par'.
-    _contents : str
+    _contents : :class:`str`
         The complete contents of a yanny parameter file.
-    _struct_type_caches : dict
+    _struct_type_caches : :class:`dict`
         A dictionary of dictionaries, one dictionary for every structure
         definition in a yanny parameter file.  Contains the types of
         each column
-    _struct_isarray_caches : dict
+    _struct_isarray_caches : :class:`dict`
         A dictionary of dictionaries, one dictionary for every structure
         definition in a yanny parameter file.  Contains a boolean value
         for every column.
-    _enum_cache : dict
+    _enum_cache : :class:`dict`
         Initially ``None``, this attribute is initialized the first time
-        the ``isenum()`` method is called.  The keyword is the name of the
+        the :meth:`isenum` method is called.  The keyword is the name of the
         enum type, the value is a list of the possible values of that type.
 
     """
@@ -96,12 +97,12 @@ class yanny(dict):
 
         Parameters
         ----------
-        string : str
+        string : :class:`str`
             A string containing words.
 
         Returns
         -------
-        get_token : tuple
+        get_token : :func:`tuple`
             A tuple containing the first word and the remainder of the string.
 
         Examples
@@ -135,12 +136,12 @@ class yanny(dict):
 
         Parameters
         ----------
-        x : str
+        x : :class:`str`
             The data to protect.
 
         Returns
         -------
-        protect : str
+        protect : :class:`str`
             The data with white space protected by quotes.
 
         Examples
@@ -172,12 +173,12 @@ class yanny(dict):
 
         Parameters
         ----------
-        line : str
+        line : :class:`str`
             A line from a yanny file potentially containing trailing comments.
 
         Returns
         -------
-        trailing_comment : str
+        trailing_comment : :class:`str`
             The line with any trailing comment and any residual white space
             trimmed off.
 
@@ -227,16 +228,16 @@ class yanny(dict):
 
         Parameters
         ----------
-        dt : numpy.dtype
+        dt : :class:`numpy.dtype`
             The dtype of a NumPy record array.
-        structname : str, optional
+        structname : :class:`str`, optional
             The name to give the structure in the yanny file.  Defaults to 'MYSTRUCT'.
-        enums : dict, optional
+        enums : :class:`dict`, optional
             A dictionary containing enum information.  See details above.
 
         Returns
         -------
-        dtype_to_struct : dict
+        dtype_to_struct : :class:`dict`
             A dictionary suitable for setting the 'symbols' dictionary of a new
             yanny object.
 
@@ -391,14 +392,14 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure that contains `variable`.
-        variable : str
+        variable : :class:`str`
             The name of the column whose type you want.
 
         Returns
         -------
-        type : str
+        type : :class:`str`
             The type of the variable.
         """
         if structure not in self:
@@ -444,14 +445,14 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure that contains `variable`.
-        variable : str
+        variable : :class:`str`
             The name of the column whose type you want.
 
         Returns
         -------
-        basetype : str
+        basetype : :class:`str`
             The type of the variable, stripped of array information.
         """
         typ = self.type(structure,variable)
@@ -472,14 +473,14 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure that contains `variable`.
-        variable : str
+        variable : :class:`str`
             The name of the column to check for array type.
 
         Returns
         -------
-        isarray : bool
+        isarray : :class:`bool`
             ``True`` if the variable is an array.
         """
         try:
@@ -508,14 +509,14 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure that contains `variable`.
-        variable : str
+        variable : :class:`str`
             The name of the column to check for enum type.
 
         Returns
         -------
-        isenum : bool
+        isenum : :class:`bool`
             ``True`` if the variable is enum type.
         """
         if self._enum_cache is None:
@@ -538,14 +539,14 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure that contains `variable`.
-        variable : str
+        variable : :class:`str`
             The name of the column to check for array length.
 
         Returns
         -------
-        array_length : int
+        array_length : :class:`int`
             The length of the array variable
         """
         if self.isarray(structure,variable):
@@ -566,14 +567,14 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure that contains `variable`.
-        variable : str
+        variable : :class:`str`
             The name of the column to check for char length.
 
         Returns
         -------
-        char_length : int or None
+        char_length : :class:`int` or None
             The length of the char variable.
         """
         typ = self.type(structure,variable)
@@ -596,12 +597,12 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure.
 
         Returns
         -------
-        dtype : numpy.dtype
+        dtype : :class:`numpy.dtype`
             A dtype object suitable for describing the yanny structure as a record array.
         """
         dt = list()
@@ -627,9 +628,9 @@ class yanny(dict):
     def convert(self,structure,variable,value):
         """Converts value into the appropriate (Python) type.
 
-        * ``short`` & ``int`` are converted to Python ``int``.
-        * ``long`` is converted to Python ``long``.
-        * ``float`` & ``double`` are converted to Python ``float``.
+        * ``short`` & ``int`` are converted to Python :class:`int`.
+        * ``long`` is converted to Python :class:`long`.
+        * ``float`` & ``double`` are converted to Python :class:`float`.
         * Other types are not altered.
 
         There may be further conversions into NumPy types, but this is the
@@ -637,16 +638,16 @@ class yanny(dict):
 
         Parameters
         ----------
-        structure : str
+        structure : :class:`str`
             The name of the structure that contains `variable`.
-        variable : str
+        variable : :class:`str`
             The name of the column undergoing conversion.
-        value : str
+        value : :class:`str`
             The value contained in a particular row of `variable`.
 
         Returns
         -------
-        convert : int, long, float or str
+        convert : :class:`int`, :class:`long`, :class:`float` or :class:`str`
             `value` converted to a Python numerical type.
         """
         typ = self.basetype(structure,variable)
@@ -690,12 +691,12 @@ class yanny(dict):
 
         Parameters
         ----------
-        table : str
+        table : :class:`str`
             The table whose columns are desired.
 
         Returns
         -------
-        columns : list
+        columns : :class:`list`
             The list of column names.
         """
         foo = list()
@@ -710,12 +711,12 @@ class yanny(dict):
 
         Parameters
         ----------
-        table : str
+        table : :class:`str`
             The table whose size desired.
 
         Returns
         -------
-        size : int
+        size : :class:`int`
             The number of rows in `table`.
         """
         foo = self.columns(table)
@@ -750,14 +751,14 @@ class yanny(dict):
 
         Parameters
         ----------
-        table : str
+        table : :class:`str`
             The table whose row is desired.
-        index : int
+        index : :class:`int`
             The number of the row to return.
 
         Returns
         -------
-        row : list
+        row : :class:`list`
             A row from `table`.
         """
         datarow = list()
@@ -782,13 +783,13 @@ class yanny(dict):
 
         Parameters
         ----------
-        table : str
+        table : :class:`str`
             The table to convert
 
         Returns
         -------
-        list_of_dicts : list
-            A list containing the rows of `table` converted to ``dict``.
+        list_of_dicts : :class:`list`
+            A list containing the rows of `table` converted to :class:`dict`.
         """
         return_list = list()
         d = dict()
@@ -808,7 +809,7 @@ class yanny(dict):
         """Returns a new dictionary of keyword/value pairs.
 
         The new dictionary (*i.e.*, not a yanny object) contains the keys
-        that ``self.pairs()`` returns. There are two reasons this is convenient:
+        that :meth:`pairs` returns. There are two reasons this is convenient:
 
         * the key 'symbols' that is part of the yanny object will not be present
         * a simple yanny file can be read with no further processing
@@ -849,9 +850,9 @@ class yanny(dict):
 
         Parameters
         ----------
-        newfile : str, optional
+        newfile : :class:`str`, optional
             The name of the file to write.
-        comments : str or list of str, optional
+        comments : :class:`str` or :class:`list` of :class:`str`, optional
             Comments that will be placed at the head of the file.  If a
             single string is passed, it will be written out verbatim, so it
             had better contain '#' characters.  If a list of strings is
@@ -863,12 +864,14 @@ class yanny(dict):
                 newfile = self.filename
             else:
                 raise ValueError("No filename specified!")
+        if os.access(newfile,os.F_OK):
+            raise PydlutilsException("{0} exists, aborting write!".format(newfile))
         if comments is None:
             basefile = os.path.basename(newfile)
             timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
             comments = "#\n# {0}\n#\n# Created by pydl.pydlutils.yanny.yanny\n#\n# {1}\n#\n".format(basefile,timestamp)
         else:
-            if not isinstance(comments, str):
+            if not isinstance(comments, six.string_types):
                 comments = "\n".join(["# {0}".format(c) for c in comments]) + "\n"
         contents = comments
         #
@@ -905,16 +908,11 @@ class yanny(dict):
         #
         # Actually write the data to file
         #
-        if os.access(newfile,os.F_OK):
-            print("{0} exists, aborting write!".format(newfile))
-            print("For reference, here's what would have been written:")
-            print(contents)
-        else:
-            with open(newfile,'w') as f:
-                f.write(contents)
-            self._contents = contents
-            self.filename = newfile
-            self._parse()
+        with open(newfile,'w') as f:
+            f.write(contents)
+        self._contents = contents
+        self.filename = newfile
+        self._parse()
         return
     #
     #
@@ -930,12 +928,12 @@ class yanny(dict):
 
         Parameters
         ----------
-        datatable : dict
+        datatable : :class:`dict`
             The data to append.
         """
         if len(self.filename) == 0:
             raise ValueError("No filename is set for this object. Use the filename attribute to set the filename!")
-        if type(datatable) != dict:
+        if not isinstance(datatable, dict):
             raise ValueError("Data to append is not of the correct type. Use a dict!")
         timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
         contents = ''
@@ -977,9 +975,10 @@ class yanny(dict):
                 self._contents += contents
                 self._parse()
             else:
-                print("{0} does not exist, aborting append!".format(self.filename))
-                print("For reference, here's what would have been written:")
-                print(contents)
+                if self.debug:
+                    print("For reference, here's what would have been written:")
+                    print(contents)
+                raise PydlutilsException("{0} does not exist, aborting append!".format(self.filename))
         else:
             print("Nothing to be appended!")
         return
@@ -1135,5 +1134,5 @@ class yanny(dict):
                 record = numpy.zeros((self.size(t),),dtype=self.dtype(t))
                 for c in self.columns(t):
                     record[c] = self[t][c]
-                self[t] = record
+                self[t] = record.view(numpy.recarray)
         return

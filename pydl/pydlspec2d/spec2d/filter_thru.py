@@ -9,14 +9,14 @@ def filter_thru(flux,waveimg=None,wset=None,mask=None,filter_prefix='sdss_jun200
         Spectral flux.
     waveimg : array-like, optional
         Full wavelength solution, with the same shape as `flux`.
-    wset : :class:`TraceSet`, optional
+    wset : :class:`~pydl.pydlutils.trace.TraceSet`, optional
         A trace set containing the wavelength solution.  Must be specified
         if `waveimg` is not specified.
     mask : array-like, optional
         Interpolate over pixels where `mask` is non-zero.
-    filter_prefix : str, optional
+    filter_prefix : :class:`str`, optional
         Specifies a set of filter curves.
-    toair : bool, optional
+    toair : :class:`bool`, optional
         If ``True``, convert the wavelengths to air from vacuum before computing.
 
     Returns

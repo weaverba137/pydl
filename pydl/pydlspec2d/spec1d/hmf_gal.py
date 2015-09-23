@@ -10,19 +10,19 @@ def hmf_gal(**kwargs):
 
     Parameters
     ----------
-    inputfile : str, optional
+    inputfile : :class:`str`, optional
         The list of spectra to use.  If not specified, $IDLSPEC2D_DIR/tempates/eigeninput_gal.dat will be used.
-    wavemin : float, optional
+    wavemin : :class:`float`, optional
         Minimum wavelength for the template.  If not specified 1900 Å will be used.
-    wavemax : float, optional
+    wavemax : :class:`float`, optional
         Maximum wavelength for the template.  If not specified 10000 Å will be used.
-    K : int, optional
+    K : :class:`int`, optional
         Number of templates to calculate.  The default is 4.
-    nonnegative : bool, optional
+    nonnegative : :class:`bool`, optional
         If set to ``True`` use nonnegative HMF.  The default is ``False``.
-    epsilon : float, optional
+    epsilon : :class:`float`, optional
         Value of regularization parameter to use.  The default is 0.0, which means it is not used.
-    flux : bool, optional
+    flux : :class:`bool`, optional
         If set to ``True`` make some additional QA plots of the input spectra.
         The default is ``False``.
 
@@ -35,7 +35,7 @@ def hmf_gal(**kwargs):
     Creates spEigenGal-MJD.fits and some associated QA plots.  These files
     will be created in the same directory as the inputfile (see above).
 
-    The ``$RUN2D`` environment variable must be set.  This routine will search
+    The :envvar:`RUN2D` environment variable must be set.  This routine will search
     for a pickle file of the form ``eigeninput_gal_$RUN2D.dump``.  If this file
     is not found, it will be created.
     """
