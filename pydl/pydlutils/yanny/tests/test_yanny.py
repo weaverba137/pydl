@@ -8,6 +8,7 @@ def test_yanny():
     from ... import PydlutilsException
     from numpy import allclose, array, dtype
     from astropy.tests.helper import raises
+    from astropy.extern import six
     #
     # Describe what should be in the object
     #
@@ -94,7 +95,7 @@ def test_yanny():
     #
     assert allclose(par['MYSTRUCT'].mag[0], array([17.5, 17.546, 17.4, 16.1, 16.0]))
     assert allclose(par['MYSTRUCT'].mag[5], array([19.3, 18.2, 17.1, 16.0, 15.9]))
-    assert par['MYSTRUCT'].foo[1] == "My dog has no nose."
+    assert par['MYSTRUCT'].foo[1] == six.b("My dog has no nose.")
     assert allclose(par['MYSTRUCT'].c[2], 7.24345567)
     assert (par['MYSTRUCT']['flags'][2] == array([123123, 0])).all()
     #
