@@ -73,7 +73,8 @@ class TestPydl(object):
         coefficients = test_data[40:44, :]
         coefficientsT = coefficients.T
         for k in range(m):
-            assert_allclose(abs(foo.coefficients[:, k]), abs(coefficientsT[:, k]),
+            assert_allclose(abs(foo.coefficients[:, k]),
+                            abs(coefficientsT[:, k]),
                             1e-4)
         eigenvalues = test_data[44, :]
         assert_allclose(foo.eigenvalues, eigenvalues, 1e-4)
