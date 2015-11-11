@@ -1,7 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def test_gcirc():
-    from .. import gcirc
+    from ..astro import gcirc
     import numpy as np
     from astropy.tests.helper import raises
     np.random.seed(137)
@@ -9,7 +11,7 @@ def test_gcirc():
     # Start in radians
     #
     offset = 5.0e-6  # approx 1 arcsec
-    ra1 = 2.0*np.pi*np.random.rand(100)
+    ra1 = 2.0 * np.pi * np.random.rand(100)
     dec1 = np.pi/2.0 - np.arccos(2.0*np.random.rand(100) - 1.0)
     ra2 = ra1 + offset
     ra2 = np.where((ra2 > 2.0*np.pi), ra2 - 2.0*np.pi, ra2)
