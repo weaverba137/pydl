@@ -29,7 +29,7 @@ def test_file_lines():
     n = file_lines(plainfiles)
     number_of_lines = [int(basename(p).split('-')[3]) for p in plainfiles]
     assert n == number_of_lines
-    n = file_lines(gzfiles,compress=True)
+    n = file_lines(gzfiles, compress=True)
     number_of_lines = [int(basename(p).split('-')[3]) for p in gzfiles]
     assert n == number_of_lines
     #

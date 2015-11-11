@@ -48,11 +48,11 @@ def uniq(x, index=None):
         if indicies.size > 0:
             return indicies
         else:
-            return array([x.size - 1,])
+            return array([x.size - 1, ])
     else:
         q = x[index]
         indicies = (q != roll(q, -1)).nonzero()[0]
         if indicies.size > 0:
             return index[indicies]
         else:
-            return array([q.size - 1,], dtype=index.dtype)
+            return array([q.size - 1, ], dtype=index.dtype)
