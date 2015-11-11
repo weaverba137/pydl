@@ -1,6 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def wavevector(minfullwave,maxfullwave,zeropoint=3.5,binsz=1.0e-4,wavemin=None,wavemax=None):
+
+
+def wavevector(minfullwave, maxfullwave, zeropoint=3.5, binsz=1.0e-4,
+               wavemin=None, wavemax=None):
     """Return an array of wavelengths.
 
     Parameters
@@ -39,5 +42,5 @@ def wavevector(minfullwave,maxfullwave,zeropoint=3.5,binsz=1.0e-4,wavemin=None,w
         wavemin = spotmin * binsz + zeropoint
         wavemax = spotmax * binsz + zeropoint
     nfinalpix = spotmax - spotmin + 1
-    finalwave = arange(nfinalpix,dtype='d') *binsz + wavemin
+    finalwave = arange(nfinalpix, dtype='d') * binsz + wavemin
     return finalwave

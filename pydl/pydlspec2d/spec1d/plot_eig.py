@@ -1,6 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def plot_eig(filename,title='Unknown'):
+
+
+def plot_eig(filename, title='Unknown'):
     """Plot spectra from an eigenspectra/template file.
 
     Parameters
@@ -35,7 +37,7 @@ def plot_eig(filename,title='Unknown'):
             title = 'CV Stars: Eigenspectra'
         else:
             raise ValueError('Unknown template type!')
-    base,ext = filename.split('.')
+    base, ext = filename.split('.')
     spectrum = pyfits.open(filename)
     newloglam0 = spectrum[0].header['COEFF0']
     objdloglam = spectrum[0].header['COEFF1']
@@ -46,9 +48,10 @@ def plot_eig(filename,title='Unknown'):
     lam = 10.0**newloglam
     fig = pylab.figure(dpi=100)
     ax = fig.add_subplot(111)
-    colorvec = ['k','r','g','b','m','c']
+    colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
     for l in range(neig):
-        p = ax.plot(lam,spectro_data[l,:],'%s-'%colorvec[l%len(colorvec)],linewidth=1)
+        p = ax.plot(lam, spectro_data[l, :],
+                    '%s-' % colorvec[l % len(colorvec)], linewidth=1)
     ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Flux [Arbitrary Units]')
     ax.set_title(title)
