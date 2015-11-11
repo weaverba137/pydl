@@ -27,7 +27,7 @@ def test_filter_thru():
         [  7.59458,    0.0395837,      2.31145,      6.42070,      2.04900,      20.3303,      1.56850,      4.25935,      2.38152,     0.984143,      1.51820,      14.4626,      2.01851,      3.74417,      1.86966,     0.133837,      3.53355,      6.86765,      2.98000,      5.82073,]
         ],dtype=np.float32).T
     assert f.shape == (20,5)
-    assert np.allclose(f,idl_data,atol=1.0e-7)
+    assert np.allclose(f,idl_data,atol=1.0e-6)
     #
     # Test bad input.
     #

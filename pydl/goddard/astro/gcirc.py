@@ -43,9 +43,9 @@ def gcirc(ra1,dec1,ra2,dec2,units=2):
     else:
         raise ValueError('units must be 0, 1 or 2!')
     deldec2 = (dcrad2-dcrad1)/2.0
-    delra2 =  (rarad2-rarad1)/2.0
-    sindis = sqrt( sin(deldec2)*sin(deldec2) +
-        cos(dcrad1)*cos(dcrad2)*sin(delra2)*sin(delra2) )
+    delra2 = (rarad2-rarad1)/2.0
+    sindis = sqrt(sin(deldec2)*sin(deldec2) +
+                  cos(dcrad1)*cos(dcrad2)*sin(delra2)*sin(delra2))
     dis = 2.0*arcsin(sindis)
     if units == 0:
         return dis

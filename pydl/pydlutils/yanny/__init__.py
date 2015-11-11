@@ -3,5 +3,4 @@
 """
 This subpackage corresponds to the yanny directory of idlutils.
 """
-from .write_ndarray_to_yanny import write_ndarray_to_yanny
-from .yanny import yanny
+from .yanny import write_ndarray_to_yanny, yanny

@@ -148,7 +148,7 @@ def pca_gal(**kwargs):
     # Make plots
     #
     colorvec = ['k','r','g','b','m','c']
-    smallfont = FontProperties(size='xx-small');
+    smallfont = FontProperties(size='xx-small')
     nspectra = pcaflux['newflux'].shape[0]
     if 'flux' in kwargs:
         nfluxes = 30

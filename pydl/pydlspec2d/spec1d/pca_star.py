@@ -70,7 +70,7 @@ def pca_star(**kwargs):
     fullflux = None
     namearr = list()
     colorvec = ['k','r','g','b','m','c']
-    smallfont = FontProperties(size='xx-small');
+    smallfont = FontProperties(size='xx-small')
     for c in classlist:
         #
         # Find the subclasses for this stellar type

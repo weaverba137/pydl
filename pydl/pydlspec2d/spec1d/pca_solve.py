@@ -111,8 +111,7 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
         'outmask':np.ones((nnew,),dtype='i4'),
         'usemask':np.ones((nnew,),dtype='i4'),
         'newflux':newflux,'newivar':newivar,
-        'newloglam':newloglam, }
-        # 'emevecs':1.0, 'emevals':1.0}
+        'newloglam':newloglam, }  # 'emevecs':1.0, 'emevals':1.0}
     #
     # If there is only one object spectrum, then all we can do is return it.
     #
@@ -190,4 +189,3 @@ def pca_solve(flux,ivar,loglam=None,zfit=None,**kwargs):
     fluxdict['eigenval'] = eigenval[0:nreturn]
     fluxdict['acoeff'] = acoeff
     return fluxdict
-

@@ -32,9 +32,9 @@ def smooth(signal,owidth,edge_truncate=False):
     --------
     """
     if owidth % 2 == 0:
-       width = owidth + 1
+        width = owidth + 1
     else:
-       width = owidth
+        width = owidth
     if width < 3:
         return signal
     n = signal.size

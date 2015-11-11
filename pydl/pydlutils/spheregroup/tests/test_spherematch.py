@@ -19,4 +19,3 @@ def test_spherematch():
     i1, i2, d12 = spherematch(ra1, dec1, ra2[foo], dec2[foo], searchrad, maxmatch=0)
     assert (i1 == i1_should_be).all()
     assert (i2 == i2_should_be).all()
-
