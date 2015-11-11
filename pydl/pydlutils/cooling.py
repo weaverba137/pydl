@@ -7,9 +7,8 @@ __doctest_skip__ = ['read_ds_cooling']
 
 
 def read_ds_cooling(fname, logT=None):
-    """Read in the `Sutherland & Dopita (1993)`_ cooling function.
-
-    .. _`Sutherland & Dopita (1993)`: http://adsabs.harvard.edu/abs/1993ApJS...88..253S
+    """Read in the `Sutherland & Dopita (1993)
+    <http://adsabs.harvard.edu/abs/1993ApJS...88..253S>`_ cooling function.
 
     Parameters
     ----------

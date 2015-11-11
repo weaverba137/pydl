@@ -28,7 +28,7 @@ def test_fchebyshev_split():
     foo = np.ones((3, x.size), dtype='d')
     foo[0, :] = (x >= 0).astype(x.dtype)
     foo[2, :] = x
-    assert np.allclose(f,f oo)
+    assert np.allclose(f, foo)
     #
     # m = 4
     #
