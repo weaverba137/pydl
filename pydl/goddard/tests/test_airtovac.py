@@ -12,6 +12,7 @@ def test_airtovac():
     air = np.array([1800.0, 1900.0, 2000.0, 2100.0, 2200.0, 2300.0])
     vacuum = airtovac(air)
     assert np.allclose(vacuum,
-                       np.array([1800.0, 1900.0, 2000.6475, 2100.6664, 2200.6868, 2300.7083]))
+                       np.array([1800.0, 1900.0, 2000.6475,
+                                 2100.6664, 2200.6868, 2300.7083]))
     vacuum = airtovac(6056.125)
     assert np.allclose(vacuum, 6057.8019)

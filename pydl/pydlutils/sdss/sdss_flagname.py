@@ -36,11 +36,12 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     flagu = flagname.upper()
     flagvaluint = uint64(flagvalue)
     one = uint64(1)
-    bits = [bit for bit in range(64) if (flagvaluint & (one << uint64(bit))) != 0]
+    bits = [bit for bit in range(64)
+            if (flagvaluint & (one << uint64(bit))) != 0]
     retval = list()
     for bit in bits:
         try:
-            f = [ x for x in maskbits[flagu].items() if x[1] == bit ]
+            f = [x for x in maskbits[flagu].items() if x[1] == bit]
         except KeyError:
             raise KeyError("Unknown flag group {0}!".format(flagu))
         if f:

@@ -30,6 +30,7 @@ if not _ASTROPY_SETUP_:
     from . import pydlutils
     from . import pydlspec2d
 
+
 class PydlException(Exception):
     pass
 

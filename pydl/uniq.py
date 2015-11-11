@@ -1,8 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-#
-def uniq(x,index=None):
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+
+def uniq(x, index=None):
     """Replicates the IDL UNIQ() function.
 
     Returns the *subscripts* of the unique elements of an array.  The elements
@@ -25,8 +27,9 @@ def uniq(x,index=None):
     Notes
     -----
     Given a sorted array, and assuming that there is a set of
-    adjacent identical items, ``uniq()`` will return the subscript of the *last*
-    unique item.  This charming feature is retained for reproducibility.
+    adjacent identical items, ``uniq()`` will return the subscript of the
+    *last* unique item.  This charming feature is retained for
+    reproducibility.
 
     References
     ----------
@@ -41,15 +44,15 @@ def uniq(x,index=None):
     """
     from numpy import array, roll
     if index is None:
-        indicies = (x != roll(x,-1)).nonzero()[0]
+        indicies = (x != roll(x, -1)).nonzero()[0]
         if indicies.size > 0:
             return indicies
         else:
             return array([x.size - 1,])
     else:
         q = x[index]
-        indicies = (q != roll(q,-1)).nonzero()[0]
+        indicies = (q != roll(q, -1)).nonzero()[0]
         if indicies.size > 0:
             return index[indicies]
         else:
-            return array([q.size - 1,],dtype=index.dtype)
+            return array([q.size - 1,], dtype=index.dtype)

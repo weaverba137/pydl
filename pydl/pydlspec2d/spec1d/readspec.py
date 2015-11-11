@@ -1,8 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
-def readspec(platein,mjd=None,fiber='all',**kwargs):
+
+
+def readspec(platein, mjd=None, fiber='all', **kwargs):
     """Read SDSS/BOSS spec2d & spec1d files.
 
     Parameters
@@ -94,24 +95,24 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
     #
     pmjd = ((np.array(platevec,dtype='u8') << 16) +
         np.array(mjdvec,dtype='u8'))
-    #print(pmjd)
+    # print(pmjd)
     upmjd = np.unique(pmjd)
-    zupmjd = list(zip(upmjd>>16,upmjd&((1<<16)-1)))
-    #print(zupmjd)
+    zupmjd = list(zip(upmjd >> 16, upmjd & ((1 << 16) - 1)))
+    # print(zupmjd)
     spplate_data = dict()
     hdunames = ('flux','invvar','andmask','ormask','disp','plugmap','sky','loglam',)
     for thisplate,thismjd in zupmjd:
-        #thisplate = int(p>>16)
-        #thismjd = int(np.bitwise_and(p,(1<<16)-1))
+        # thisplate = int(p>>16)
+        # thismjd = int(np.bitwise_and(p,(1<<16)-1))
         pmjdindex = ((platevec==thisplate) & (mjdvec==thismjd)).nonzero()[0]
         thisfiber = fibervec[pmjdindex]
-        #print(type(thisplate),type(thismjd))
+        # print(type(thisplate),type(thismjd))
         pmjdstr = "{0:04d}-{1:05d}".format(int(thisplate),int(thismjd))
         if 'path' in kwargs:
-            sppath = [ kwargs['path'] ]
+            sppath = [kwargs['path']]
         else:
-            sppath = spec_path(thisplate,run2d=run2d)
-        spfile = os.path.join(sppath[0],"spPlate-{0}.fits".format(pmjdstr))
+            sppath = spec_path(thisplate, run2d=run2d)
+        spfile = os.path.join(sppath[0], "spPlate-{0}.fits".format(pmjdstr))
         print(spfile)
         spplate = pyfits.open(spfile)
         #
@@ -120,10 +121,10 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
         npix = spplate[0].header['NAXIS1']
         c0 = spplate[0].header['COEFF0']
         c1 = spplate[0].header['COEFF1']
-        coeff0 = np.zeros(thisfiber.size,dtype='d') + c0
-        coeff1 = np.zeros(thisfiber.size,dtype='d') + c1
-        loglam0 = c0 + c1*np.arange(npix,dtype='d')
-        loglam = np.resize(loglam0,(thisfiber.size,npix))
+        coeff0 = np.zeros(thisfiber.size, dtype='d') + c0
+        coeff1 = np.zeros(thisfiber.size, dtype='d') + c1
+        loglam0 = c0 + c1*np.arange(npix, dtype='d')
+        loglam = np.resize(loglam0, (thisfiber.size, npix))
         #
         # Read the data images
         #
@@ -160,7 +161,7 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
                         if mincoeff0 > 0 and coeff0[0] == 0:
                             coeff0 = mincoeff0
                             coeff1 = allcoeff1[0]
-                        ps = np.floor( (coeff0[0] - mincoeff0)/coeff1[0] + 0.5)
+                        ps = np.floor((coeff0[0] - mincoeff0)/coeff1[0] + 0.5)
                         if ps > 0:
                             coeff0 = coeff0 - ps*coeff1
                         else:

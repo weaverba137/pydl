@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def window_read(**kwargs):
     """Read window files in $PHOTO_RESOLVE.
     """
@@ -49,7 +51,7 @@ def window_read(**kwargs):
         # Copy blist data to balkans
         #
         r['balkans'] = r['blist'].copy()
-        r['balkans']['caps'] = { 'X':list(), 'CM':list() }
+        r['balkans']['caps'] = {'X': list(), 'CM': list()}
         r['balkans']['use_caps'] = np.zeros(r['balkans']['ICAP'].shape,dtype=np.uint64)
         if 'blist' not in kwargs:
             del r['blist']

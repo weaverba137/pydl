@@ -1,9 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def djs_reject(data,model,outmask=None,inmask=None,sigma=None,invvar=None,
-    lower=None,upper=None,maxdev=None,
-    maxrej=None,groupdim=None,groupsize=None,groupbadpix=False,
-    grow=0,sticky=False):
+def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
+               invvar=None, lower=None, upper=None, maxdev=None,
+               maxrej=None, groupdim=None, groupsize=None, groupbadpix=False,
+               grow=0, sticky=False):
     """Routine to reject points when doing an iterative fit to data.
 
     Parameters

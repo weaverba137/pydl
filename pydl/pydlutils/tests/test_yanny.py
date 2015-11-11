@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def test_yanny():
     """Used to test the yanny class.
     """
@@ -86,7 +88,7 @@ def test_yanny():
         assert set(par.columns(t)) == set(struct_dict[t]['columns'])
         for c in par.columns(t):
             assert par.type(t,c) == struct_dict[t]['columns'][c]
-            #print(par[t][c])
+            # print(par[t][c])
     assert par.isenum('MYSTRUCT','new_flag')
     assert par._enum_cache['BOOLEAN'] == ['FALSE','TRUE']
     assert par._enum_cache['STATUS'] == ['FAILURE','INCOMPLETE','SUCCESS']
@@ -110,8 +112,7 @@ def test_yanny():
     with raises(PydlutilsException):
         par.append(datatable) # This should also fail, because test_append.par does not exist
     return
-#
-# Testing purposes
-#
+
+
 if __name__ == '__main__':
     test_yanny()

@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 from astropy.utils import lazyproperty
-#
+
+
 class computechi2(object):
     """Solve the linear set of equations Ax=b using SVD.
 
@@ -36,9 +37,7 @@ class computechi2(object):
         The variances of the fit.  This is identical to the diagonal of the
         covariance matrix.  This vector has length M.
     """
-    #
-    #
-    #
+
     def __init__(self,bvec,sqivar,amatrix):
         """Initialize the object and perform initial computations.
         """
@@ -46,7 +45,7 @@ class computechi2(object):
         #
         # Save the inputs
         #
-        #self.bvec = bvec
+        # self.bvec = bvec
         self.sqivar = sqivar
         self.amatrix = amatrix
         if len(amatrix.shape) > 1:
@@ -54,61 +53,51 @@ class computechi2(object):
         else:
             self.nstar = 1
         self.bvec = bvec*sqivar
-        self.mmatrix = self.amatrix * np.tile(sqivar,self.nstar).reshape(self.nstar,bvec.size).transpose()
-        mm = np.dot(self.mmatrix.T,self.mmatrix)
-        self.uu,self.ww,self.vv = svd(mm,full_matrices=False)
-        self.mmi = np.dot((self.vv.T / np.tile(self.ww,self.nstar).reshape(self.nstar,self.nstar)),self.uu.T)
+        self.mmatrix = self.amatrix * np.tile(sqivar, self.nstar).reshape(
+                       self.nstar,bvec.size).transpose()
+        mm = np.dot(self.mmatrix.T, self.mmatrix)
+        self.uu,self.ww,self.vv = svd(mm, full_matrices=False)
+        self.mmi = np.dot((self.vv.T / np.tile(self.ww, self.nstar).reshape(
+                   self.nstar, self.nstar)), self.uu.T)
         return
-    #
-    #
-    #
+
     @lazyproperty
     def acoeff(self):
         """Computes the x values in Ax=b.
         """
-        return np.dot(self.mmi,np.dot(self.mmatrix.T,self.bvec))
-    #
-    #
-    #
+        return np.dot(self.mmi, np.dot(self.mmatrix.T, self.bvec))
+
     @lazyproperty
     def chi2(self):
         """Computes the chi**2 value.
         """
-        return np.sum((np.dot(self.mmatrix,self.acoeff) - self.bvec)**2)
-    #
-    #
-    #
+        return np.sum((np.dot(self.mmatrix, self.acoeff) - self.bvec)**2)
+
     @lazyproperty
     def yfit(self):
         """Computes the best fit.
         """
-        return np.dot(self.amatrix,self.acoeff)
-    #
-    #
-    #
+        return np.dot(self.amatrix, self.acoeff)
+
     @lazyproperty
     def dof(self):
         """Computes the degrees of freedom.
         """
         return (self.sqivar > 0).sum() - self.nstar
-    #
-    #
-    #
+
     @lazyproperty
     def covar(self):
         """Computes the covariance matrix.
         """
         wwt = self.ww.copy()
         wwt[self.ww>0] = 1.0/self.ww[self.ww>0]
-        covar = np.zeros((self.nstar,self.nstar),dtype=self.ww.dtype)
+        covar = np.zeros((self.nstar, self.nstar), dtype=self.ww.dtype)
         for i in range(self.nstar):
-            for j in range(i+1):
+            for j in range(i + 1):
                 covar[i,j] = np.sum(wwt * self.vv[:,i] * self.vv[:,j])
                 covar[j,i] = covar[i,j]
         return covar
-    #
-    #
-    #
+
     @lazyproperty
     def var(self):
         """Computes the variances of the fit parameters.

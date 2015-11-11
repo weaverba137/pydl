@@ -1,8 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
-def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs):
+
+
+def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
+            maxiter=10, **kwargs):
     """Iteratively fit a b-spline set to data, with rejection.
 
     Parameters
@@ -64,7 +66,7 @@ def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs)
     else:
         if not maskwork.any():
             raise ValueError('No valid data points.')
-            #return (None,None)
+            # return (None,None)
         if 'fullbkpt' in kwargs:
             fullbkpt = kwargs['fullbkpt']
         else:
@@ -110,8 +112,8 @@ def iterfit(xdata,ydata,invvar=None,upper=5,lower=5,x2=None,maxiter=10,**kwargs)
                 ct = 0
                 for ileft in range(sset.nord,sset.mask.sum()-sset.nord+1):
                     while (xwork[i] >= sset.breakpoints[goodbk[ileft]] and
-                        xwork[i] < sset.breakpoints[goodbk[ileft+1]] and
-                        i < nx-1):
+                           xwork[i] < sset.breakpoints[goodbk[ileft+1]] and
+                           i < nx-1):
                         ct += invwork[i]*maskwork[i] > 0
                         i += 1
                     if ct >= kwargs['requiren']:

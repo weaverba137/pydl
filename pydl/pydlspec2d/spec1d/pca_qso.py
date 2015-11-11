@@ -1,8 +1,8 @@
 #
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
-#
+
+
 def pca_qso(**kwargs):
     """Wrapper on pca_solve to handle QSO eigenspectra.
     """
@@ -46,9 +46,11 @@ def pca_qso(**kwargs):
     # Read the input spectra
     #
     converters = {'plate': [ascii.convert_numpy(np.int32)],
-        'mjd': [ascii.convert_numpy(np.int32)],
-        'fiber': [ascii.convert_numpy(np.int32)] }
-    input_data = ascii.read(inputfile,names=['plate','mjd','fiber','zfit'],converters=converters)
+                  'mjd': [ascii.convert_numpy(np.int32)],
+                  'fiber': [ascii.convert_numpy(np.int32)]}
+    input_data = ascii.read(inputfile,
+                            names=['plate', 'mjd', 'fiber', 'zfit'],
+                            converters=converters)
     plate = input_data['plate'].data
     mjd = input_data['mjd'].data
     fiber = input_data['fiber'].data

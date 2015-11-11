@@ -6,15 +6,16 @@ This subpackage implements functions from the idlutils package.
 #
 # Define this early on so that submodules can use it
 #
-#from .. import PydlException
-#class PydlutilsException(PydlException):
-#    pass
+from astropy.utils.exceptions import AstropyUserWarning
+
+
 class PydlutilsException(Exception):
     pass
-#
-from astropy.utils.exceptions import AstropyUserWarning
+
+
 class PydlutilsUserWarning(AstropyUserWarning):
     pass
+
 #
 # Import subpackages
 #
@@ -33,4 +34,4 @@ from . import yanny
 # Set __all__
 #
 __all__ = ['PydlutilsException', 'bspline', 'cooling', 'image', 'mangle',
-    'math', 'misc', 'sdss', 'spheregroup', 'trace', 'yanny']
+           'math', 'misc', 'sdss', 'spheregroup', 'trace', 'yanny']

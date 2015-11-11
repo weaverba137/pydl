@@ -8,7 +8,8 @@ if six.PY3:
     long = int
 
 
-def set_use_caps(x,cm,polygon_use_caps,add=False,tol=1.0e-10,allow_doubles=False,allow_neg_doubles=False):
+def set_use_caps(x, cm, polygon_use_caps, add=False, tol=1.0e-10,
+                 allow_doubles=False, allow_neg_doubles=False):
     """Set the bits in use_caps for a polygon.
 
     Parameters
@@ -49,12 +50,13 @@ def set_use_caps(x,cm,polygon_use_caps,add=False,tol=1.0e-10,allow_doubles=False
         # Check for doubles
         #
         for i in range(len(cm)):
-            if is_cap_used(use_caps,i):
-                for j in range(i+1,len(cm)):
-                    if is_cap_used(use_caps,j):
+            if is_cap_used(use_caps, i):
+                for j in range(i+1, len(cm)):
+                    if is_cap_used(use_caps, j):
                         if np.sum((x[i]-x[j])**2) < t2:
                             if ((np.absolute(cm[i]-cm[j]) < tol) or
-                                ((cm[i] + cm[j]) < tol and not allow_neg_doubles)):
+                                    ((cm[i] + cm[j]) < tol and not
+                                    allow_neg_doubles)):
                                 #
                                 # Don't use
                                 #

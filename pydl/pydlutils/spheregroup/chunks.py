@@ -1,7 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
+
+
 class chunks(object):
     """chunks class
 
@@ -10,6 +11,7 @@ class chunks(object):
     """
     import numpy as np
     from .. import PydlutilsException
+
     def __init__(self, ra, dec, minSize):
         """Init creates an object whose attributes are similar those created
         by the setchunks() function in the spheregroup library.
@@ -80,10 +82,10 @@ class chunks(object):
             #
             # If we cannot avoid the 0/360 point, embrace it
             #
-            if ( raRangeTmp >= 360.0 or
-                raMinTmp <= minSize/cosDecMin or
-                raMaxTmp >= 360.0 - minSize/cosDecMin or
-                abs(self.decBounds[i]) == 90.0 ):
+            if (raRangeTmp >= 360.0 or
+                    raMinTmp <= minSize/cosDecMin or
+                    raMaxTmp >= 360.0 - minSize/cosDecMin or
+                    abs(self.decBounds[i]) == 90.0):
                 raMinTmp = 0.0
                 raMaxTmp = 360.0
                 raRangeTmp = 360.0
@@ -102,7 +104,8 @@ class chunks(object):
         #
         self.nChunkMax = 0
         return
-    def rarange(self,ra,minSize):
+
+    def rarange(self, ra, minSize):
         """Finds the offset which yields the smallest raRange & returns both.
 
         Notes
@@ -119,24 +122,27 @@ class chunks(object):
             raRange = raMax-raMin
             # print(minSize,raMin,raMax, raRange, raRangeMin)
             if (2.0*(raRange-raRangeMin)/(raRange+raRangeMin) < -EPS and
-                raMin > minSize and raMax < 360.0 - minSize):
+                    raMin > minSize and raMax < 360.0 - minSize):
                 # print(j)
                 raRangeMin = raRange
                 raOffset = 360.0*float(j)/float(NRA)
         # print(raRangeMin, raOffset)
         return (raRangeMin, raOffset)
-    def getraminmax(self,ra,raOffset):
+
+    def getraminmax(self, ra, raOffset):
         """Utility function used by rarange.
         """
         currRa = self.np.fmod(ra + raOffset, 360.0)
         return (currRa.min(), currRa.max())
-    def cosDecMin(self,i):
+
+    def cosDecMin(self, i):
         """Frequently used utility function.
         """
         if abs(self.decBounds[i]) > abs(self.decBounds[i+1]):
             return self.np.cos(self.np.deg2rad(self.decBounds[i]))
         else:
             return self.np.cos(self.np.deg2rad(self.decBounds[i+1]))
+
     def assign(self, ra, dec, marginSize):
         """Take the objects and the chunks (already defined in the constructor)
         and assign the objects to the appropriate chunks, with some leeway
@@ -185,6 +191,7 @@ class chunks(object):
                                 self.nChunkMax = len(self.chunkList[decChunk][currRaChunk])
                             chunkDone[decChunk][currRaChunk] = True
         return
+
     def getbounds(self,ra,dec,marginSize):
         """Find the set of chunks a point (with margin) belongs to.
         """
@@ -241,6 +248,7 @@ class chunks(object):
                     raCheck += 1
             raChunkMax[i-decChunkMin] = raCheck
         return (raChunkMin, raChunkMax, decChunkMin, decChunkMax)
+
     def get(self, ra, dec):
         """Find the chunk to which a given point belongs.
         """
@@ -262,6 +270,7 @@ class chunks(object):
         else:
             raChunk = -1
         return (raChunk, decChunk)
+
     def friendsoffriends(self,ra,dec,linkSep):
         """Friends-of-friends using chunked data.
         """
@@ -334,6 +343,7 @@ class chunks(object):
                 multGroup[i] += 1
                 j = nextGroup[j]
         return (inGroup, multGroup, firstGroup, nextGroup, nGroups)
+
     def chunkfriendsoffriends(self,ra,dec,chunkList,linkSep):
         """Does friends-of-friends on the ra, dec that are defined by
         chunkList.

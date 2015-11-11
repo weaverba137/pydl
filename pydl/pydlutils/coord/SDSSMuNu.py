@@ -1,12 +1,13 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-#
 from astropy import units as u
 from astropy.coordinates import (Angle, BaseCoordinateFrame, FrameAttribute,
-    SphericalRepresentation, QuantityFrameAttribute,
-    RepresentationMapping)
+                                 SphericalRepresentation,
+                                 QuantityFrameAttribute,
+                                 RepresentationMapping)
 from .stripe_to_incl import stripe_to_incl
-#
+
+
 class SDSSMuNu(BaseCoordinateFrame):
     """SDSS Great Circle Coordinates
 
@@ -46,9 +47,7 @@ class SDSSMuNu(BaseCoordinateFrame):
     stripe = FrameAttribute(default=0)
     node = QuantityFrameAttribute(default=Angle(95.0,unit=u.deg),unit=u.deg)
     # phi = QuantityFrameAttribute(default=None,unit=u.deg)
-    #
-    #
-    #
+
     @property
     def incl(self):
         return Angle(stripe_to_incl(self.stripe),unit=u.deg)

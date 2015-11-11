@@ -20,12 +20,13 @@ def airtovac(air):
 
     Notes
     -----
-    * Formula from `P. E. Ciddor, Applied Optics, 35, 1566 (1996) <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
+    * Formula from `P. E. Ciddor, Applied Optics, 35, 1566 (1996)
+      <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
     * Values of wavelength below 2000 Å are not converted.
     """
     from numpy import zeros
     try:
-        vacuum = zeros(air.size,dtype=air.dtype) + air
+        vacuum = zeros(air.size, dtype=air.dtype) + air
         g = vacuum < 2000.0
     except AttributeError:
         # Most likely, vacuum is simply a float.
@@ -43,7 +44,7 @@ def airtovac(air):
     return vacuum
 
 
-def gcirc(ra1,dec1,ra2,dec2,units=2):
+def gcirc(ra1, dec1, ra2, dec2, units=2):
     """Computes rigorous great circle arc distances.
 
     Parameters
@@ -149,7 +150,8 @@ def vactoair(vacuum):
 
     Notes
     -----
-    * Formula from `P. E. Ciddor, Applied Optics, 35, 1566 (1996) <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
+    * Formula from `P. E. Ciddor, Applied Optics, 35, 1566 (1996)
+      <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
     * Values of wavelength below 2000 Å are not converted.
     """
     from numpy import zeros

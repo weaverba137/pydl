@@ -1,8 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
-def findspec(*args,**kwargs):
+
+
+def findspec(*args, **kwargs):
     """Find SDSS/BOSS spectra that match a given RA, Dec.
 
     Parameters
@@ -20,7 +21,7 @@ def findspec(*args,**kwargs):
     from ...pydlutils.misc import struct_print
     from ...pydlutils.spheregroup import spherematch
     from .. import Pydlspec2dException
-    import pydl.pydlspec2d.spec1d # get the findspec_cache dictionary
+    import pydl.pydlspec2d.spec1d  # get the findspec_cache dictionary
     #
     # Set up default values
     #
@@ -42,10 +43,10 @@ def findspec(*args,**kwargs):
         else:
             run1d = os.getenv('RUN1D')
     if pydl.pydlspec2d.spec1d.findspec_cache is None:
-        pydl.pydlspec2d.spec1d.findspec_cache = { 'lasttopdir':topdir,
-            'plist':None }
+        pydl.pydlspec2d.spec1d.findspec_cache = {'lasttopdir': topdir,
+                                                 'plist': None}
     if (pydl.pydlspec2d.spec1d.findspec_cache['plist'] is None or
-        topdir != pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir']):
+            topdir != pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir']):
         pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir'] = topdir
         platelist_file = os.path.join(topdir,"platelist.fits")
         plates_files = glob.glob(os.path.join(topdir,"plates-*.fits"))

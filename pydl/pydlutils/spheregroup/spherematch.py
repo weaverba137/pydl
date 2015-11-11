@@ -1,8 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
-def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1):
+
+
+def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
+                maxmatch=1):
     """Match points on a sphere.
 
     Parameters
@@ -85,7 +87,7 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1):
         nmatch = 0
         for i in range(omatch1.size):
             if (gotten1[omatch1[s[i]]] < maxmatch and
-                gotten2[omatch2[s[i]]] < maxmatch):
+                    gotten2[omatch2[s[i]]] < maxmatch):
                 gotten1[omatch1[s[i]]] += 1
                 gotten2[omatch2[s[i]]] += 1
                 nmatch += 1
@@ -97,7 +99,7 @@ def spherematch(ra1,dec1,ra2,dec2,matchlength,chunksize=None,maxmatch=1):
         nmatch = 0
         for i in range(omatch1.size):
             if (gotten1[omatch1[s[i]]] < maxmatch and
-                gotten2[omatch2[s[i]]] < maxmatch):
+                    gotten2[omatch2[s[i]]] < maxmatch):
                 gotten1[omatch1[s[i]]] += 1
                 gotten2[omatch2[s[i]]] += 1
                 match1[nmatch] = omatch1[s[i]]

@@ -3,17 +3,6 @@
 """
 This subpackage contains the Goddard utilities.
 """
-#
-# Define this early on so that submodules can use it
-#
-#from .. import PydlException
-#class GoddardException(PydlException):
-#    pass
-#class GoddardException(Exception):
-#    pass
-#
-# Import subpackages
-#
 from . import astro
 from . import math
 from . import misc

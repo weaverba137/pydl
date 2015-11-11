@@ -1,28 +1,32 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
+
+
 class groups(object):
     """Group a set of objects (a list of coordinates in some space) based on
     a friends-of-friends algorithm
     """
     import numpy as np
     from .. import PydlutilsException
+
     @staticmethod
-    def euclid(x1,x2):
+    def euclid(x1, x2):
         """Pythagorean theorem in Euclidean space with arbitrary number
         of dimensions.
         """
         return self.np.sqrt(((x1-x2)**2).sum())
+
     @staticmethod
-    def sphereradec(x1,x2):
+    def sphereradec(x1, x2):
         """Separation of two points on a 2D-sphere, assuming they are in
         longitude-latitude or right ascension-declination form.  Assumes
         everything is already in radians.
         """
         from ...goddard.astro import gcirc
-        return gcirc(x1[0],x1[1],x2[0],x2[1],units=0)
-    def __init__(self,coordinates,distance,separation='euclid'):
+        return gcirc(x1[0], x1[1], x2[0], x2[1], units=0)
+
+    def __init__(self, coordinates, distance, separation='euclid'):
         """Init creates an object and performs the friends-of-friends
         algorithm.  The coordinates can have arbitrary dimensions, with each
         column representing one of the dimensions.  Each row defines an object.

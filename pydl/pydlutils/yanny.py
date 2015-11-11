@@ -44,13 +44,14 @@ class yanny(dict):
     Parameters
     ----------
     filename : :class:`str` or file-like, optional
-        The name of a yanny file or a file-like object representing a yanny file.
+        The name of a yanny file or a file-like object representing a
+        yanny file.
     np : :class:`bool`, optional
         If ``True``, data in a yanny file will be converted into a NumPy
         :class:`record array <numpy.recarray>`. Default is ``False``.
     debug : :class:`bool`, optional
-        If ``True``, some simple debugging statements will be turned on. Default
-        is ``False``.
+        If ``True``, some simple debugging statements will be turned on.
+        Default is ``False``.
 
     Attributes
     ----------
@@ -108,18 +109,18 @@ class yanny(dict):
         """
         if string[0] == '"':
             (word, remainder) = re.search(r'^"([^"]*)"\s*(.*)',
-                string).groups()
+                                          string).groups()
         elif string[0] == '{':
             (word, remainder) = re.search(r'^\{\s*([^}]*)\s*\}\s*(.*)',
-                string).groups()
+                                          string).groups()
         else:
             try:
-                (word, remainder) = re.split(r'\s+',string,1)
+                (word, remainder) = re.split(r'\s+', string, 1)
             except ValueError:
                 (word, remainder) = (string, '')
         if remainder is None:
             remainder = ''
-        return (word,remainder)
+        return (word, remainder)
 
     @staticmethod
     def protect(x):
@@ -145,11 +146,11 @@ class yanny(dict):
         >>> yanny.protect('This string contains a #hashtag.')
         '"This string contains a #hashtag."'
         """
-        if isinstance(x,numpy.bytes_):
+        if isinstance(x, numpy.bytes_):
             s = x.decode()
         else:
             s = str(x)
-        if len(s) == 0 or s.find('#') >= 0 or re.search(r'\s+',s) is not None:
+        if len(s) == 0 or s.find('#') >= 0 or re.search(r'\s+', s) is not None:
             return '"' + s + '"'
         else:
             return s
@@ -220,21 +221,22 @@ class yanny(dict):
         dt : :class:`numpy.dtype`
             The dtype of a NumPy record array.
         structname : :class:`str`, optional
-            The name to give the structure in the yanny file.  Defaults to 'MYSTRUCT'.
+            The name to give the structure in the yanny file.  Defaults to
+            'MYSTRUCT'.
         enums : :class:`dict`, optional
             A dictionary containing enum information.  See details above.
 
         Returns
         -------
         dtype_to_struct : :class:`dict`
-            A dictionary suitable for setting the 'symbols' dictionary of a new
-            yanny object.
+            A dictionary suitable for setting the 'symbols' dictionary of a
+            new yanny object.
 
         Examples
         --------
         """
-        dtmap = {'i2':'short','i4':'int','i8':'long','f4':'float',
-            'f8':'double'}
+        dtmap = {'i2': 'short', 'i4': 'int', 'i8': 'long', 'f4': 'float',
+                 'f8': 'double'}
         returnenums = list()
         if enums is not None:
             for e in enums:
@@ -245,7 +247,7 @@ class yanny(dict):
                 lines[-1] = lines[-1].strip(',')
                 lines.append('}} {0};'.format(enums[e][0].upper()))
                 returnenums.append("\n".join(lines))
-                #lines.append('')
+                # lines.append('')
         lines = list()
         lines.append('typedef struct {')
         for c in dt.names:
@@ -273,7 +275,8 @@ class yanny(dict):
             line += ';'
             lines.append(line)
         lines.append('}} {0};'.format(structname.upper()))
-        return {structname.upper():list(dt.names),'enum':returnenums,'struct':["\n".join(lines)]}
+        return {structname.upper(): list(dt.names),
+                'enum': returnenums, 'struct': ["\n".join(lines)]}
 
     def __init__(self, filename=None, np=False, debug=False):
         """Create a yanny object using a yanny file.
@@ -283,14 +286,14 @@ class yanny(dict):
         #
         self['symbols'] = dict()
         #
-        # Create special attributes that contain the internal status of the object
-        # this should prevent overlap with keywords in the data files
+        # Create special attributes that contain the internal status of the
+        # object. This should prevent overlap with keywords in the data files.
         #
         self.filename = ''
         self._contents = ''
         #
-        # Since the re is expensive, cache the structure types keyed by the field.
-        # Create a dictionary for each structure found.
+        # Since the re is expensive, cache the structure types keyed by
+        # the field. Create a dictionary for each structure found.
         #
         self._struct_type_caches = dict()
         self._struct_isarray_caches = dict()
@@ -311,9 +314,9 @@ class yanny(dict):
             # Handle file-like objects
             #
             if isinstance(filename, six.string_types):
-                if os.access(filename,os.R_OK):
+                if os.access(filename, os.R_OK):
                     self.filename = filename
-                    with open(filename,'r') as f:
+                    with open(filename, 'r') as f:
                         self._contents = f.read()
             else:
                 #
@@ -343,7 +346,8 @@ class yanny(dict):
     def __ne__(self, other):
         """Test two yanny objects for inequality.
 
-        Two yanny objects are assumed to be unequal if their contents are unequal.
+        Two yanny objects are assumed to be unequal if their contents are
+        unequal.
         """
         if isinstance(other, yanny):
             return str(other) != str(self)
@@ -359,7 +363,7 @@ class yanny(dict):
     # `__nonzero__` is needed for Python 2.
     # Python 3 uses `__bool__`.
     # http://stackoverflow.com/a/2233850/498873
-    __nonzero__=__bool__
+    __nonzero__ = __bool__
 
     def type(self, structure, variable):
         """Returns the type of a variable defined in a structure.
@@ -402,9 +406,9 @@ class yanny(dict):
             if self.debug:
                 print(variable)
             defl = [x for x in self['symbols']['struct']
-                    if x.find(structure.lower()) > 0 ]
+                    if x.find(structure.lower()) > 0]
             defu = [x for x in self['symbols']['struct']
-                    if x.find(structure.upper()) > 0 ]
+                    if x.find(structure.upper()) > 0]
             if len(defl) != 1 and len(defu) != 1:
                 return None
             elif len(defl) == 1:
@@ -412,7 +416,7 @@ class yanny(dict):
             else:
                 definition = defu
             typere = re.compile(r'(\S+)\s+{0}([[<].*[]>]|);'.format(variable))
-            (typ,array) = typere.search(definition[0]).groups()
+            (typ, array) = typere.search(definition[0]).groups()
             var_type = typ + array.replace('<', '[').replace('>', ']')
             cache[variable] = var_type
         return var_type
@@ -471,7 +475,7 @@ class yanny(dict):
             character_array = re.compile(r'char[[<]\d*[]>][[<]\d*[]>]')
             if ((character_array.search(typ) is not None) or
                     (typ.find('char') < 0 and (typ.find('[') >= 0 or
-                    typ.find('<') >= 0))):
+                                               typ.find('<') >= 0))):
                 cache[variable] = True
             else:
                 cache[variable] = False
@@ -499,7 +503,7 @@ class yanny(dict):
                 for e in self['symbols']['enum']:
                     m = re.search(r'typedef\s+enum\s*\{([^}]+)\}\s*(\w+)\s*;',
                                   e).groups()
-                    self._enum_cache[m[1]] = re.split(r',\s*',m[0].strip())
+                    self._enum_cache[m[1]] = re.split(r',\s*', m[0].strip())
             else:
                 return False
         return self.basetype(structure, variable) in self._enum_cache
@@ -523,14 +527,12 @@ class yanny(dict):
         array_length : :class:`int`
             The length of the array variable
         """
-        if self.isarray(structure,variable):
-            typ = self.type(structure,variable)
+        if self.isarray(structure, variable):
+            typ = self.type(structure, variable)
             return int(typ[typ.index('[')+1:typ.index(']')])
         else:
             return 1
-    #
-    #
-    #
+
     def char_length(self, structure, variable):
         """Returns the length of a character field.
 
@@ -551,20 +553,18 @@ class yanny(dict):
         char_length : :class:`int` or None
             The length of the char variable.
         """
-        typ = self.type(structure,variable)
+        typ = self.type(structure, variable)
         if typ.find('char') < 0:
             return None
         try:
             return int(typ[typ.rfind('[')+1:typ.rfind(']')])
         except ValueError:
-            if self.isarray(structure,variable):
+            if self.isarray(structure, variable):
                 return max([max([len(x) for x in r])
                             for r in self[structure][variable]])
             else:
                 return max([len(x) for x in self[structure][variable]])
-    #
-    #
-    #
+
     def dtype(self, structure):
         """Returns a NumPy dtype object suitable for describing a table as a
         record array.
@@ -579,16 +579,17 @@ class yanny(dict):
         Returns
         -------
         dtype : :class:`numpy.dtype`
-            A dtype object suitable for describing the yanny structure as a record array.
+            A dtype object suitable for describing the yanny structure as a
+            record array.
         """
         dt = list()
         dtmap = {'short': 'i2', 'int': 'i4', 'long': 'i8', 'float': 'f',
-            'double':'d' }
+                 'double': 'd'}
         for c in self.columns(structure):
-            typ = self.basetype(structure,c)
+            typ = self.basetype(structure, c)
             if typ == 'char':
-                d = "S{0:d}".format(self.char_length(structure,c))
-            elif self.isenum(structure,c):
+                d = "S{0:d}".format(self.char_length(structure, c))
+            elif self.isenum(structure, c):
                 d = "S{0:d}".format(max([len(x) for x in
                                          self._enum_cache[typ]]))
             else:
@@ -651,7 +652,7 @@ class yanny(dict):
         """
         foo = list()
         for k in self['symbols'].keys():
-            if k not in ('struct','enum'):
+            if k not in ('struct', 'enum'):
                 foo.append(k)
         return foo
 
@@ -775,7 +776,8 @@ class yanny(dict):
         The new dictionary (*i.e.*, not a yanny object) contains the keys
         that :meth:`pairs` returns. There are two reasons this is convenient:
 
-        * the key 'symbols' that is part of the yanny object will not be present
+        * the key 'symbols' that is part of the yanny object will not be
+          present
         * a simple yanny file can be read with no further processing
 
         Examples
@@ -826,21 +828,24 @@ class yanny(dict):
                 newfile = self.filename
             else:
                 raise ValueError("No filename specified!")
-        if os.access(newfile,os.F_OK):
-            raise PydlutilsException("{0} exists, aborting write!".format(newfile))
+        if os.access(newfile, os.F_OK):
+            raise PydlutilsException(
+                  "{0} exists, aborting write!".format(newfile))
         if comments is None:
             basefile = os.path.basename(newfile)
-            timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
-            comments = "#\n# {0}\n#\n# Created by pydl.pydlutils.yanny.yanny\n#\n# {1}\n#\n".format(basefile,timestamp)
+            timestamp = datetime.datetime.utcnow().strftime(
+                        '%Y-%m-%d %H:%M:%S UTC')
+            comments = "#\n# {0}\n#\n# Created by pydl.pydlutils.yanny.yanny\n#\n# {1}\n#\n".format(basefile, timestamp)
         else:
             if not isinstance(comments, six.string_types):
-                comments = "\n".join(["# {0}".format(c) for c in comments]) + "\n"
+                comments = ("\n".join(["# {0}".format(c) for c in comments]) +
+                            "\n")
         contents = comments
         #
         # Print any key/value pairs
         #
         for key in self.pairs():
-            contents += "{0} {1}\n".format(key,self[key])
+            contents += "{0} {1}\n".format(key, self[key])
         #
         # Print out enum definitions
         #
@@ -861,8 +866,9 @@ class yanny(dict):
                 line = list()
                 line.append(sym)
                 for col in columns:
-                    if self.isarray(sym,col):
-                        datum = '{' + ' '.join([self.protect(x) for x in self[sym][col][k]]) + '}'
+                    if self.isarray(sym, col):
+                        datum = ('{' + ' '.join([self.protect(x)
+                                 for x in self[sym][col][k]]) + '}')
                     else:
                         datum = self.protect(self[sym][col][k])
                     line.append(datum)
@@ -870,21 +876,22 @@ class yanny(dict):
         #
         # Actually write the data to file
         #
-        with open(newfile,'w') as f:
+        with open(newfile, 'w') as f:
             f.write(contents)
         self._contents = contents
         self.filename = newfile
         self._parse()
         return
 
-    def append(self,datatable):
+    def append(self, datatable):
         """Appends data to an existing FTCL/yanny file.
 
         Tries as much as possible to preserve the ordering & format of the
         original file.  The datatable should adhere to the format of the
         yanny object, but it is not necessary to reproduce the 'symbols'
         dictionary.  It will not try to append data to a file that does not
-        exist.  If the append is successful, the data in the object will be updated.
+        exist.  If the append is successful, the data in the object will be
+        updated.
 
         Parameters
         ----------
@@ -892,10 +899,13 @@ class yanny(dict):
             The data to append.
         """
         if len(self.filename) == 0:
-            raise ValueError("No filename is set for this object. Use the filename attribute to set the filename!")
+            raise ValueError("No filename is set for this object. " +
+                             "Use the filename attribute to set the filename!")
         if not isinstance(datatable, dict):
-            raise ValueError("Data to append is not of the correct type. Use a dict!")
-        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            raise ValueError("Data to append is not of the correct type. " +
+                             "Use a dict!")
+        timestamp = datetime.datetime.utcnow().strftime(
+                    '%Y-%m-%d %H:%M:%S UTC')
         contents = ''
         #
         # Print any key/value pairs
@@ -918,8 +928,10 @@ class yanny(dict):
                     line = list()
                     line.append(sym)
                     for col in columns:
-                        if self.isarray(sym,col):
-                            datum = '{' + ' '.join([self.protect(x) for x in datatable[datasym][col][k]]) + '}'
+                        if self.isarray(sym, col):
+                            datum = ('{' + ' '.join([self.protect(x)
+                                     for x in datatable[datasym][col][k]]) +
+                                     '}')
                         else:
                             datum = self.protect(datatable[datasym][col][k])
                         line.append(datum)
@@ -928,17 +940,20 @@ class yanny(dict):
         # Actually write the data to file
         #
         if len(contents) > 0:
-            contents = ("# Appended by yanny.py at {0}.\n".format(timestamp)) + contents
-            if os.access(self.filename,os.W_OK):
-                with open(self.filename,'a') as f:
+            contents = ("# Appended by yanny.py at {0}.\n".format(timestamp) +
+                        contents)
+            if os.access(self.filename, os.W_OK):
+                with open(self.filename, 'a') as f:
                     f.write(contents)
                 self._contents += contents
                 self._parse()
             else:
                 if self.debug:
-                    print("For reference, here's what would have been written:")
+                    print("For reference, " +
+                          "here's what would have been written:")
                     print(contents)
-                raise PydlutilsException("{0} does not exist, aborting append!".format(self.filename))
+                raise PydlutilsException(self.filename +
+                                         " does not exist, aborting append!")
         else:
             print("Nothing to be appended!")
         return
@@ -992,38 +1007,47 @@ class yanny(dict):
         #
         # Reattach lines ending with \
         #
-        lines = re.sub(r'\\\s*\n',' ',lines)
+        lines = re.sub(r'\\\s*\n', ' ', lines)
         #
         # Find structure & enumeration definitions & strip them out
         #
-        self['symbols']['struct'] = re.findall(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;',lines)
-        self['symbols']['enum'] = re.findall(r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;',lines)
-        lines = re.sub(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;','',lines)
-        lines = re.sub(r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;','',lines)
+        self['symbols']['struct'] = re.findall(
+                                    r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;',
+                                    lines)
+        self['symbols']['enum'] = re.findall(
+                                  r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;',
+                                  lines)
+        lines = re.sub(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;', '', lines)
+        lines = re.sub(r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;', '', lines)
         #
         # Interpret the structure definitions
         #
         typedefre = re.compile(r'typedef\s+struct\s*\{([^}]+)\}\s*(\w*)\s*;')
         for typedef in self['symbols']['struct']:
             typedefm = typedefre.search(typedef)
-            (definition,name) = typedefm.groups()
+            (definition, name) = typedefm.groups()
             self[name.upper()] = dict()
             self['symbols'][name.upper()] = list()
-            definitions = re.findall(r'\S+\s+\S+;',definition)
+            definitions = re.findall(r'\S+\s+\S+;', definition)
             for d in definitions:
-                d = d.replace(';','')
-                (datatype,column) = re.split(r'\s+',d)
-                column = re.sub(r'[[<].*[]>]$','',column)
+                d = d.replace(';', '')
+                (datatype, column) = re.split(r'\s+', d)
+                column = re.sub(r'[[<].*[]>]$', '', column)
                 self['symbols'][name.upper()].append(column)
                 self[name.upper()][column] = list()
-        comments = re.compile(r'^\s*#') # Remove lines containing only comments
-        blanks = re.compile(r'^\s*$') # Remove lines containing only whitespace
+        # Remove lines containing only comments
+        comments = re.compile(r'^\s*#')
+        # Remove lines containing only whitespace
+        blanks = re.compile(r'^\s*$')
         #
         # Remove trailing comments, but not if they are enclosed in quotes.
         #
-        #trailing_comments = re.compile(r'\s*\#.*$')
-        #trailing_comments = re.compile(r'\s*\#[^"]+$')
-        double_braces = re.compile(r'\{\s*\{\s*\}\s*\}') # Double empty braces get replaced with empty quotes
+        # trailing_comments = re.compile(r'\s*\#.*$')
+        # trailing_comments = re.compile(r'\s*\#[^"]+$')
+        #
+        # Double empty braces get replaced with empty quotes
+        #
+        double_braces = re.compile(r'\{\s*\{\s*\}\s*\}')
         if len(lines) > 0:
             for line in lines.split('\n'):
                 if self.debug:
@@ -1039,8 +1063,8 @@ class yanny(dict):
                 #
                 line = line.strip()
                 line = self.trailing_comment(line)
-                #line = trailing_comments.sub('',line)
-                line = double_braces.sub('""',line)
+                # line = trailing_comments.sub('',line)
+                line = double_braces.sub('""', line)
                 #
                 # Now if the first word on the line does not match a
                 # structure definition it is a keyword/value pair
@@ -1053,8 +1077,8 @@ class yanny(dict):
                     #
                     for column in self['symbols'][uckey]:
                         if len(value) > 0 and blanks.search(value) is None:
-                            (data,value) = self.get_token(value)
-                            if self.isarray(uckey,column):
+                            (data, value) = self.get_token(value)
+                            if self.isarray(uckey, column):
                                 #
                                 # An array value
                                 # if it's character data, it won't be
@@ -1070,13 +1094,13 @@ class yanny(dict):
                                     (token, data) = self.get_token(data)
                                     arraydata.append(token)
                                 self[uckey][column].append(
-                                    self.convert(uckey,column,arraydata))
+                                    self.convert(uckey, column, arraydata))
                             else:
                                 #
                                 # A single value
                                 #
                                 self[uckey][column].append(
-                                    self.convert(uckey,column,data))
+                                    self.convert(uckey, column, data))
                         else:
                             break
                 else:
@@ -1089,7 +1113,7 @@ class yanny(dict):
         #
         if self.np:
             for t in self.tables():
-                record = numpy.zeros((self.size(t),),dtype=self.dtype(t))
+                record = numpy.zeros((self.size(t),), dtype=self.dtype(t))
                 for c in self.columns(t):
                     record[c] = self[t][c]
                 self[t] = record.view(numpy.recarray)
@@ -1107,16 +1131,21 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
     filename : :class:`str`
         The name of a parameter file.
     datatables : :class:`numpy.ndarray`, :class:`numpy.recarray` or :class:`list` of these.
-        A NumPy record array containing data that can be copied into a `yanny` object.
+        A NumPy record array containing data that can be copied into a
+        `yanny` object.
     structnames : :class:`str` or :class:`list` of :class:`str`, optional
-        The name(s) to give the structure(s) in the yanny file.  Defaults to 'MYSTRUCT0'.
+        The name(s) to give the structure(s) in the yanny file.  Defaults to
+        'MYSTRUCT0'.
     enums : :class:`dict`, optional
         A dictionary containing enum information.  See the documentation for
-        the :meth:`~pydl.pydlutils.yanny.yanny.dtype_to_struct` method of the yanny object.
+        the :meth:`~pydl.pydlutils.yanny.yanny.dtype_to_struct` method of the
+        yanny object.
     hdr : :class:`dict`, optional
-        A dictionary containing keyword/value pairs for the 'header' of the yanny file.
+        A dictionary containing keyword/value pairs for the 'header' of the
+        yanny file.
     comments : :class:`str` or :class:`list` of :class:`str`, optional
-        A string containing comments that will be added to the start of the new file.
+        A string containing comments that will be added to the start of the
+        new file.
 
     Returns
     -------
@@ -1135,17 +1164,21 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
         #
         # If the file already exists
         #
-        raise PydlutilsException("Apparently {0} already exists.".format(filename))
+        raise PydlutilsException(
+              "Apparently {0} already exists.".format(filename))
     if isinstance(datatables, (ndarray, recarray)):
         datatables = (datatables,)
     if structnames is None:
-        structnames = ["MYSTRUCT{0:d}".format(k) for k in range(len(datatables))]
+        structnames = ["MYSTRUCT{0:d}".format(k)
+                       for k in range(len(datatables))]
     if isinstance(structnames, string_types):
         structnames = (structnames,)
     if len(datatables) != len(structnames):
-        raise PydlutilsException("The data tables and their names do not match!")
+        raise PydlutilsException(
+              "The data tables and their names do not match!")
     for k in range(len(datatables)):
-        struct = par.dtype_to_struct(datatables[k].dtype,structname=structnames[k],enums=enums)
+        struct = par.dtype_to_struct(datatables[k].dtype,
+                                     structname=structnames[k], enums=enums)
         par['symbols']['struct'] += struct['struct']
         par['symbols'][structnames[k].upper()] = struct[structnames[k].upper()]
         if enums is not None and len(par['symbols']['enum']) == 0:

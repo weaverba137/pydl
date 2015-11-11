@@ -1,7 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-#
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+
 def test_file_lines():
     from ..file_lines import file_lines
     from os.path import basename, dirname, join
@@ -9,8 +11,8 @@ def test_file_lines():
     #
     # Find the test files
     #
-    datadir = join(dirname(__file__),'t')
-    fileglob = join(datadir,'this-file-contains-*-lines.txt')
+    datadir = join(dirname(__file__), 't')
+    fileglob = join(datadir, 'this-file-contains-*-lines.txt')
     plainfiles = glob.glob(fileglob)
     gzfiles = glob.glob(fileglob+'.gz')
     for p in plainfiles:
@@ -18,7 +20,7 @@ def test_file_lines():
         number_of_lines = int(basename(p).split('-')[3])
         assert n == number_of_lines
     for p in gzfiles:
-        n = file_lines(p,compress=True)
+        n = file_lines(p, compress=True)
         number_of_lines = int(basename(p).split('-')[3])
         assert n == number_of_lines
     #
@@ -33,5 +35,5 @@ def test_file_lines():
     #
     # Make sure empty files work
     #
-    n = file_lines(join(datadir,'this-file-is-empty.txt'))
+    n = file_lines(join(datadir, 'this-file-is-empty.txt'))
     assert n == 0

@@ -1,7 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-#
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+
 def test_pcomp():
     from ..pcomp import pcomp
     from numpy import array, tile
@@ -32,9 +34,9 @@ def test_pcomp():
         [25.2, 51.0, 27.5, 21.1]])
     m=4
     n=20
-    means = tile(pcomp_data.mean(0),20).reshape(pcomp_data.shape)
+    means = tile(pcomp_data.mean(0), 20).reshape(pcomp_data.shape)
     newarray = pcomp_data - means
-    foo = pcomp(newarray,covariance=True)
+    foo = pcomp(newarray, covariance=True)
     #
     # This array is obtained from the IDL version of PCOMP.
     # It is only accurate up to an overall sign on each column.
@@ -61,7 +63,7 @@ def test_pcomp():
         [  -54.1269 ,   2.55509 , -4.21364  , -0.0251960 ],
         [    2.84273,  -1.06368 ,  1.62462  , -0.00701279]])
     for k in range(m):
-        assert_allclose(abs(foo.derived[:,k]),abs(derived[:,k]),1e-4)
+        assert_allclose(abs(foo.derived[:,k]), abs(derived[:,k]), 1e-4)
     coefficients = array([
         [  4.87988  ,  5.05684  , 1.02824  ,  4.79357   ],
         [  1.01466  , -0.954475 , 3.48852  , -0.774333  ],
@@ -69,8 +71,9 @@ def test_pcomp():
         [ -0.0900205,  0.0751850, 0.0472409,  0.00219369]])
     coefficientsT = coefficients.T
     for k in range(m):
-        assert_allclose(abs(foo.coefficients[:,k]),abs(coefficientsT[:,k]),1e-4)
+        assert_allclose(abs(foo.coefficients[:,k]), abs(coefficientsT[:,k]),
+                        1e-4)
     eigenvalues = array([73.4205, 14.7100, 3.86270, 0.0159930])
-    assert_allclose(foo.eigenvalues,eigenvalues,1e-4)
+    assert_allclose(foo.eigenvalues, eigenvalues, 1e-4)
     variance = array([0.797969, 0.159875, 0.0419817, 0.000173819])
-    assert_allclose(foo.variance,variance,1e-4)
+    assert_allclose(foo.variance, variance, 1e-4)

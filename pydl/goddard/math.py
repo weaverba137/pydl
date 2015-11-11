@@ -14,7 +14,8 @@ def flegendre(x, m):
         Compute the Legendre polynomials at these abscissa values.
     m : :class:`int`
         The number of Legendre polynomials to compute.  For example, if
-        :math:`m = 3`, :math:`P_0 (x)`, :math:`P_1 (x)` and :math:`P_2 (x)` will be computed.
+        :math:`m = 3`, :math:`P_0 (x)`, :math:`P_1 (x)` and :math:`P_2 (x)`
+        will be computed.
 
     Returns
     -------
@@ -34,8 +35,8 @@ def flegendre(x, m):
         dt = np.float64
     leg = np.ones((m, n), dtype=dt)
     if m >= 2:
-        leg[1,:] = x
+        leg[1, :] = x
     if m >= 3:
-        for k in range(2,m):
-            leg[k,:] = np.polyval(legendre(k), x)
+        for k in range(2, m):
+            leg[k, :] = np.polyval(legendre(k), x)
     return leg

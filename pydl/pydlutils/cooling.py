@@ -59,5 +59,6 @@ def read_ds_cooling(fname, logT=None):
     if logT is None:
         return (data['log(T)'].data, data['log(lambda net)'].data)
     else:
-        loglambda = interp(logT, data['log(T)'].data, data['log(lambda net)'].data)
+        loglambda = interp(logT, data['log(T)'].data,
+                           data['log(lambda net)'].data)
         return (logT, loglambda)

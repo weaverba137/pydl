@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 #
-def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit=7,
-    html=False,no_head=False,debug=False,silent=False):
+def struct_print(array, filename=None, formatcodes=None, alias=None,
+                 fdigit=5, ddigit=7, html=False, no_head=False,
+                 debug=False,silent=False):
     """Print a NumPy record array (analogous to an IDL structure) in a nice way.
 
     Parameters
@@ -57,7 +58,7 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
         colstart = '<tr><td>'
         colsep = '</td><td>'
         colend = '</td></tr>'
-        css = [ '<style type="text/css">',
+        css = ['<style type="text/css">',
             'table {',
             '    border-collapse: collapse;',
             '}',
@@ -72,7 +73,7 @@ def struct_print(array,filename=None,formatcodes=None,alias=None,fdigit=5,ddigit
             '    text-align: right;',
             '    border: 1px solid black;',
             '}',
-            '</style>' ]
+            '</style>']
     else:
         headstart = ''
         headsep = ' '

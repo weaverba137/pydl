@@ -1,10 +1,11 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 from astropy.extern import six
 
 
-def file_lines(path,compress=False):
+def file_lines(path, compress=False):
     """Replicates the IDL FILE_LINES() function.
 
     Given a path to a file name or a list of such paths, returns the number of
@@ -15,7 +16,8 @@ def file_lines(path,compress=False):
     path : :class:`str` or :class:`list` of :class:`str`
         Path to a file.  Can be a list of paths.
     compress : :class:`bool`, optional
-        If set to ``True``, assumes that all files in `path` are GZIP compressed.
+        If set to ``True``, assumes that all files in `path` are GZIP
+        compressed.
 
     Returns
     -------

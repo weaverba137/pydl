@@ -4,7 +4,8 @@
 Create galaxy template files with HMF.
 """
 from __future__ import print_function
-#
+
+
 def hmf_gal(**kwargs):
     """Wrapper on hmf_solve analogous to pca_gal and pca_solve.
 
@@ -96,9 +97,11 @@ def hmf_gal(**kwargs):
     # Read the input spectra
     #
     converters = {'plate': [ascii.convert_numpy(np.int32)],
-        'mjd': [ascii.convert_numpy(np.int32)],
-        'fiber': [ascii.convert_numpy(np.int32)] }
-    input_data = ascii.read(inputfile,names=['plate','mjd','fiber','zfit'],converters=converters)
+                  'mjd': [ascii.convert_numpy(np.int32)],
+                  'fiber': [ascii.convert_numpy(np.int32)]}
+    input_data = ascii.read(inputfile,
+                            names=['plate', 'mjd', 'fiber', 'zfit'],
+                            converters=converters)
     plate = input_data['plate'].data
     mjd = input_data['mjd'].data
     fiber = input_data['fiber'].data
@@ -349,9 +352,9 @@ def main():
         metavar='EPSILON', default=1.0, help='Set the epsilon parameter (default 1.0). Set to 0 to turn off entirely')
     parser.add_argument('-K', '--dims', action='store', type=int, dest='K',
         metavar='K', default=4, help='Set the number of functions to model (default 4).')
-    #parser.add_argument('-d', '--outdir', action='store', dest='outdir',
-    #    metavar='DIR', default=os.path.join(os.getenv('HOME'),'scratch'),
-    #    help='Write output files to DIR.')
+    # parser.add_argument('-d', '--outdir', action='store', dest='outdir',
+    #     metavar='DIR', default=os.path.join(os.getenv('HOME'),'scratch'),
+    #     help='Write output files to DIR.')
     parser.add_argument('-f', '--file', action='store', dest='inputfile',
         metavar='FILE', default=os.path.join(os.getenv('HOME'),'scratch','eigeninput_gal.dat'),
         help='Read input spectra and redshifts from FILE.')

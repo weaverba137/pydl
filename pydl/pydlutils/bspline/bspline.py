@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 import numpy as np
-#
+
+
 class bspline(object):
     """Bspline class.
 
@@ -45,7 +46,9 @@ class bspline(object):
     funcname
         To be documented.
     """
-    def __init__(self,x,nord=4,npoly=1,bkpt=None,bkspread=1.0,verbose=False,**kwargs):
+
+    def __init__(self, x, nord=4, npoly=1, bkpt=None, bkspread=1.0,
+                 verbose=False, **kwargs):
         """Init creates an object whose attributes are similar to the
         structure returned by the create_bspline function.
         """
@@ -121,10 +124,8 @@ class bspline(object):
         self.xmax = 1.0
         self.funcname = 'legendre'
         return
-    #
-    #
-    #
-    def fit(self,xdata,ydata,invvar,x2=None):
+
+    def fit(self, xdata, ydata, invvar, x2=None):
         """Calculate a B-spline in the least-squares sense.
 
         Fit is based on two variables: x which is sorted and spans a large range
@@ -203,10 +204,8 @@ class bspline(object):
             self.coeff[goodbk] = np.array(sol[0:nfull],dtype=sol.dtype)
         yfit,foo = self.value(xdata,x2=x2,action=a1,upper=upper,lower=lower)
         return (0,yfit)
-    #
-    #
-    #
-    def action(self,x,x2=None):
+
+    def action(self, x, x2=None):
         """Construct banded bspline matrix, with dimensions [ndata, bandwidth].
 
         Parameters
@@ -247,7 +246,7 @@ class bspline(object):
         if x2 is not None:
             if x2.size != nx:
                 raise ValueError('Dimensions of x and x2 do not match.')
-            x2norm = 2.0 * (x2 - self.xmin) / (self.xmax - self.xmin ) - 1.0
+            x2norm = 2.0 * (x2 - self.xmin) / (self.xmax - self.xmin) - 1.0
             if self.funcname == 'poly':
                 temppoly = np.ones((nx,self.npoly),dtype='f')
                 for i in range(1,self.npoly):
@@ -269,10 +268,8 @@ class bspline(object):
                     counter += 1
                     action[:,counter] = bf1[:,ii]*temppoly[:,jj]
         return (action,lower,upper)
-    #
-    #
-    #
-    def intrv(self,x):
+
+    def intrv(self, x):
         """Find the segment between breakpoints which contain each value in the array x.
 
         The minimum breakpoint is nbkptord -1, and the maximum
@@ -297,10 +294,8 @@ class bspline(object):
                 ileft += 1
             indx[i] = ileft
         return indx
-    #
-    #
-    #
-    def bsplvn(self,x,ileft):
+
+    def bsplvn(self, x, ileft):
         """To be documented.
 
         Parameters
@@ -334,10 +329,8 @@ class bspline(object):
             j += 1
             vnikx[:,j] = vmprev
         return vnikx
-    #
-    #
-    #
-    def value(self,x,x2=None,action=None,lower=None,upper=None):
+
+    def value(self, x, x2=None, action=None, lower=None, upper=None):
         """Evaluate a bspline at specified values.
 
         Parameters
@@ -403,10 +396,8 @@ class bspline(object):
             if inside.any():
                 mask[inside] = False
         return (yy,mask)
-    #
-    #
-    #
-    def maskpoints(self,err):
+
+    def maskpoints(self, err):
         """Perform simple logic of which breakpoints to mask.
 
         Parameters

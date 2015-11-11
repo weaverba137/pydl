@@ -7,7 +7,8 @@ from .. import PydlutilsException
 from ..math import djs_reject
 from ..misc import djs_laxisgen
 from ...goddard.math import flegendre
-#
+
+
 class TraceSet(object):
     """Implements the idea of a trace set.
 
@@ -36,11 +37,9 @@ class TraceSet(object):
     yfit : array-like
         When initialized with x,y positions, this contains the fitted y values.
     """
-    _func_map = {'poly':fpoly,'legendre':flegendre,'chebyshev':fchebyshev}
-    #
-    #
-    #
-    def __init__(self,*args,**kwargs):
+    _func_map = {'poly': fpoly, 'legendre': flegendre, 'chebyshev': fchebyshev}
+
+    def __init__(self, *args, **kwargs):
         """This class can be initialized either with a set of xy positions,
         or with a trace set HDU from a FITS file.
         """
@@ -132,10 +131,8 @@ class TraceSet(object):
                 self.outmask[iTrace,:] = thismask
         else:
             raise PydlutilsException("Wrong number of arguments to TraceSet!")
-    #
-    #
-    #
-    def xy(self,xpos=None,ignore_jump=False):
+
+    def xy(self, xpos=None, ignore_jump=False):
         """Convert from a trace set to an array of x,y positions.
 
         Parameters
@@ -160,42 +157,32 @@ class TraceSet(object):
             legarr = self._func_map[self.func](xvec,self.ncoeff)
             ypos[iTrace:] = np.dot(legarr.T,self.coeff[iTrace,:])
         return (xpos,ypos)
-    #
-    #
-    #
+
     @property
     def has_jump(self):
         """``True`` if jump conditions are set.
         """
         return self.xjumplo is not None
-    #
-    #
-    #
+
     @property
     def xRange(self):
         """Range of x values.
         """
         return self.xmax - self.xmin
-    #
-    #
-    #
+
     @property
     def nx(self):
         """Number of x values.
         """
         return int(self.xRange + 1)
-    #
-    #
-    #
+
     @property
     def xmid(self):
         """Midpoint of x values.
         """
         return 0.5 * (self.xmin + self.xmax)
-    #
-    #
-    #
-    def xnorm(self,xinput,jump):
+
+    def xnorm(self, xinput, jump):
         """Convert input x coordinates to normalized coordinates suitable
         for input to special polynomials.
 

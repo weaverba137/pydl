@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def test_struct_print():
     import numpy as np
     from .. import struct_print
@@ -13,11 +15,11 @@ def test_struct_print():
     slist['RA'] = 360.0*np.random.random((n,))
     slist['DEC'] = 90.0 - np.rad2deg(np.arccos(2.0*np.random.random((n,)) - 1.0))
     slist['MATCHRAD'] = np.random.random((n,))
-    #print(slist)
-    #lines,css = struct_print(slist,debug=True)
-    #print(lines)
-    #print(css)
-    #lines,css = struct_print(slist,debug=True,html=True)
-    #print(lines)
-    #print(css)
+    # print(slist)
+    # lines,css = struct_print(slist,debug=True)
+    # print(lines)
+    # print(css)
+    # lines,css = struct_print(slist,debug=True,html=True)
+    # print(lines)
+    # print(css)
     assert slist.size == n
