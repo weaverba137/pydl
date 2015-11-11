@@ -4,8 +4,8 @@ def test_yanny():
     """Used to test the yanny class.
     """
     import os
-    from .. import yanny
-    from ... import PydlutilsException
+    from ..yanny import yanny
+    from .. import PydlutilsException
     from numpy import allclose, array, dtype
     from astropy.tests.helper import raises
     from astropy.extern import six

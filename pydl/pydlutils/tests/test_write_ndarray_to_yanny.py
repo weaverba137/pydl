@@ -3,15 +3,17 @@
 
 import os
 import numpy as np
-from .. import yanny
-from .. import write_ndarray_to_yanny
-from ... import PydlutilsException
+from ..yanny import write_ndarray_to_yanny, yanny
+from .. import PydlutilsException
 from . import YannyTestCase
 from astropy.tests.helper import raises
 
+
 class TestWriteNdarray(YannyTestCase):
-    """Test class for ndarray to yanny conversions."""
+    """Test class for ndarray to yanny conversions.
+    """
     save_temp = False
+
     def test_write_single_ndarray_to_yanny(self):
         """Test the write_ndarray_to_yanny function."""
         mystruct = np.zeros((4,),

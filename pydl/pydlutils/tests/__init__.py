@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 """
-This is the pydl/pydlutils/yanny/tests directory.
+This is the pydl/pydlutils/tests directory.
 """
 
 import os
@@ -11,9 +11,12 @@ import tempfile
 import time
 import warnings
 
+
 class YannyTestCase(object):
-    """Based on astropy.io.fits.tests.FitsTestCase."""
+    """Based on astropy.io.fits.tests.FitsTestCase.
+    """
     save_temp = False
+
     def setup(self):
         self.data_dir = os.path.join(os.path.dirname(__file__), 't')
         self.temp_dir = tempfile.mkdtemp(prefix='yanny-test-')

@@ -20,7 +20,7 @@ class PydlutilsUserWarning(AstropyUserWarning):
 #
 from . import bspline
 from . import cooling
-#from . import coord
+# from . import coord
 from . import image
 from . import mangle
 from . import math

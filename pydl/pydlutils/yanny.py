@@ -22,7 +22,7 @@ import os.path
 import datetime
 import numpy
 from astropy.extern import six
-from .. import PydlutilsException
+from . import PydlutilsException
 
 if six.PY3:
     long = int
@@ -1128,8 +1128,6 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
     """
     from numpy import ndarray, recarray
     from astropy.extern.six import string_types
-    from . import yanny
-    from .. import PydlutilsException
     par = yanny(filename, np=True)
     if par:
         #
