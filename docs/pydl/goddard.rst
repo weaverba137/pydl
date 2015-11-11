@@ -13,13 +13,9 @@ API
 +++
 
 .. automodapi:: pydl.goddard
-   :no-inheritance-diagram:
 
 .. automodapi:: pydl.goddard.astro
-    :no-inheritance-diagram:
 
 .. automodapi:: pydl.goddard.math
-    :no-inheritance-diagram:
 
 .. automodapi:: pydl.goddard.misc
-    :no-inheritance-diagram:

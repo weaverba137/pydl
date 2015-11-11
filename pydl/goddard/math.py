@@ -1,6 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-"""This file corresponds to the goddard/math directory.
+"""This module corresponds to the goddard/math directory in idlutils.
 """
 
 

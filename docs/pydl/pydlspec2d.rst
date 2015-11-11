@@ -13,10 +13,7 @@ API
 +++
 
 .. automodapi:: pydl.pydlspec2d
-   :no-inheritance-diagram:
 
 .. automodapi:: pydl.pydlspec2d.spec1d
-    :no-inheritance-diagram:
 
 .. automodapi:: pydl.pydlspec2d.spec2d
-    :no-inheritance-diagram:

@@ -1,10 +1,15 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-#
+"""This module corresponds to the cooling directory in idlutils.
+"""
+
 __doctest_skip__ = ['read_ds_cooling']
-#
-def read_ds_cooling(fname,logT=None):
-    """Read in Dopita & Sutherland 1993 cooling function.
+
+
+def read_ds_cooling(fname, logT=None):
+    """Read in the `Sutherland & Dopita (1993)`_ cooling function.
+
+    .. _`Sutherland & Dopita (1993)`: http://adsabs.harvard.edu/abs/1993ApJS...88..253S
 
     Parameters
     ----------
@@ -44,14 +49,15 @@ def read_ds_cooling(fname,logT=None):
     from numpy import interp
     from astropy.io import ascii
     baseurl = 'http://www.mso.anu.edu.au/~ralph/data/cool/'
-    if fname not in ('m-00.cie', 'm-05.cie', 'm+05.cie', 'm-10.cie', 'm-15.cie', 'm-20.cie', 'm-30.cie', 'mzero.cie'):
+    if fname not in ('m-00.cie', 'm-05.cie', 'm+05.cie', 'm-10.cie',
+                     'm-15.cie', 'm-20.cie', 'm-30.cie', 'mzero.cie'):
         raise ValueError('Invalid value for data file: {0}'.format(fname))
-    filename = download_file(baseurl+fname,cache=True,show_progress=False)
+    filename = download_file(baseurl+fname, cache=True, show_progress=False)
     with open(filename) as coolingfile:
         coolingfile = coolingfile.read()
-    data = ascii.read(coolingfile.split('\n')[2:],delimiter='\t')
+    data = ascii.read(coolingfile.split('\n')[2:], delimiter='\t')
     if logT is None:
         return (data['log(T)'].data, data['log(lambda net)'].data)
     else:
         loglambda = interp(logT, data['log(T)'].data, data['log(lambda net)'].data)
-        return (logT,loglambda)
+        return (logT, loglambda)

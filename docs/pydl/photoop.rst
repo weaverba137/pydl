@@ -13,13 +13,9 @@ API
 +++
 
 .. automodapi:: pydl.photoop
-    :no-inheritance-diagram:
 
 .. automodapi:: pydl.photoop.photoobj
-    :no-inheritance-diagram:
 
 .. automodapi:: pydl.photoop.sdssio
-    :no-inheritance-diagram:
 
 .. automodapi:: pydl.photoop.window
-    :no-inheritance-diagram:

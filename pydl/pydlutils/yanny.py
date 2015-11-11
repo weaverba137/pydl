@@ -1,6 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-"""Python library for reading & writing yanny files.
+"""This module corresponds to the yanny directory in idlutils.
+
+This is a Python library for reading & writing yanny files.
 
 yanny is an object-oriented interface to FTCL/yanny data files following
 these specifications_.
@@ -13,7 +15,7 @@ close reading of the specifications indicates that multidimensional arrays
 were only ever intended to be supported for type ``char``.  So no
 multidimensional arrays, sorry.
 
-.. _specifications: http://www.sdss3.org/dr8/software/par.php
+.. _specifications: http://www.sdss.org/dr12/software/par/
 """
 from __future__ import print_function
 import re
