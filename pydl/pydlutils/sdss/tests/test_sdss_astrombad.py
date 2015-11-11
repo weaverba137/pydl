@@ -20,7 +20,9 @@ from astropy.tests.helper import remote_data, raises
 # BADFIELDS  251   focus  97 160                   "Manual focus tests (donuts!)"
 # BADFIELDS  251  astrom 147 159      "Large astrometric offset at field 156 158"
 #
+
 class TestSDSSAstrombad(object):
+
     def setup(self):
         self.opbadfields = np.array([
             (77, 'astrom', 30, 73, 'Large astrometric offset at field 39... 72'),
@@ -38,10 +40,10 @@ class TestSDSSAstrombad(object):
 
     def test_sdss_astrombad(self):
         from .. import sdss_astrombad
-        assert sdss_astrombad(77,1,20) == False
-        assert sdss_astrombad(77,3,35) == True
-        assert sdss_astrombad(77,6,77) == False
-        assert sdss_astrombad(85,1,15) == True
+        assert not sdss_astrombad(77,1,20)
+        assert sdss_astrombad(77,3,35)
+        assert not sdss_astrombad(77,6,77)
+        assert sdss_astrombad(85,1,15)
         assert (sdss_astrombad(np.array([77,85,251]),np.array([1,2,3]),np.array([20,15,151])) == np.array([False,True,True])).all()
 
     def test_sdss_astrombad_raises(self):
@@ -65,6 +67,6 @@ class TestSDSSAstrombad(object):
     def test_sdss_astrombad_remote(self):
         pydl.pydlutils.sdss.opbadfields = None
         from .. import sdss_astrombad
-        assert sdss_astrombad(77,1,20) == False
-        assert sdss_astrombad(77,3,35) == True
-        assert sdss_astrombad(77,6,77) == False
+        assert not sdss_astrombad(77,1,20)
+        assert sdss_astrombad(77,3,35)
+        assert not sdss_astrombad(77,6,77)

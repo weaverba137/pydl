@@ -1,5 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
 def test_djs_median():
     from numpy import allclose, array, median
     from numpy.random import random, seed
@@ -7,9 +8,10 @@ def test_djs_median():
     from .. import djs_median
     seed(424242)
     data = 100.0*random(100)
-    data2 = 100.0*random((10,10))
-    data3 = 100.0*random((10,10,10))
-    data_width_5 = array([ 49.68311576,  74.83671757,  49.68311576,  42.12573137,
+    data2 = 100.0*random((10, 10))
+    data3 = 100.0*random((10, 10, 10))
+    data_width_5 = array([
+        49.68311576,  74.83671757,  49.68311576,  42.12573137,
         32.11576752,  27.22092569,  15.08905903,  15.08905903,
         27.22092569,  20.07809411,  41.55978953,  41.55978953,
         35.01184343,  35.01184343,  38.7967727 ,  38.7967727 ,
@@ -34,7 +36,8 @@ def test_djs_median():
         34.55273356,  62.09010468,  62.09010468,  70.43134908,
         68.89705132,  68.89705132,  68.89705132,  66.30426084,
         55.92748086,  55.92748086,  55.92748086,  65.11387444])
-    data_width_5_reflect = array([ 49.68311576,  49.68311576,  49.68311576,  42.12573137,
+    data_width_5_reflect = array([
+        49.68311576,  49.68311576,  49.68311576,  42.12573137,
         32.11576752,  27.22092569,  15.08905903,  15.08905903,
         27.22092569,  20.07809411,  41.55978953,  41.55978953,
         35.01184343,  35.01184343,  38.7967727 ,  38.7967727 ,
@@ -62,27 +65,28 @@ def test_djs_median():
     #
     # Degenerate cases that fall back on numpy.median().
     #
-    assert allclose(median(data),djs_median(data))
-    assert allclose(median(data2,axis=0),djs_median(data2,dimension=0))
-    assert allclose(median(data2,axis=1),djs_median(data2,dimension=1))
+    assert allclose(median(data), djs_median(data))
+    assert allclose(median(data2, axis=0), djs_median(data2, dimension=0))
+    assert allclose(median(data2, axis=1), djs_median(data2, dimension=1))
     #
     # Test widths.
     #
-    assert allclose(data,djs_median(data,width=1))
-    assert allclose(data_width_5,djs_median(data,width=5))
-    # assert allclose(data_width_5_reflect,djs_median(data,width=5,boundary='reflect'))
+    assert allclose(data, djs_median(data, width=1))
+    assert allclose(data_width_5, djs_median(data, width=5))
+    # assert allclose(data_width_5_reflect,
+    #                 djs_median(data, width=5, boundary='reflect'))
     #
     # Exceptions
     #
     with raises(ValueError):
-        foo = djs_median(data,width=5,boundary='nearest')
+        foo = djs_median(data, width=5, boundary='nearest')
     with raises(ValueError):
-        foo = djs_median(data,width=5,boundary='wrap')
+        foo = djs_median(data, width=5, boundary='wrap')
     with raises(ValueError):
-        foo = djs_median(data,width=5,boundary='foobar')
+        foo = djs_median(data, width=5, boundary='foobar')
     with raises(ValueError):
-        foo = djs_median(data2,width=5,dimension=1)
+        foo = djs_median(data2, width=5, dimension=1)
     with raises(ValueError):
-        foo = djs_median(data3,width=5)
+        foo = djs_median(data3, width=5)
     with raises(ValueError):
-        foo = djs_median(data3,width=5,boundary='reflect')
+        foo = djs_median(data3, width=5, boundary='reflect')
