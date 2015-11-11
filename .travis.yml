@@ -48,6 +48,8 @@ matrix:
           env: SETUP_CMD='test'
         - python: 3.4
           env: SETUP_CMD='test'
+        - python: 3.5
+          env: SETUP_CMD='test'
 
         # Try older numpy versions
         - python: 2.7
@@ -108,6 +110,9 @@ install:
 
     # COVERAGE DEPENDENCIES
     - if [[ $SETUP_CMD == 'test --coverage' ]]; then $PIP_INSTALL coverage==3.7.1 coveralls; fi
+
+    # PEP8 DEPENDENCIES
+    - if [[ $MAIN_CMD == 'pep8' ]]; then $PIP_INSTALL pep8; fi
 
 script:
    - $MAIN_CMD $SETUP_CMD
