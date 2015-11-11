@@ -1,6 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',no_path=False):
+
+
+def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',
+              no_path=False):
     """Return the name of an SDSS data file including path.
 
     Parameters
@@ -18,8 +21,8 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',no_path=False)
     thisfilter : :class:`int` or :class:`str`, optional
         If necessary, set the filter using this argument.
     no_path : :class:`bool`, optional
-        Normally, sdss_name returns the full path.  If `no_path` is ``True``, only
-        the basename of the file is returned.
+        Normally, sdss_name returns the full path.  If `no_path` is ``True``,
+        only the basename of the file is returned.
 
     Returns
     -------
@@ -34,8 +37,8 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',no_path=False)
     from os import getenv
     from os.path import join
     from . import _name_formats, sdss_path, filtername
-    # cname = ('u','g','r','i','z')
-    # camrow = (3,5,1,2,4)
+    # cname = ('u', 'g', 'r', 'i', 'z')
+    # camrow = (3, 5, 1, 2, 4)
     if ftype == 'reObj':
         if getenv('PHOTO_RESOLVE') is None:
             myftype = 'reObjRun'
@@ -44,10 +47,8 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',no_path=False)
     else:
         myftype = ftype
     thisfilter = filtername(thisfilter)
-    indict = {
-        'ftype':myftype, 'run':run, 'camcol':camcol, 'field':field,
-        'filter':thisfilter, 'rerun':rerun
-        }
+    indict = {'ftype': myftype, 'run': run, 'camcol': camcol, 'field': field,
+              'filter': thisfilter, 'rerun': rerun}
     try:
         fullname = _name_formats[myftype].format(**indict)
     except KeyError:

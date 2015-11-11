@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def unwrap_objid(objid):
     """Unwrap CAS-style objID into run, camcol, field, id, rerun.
 
@@ -21,8 +23,8 @@ def unwrap_objid(objid):
     Notes
     -----
     For historical reasons, the inverse of this function,
-    :func:`~pydl.pydlutils.sdss.sdss_objid` is not in the same namespace as this
-    function.
+    :func:`~pydl.pydlutils.sdss.sdss_objid` is not in the same namespace as
+    this function.
 
     'frame' is used instead of 'field' because record arrays have a method
     of the same name.
@@ -42,8 +44,10 @@ def unwrap_objid(objid):
         tempobjid = objid.copy()
     else:
         raise ValueError('Unrecognized type for objid!')
-    unwrap = recarray(objid.shape,dtype=[('skyversion','i4'),('rerun','i4'),('run','i4'),
-        ('camcol','i4'),('frame','i4'),('id','i4')])
+    unwrap = recarray(objid.shape,
+                      dtype=[('skyversion', 'i4'), ('rerun', 'i4'),
+                             ('run', 'i4'), ('camcol', 'i4'),
+                             ('frame', 'i4'), ('id', 'i4')])
     unwrap.skyversion = bitwise_and(tempobjid >> 59, 2**4 - 1)
     unwrap.rerun = bitwise_and(tempobjid >> 48, 2**11 - 1)
     unwrap.run = bitwise_and(tempobjid >> 32, 2**16 - 1)

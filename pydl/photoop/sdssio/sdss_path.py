@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def sdss_path(ftype, run, camcol=0, rerun=''):
     """Return the path name for SDSS data assuming SAS directory structure.
 
@@ -28,16 +30,16 @@ def sdss_path(ftype, run, camcol=0, rerun=''):
     from os import getenv
     from . import _path_formats
     indict = {
-        'run':run,
-        'camcol':camcol,
-        'rerun':rerun,
-        'calib':getenv('PHOTO_CALIB'),
-        'data':getenv('PHOTO_DATA'),
-        'photoobj':getenv('BOSS_PHOTOOBJ'),
-        'redux':getenv('PHOTO_REDUX'),
-        'resolve':getenv('PHOTO_RESOLVE'),
-        'sky':getenv('PHOTO_SKY'),
-        'sweep':getenv('PHOTO_SWEEP'),
+        'run': run,
+        'camcol': camcol,
+        'rerun': rerun,
+        'calib': getenv('PHOTO_CALIB'),
+        'data': getenv('PHOTO_DATA'),
+        'photoobj': getenv('BOSS_PHOTOOBJ'),
+        'redux': getenv('PHOTO_REDUX'),
+        'resolve': getenv('PHOTO_RESOLVE'),
+        'sky': getenv('PHOTO_SKY'),
+        'sweep': getenv('PHOTO_SWEEP'),
         }
     try:
         datadir = _path_formats[ftype].format(**indict)
