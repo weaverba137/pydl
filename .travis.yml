@@ -48,8 +48,9 @@ matrix:
           env: SETUP_CMD='test'
         - python: 3.4
           env: SETUP_CMD='test'
-        - python: 3.5
-          env: SETUP_CMD='test'
+        # Postpone 3.5 tests due to a scipy conflict.
+        # - python: 3.5
+        #   env: SETUP_CMD='test'
 
         # Try older numpy versions
         - python: 2.7
