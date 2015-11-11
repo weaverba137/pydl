@@ -708,7 +708,7 @@ class yanny(dict):
         p = list()
         foo = self.tables()
         for k in self.keys():
-            if k != 'symbols' and k not in foo:
+            if k not in foo:
                 p.append(k)
         return p
 
