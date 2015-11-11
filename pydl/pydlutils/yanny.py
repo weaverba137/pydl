@@ -4,11 +4,13 @@
 
 This is a Python library for reading & writing yanny files.
 
-yanny is an object-oriented interface to FTCL/yanny data files following
-these specifications_.
+yanny is an object-oriented interface to SDSS Parameter files
+(a.k.a. "FTCL" or "yanny" files) following these specifications_.
+Parameter files typically have the extension ``.par``.
 
-The format of the returned object is similar to that returned by
-``read_yanny()`` in the efftickle perl package (in the yannytools product).
+Because Parameter files can contain multiple tables, as well as
+metadata, there is no simple, one-to-one correspondence between these
+files and, say, an astropy :class:`~astropy.table.Table` objects.
 
 Currently multidimensional arrays are only supported for type ``char``, and a
 close reading of the specifications indicates that multidimensional arrays
@@ -46,23 +48,27 @@ class yanny(dict):
     filename : :class:`str` or file-like, optional
         The name of a yanny file or a file-like object representing a
         yanny file.
-    np : :class:`bool`, optional
-        If ``True``, data in a yanny file will be converted into a NumPy
-        :class:`record array <numpy.recarray>`. Default is ``False``.
+    raw : :class:`bool`, optional
+        If ``True``, data in a yanny file will *not* be converted into
+        astropy :class:`~astropy.table.Table` objects, but will instead be
+        retained as raw Python lists.
     debug : :class:`bool`, optional
         If ``True``, some simple debugging statements will be turned on.
         Default is ``False``.
 
     Attributes
     ----------
-    np : :class:`bool`
-        If ``True``, data in a yanny file will be converted into a NumPy
-        :class:`record array <numpy.recarray>`.
+    raw : :class:`bool`
+        If ``True``, data in a yanny file will *not* be converted into
+        astropy :class:`~astropy.table.Table` objects, but will instead be
+        retained as raw Python lists.
     debug : :class:`bool`
         If ``True``, some simple debugging statements will be turned on.
     filename : :class:`str`
         The name of a yanny parameter file.  If a file-like object was used
         to initialize the object, this will have the value 'in_memory.par'.
+    _symbols : :class:`dict`
+        A dictionary containing the metadata describing the tables.
     _contents : :class:`str`
         The complete contents of a yanny parameter file.
     _struct_type_caches : :class:`dict`
@@ -278,13 +284,13 @@ class yanny(dict):
         return {structname.upper(): list(dt.names),
                 'enum': returnenums, 'struct': ["\n".join(lines)]}
 
-    def __init__(self, filename=None, np=False, debug=False):
+    def __init__(self, filename=None, raw=False, debug=False):
         """Create a yanny object using a yanny file.
         """
         #
         # The symbol hash is inherited from the old read_yanny
         #
-        self['symbols'] = dict()
+        self._symbols = dict()
         #
         # Create special attributes that contain the internal status of the
         # object. This should prevent overlap with keywords in the data files.
@@ -301,7 +307,7 @@ class yanny(dict):
         #
         # Optionally convert numeric data into NumPy arrays
         #
-        self.np = np
+        self.raw = raw
         #
         # Turn on simple debugging
         #
@@ -405,9 +411,9 @@ class yanny(dict):
         except KeyError:
             if self.debug:
                 print(variable)
-            defl = [x for x in self['symbols']['struct']
+            defl = [x for x in self._symbols['struct']
                     if x.find(structure.lower()) > 0]
-            defu = [x for x in self['symbols']['struct']
+            defu = [x for x in self._symbols['struct']
                     if x.find(structure.upper()) > 0]
             if len(defl) != 1 and len(defu) != 1:
                 return None
@@ -499,8 +505,8 @@ class yanny(dict):
         """
         if self._enum_cache is None:
             self._enum_cache = dict()
-            if 'enum' in self['symbols']:
-                for e in self['symbols']['enum']:
+            if 'enum' in self._symbols:
+                for e in self._symbols['enum']:
                     m = re.search(r'typedef\s+enum\s*\{([^}]+)\}\s*(\w+)\s*;',
                                   e).groups()
                     self._enum_cache[m[1]] = re.split(r',\s*', m[0].strip())
@@ -651,7 +657,7 @@ class yanny(dict):
         keys removed.
         """
         foo = list()
-        for k in self['symbols'].keys():
+        for k in self._symbols.keys():
             if k not in ('struct', 'enum'):
                 foo.append(k)
         return foo
@@ -673,8 +679,8 @@ class yanny(dict):
             The list of column names.
         """
         foo = list()
-        if table in self['symbols']:
-            return self['symbols'][table]
+        if table in self._symbols:
+            return self._symbols[table]
         return foo
 
     def size(self, table):
@@ -818,10 +824,10 @@ class yanny(dict):
             The name of the file to write.
         comments : :class:`str` or :class:`list` of :class:`str`, optional
             Comments that will be placed at the head of the file.  If a
-            single string is passed, it will be written out verbatim, so it
-            had better contain '#' characters.  If a list of strings is
-            passed, comment characters will be added and the strings
-            will be joined together.
+            single string is passed, it will be written out verbatim, although
+            a '#' character will be added if it does not already have one.
+            If a list of strings is passed, comment characters will be added
+            and the strings will be joined together.
         """
         if newfile is None:
             if len(self.filename) > 0:
@@ -837,7 +843,10 @@ class yanny(dict):
                         '%Y-%m-%d %H:%M:%S UTC')
             comments = "#\n# {0}\n#\n# Created by pydl.pydlutils.yanny.yanny\n#\n# {1}\n#\n".format(basefile, timestamp)
         else:
-            if not isinstance(comments, six.string_types):
+            if isinstance(comments, six.string_types):
+                if not comments.startswith('#'):
+                    comments = '# ' + comments
+            else:
                 comments = ("\n".join(["# {0}".format(c) for c in comments]) +
                             "\n")
         contents = comments
@@ -849,13 +858,13 @@ class yanny(dict):
         #
         # Print out enum definitions
         #
-        if len(self['symbols']['enum']) > 0:
-            contents += "\n" + "\n\n".join(self['symbols']['enum']) + "\n"
+        if len(self._symbols['enum']) > 0:
+            contents += "\n" + "\n\n".join(self._symbols['enum']) + "\n"
         #
         # Print out structure definitions
         #
-        if len(self['symbols']['struct']) > 0:
-            contents += "\n" + "\n\n".join(self['symbols']['struct']) + "\n"
+        if len(self._symbols['struct']) > 0:
+            contents += "\n" + "\n\n".join(self._symbols['struct']) + "\n"
         contents += "\n"
         #
         # Print out the data tables
@@ -992,7 +1001,7 @@ class yanny(dict):
               as a keyword/value pair.  No further processing is done to
               the value.
 
-        #. At the conclusion of parsing, if ``self.np`` is ``True``, the
+        #. At the conclusion of parsing, if ``self.raw`` is ``False``, the
            structures are converted into NumPy record arrays.
         """
         #
@@ -1011,10 +1020,10 @@ class yanny(dict):
         #
         # Find structure & enumeration definitions & strip them out
         #
-        self['symbols']['struct'] = re.findall(
+        self._symbols['struct'] = re.findall(
                                     r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;',
                                     lines)
-        self['symbols']['enum'] = re.findall(
+        self._symbols['enum'] = re.findall(
                                   r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;',
                                   lines)
         lines = re.sub(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;', '', lines)
@@ -1023,17 +1032,17 @@ class yanny(dict):
         # Interpret the structure definitions
         #
         typedefre = re.compile(r'typedef\s+struct\s*\{([^}]+)\}\s*(\w*)\s*;')
-        for typedef in self['symbols']['struct']:
+        for typedef in self._symbols['struct']:
             typedefm = typedefre.search(typedef)
             (definition, name) = typedefm.groups()
             self[name.upper()] = dict()
-            self['symbols'][name.upper()] = list()
+            self._symbols[name.upper()] = list()
             definitions = re.findall(r'\S+\s+\S+;', definition)
             for d in definitions:
                 d = d.replace(';', '')
                 (datatype, column) = re.split(r'\s+', d)
                 column = re.sub(r'[[<].*[]>]$', '', column)
-                self['symbols'][name.upper()].append(column)
+                self._symbols[name.upper()].append(column)
                 self[name.upper()][column] = list()
         # Remove lines containing only comments
         comments = re.compile(r'^\s*#')
@@ -1071,11 +1080,11 @@ class yanny(dict):
                 #
                 (key, value) = self.get_token(line)
                 uckey = key.upper()
-                if uckey in self['symbols'].keys():
+                if uckey in self._symbols.keys():
                     #
                     # Structure data
                     #
-                    for column in self['symbols'][uckey]:
+                    for column in self._symbols[uckey]:
                         if len(value) > 0 and blanks.search(value) is None:
                             (data, value) = self.get_token(value)
                             if self.isarray(uckey, column):
@@ -1109,9 +1118,9 @@ class yanny(dict):
                     #
                     self[key] = value
         #
-        # If self.np is True, convert tables into NumPy record arrays
+        # If self.raw is False, convert tables into NumPy record arrays
         #
-        if self.np:
+        if not self.raw:
             for t in self.tables():
                 record = numpy.zeros((self.size(t),), dtype=self.dtype(t))
                 for c in self.columns(t):
@@ -1159,7 +1168,7 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
     """
     from numpy import ndarray, recarray
     from astropy.extern.six import string_types
-    par = yanny(filename, np=True)
+    par = yanny(filename)
     if par:
         #
         # If the file already exists
@@ -1179,10 +1188,10 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
     for k in range(len(datatables)):
         struct = par.dtype_to_struct(datatables[k].dtype,
                                      structname=structnames[k], enums=enums)
-        par['symbols']['struct'] += struct['struct']
-        par['symbols'][structnames[k].upper()] = struct[structnames[k].upper()]
-        if enums is not None and len(par['symbols']['enum']) == 0:
-            par['symbols']['enum'] = struct['enum']
+        par._symbols['struct'] += struct['struct']
+        par._symbols[structnames[k].upper()] = struct[structnames[k].upper()]
+        if enums is not None and len(par._symbols['enum']) == 0:
+            par._symbols['enum'] = struct['enum']
         par[structnames[k].upper()] = datatables[k]
     if hdr is not None:
         for key in hdr:
