@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the goddard/math directory in idlutils.
 """
+from __future__ import absolute_import
 
 
 def flegendre(x, m):
