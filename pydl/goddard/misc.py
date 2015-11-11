@@ -1,6 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def cirrange(ang,radians=False):
+"""This file corresponds to the goddard/misc directory.
+"""
+
+
+def cirrange(ang, radians=False):
     """Convert an angle larger than 360 degrees to one less than 360 degrees.
 
     Parameters

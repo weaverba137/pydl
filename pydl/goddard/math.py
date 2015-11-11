@@ -1,6 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def flegendre(x,m):
+"""This file corresponds to the goddard/math directory.
+"""
+
+
+def flegendre(x, m):
     """Compute the first `m` Legendre polynomials.
 
     Parameters
@@ -17,7 +21,7 @@ def flegendre(x,m):
     """
     import numpy as np
     from scipy.special import legendre
-    if isinstance(x,np.ndarray):
+    if isinstance(x, np.ndarray):
         n = x.size
     else:
         n = 1
@@ -27,10 +31,10 @@ def flegendre(x,m):
         dt = x.dtype
     except AttributeError:
         dt = np.float64
-    leg = np.ones((m,n),dtype=dt)
+    leg = np.ones((m, n), dtype=dt)
     if m >= 2:
         leg[1,:] = x
     if m >= 3:
         for k in range(2,m):
-            leg[k,:] = np.polyval(legendre(k),x)
+            leg[k,:] = np.polyval(legendre(k), x)
     return leg
