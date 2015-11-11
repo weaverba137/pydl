@@ -1,6 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def djs_maskinterp1(yval,mask,xval=None,const=False):
+"""This module corresponds to the image directory in idlutils.
+"""
+
+
+def djs_maskinterp1(yval, mask, xval=None, const=False):
     """Interpolate over a masked, 1-d array.
 
     Parameters
@@ -50,10 +54,9 @@ def djs_maskinterp1(yval,mask,xval=None,const=False):
             if igood[ngood-1] != ny-1:
                 ynew[ii[igood[ngood-1]+1:ny]] = ynew[ii[igood[ngood-1]]]
     return ynew
-#
-#
-#
-def djs_maskinterp(yval,mask,xval=None,axis=None,const=False):
+
+
+def djs_maskinterp(yval, mask, xval=None, axis=None, const=False):
     """Interpolate over masked pixels in a vector, image or 3-D array.
 
     Parameters
@@ -84,7 +87,7 @@ def djs_maskinterp(yval,mask,xval=None,axis=None,const=False):
             raise ValueError('xval must have the same shape as yval.')
     ndim = yval.ndim
     if ndim == 1:
-        ynew = djs_maskinterp1(yval,mask,xval,const=const)
+        ynew = djs_maskinterp1(yval, mask, xval, const=const)
     else:
         if axis is None:
             raise ValueError('Must set axis if yval has more than one dimension.')
