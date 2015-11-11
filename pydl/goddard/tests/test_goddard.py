@@ -6,6 +6,7 @@ from ..astro import airtovac, gcirc, get_juldate, vactoair
 from ..math import flegendre
 from ..misc import cirrange
 
+
 class TestGoddard(object):
     """Test the goddard package.
     """
@@ -92,8 +93,9 @@ class TestGoddard(object):
         dec2 = np.where((dec1 > 0), dec1 - offset, dec1 + offset)
         deldec2 = (dec2-dec1)/2.0
         delra2 = (ra2-ra1)/2.0
-        sindis = np.sqrt(np.sin(deldec2)*np.sin(deldec2) +
-                         np.cos(dec1)*np.cos(dec2)*np.sin(delra2)*np.sin(delra2))
+        sindis = np.sqrt(np.sin(deldec2) * np.sin(deldec2) +
+                         np.cos(dec1) * np.cos(dec2) *
+                         np.sin(delra2) * np.sin(delra2))
         dis = 2.0*np.arcsin(sindis)
         #
         # units = 0
@@ -103,8 +105,8 @@ class TestGoddard(object):
         #
         # units = 2
         #
-        d0 = gcirc(np.rad2deg(ra1)/15.0, np.rad2deg(dec1), np.rad2deg(ra2)/15.0,
-                   np.rad2deg(dec2), units=1)
+        d0 = gcirc(np.rad2deg(ra1)/15.0, np.rad2deg(dec1),
+                   np.rad2deg(ra2)/15.0, np.rad2deg(dec2), units=1)
         assert np.allclose(d0, np.rad2deg(dis)*3600.0)
         #
         # units = 2
