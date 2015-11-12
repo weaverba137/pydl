@@ -76,8 +76,8 @@ class YannyTestCase(object):
         return np.dtype(stuff)
 
 
-class TestWriteNdarray(YannyTestCase):
-    """Test class for ndarray to yanny conversions.
+class TestYanny(YannyTestCase):
+    """Test class for yanny files.
     """
     save_temp = False
 
