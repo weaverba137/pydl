@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def sdss_flagname(flagname, flagvalue, concat=False):
     """Return a list of flag names corresponding to the values.
 
@@ -10,7 +12,8 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     flagvalue : :class:`long`
         The value to be converted into bitmask names.
     concat : :class:`bool`, optional
-        If set to ``True``, the list of names is converted to a space-separated string.
+        If set to ``True``, the list of names is converted to a
+        space-separated string.
 
     Returns
     -------
@@ -30,7 +33,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     """
     from . import maskbits
     from numpy import uint64
-    if maskbits is None: # pragma: no cover
+    if maskbits is None:  # pragma: no cover
         from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     flagu = flagname.upper()

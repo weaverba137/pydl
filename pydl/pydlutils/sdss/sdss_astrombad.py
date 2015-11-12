@@ -1,7 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
-    """For a list of RUN, CAMCOL, FIELD, return whether each field has bad astrometry.
+
+
+def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
+    """For a list of RUN, CAMCOL, FIELD, return whether each field has bad
+    astrometry.
 
     Parameters
     ----------
@@ -20,7 +23,8 @@ def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
     Raises
     ------
     ValueError
-        If the sizes of the arrays don't match or if the array values are out of bounds.
+        If the sizes of the arrays don't match or if the array values are out
+        of bounds.
 
     Notes
     -----
@@ -39,13 +43,13 @@ def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
     #
     # Check inputs
     #
-    if isinstance(run,int):
+    if isinstance(run, int):
         #
         # Assume all inputs are integers & promote to arrays.
         #
-        run = array([run],dtype=int64)
-        camcol = array([camcol],dtype=int64)
-        field = array([field],dtype=int64)
+        run = array([run], dtype=int64)
+        camcol = array([camcol], dtype=int64)
+        field = array([field], dtype=int64)
     else:
         #
         # Check that all inputs have the same shape.
@@ -66,24 +70,27 @@ def sdss_astrombad(run,camcol,field,photolog_version='dr10'):
     #
     # Read the file
     #
-    if opbadfields is None: # pragma: no cover
+    if opbadfields is None:  # pragma: no cover
         if getenv('PHOTOLOG_DIR') is None:
-            if photolog_version == 'trunk' or photolog_version.startswith('branches/'):
+            if (photolog_version == 'trunk' or
+                    photolog_version.startswith('branches/')):
                 iversion = photolog_version
             else:
                 iversion = 'tags/'+photolog_version
-            baseurl = 'http://www.sdss3.org/svn/repo/photolog/{0}/opfiles/opBadfields.par'.format(iversion)
-            filename = download_file(baseurl,cache=True)
+            baseurl = ('http://www.sdss3.org/svn/repo/photolog/' +
+                        '{0}/opfiles/opBadfields.par').format(iversion)
+            filename = download_file(baseurl, cache=True)
         else:
-            filename = join(getenv('PHOTOLOG_DIR'),'opfiles','opBadfields.par')
-        astrombadfile = yanny(filename,np=True)
+            filename = join(getenv('PHOTOLOG_DIR'), 'opfiles',
+                            'opBadfields.par')
+        astrombadfile = yanny(filename)
         w = ((astrombadfile['BADFIELDS']['problem'] == 'astrom'.encode()) |
             (astrombadfile['BADFIELDS']['problem'] == 'rotator'.encode()))
         opbadfields = astrombadfile['BADFIELDS'][w]
     #
     # opbadfields already has astrom problems selected at this point
     #
-    bad = zeros(run.shape,dtype=bool)
+    bad = zeros(run.shape, dtype=bool)
     for row in opbadfields:
         w = ((run == row['run']) &
         (field >= row['firstfield']) & (field < row['lastfield']))

@@ -1,6 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def sdss_flagval(flagname,bitname):
+
+
+def sdss_flagval(flagname, bitname):
     """Convert bitmask names into values.
 
     Converts human-readable bitmask names into numerical values.  The inputs
@@ -32,13 +34,13 @@ def sdss_flagval(flagname,bitname):
     from astropy.extern.six import string_types
     from numpy import uint64
     from . import maskbits
-    if maskbits is None: # pragma: no cover
+    if maskbits is None:  # pragma: no cover
         from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     #
     # Make sure inlabel is a list
     #
-    if isinstance(bitname,string_types):
+    if isinstance(bitname, string_types):
         bitnames = [bitname.upper()]
     else:
         bitnames = [b.upper() for b in bitname]

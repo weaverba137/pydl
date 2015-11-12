@@ -1,6 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def sdss_objid(run,camcol,field,objnum,rerun=301,skyversion=None):
+
+
+def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
     """Convert SDSS photometric identifiers into CAS-style ObjID.
 
     Bits are assigned in objid thus:
@@ -21,11 +23,11 @@ def sdss_objid(run,camcol,field,objnum,rerun=301,skyversion=None):
     Parameters
     ----------
     run, camcol, field, objnum : :class:`int` or array of int
-        Run, camcol, field and object number within field.  If arrays are passed,
-        all must have the same length.
+        Run, camcol, field and object number within field.  If arrays are
+        passed, all must have the same length.
     rerun, skyversion : :class:`int` or array of int, optional
-        Rerun and skyversion usually don't change very much.  If supplied, make
-        sure the size matches all the other values.
+        Rerun and skyversion usually don't change very much.  If supplied,
+        make sure the size matches all the other values.
 
     Returns
     -------
@@ -35,7 +37,8 @@ def sdss_objid(run,camcol,field,objnum,rerun=301,skyversion=None):
     Raises
     ------
     ValueError
-        If the sizes of the arrays don't match or if the array values are out of bounds.
+        If the sizes of the arrays don't match or if the array values are
+        out of bounds.
 
     Notes
     -----
@@ -51,29 +54,29 @@ def sdss_objid(run,camcol,field,objnum,rerun=301,skyversion=None):
     from numpy import array, int64, zeros
     if skyversion is None:
         skyversion = default_skyversion()
-    if isinstance(run,int):
-        run = array([run],dtype=int64)
-    if isinstance(camcol,int):
-        camcol = array([camcol],dtype=int64)
-    if isinstance(field,int):
-        field = array([field],dtype=int64)
-    if isinstance(objnum,int):
-        objnum = array([objnum],dtype=int64)
-    if isinstance(rerun,int):
+    if isinstance(run, int):
+        run = array([run], dtype=int64)
+    if isinstance(camcol, int):
+        camcol = array([camcol], dtype=int64)
+    if isinstance(field, int):
+        field = array([field], dtype=int64)
+    if isinstance(objnum, int):
+        objnum = array([objnum], dtype=int64)
+    if isinstance(rerun, int):
         if rerun == 301:
-            rerun = zeros(run.shape,dtype=int64) + 301
+            rerun = zeros(run.shape, dtype=int64) + 301
         else:
-            rerun = array([rerun],dtype=int64)
-    if isinstance(skyversion,int):
+            rerun = array([rerun], dtype=int64)
+    if isinstance(skyversion, int):
         if skyversion == default_skyversion():
-            skyversion = zeros(run.shape,dtype=int64) + default_skyversion()
+            skyversion = zeros(run.shape, dtype=int64) + default_skyversion()
         else:
-            skyversion = array([skyversion],dtype=int64)
+            skyversion = array([skyversion], dtype=int64)
 
     #
     # Check that all inputs have the same shape.
     #
-    firstfield = zeros(run.shape,dtype=int64)
+    firstfield = zeros(run.shape, dtype=int64)
     if run.shape != camcol.shape:
         raise ValueError("camcol.shape does not match run.shape!")
     if run.shape != field.shape:

@@ -17,7 +17,7 @@ maskbits = None
 #
 # Cache the sweep index
 #
-sweep_cache = {'star':None,'gal':None,'sky':None}
+sweep_cache = {'star': None, 'gal': None, 'sky': None}
 #
 # Cache sdss_astrombad data
 #

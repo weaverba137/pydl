@@ -31,7 +31,7 @@ class TestMaskbits(object):
         assert not l
         assert tuple(which) == (True, True, True, True, False)
         l, f, which = sdss_flagexist('TARGET', ['rosat_a', 'rosat_b',
-                                    'rosat_c','rosat_d','foobar'],
+                                    'rosat_c', 'rosat_d', 'foobar'],
                                     flagexist=True, whichexist=True)
         assert not l
         assert f

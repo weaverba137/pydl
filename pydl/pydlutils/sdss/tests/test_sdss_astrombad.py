@@ -4,6 +4,7 @@
 import numpy as np
 import pydl.pydlutils.sdss
 from astropy.tests.helper import remote_data, raises
+from .. import sdss_astrombad
 #
 # First few data lines of opBadfields.par for reference:
 #
@@ -20,6 +21,7 @@ from astropy.tests.helper import remote_data, raises
 # BADFIELDS  251   focus  97 160                   "Manual focus tests (donuts!)"
 # BADFIELDS  251  astrom 147 159      "Large astrometric offset at field 156 158"
 #
+
 
 class TestSDSSAstrombad(object):
 
@@ -39,34 +41,35 @@ class TestSDSSAstrombad(object):
         pass
 
     def test_sdss_astrombad(self):
-        from .. import sdss_astrombad
-        assert not sdss_astrombad(77,1,20)
-        assert sdss_astrombad(77,3,35)
-        assert not sdss_astrombad(77,6,77)
-        assert sdss_astrombad(85,1,15)
-        assert (sdss_astrombad(np.array([77,85,251]),np.array([1,2,3]),np.array([20,15,151])) == np.array([False,True,True])).all()
+        assert not sdss_astrombad(77, 1, 20)
+        assert sdss_astrombad(77, 3, 35)
+        assert not sdss_astrombad(77, 6, 77)
+        assert sdss_astrombad(85, 1, 15)
+        assert (sdss_astrombad(np.array([77, 85, 251]),
+                np.array([1, 2, 3]), np.array([20, 15, 151])) ==
+                np.array([False, True, True])).all()
 
     def test_sdss_astrombad_raises(self):
-        from .. import sdss_astrombad
         with raises(ValueError):
-            foo = sdss_astrombad(77,32,20)
+            foo = sdss_astrombad(77, 32, 20)
         with raises(ValueError):
-            foo = sdss_astrombad(-1,1,20)
+            foo = sdss_astrombad(-1, 1, 20)
         with raises(ValueError):
-            foo = sdss_astrombad(2**17,1,20)
+            foo = sdss_astrombad(2**17, 1, 20)
         with raises(ValueError):
-            foo = sdss_astrombad(-2,1,20)
+            foo = sdss_astrombad(-2, 1, 20)
         with raises(ValueError):
-            foo = sdss_astrombad(251,1,2**16)
+            foo = sdss_astrombad(251, 1, 2**16)
         with raises(ValueError):
-            foo = sdss_astrombad(np.array([77,85,251]),np.array([1]),np.array([20,15,151]))
+            foo = sdss_astrombad(np.array([77, 85, 251]), np.array([1]),
+                                np.array([20, 15, 151]))
         with raises(ValueError):
-            foo = sdss_astrombad(np.array([77,85,251]),np.array([1,2,3]),np.array([20]))
+            foo = sdss_astrombad(np.array([77, 85, 251]), np.array([1, 2, 3]),
+                                np.array([20]))
 
     @remote_data
     def test_sdss_astrombad_remote(self):
         pydl.pydlutils.sdss.opbadfields = None
-        from .. import sdss_astrombad
-        assert not sdss_astrombad(77,1,20)
-        assert sdss_astrombad(77,3,35)
-        assert not sdss_astrombad(77,6,77)
+        assert not sdss_astrombad(77, 1, 20)
+        assert sdss_astrombad(77, 3, 35)
+        assert not sdss_astrombad(77, 6, 77)
