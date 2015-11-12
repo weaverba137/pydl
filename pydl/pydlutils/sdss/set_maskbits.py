@@ -1,6 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def set_maskbits(idlutils_version='v5_5_8',maskbits_file=None):
+
+
+def set_maskbits(idlutils_version='v5_5_8', maskbits_file=None):
     """Populate the maskbits cache.
 
     Parameters
@@ -23,7 +25,7 @@ def set_maskbits(idlutils_version='v5_5_8',maskbits_file=None):
     """
     from ..yanny import yanny
     from astropy.utils.data import download_file
-    if maskbits_file is None: # pragma: no cover
+    if maskbits_file is None:  # pragma: no cover
         if idlutils_version == 'trunk' or idlutils_version.startswith('branches/'):
             iversion = idlutils_version
         else:
@@ -32,7 +34,7 @@ def set_maskbits(idlutils_version='v5_5_8',maskbits_file=None):
         filename = download_file(baseurl,cache=True,show_progress=False)
     else:
         filename = maskbits_file
-    maskfile = yanny(filename)
+    maskfile = yanny(filename,raw=True)
     #
     # Parse the file & cache the results in maskbits
     #

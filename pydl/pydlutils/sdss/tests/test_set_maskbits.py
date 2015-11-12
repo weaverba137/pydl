@@ -1,9 +1,12 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def test_set_maskbits():
     from ..set_maskbits import set_maskbits
     from os.path import dirname, join
-    maskbits = set_maskbits(maskbits_file=join(dirname(__file__),'t','testMaskbits.par'))
+    maskbits = set_maskbits(maskbits_file=join(dirname(__file__), 't',
+                            'testMaskbits.par'))
     assert (set(maskbits.keys()) ==
         set(['TARGET', 'BOSS_TARGET1', 'PRIMTARGET', 'ANCILLARY_TARGET1',
             'ZWARNING', 'TTARGET', 'SECTARGET', 'LEGACY_TARGET2',
