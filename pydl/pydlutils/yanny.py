@@ -601,9 +601,9 @@ class yanny(dict):
             else:
                 d = dtmap[typ]
             if self.isarray(structure, c):
-                dt.append((c, d, (self.array_length(structure, c),)))
+                dt.append((str(c), str(d), (self.array_length(structure, c),)))
             else:
-                dt.append((c, d))
+                dt.append((str(c), str(d)))
         dt = numpy.dtype(dt)
         return dt
 

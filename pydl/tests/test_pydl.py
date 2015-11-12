@@ -104,12 +104,12 @@ class TestPydl(object):
         # Test pre-sorted array.
         #
         u1 = uniq(items_sorted)
-        assert (u1 == np.array([3,  5,  7,  9, 10, 11, 12, 13])).all()
+        assert (u1 == np.array([3, 5, 7, 9, 10, 11, 12, 13])).all()
         #
         # Test arg-sorted array.
         #
         u2 = uniq(items, items_argsorted)
-        assert (u2 == np.array([13,  9,  8,  10, 5, 7, 11, 12])).all()
+        assert (u2 == np.array([13, 9, 8, 10, 5, 7, 11, 12])).all()
         assert (items_sorted[u1] == items[u2]).all()
         #
         # Test degenerate case of all identical items.
