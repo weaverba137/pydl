@@ -10,18 +10,21 @@ def djs_maskinterp1(yval, mask, xval=None, const=False):
     Parameters
     ----------
     yval : :class:`numpy.ndarray`
-        The input values
+        The input values.
     mask : :class:`numpy.ndarray`
-        The mask
+        The mask.
     xval : :class:`numpy.ndarray`, optional
-        If set, use these x values, otherwise use an array
+        If set, use these x values, otherwise use an array.
     const : :class:`bool`, optional
         If set to ``True``, bad values around the edges of the array will be
-        set to a constant value.
+        set to a constant value.  Because of the default behavior of
+        :func:`numpy.interp`, this value actually makes no difference in
+        the output.
 
     Returns
     -------
     djs_maskinterp1 : :class:`numpy.ndarray`
+        The `yval` array with masked values replaced by interpolated values.
     """
     import numpy as np
     good = mask == 0
@@ -88,7 +91,7 @@ def djs_maskinterp(yval, mask, xval=None, axis=None, const=False):
             raise ValueError('xval must have the same shape as yval.')
     ndim = yval.ndim
     if ndim == 1:
-        ynew = djs_maskinterp1(yval, mask, xval, const=const)
+        ynew = djs_maskinterp1(yval, mask, xval=xval, const=const)
     else:
         if axis is None:
             raise ValueError(
@@ -110,11 +113,13 @@ def djs_maskinterp(yval, mask, xval=None, axis=None, const=False):
                 if axis == 0:
                     for i in range(yval.shape[0]):
                         ynew[i, :] = djs_maskinterp1(yval[i, :], mask[i, :],
-                                                     xval[i, :], const=const)
+                                                     xval=xval[i, :],
+                                                     const=const)
                 else:
                     for i in range(yval.shape[1]):
                         ynew[:, i] = djs_maskinterp1(yval[:, i], mask[:, i],
-                                                     xval[:, i], const=const)
+                                                     xval=xval[:, i],
+                                                     const=const)
         elif ndim == 3:
             if xval is None:
                 if axis == 0:
@@ -141,21 +146,21 @@ def djs_maskinterp(yval, mask, xval=None, axis=None, const=False):
                         for j in range(yval.shape[1]):
                             ynew[i, j, :] = djs_maskinterp1(yval[i, j, :],
                                                             mask[i, j, :],
-                                                            xval[i, j, :],
+                                                            xval=xval[i, j, :],
                                                             const=const)
                 elif axis == 1:
                     for i in range(yval.shape[0]):
                         for j in range(yval.shape[2]):
                             ynew[i, :, j] = djs_maskinterp1(yval[i, :, j],
                                                             mask[i, :, j],
-                                                            xval[i, j, :],
+                                                            xval=xval[i, :, j],
                                                             const=const)
                 else:
                     for i in range(yval.shape[1]):
                         for j in range(yval.shape[2]):
                             ynew[:, i, j] = djs_maskinterp1(yval[:, i, j],
                                                             mask[:, i, j],
-                                                            xval[i, j, :],
+                                                            xval=xval[:, i, j],
                                                             const=const)
         else:
             raise ValueError('Unsupported number of dimensions.')
