@@ -18,7 +18,6 @@ class TestCoord(object):
         pass
 
     def test_current_mjd(self):
-        from .. import current_mjd
         assert current_mjd() > 50000.0
 
     def test_munu_to_radec(self):

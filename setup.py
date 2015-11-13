@@ -82,7 +82,7 @@ package_info['package_data'][PACKAGENAME].append('data/*')
 entry_points = {}
 entry_points['console_scripts'] = [
     'get_juldate = pydl.goddard.astro:get_juldate_main',
-    'hogg_iau_name = pydl.pydlutils.misc.hogg_iau_name:hogg_iau_name_main',
+    'hogg_iau_name = pydl.pydlutils.misc:hogg_iau_name_main',
     'pca_gal = pydl.pydlspec2d.spec1d.pca_gal:pca_gal_main'
 ]
 
