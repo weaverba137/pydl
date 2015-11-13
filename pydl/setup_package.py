@@ -9,7 +9,6 @@ def get_package_data():
         'pydl.tests': ['coveragerc', 't/*'],
         'pydl.pydlspec2d.spec2d.tests': ['t/*'],
         'pydl.pydlutils': ['data/filters/*'],
-        'pydl.pydlutils.sdss.tests': ['t/*'],
         'pydl.pydlutils.tests': ['t/*'],
     }
 

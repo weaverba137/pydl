@@ -3,7 +3,7 @@
 import numpy as np
 import pydl.pydlutils.sdss
 from os.path import dirname, join
-from astropy.tests.helper import raises
+from astropy.tests.helper import remote_data, raises
 from ..sdss import (default_skyversion, sdss_flagexist, sdss_flagname,
                     sdss_flagval, set_maskbits, sdss_astrombad,
                     sdss_objid)
