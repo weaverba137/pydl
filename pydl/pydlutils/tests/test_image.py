@@ -97,25 +97,25 @@ class TestImage(object):
         x = np.dstack((x, x, x, x, x, x, x))
         y = np.dstack((y, y, y, y, y, y, y))
         mask = np.dstack((mask, mask, mask, mask, mask, mask, mask))
-        mask[:,:,:] = 0
-        mask[:,:,5] = 1
+        mask[:, :, :] = 0
+        mask[:, :, 5] = 1
         yi = djs_maskinterp(y, mask, axis=0)
         assert np.allclose(y, yi)
         yi = djs_maskinterp(y, mask, axis=0, xval=x)
         assert np.allclose(y, yi)
-        mask[:,:,:] = 0
-        mask[:,3,:] = 1
+        mask[:, :, :] = 0
+        mask[:, 3, :] = 1
         yi = djs_maskinterp(y, mask, axis=1)
         assert np.allclose(y, yi)
         yi = djs_maskinterp(y, mask, axis=1, xval=x)
         assert np.allclose(y, yi)
-        mask[:,:,:] = 0
-        mask[1,:,:] = 1
+        mask[:, :, :] = 0
+        mask[1, :, :] = 1
         yi = djs_maskinterp(y, mask, axis=2)
         assert np.allclose(y, yi)
         yi = djs_maskinterp(y, mask, axis=2, xval=x)
         assert np.allclose(y, yi)
         # 4-D case
-        y = np.random.random((2,2,2,2))
+        y = np.random.random((2, 2, 2, 2))
         with raises(ValueError):
             yi = djs_maskinterp(y, (y > 0.5), axis=0)
