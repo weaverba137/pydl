@@ -11,7 +11,6 @@ def get_package_data():
         'pydl.pydlutils': ['data/filters/*'],
         'pydl.pydlutils.sdss.tests': ['t/*'],
         'pydl.pydlutils.tests': ['t/*'],
-        'pydl.pydlutils.trace.tests': ['t/*']
     }
 
 
