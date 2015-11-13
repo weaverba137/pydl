@@ -97,8 +97,8 @@ class TestMisc(object):
         assert (hogg_iau_name(354.120375, -0.544777778, precision=2) ==
                 'SDSS J233628.890-003241.20')
         ra = np.array([354.120375, 7.89439, 36.31915, 110.44730])
-        dec = array([-0.544777778, -0.35157, 0.47505, 39.35352])
-        names = np.hogg_iau_name(ra, dec)
+        dec = np.array([-0.544777778, -0.35157, 0.47505, 39.35352])
+        names = hogg_iau_name(ra, dec)
         assert tuple(names) == ('SDSS J233628.89-003241.2',
                                 'SDSS J003134.65-002105.6',
                                 'SDSS J022516.59+002830.1',
