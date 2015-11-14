@@ -15,13 +15,11 @@ class TestPhotoobj(object):
     def teardown(self):
         pass
 
-    def test_sdss_calibv():
-        from numpy.testing import assert_allclose
-        from .. import sdss_calibv
+    def test_sdss_calibv(self):
         assert np.allclose(0.2650306748466258, sdss_calibv())
 
-    def test_unwrap_objid():
-        objid = unwrap_objid(array([1237661382772195474]))
+    def test_unwrap_objid(self):
+        objid = unwrap_objid(np.array([1237661382772195474]))
         assert objid.skyversion == 2
         assert objid.rerun == 301
         assert objid.run == 3704
@@ -36,4 +34,4 @@ class TestPhotoobj(object):
         assert objid.frame == 91
         assert objid.id == 146
         with raises(ValueError):
-            objid = unwrap_objid(array([3.14159]))
+            objid = unwrap_objid(np.array([3.14159]))
