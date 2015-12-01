@@ -421,6 +421,11 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     sdss_sweep_circle : `numpy.ndarray`
         The data extracted from the sweep files.
 
+    Raises
+    ------
+    PydlutilsException
+        If :envvar:`PHOTO_SWEEP` is not set.
+
     Notes
     -----
     Assumes that the sweep files exist in :envvar:`PHOTO_SWEEP` and

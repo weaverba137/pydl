@@ -34,5 +34,7 @@ API
 .. automodapi:: pydl.pydlutils.spheregroup
 
 .. automodapi:: pydl.pydlutils.trace
+    :skip: PydlutilsException, flegendre
 
 .. automodapi:: pydl.pydlutils.yanny
+    :skip: PydlutilsException
