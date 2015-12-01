@@ -15,23 +15,3 @@ class PydlutilsException(Exception):
 
 class PydlutilsUserWarning(AstropyUserWarning):
     pass
-
-#
-# Import subpackages
-#
-from . import bspline
-from . import cooling
-# from . import coord
-from . import image
-from . import mangle
-from . import math
-from . import misc
-from . import sdss
-from . import spheregroup
-from . import trace
-from . import yanny
-#
-# Set __all__
-#
-__all__ = ['PydlutilsException', 'bspline', 'cooling', 'image', 'mangle',
-           'math', 'misc', 'sdss', 'spheregroup', 'trace', 'yanny']

@@ -10,7 +10,6 @@ from astropy.coordinates import (Angle, BaseCoordinateFrame, FrameAttribute,
                                  RepresentationMapping,
                                  frame_transform_graph,
                                  FunctionTransform, ICRS)
-from ..goddard.astro import get_juldate
 
 
 class SDSSMuNu(BaseCoordinateFrame):
@@ -64,6 +63,7 @@ class SDSSMuNu(BaseCoordinateFrame):
 def current_mjd():
     """Return the current MJD.
     """
+    from ..goddard.astro import get_juldate
     return get_juldate() - 2400000.5
 
 

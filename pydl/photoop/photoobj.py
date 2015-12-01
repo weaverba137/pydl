@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the photoobj directory in photoop.
 """
-import numpy as np
 
 
 def sdss_calibv():
@@ -61,6 +60,7 @@ def unwrap_objid(objid):
     rec.array([(2, 301, 3704, 3, 91, 146)],
           dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('frame', '<i4'), ('id', '<i4')])
     """
+    import numpy as np
     if objid.dtype.type is np.string_ or objid.dtype.type is np.unicode_:
         tempobjid = objid.astype(np.int64)
     elif objid.dtype.type is np.int64:
