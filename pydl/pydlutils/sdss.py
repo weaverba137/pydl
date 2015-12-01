@@ -2,16 +2,11 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the sdss directory in idlutils.
 """
-from numpy import array, bool, int64, uint64, where, zeros
-from os import getenv
-from os.path import join
+import os
+import numpy as np
 from astropy.extern.six import string_types
 from astropy.io import fits
-from astropy.utils.data import download_file
 from . import PydlutilsException
-from .. import uniq
-from .spheregroup import spherematch
-from .yanny import yanny
 #
 # Cache for the maskbits file.
 #
@@ -79,6 +74,8 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
     problem with all camcols.
 
     """
+    from astropy.utils.data import download_file
+    from .yanny import yanny
     global opbadfields
     #
     # Check inputs
@@ -87,9 +84,9 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
         #
         # Assume all inputs are integers & promote to arrays.
         #
-        run = array([run], dtype=int64)
-        camcol = array([camcol], dtype=int64)
-        field = array([field], dtype=int64)
+        run = np.array([run], dtype=np.int64)
+        camcol = np.array([camcol], dtype=np.int64)
+        field = np.array([field], dtype=np.int64)
     else:
         #
         # Check that all inputs have the same shape.
@@ -111,7 +108,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
     # Read the file
     #
     if opbadfields is None:  # pragma: no cover
-        if getenv('PHOTOLOG_DIR') is None:
+        if os.getenv('PHOTOLOG_DIR') is None:
             if (photolog_version == 'trunk' or
                     photolog_version.startswith('branches/')):
                 iversion = photolog_version
@@ -121,7 +118,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
                         '{0}/opfiles/opBadfields.par').format(iversion)
             filename = download_file(baseurl, cache=True)
         else:
-            filename = join(getenv('PHOTOLOG_DIR'), 'opfiles',
+            filename = os.path.join(os.getenv('PHOTOLOG_DIR'), 'opfiles',
                             'opBadfields.par')
         astrombadfile = yanny(filename)
         w = ((astrombadfile['BADFIELDS']['problem'] == 'astrom'.encode()) |
@@ -130,7 +127,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
     #
     # opbadfields already has astrom problems selected at this point
     #
-    bad = zeros(run.shape, dtype=bool)
+    bad = np.zeros(run.shape, dtype=bool)
     for row in opbadfields:
         w = ((run == row['run']) &
         (field >= row['firstfield']) & (field < row['lastfield']))
@@ -223,10 +220,10 @@ def sdss_flagname(flagname, flagvalue, concat=False):
         from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     flagu = flagname.upper()
-    flagvaluint = uint64(flagvalue)
-    one = uint64(1)
+    flagvaluint = np.uint64(flagvalue)
+    one = np.uint64(1)
     bits = [bit for bit in range(64)
-            if (flagvaluint & (one << uint64(bit))) != 0]
+            if (flagvaluint & (one << np.uint64(bit))) != 0]
     retval = list()
     for bit in bits:
         try:
@@ -281,11 +278,11 @@ def sdss_flagval(flagname, bitname):
     else:
         bitnames = [b.upper() for b in bitname]
     flagu = flagname.upper()
-    flagvalue = uint64(0)
+    flagvalue = np.uint64(0)
     for bit in bitnames:
         if flagu in maskbits:
             if bit in maskbits[flagu]:
-                flagvalue += uint64(2)**uint64(maskbits[flagu][bit])
+                flagvalue += np.uint64(2)**np.uint64(maskbits[flagu][bit])
             else:
                 raise KeyError("Unknown bit label {0} for flag group {1}!".format(bit, flagu))
         else:
@@ -344,28 +341,28 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
     if skyversion is None:
         skyversion = default_skyversion()
     if isinstance(run, int):
-        run = array([run], dtype=int64)
+        run = np.array([run], dtype=np.int64)
     if isinstance(camcol, int):
-        camcol = array([camcol], dtype=int64)
+        camcol = np.array([camcol], dtype=np.int64)
     if isinstance(field, int):
-        field = array([field], dtype=int64)
+        field = np.array([field], dtype=np.int64)
     if isinstance(objnum, int):
-        objnum = array([objnum], dtype=int64)
+        objnum = np.array([objnum], dtype=np.int64)
     if isinstance(rerun, int):
         if rerun == 301:
-            rerun = zeros(run.shape, dtype=int64) + 301
+            rerun = np.zeros(run.shape, dtype=np.int64) + 301
         else:
-            rerun = array([rerun], dtype=int64)
+            rerun = np.array([rerun], dtype=np.int64)
     if isinstance(skyversion, int):
         if skyversion == default_skyversion():
-            skyversion = zeros(run.shape, dtype=int64) + default_skyversion()
+            skyversion = np.zeros(run.shape, dtype=np.int64) + default_skyversion()
         else:
-            skyversion = array([skyversion], dtype=int64)
+            skyversion = np.array([skyversion], dtype=np.int64)
 
     #
     # Check that all inputs have the same shape.
     #
-    firstfield = zeros(run.shape, dtype=int64)
+    firstfield = np.zeros(run.shape, dtype=np.int64)
     if run.shape != camcol.shape:
         raise ValueError("camcol.shape does not match run.shape!")
     if run.shape != field.shape:
@@ -429,28 +426,30 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     Assumes that the sweep files exist in :envvar:`PHOTO_SWEEP` and
     that index files have been created.
     """
+    from .. import uniq
+    from .spheregroup import spherematch
     global sweep_cache
     #
     # Check values
     #
     if stype not in ('star', 'gal', 'sky'):
         raise ValueError('Invalid type {0}!'.format(stype))
-    sweepdir = getenv('PHOTO_SWEEP')
+    sweepdir = os.getenv('PHOTO_SWEEP')
     if sweepdir is None:
         raise PydlutilsException('PHOTO_SWEEP is not set!')
     #
     # Read the index
     #
     if sweep_cache[stype] is None:
-        indexfile = join(sweepdir, 'datasweep-index-{0}.fits'.format(stype))
+        indexfile = os.path.join(sweepdir, 'datasweep-index-{0}.fits'.format(stype))
         with fits.open(indexfile) as f:
             sweep_cache[stype] = f[1].data
     index = sweep_cache[stype]
     #
     # Match
     #
-    ira = array([ra])
-    idec = array([dec])
+    ira = np.array([ra])
+    idec = np.array([dec])
     m1, m2, d12 = spherematch(index['RA'], index['DEC'], ira, idec,
                                 radius+0.36, maxmatch=0)
     if len(m1) == 0:
@@ -466,7 +465,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     #
     if allobj:
         n = index['IEND'][m1] - index['ISTART'][m1] + 1
-        ntot = (where(n > 0, n, zeros(n.shape, dtype=n.dtype))).sum()
+        ntot = (where(n > 0, n, np.zeros(n.shape, dtype=n.dtype))).sum()
     else:
         ntot = index['NPRIMARY'][m1].sum()
     #
@@ -494,7 +493,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
             #
             # Read in the rows of that file
             #
-            swfile = join(getenv('PHOTO_SWEEP'), rerun,
+            swfile = os.path.join(os.getenv('PHOTO_SWEEP'), rerun,
                             'calibObj-{0:06d}-{1:1d}-{2}.fits.gz'.format(
                             int(run), int(camcol), stype))
             with fits.open(swfile) as f:
@@ -520,7 +519,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
                             tmp_objs = None
                     if tmp_objs is not None:
                         if objs is None:
-                            objs = zeros(ntot, dtype=tmp_objs.dtype)
+                            objs = np.zeros(ntot, dtype=tmp_objs.dtype)
                         objs[nobjs:nobjs+tmp_objs.size] = tmp_objs
                         nobjs += tmp_objs.size
         istart = iend+1
@@ -551,6 +550,8 @@ def set_maskbits(idlutils_version='v5_5_8', maskbits_file=None):
     URLError
         If the data file could not be retrieved.
     """
+    from astropy.utils.data import download_file
+    from .yanny import yanny
     if maskbits_file is None:  # pragma: no cover
         if (idlutils_version == 'trunk' or
                 idlutils_version.startswith('branches/')):

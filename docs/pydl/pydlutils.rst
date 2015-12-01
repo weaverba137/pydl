@@ -36,4 +36,3 @@ API
 .. automodapi:: pydl.pydlutils.trace
 
 .. automodapi:: pydl.pydlutils.yanny
-    :skip: PydlutilsException

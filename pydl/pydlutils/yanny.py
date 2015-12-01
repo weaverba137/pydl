@@ -22,7 +22,6 @@ multidimensional arrays, sorry.
 from __future__ import print_function
 import re
 import os
-import os.path
 import datetime
 import numpy
 from astropy.extern import six

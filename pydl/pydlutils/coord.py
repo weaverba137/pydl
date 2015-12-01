@@ -3,16 +3,11 @@
 """This module corresponds to the coord directory in idlutils.
 """
 import numpy as np
-from astropy import units as u
-from astropy.coordinates import (Angle, BaseCoordinateFrame, FrameAttribute,
-                                 SphericalRepresentation,
-                                 QuantityFrameAttribute,
-                                 RepresentationMapping,
-                                 frame_transform_graph,
-                                 FunctionTransform, ICRS)
+import astropy.units as u
+import astropy.coordinates as ac
 
 
-class SDSSMuNu(BaseCoordinateFrame):
+class SDSSMuNu(ac.BaseCoordinateFrame):
     """SDSS Great Circle Coordinates
 
     Attributes
@@ -40,24 +35,25 @@ class SDSSMuNu(BaseCoordinateFrame):
     -----
     http://www.sdss.org/dr12/algorithms/surveycoords/
     """
-    default_representation = SphericalRepresentation
+    default_representation = ac.SphericalRepresentation
     frame_specific_representation_info = {
         'spherical': [
-            RepresentationMapping(reprname='lon', framename='mu',
+            ac.RepresentationMapping(reprname='lon', framename='mu',
                                     defaultunit=u.deg),
-            RepresentationMapping(reprname='lat', framename='nu',
+            ac.RepresentationMapping(reprname='lat', framename='nu',
                                     defaultunit=u.deg)
             ]
         }
     frame_specific_representation_info['unitspherical'] = (
             frame_specific_representation_info['spherical'])
-    stripe = FrameAttribute(default=0)
-    node = QuantityFrameAttribute(default=Angle(95.0, unit=u.deg), unit=u.deg)
-    # phi = QuantityFrameAttribute(default=None, unit=u.deg)
+    stripe = ac.FrameAttribute(default=0)
+    node = ac.QuantityFrameAttribute(default=ac.Angle(95.0, unit=u.deg),
+                                     unit=u.deg)
+    # phi = ac.QuantityFrameAttribute(default=None, unit=u.deg)
 
     @property
     def incl(self):
-        return Angle(stripe_to_incl(self.stripe), unit=u.deg)
+        return ac.Angle(stripe_to_incl(self.stripe), unit=u.deg)
 
 
 def current_mjd():
@@ -67,7 +63,7 @@ def current_mjd():
     return get_juldate() - 2400000.5
 
 
-@frame_transform_graph.transform(FunctionTransform, SDSSMuNu, ICRS)
+@ac.frame_transform_graph.transform(ac.FunctionTransform, SDSSMuNu, ac.ICRS)
 def munu_to_radec(munu, icrs_frame):
     """Convert from SDSS great circle coordinates to equatorial coordinates.
 
@@ -81,7 +77,6 @@ def munu_to_radec(munu, icrs_frame):
     munu_to_radec : :class:`~astropy.coordinates.ICRS`
         Equatorial coordinates (RA, Dec).
     """
-    import numpy as np
     # from pydlutils.coord import stripe_to_eta
     # from pydlutils.goddard.misc import cirrange
     # if 'stripe' in kwargs:
@@ -103,18 +98,18 @@ def munu_to_radec(munu, icrs_frame):
     xx = cosmu * cosnu
     yy = sinmu * cosnu * cosi - sinnu * sini
     zz = sinmu * cosnu * sini + sinnu * cosi
-    ra = Angle(np.arctan2(yy, xx), unit=u.radian) + munu.node
-    dec = Angle(np.arcsin(zz), unit=u.radian)
+    ra = ac.Angle(np.arctan2(yy, xx), unit=u.radian) + munu.node
+    dec = ac.Angle(np.arcsin(zz), unit=u.radian)
     # if 'phi' in kwargs:
     #     phi = np.rad2deg(np.arctan2(cosmu * sini,
     #         (-sinmu * sinnu * sini + cosnu * cosi)*cosnu))
     #     return (ra, dec, phi)
     # else:
     #     return (ra, dec)
-    return ICRS(ra=ra, dec=dec).transform_to(icrs_frame)
+    return ac.ICRS(ra=ra, dec=dec).transform_to(icrs_frame)
 
 
-@frame_transform_graph.transform(FunctionTransform, ICRS, SDSSMuNu)
+@ac.frame_transform_graph.transform(ac.FunctionTransform, ac.ICRS, SDSSMuNu)
 def radec_to_munu(icrs_frame, munu):
     """Convert from equatorial coordinates to SDSS great circle coordinates.
 
@@ -152,8 +147,8 @@ def radec_to_munu(icrs_frame, munu):
     x2 = x1
     y2 = y1 * cosi + z1 * sini
     z2 = -y1 * sini + z1 * cosi
-    mu = Angle(np.arctan2(y2, x2), unit=u.radian) + munu.node
-    nu = Angle(np.arcsin(z2), unit=u.radian)
+    mu = ac.Angle(np.arctan2(y2, x2), unit=u.radian) + munu.node
+    nu = ac.Angle(np.arcsin(z2), unit=u.radian)
     # if 'phi' in kwargs:
     #     sinnu = np.sin(np.deg2rad(nu))
     #     cosnu = np.cos(np.deg2rad(nu))
