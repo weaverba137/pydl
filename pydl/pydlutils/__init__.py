@@ -6,12 +6,12 @@ This subpackage implements functions from the idlutils package.
 #
 # Define this early on so that submodules can use it
 #
-from astropy.utils.exceptions import AstropyUserWarning
+import astropy.utils.exceptions as aue
 
 
 class PydlutilsException(Exception):
     pass
 
 
-class PydlutilsUserWarning(AstropyUserWarning):
+class PydlutilsUserWarning(aue.AstropyUserWarning):
     pass

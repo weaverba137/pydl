@@ -3,9 +3,7 @@
 """This module corresponds to the math directory in idlutils.
 """
 import numpy as np
-from scipy.signal import medfilt, medfilt2d
-from astropy.utils import lazyproperty
-from .misc import djs_laxisnum
+import astropy.utils as au
 
 
 class computechi2(object):
@@ -66,31 +64,31 @@ class computechi2(object):
                    self.nstar, self.nstar)), self.uu.T)
         return
 
-    @lazyproperty
+    @au.lazyproperty
     def acoeff(self):
         """Computes the x values in Ax=b.
         """
         return np.dot(self.mmi, np.dot(self.mmatrix.T, self.bvec))
 
-    @lazyproperty
+    @au.lazyproperty
     def chi2(self):
         """Computes the chi**2 value.
         """
         return np.sum((np.dot(self.mmatrix, self.acoeff) - self.bvec)**2)
 
-    @lazyproperty
+    @au.lazyproperty
     def yfit(self):
         """Computes the best fit.
         """
         return np.dot(self.amatrix, self.acoeff)
 
-    @lazyproperty
+    @au.lazyproperty
     def dof(self):
         """Computes the degrees of freedom.
         """
         return (self.sqivar > 0).sum() - self.nstar
 
-    @lazyproperty
+    @au.lazyproperty
     def covar(self):
         """Computes the covariance matrix.
         """
@@ -103,7 +101,7 @@ class computechi2(object):
                 covar[j, i] = covar[i, j]
         return covar
 
-    @lazyproperty
+    @au.lazyproperty
     def var(self):
         """Computes the variances of the fit parameters.
         """
@@ -113,6 +111,7 @@ class computechi2(object):
 def _fix_medfilt(array, width):
     """Wrap medfilt so that the results more closely resemble IDL MEDIAN().
     """
+    from scipy.signal import medfilt
     medarray = medfilt(array, min(width, array.size))
     istart = int((width - 1)/2)
     iend = array.size - int((width + 1)/2)
@@ -125,6 +124,7 @@ def _fix_medfilt(array, width):
 def _fix_medfilt2d(array, width):
     """Wrap medfilt2d so that the results more closely resemble IDL MEDIAN().
     """
+    from scipy.signal import medfilt2d
     medarray = medfilt2d(array, min(width, array.size))
     istart = int((width-1)/2)
     iend = (array.shape[0] - int((width+1)/2), array.shape[1] - int((width+1)/2))
@@ -288,6 +288,7 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     ValueError
         If dimensions of various inputs do not match.
     """
+    from .misc import djs_laxisnum
     #
     # Create outmask setting = 1 for good data.
     #
