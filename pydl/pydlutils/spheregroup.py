@@ -3,6 +3,7 @@
 """This module corresponds to the spheregroup directory in idlutils.
 """
 import numpy as np
+from astropy.extern.six import string_types
 from . import PydlutilsException, PydlutilsUserWarning
 
 
@@ -39,7 +40,8 @@ class chunks(object):
             decMin = -90.0
         if decMax > 90.0 - 3.0*minSize:
             decMax = 90.0
-        self.decBounds = decMin + (decMax-decMin)*np.arange(self.nDec+1,dtype='d')/float(self.nDec)
+        self.decBounds = decMin + ((decMax - decMin) * np.arange(self.nDec + 1,
+                                    dtype='d'))/float(self.nDec)
         #
         # Find ra offset which minimizes the range in ra (this should take care
         # of the case that ra crosses zero in some parts
@@ -50,8 +52,8 @@ class chunks(object):
             cosDecMin = np.cos(np.deg2rad(self.decBounds[0]))
         if cosDecMin <= 0.0:
             raise PydlutilsException("cosDecMin={0:f} not positive in setchunks().".format(cosDecMin))
-        self.raRange, self.raOffset = self.rarange(ra,minSize/cosDecMin)
-        self.raMin, self.raMax = self.getraminmax(ra,self.raOffset)
+        self.raRange, self.raOffset = self.rarange(ra, minSize/cosDecMin)
+        self.raMin, self.raMax = self.getraminmax(ra, self.raOffset)
         #
         # Isn't this redundant?
         #
@@ -93,7 +95,7 @@ class chunks(object):
             if self.decBounds[i] == -90.0 or self.decBounds[i+1] == 90.0:
                 self.nRa[i] = 1
             self.raBounds.append(raMinTmp +
-                (raMaxTmp-raMinTmp)*np.arange(self.nRa[i]+1,dtype='d')/
+                (raMaxTmp - raMinTmp) * np.arange(self.nRa[i] + 1, dtype='d') /
                 float(self.nRa[i]))
         #
         # Create an empty set of lists to hold the output of self.assign()
@@ -119,15 +121,12 @@ class chunks(object):
         raOffset = 0.0
         EPS = 1.0e-5
         for j in range(NRA):
-            raMin,raMax = self.getraminmax(ra, 360.0*float(j)/float(NRA))
+            raMin, raMax = self.getraminmax(ra, 360.0*float(j)/float(NRA))
             raRange = raMax-raMin
-            # print(minSize,raMin,raMax, raRange, raRangeMin)
             if (2.0*(raRange-raRangeMin)/(raRange+raRangeMin) < -EPS and
                     raMin > minSize and raMax < 360.0 - minSize):
-                # print(j)
                 raRangeMin = raRange
                 raOffset = 360.0*float(j)/float(NRA)
-        # print(raRangeMin, raOffset)
         return (raRangeMin, raOffset)
 
     def getraminmax(self, ra, raOffset):
@@ -152,20 +151,20 @@ class chunks(object):
         to it.
         """
         if marginSize >= self.minSize:
-            raise PydlutilsException("marginSize>=minSize ({0:f}={1:f}) in chunks.assign().".format(marginSize,self.minSize))
+            raise PydlutilsException("marginSize>=minSize ({0:f}={1:f}) in chunks.assign().".format(marginSize, self.minSize))
         chunkDone = [[False for j in range(self.nRa[i])] for i in range(self.nDec)]
         for i in range(ra.size):
-            currRa = np.fmod(ra[i]+self.raOffset,360.0)
+            currRa = np.fmod(ra[i] + self.raOffset, 360.0)
             try:
-                raChunkMin, raChunkMax, decChunkMin, decChunkMax = self.getbounds(currRa,dec[i],marginSize)
+                raChunkMin, raChunkMax, decChunkMin, decChunkMax = self.getbounds(currRa, dec[i], marginSize)
             except PydlutilsException:
                 continue
             #
             # Reset chunkDone.  This is silly, but is necessary to
             # reproduce the logic.
             #
-            for decChunk in range(decChunkMin,decChunkMax+1):
-                for raChunk in range(raChunkMin[decChunk-decChunkMin]-1,raChunkMax[decChunk-decChunkMin]+2):
+            for decChunk in range(decChunkMin, decChunkMax+1):
+                for raChunk in range(raChunkMin[decChunk-decChunkMin]-1, raChunkMax[decChunk-decChunkMin]+2):
                     if raChunk < 0:
                         currRaChunk = (raChunk+self.nRa[decChunk]) % self.nRa[decChunk]
                     elif raChunk > self.nRa[decChunk]-1:
@@ -174,8 +173,8 @@ class chunks(object):
                         currRaChunk = raChunk
                     if currRaChunk >= 0 and currRaChunk <= self.nRa[decChunk]-1:
                         chunkDone[decChunk][currRaChunk] = False
-            for decChunk in range(decChunkMin,decChunkMax+1):
-                for raChunk in range(raChunkMin[decChunk-decChunkMin],raChunkMax[decChunk-decChunkMin]+1):
+            for decChunk in range(decChunkMin, decChunkMax+1):
+                for raChunk in range(raChunkMin[decChunk-decChunkMin], raChunkMax[decChunk-decChunkMin]+1):
                     if raChunk < 0:
                         currRaChunk = (raChunk+self.nRa[decChunk]) % self.nRa[decChunk]
                     elif raChunk > self.nRa[decChunk]-1:
@@ -193,14 +192,14 @@ class chunks(object):
                             chunkDone[decChunk][currRaChunk] = True
         return
 
-    def getbounds(self,ra,dec,marginSize):
+    def getbounds(self, ra, dec, marginSize):
         """Find the set of chunks a point (with margin) belongs to.
         """
         #
         # Find the declination slice without regard to marginSize
         #
-        decChunkMin = int(np.floor((dec - self.decBounds[0])*
-            float(self.nDec)/
+        decChunkMin = int(np.floor((dec - self.decBounds[0]) *
+            float(self.nDec) /
             (self.decBounds[self.nDec]-self.decBounds[0])))
         decChunkMax = decChunkMin
         if decChunkMin < 0 or decChunkMin > self.nDec - 1:
@@ -208,19 +207,19 @@ class chunks(object):
         #
         # Set minimum and maximum bounds of dec
         #
-        while dec-self.decBounds[decChunkMin] < marginSize and decChunkMin > 0:
+        while dec - self.decBounds[decChunkMin] < marginSize and decChunkMin > 0:
             decChunkMin -= 1
-        while self.decBounds[decChunkMax+1]-dec < marginSize and decChunkMax < self.nDec -1:
+        while self.decBounds[decChunkMax+1] - dec < marginSize and decChunkMax < self.nDec - 1:
             decChunkMax += 1
         #
         # Find ra chunk bounds for each dec chunk
         #
-        raChunkMin = np.zeros(decChunkMax-decChunkMin+1,dtype='i4')
-        raChunkMax = np.zeros(decChunkMax-decChunkMin+1,dtype='i4')
-        for i in range(decChunkMin,decChunkMax+1):
+        raChunkMin = np.zeros(decChunkMax-decChunkMin+1, dtype='i4')
+        raChunkMax = np.zeros(decChunkMax-decChunkMin+1, dtype='i4')
+        for i in range(decChunkMin, decChunkMax+1):
             cosDecMin = self.cosDecMin(i)
-            raChunkMin[i-decChunkMin] = int(np.floor((ra - self.raBounds[i][0])*
-                float(self.nRa[i])/
+            raChunkMin[i-decChunkMin] = int(np.floor((ra - self.raBounds[i][0]) *
+                float(self.nRa[i]) /
                 (self.raBounds[i][self.nRa[i]] - self.raBounds[i][0])))
             raChunkMax[i-decChunkMin] = raChunkMin[i-decChunkMin]
             if raChunkMin[i-decChunkMin] < 0 or raChunkMin[i-decChunkMin] > self.nRa[i]-1:
@@ -256,15 +255,15 @@ class chunks(object):
         #
         # Find dec chunk
         #
-        decChunk = int(np.floor((dec - self.decBounds[0])*
-            float(self.nDec)/
+        decChunk = int(np.floor((dec - self.decBounds[0]) *
+            float(self.nDec) /
             (self.decBounds[self.nDec]-self.decBounds[0])))
         #
         # Find ra chunk
         #
         if decChunk < self.nDec and decChunk >= 0:
-            raChunk = int(np.floor((ra - self.raBounds[decChunk][0])*
-                float(self.nRa[decChunk])/
+            raChunk = int(np.floor((ra - self.raBounds[decChunk][0]) *
+                float(self.nRa[decChunk]) /
                 (self.raBounds[decChunk][self.nRa[decChunk]] - self.raBounds[decChunk][0])))
             if raChunk < 0 or raChunk > self.nRa[decChunk]-1:
                 raise PydlutilsException("raChunk out of range in chunks.get()")
@@ -272,11 +271,11 @@ class chunks(object):
             raChunk = -1
         return (raChunk, decChunk)
 
-    def friendsoffriends(self,ra,dec,linkSep):
+    def friendsoffriends(self, ra, dec, linkSep):
         """Friends-of-friends using chunked data.
         """
         nPoints = ra.size
-        inGroup = np.zeros(nPoints,dtype='i4') - 1
+        inGroup = np.zeros(nPoints, dtype='i4') - 1
         #
         # mapGroups contains an equivalency mapping of groups.  mapGroup[i]=j
         # means i and j are actually the same group.  j<=i always, by design.
@@ -284,12 +283,12 @@ class chunks(object):
         # (assuming linkSep < marginSize < minSize) is 9 times the number of
         # targets
         #
-        mapGroups = np.zeros(9*nPoints,dtype='i4') - 1
+        mapGroups = np.zeros(9*nPoints, dtype='i4') - 1
         nMapGroups = 0
         for i in range(self.nDec):
             for j in range(self.nRa[i]):
                 if len(self.chunkList[i][j]) > 0:
-                    chunkGroup = self.chunkfriendsoffriends(ra,dec,self.chunkList[i][j],linkSep)
+                    chunkGroup = self.chunkfriendsoffriends(ra, dec, self.chunkList[i][j], linkSep)
                     for k in range(chunkGroup.nGroups):
                         minEarly = 9*nPoints
                         l = chunkGroup.firstGroup[k]
@@ -297,8 +296,8 @@ class chunks(object):
                             if inGroup[self.chunkList[i][j][l]] != -1:
                                 checkEarly = inGroup[self.chunkList[i][j][l]]
                                 while mapGroups[checkEarly] != checkEarly:
-                                    checkEarly=mapGroups[checkEarly]
-                                minEarly = min(minEarly,checkEarly)
+                                    checkEarly = mapGroups[checkEarly]
+                                minEarly = min(minEarly, checkEarly)
                             else:
                                 inGroup[self.chunkList[i][j][l]] = nMapGroups
                             l = chunkGroup.nextGroup[l]
@@ -310,11 +309,11 @@ class chunks(object):
                             while l != -1:
                                 checkEarly = inGroup[self.chunkList[i][j][l]]
                                 while mapGroups[checkEarly] != checkEarly:
-                                    tmpEarly=mapGroups[checkEarly]
-                                    mapGroups[checkEarly]=minEarly
-                                    checkEarly=tmpEarly
-                                mapGroups[checkEarly]=minEarly
-                                l=chunkGroup.nextGroup[l]
+                                    tmpEarly = mapGroups[checkEarly]
+                                    mapGroups[checkEarly] = minEarly
+                                    checkEarly = tmpEarly
+                                mapGroups[checkEarly] = minEarly
+                                l = chunkGroup.nextGroup[l]
                         nMapGroups += 1
         #
         # Now all groups which are mapped to themselves are the real groups
@@ -329,13 +328,13 @@ class chunks(object):
                 else:
                     mapGroups[i] = mapGroups[mapGroups[i]]
             else:
-                raise PydlutilsException("MapGroups[{0:d}]={1:d} in chunks.friendsoffriends().".format(i,mapGroups[i]))
+                raise PydlutilsException("MapGroups[{0:d}]={1:d} in chunks.friendsoffriends().".format(i, mapGroups[i]))
         for i in range(nPoints):
             inGroup[i] = mapGroups[inGroup[i]]
-        firstGroup = np.zeros(nPoints,dtype='i4') - 1
-        nextGroup = np.zeros(nPoints,dtype='i4') - 1
-        multGroup = np.zeros(nPoints,dtype='i4')
-        for i in range(nPoints-1,-1,-1):
+        firstGroup = np.zeros(nPoints, dtype='i4') - 1
+        nextGroup = np.zeros(nPoints, dtype='i4') - 1
+        multGroup = np.zeros(nPoints, dtype='i4')
+        for i in range(nPoints-1, -1, -1):
             nextGroup[i] = firstGroup[inGroup[i]]
             firstGroup[inGroup[i]] = i
         for i in range(nGroups):
@@ -345,7 +344,7 @@ class chunks(object):
                 j = nextGroup[j]
         return (inGroup, multGroup, firstGroup, nextGroup, nGroups)
 
-    def chunkfriendsoffriends(self,ra,dec,chunkList,linkSep):
+    def chunkfriendsoffriends(self, ra, dec, chunkList, linkSep):
         """Does friends-of-friends on the ra, dec that are defined by
         chunkList.
         """
@@ -353,9 +352,9 @@ class chunks(object):
         # Convert ra, dec into something that can be digested by the
         # groups object.
         #
-        x = np.deg2rad(np.vstack((ra[chunkList],dec[chunkList])))
+        x = np.deg2rad(np.vstack((ra[chunkList], dec[chunkList])))
         radLinkSep = np.deg2rad(linkSep)
-        group = groups(x,radLinkSep,'sphereradec')
+        group = groups(x, radLinkSep, 'sphereradec')
         return group
 
 
@@ -391,7 +390,7 @@ class groups(object):
         #
         if callable(separation):
             self.separation = separation
-        elif isinstance(separation,str):
+        elif isinstance(separation, string_types):
             if separation == 'euclid':
                 self.separation = self.euclid
             elif separation == 'sphereradec':
@@ -405,10 +404,10 @@ class groups(object):
         #
         nGroups = 0
         nTargets = coordinates.shape[1]
-        multGroup = np.zeros(nTargets,dtype='i4')
-        firstGroup = np.zeros(nTargets,dtype='i4') -1
-        nextGroup = np.zeros(nTargets,dtype='i4') -1
-        inGroup = np.arange(nTargets,dtype='i4')
+        multGroup = np.zeros(nTargets, dtype='i4')
+        firstGroup = np.zeros(nTargets, dtype='i4') - 1
+        nextGroup = np.zeros(nTargets, dtype='i4') - 1
+        inGroup = np.arange(nTargets, dtype='i4')
         #
         # Find all the other targets associated with each target
         #
@@ -416,10 +415,10 @@ class groups(object):
             nTmp = 0
             minGroup = nGroups
             for j in range(nTargets):
-                sep = self.separation(coordinates[:,i],coordinates[:,j])
+                sep = self.separation(coordinates[:, i], coordinates[:, j])
                 if sep <= distance:
                     multGroup[nTmp] = j
-                    minGroup = min(minGroup,inGroup[j])
+                    minGroup = min(minGroup, inGroup[j])
                     nTmp += 1
             #
             # Use this minimum for all
@@ -438,13 +437,13 @@ class groups(object):
                 nGroups += 1
             for j in range(i+1):
                 firstGroup[j] = -1
-            for j in range(i,-1,-1):
+            for j in range(i, -1, -1):
                 nextGroup[j] = firstGroup[inGroup[j]]
                 firstGroup[inGroup[j]] = j
         #
         # Renumber to get rid of the numbers which were skipped
         #
-        renumbered = np.zeros(nTargets,dtype='bool')
+        renumbered = np.zeros(nTargets, dtype='bool')
         nTmp = nGroups
         nGroups = 0
         for i in range(nTargets):
@@ -459,7 +458,7 @@ class groups(object):
         # Reset the values of firstGroup and inGroup
         #
         firstGroup[:] = -1
-        for i in range(nTargets-1,-1,-1):
+        for i in range(nTargets-1, -1, -1):
             nextGroup[i] = firstGroup[inGroup[i]]
             firstGroup[inGroup[i]] = i
         #
@@ -603,7 +602,7 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
     # Set default values
     #
     if chunksize is None:
-        chunksize = max(4.0*matchlength,0.1)
+        chunksize = max(4.0*matchlength, 0.1)
     #
     # Check input size
     #
@@ -612,8 +611,8 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
     #
     # Initialize chunks
     #
-    chunk = chunks(ra1,dec1,chunksize)
-    chunk.assign(ra2,dec2,matchlength)
+    chunk = chunks(ra1, dec1, chunksize)
+    chunk.assign(ra2, dec2, matchlength)
     #
     # Create return arrays
     #
@@ -621,13 +620,13 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
     match2 = list()
     distance12 = list()
     for i in range(ra1.size):
-        currra = np.fmod(ra1[i]+chunk.raOffset,360.0)
-        rachunk,decchunk = chunk.get(currra,dec1[i])
+        currra = np.fmod(ra1[i]+chunk.raOffset, 360.0)
+        rachunk, decchunk = chunk.get(currra, dec1[i])
         jmax = len(chunk.chunkList[decchunk][rachunk])
         if jmax > 0:
             for j in range(jmax):
                 k = chunk.chunkList[decchunk][rachunk][j]
-                sep = gcirc(ra1[i],dec1[i],ra2[k],dec2[k],units=2)/3600.0
+                sep = gcirc(ra1[i], dec1[i], ra2[k], dec2[k], units=2)/3600.0
                 if sep < matchlength:
                     match1.append(i)
                     match2.append(k)
@@ -643,8 +642,8 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
     # Retain only desired matches
     #
     if maxmatch > 0:
-        gotten1 = np.zeros(ra1.size,dtype='i4')
-        gotten2 = np.zeros(ra2.size,dtype='i4')
+        gotten1 = np.zeros(ra1.size, dtype='i4')
+        gotten2 = np.zeros(ra2.size, dtype='i4')
         nmatch = 0
         for i in range(omatch1.size):
             if (gotten1[omatch1[s[i]]] < maxmatch and
@@ -652,9 +651,9 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
                 gotten1[omatch1[s[i]]] += 1
                 gotten2[omatch2[s[i]]] += 1
                 nmatch += 1
-        match1 = np.zeros(nmatch,dtype='i4')
-        match2 = np.zeros(nmatch,dtype='i4')
-        distance12 = np.zeros(nmatch,dtype='d')
+        match1 = np.zeros(nmatch, dtype='i4')
+        match2 = np.zeros(nmatch, dtype='i4')
+        distance12 = np.zeros(nmatch, dtype='d')
         gotten1[:] = 0
         gotten2[:] = 0
         nmatch = 0
@@ -671,4 +670,4 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
         match1 = omatch1[s]
         match2 = omatch2[s]
         distance12 = odistance12[s]
-    return (match1,match2,distance12)
+    return (match1, match2, distance12)
