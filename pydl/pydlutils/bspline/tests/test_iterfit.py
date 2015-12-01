@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def test_iterfit():
     import numpy as np
     from .. import iterfit
@@ -27,11 +29,11 @@ def test_iterfit():
     assert y0.size == 100
     y = smooth(y0,10)
     assert y.size == 100
-    x = np.arange(y0.size,dtype='d')
-    sset,outmask = iterfit(x,y,nord=3,maxiter=0,bkspace=10)
+    x = np.arange(y0.size, dtype='d')
+    sset,outmask = iterfit(x, y, nord=3, maxiter=0, bkspace=10)
     assert sset.npoly == 1
     assert sset.funcname == 'legendre'
     # print(sset)
     # yfit,mask = sset.value(x)
     # print(yfit)
-    # pylab.plot(x,y,'k-',x,yfit,'r-')
+    # pylab.plot(x, y, 'k-', x, yfit, 'r-')

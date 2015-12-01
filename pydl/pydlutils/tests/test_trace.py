@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from os.path import dirname,join
+from os.path import dirname, join
 from astropy.io import fits
 from astropy.tests.helper import raises
 from ..trace import (fchebyshev, fchebyshev_split, fpoly, func_fit,
@@ -235,7 +235,7 @@ class TestTrace(object):
         assert tset.xRange == tset.xmax - tset.xmin
         assert tset.nx == int(tset.xmax - tset.xmin + 1)
         assert tset.xmid == 0.5 * (tset.xmin + tset.xmax)
-        x,y = traceset2xy(tset)
+        x, y = traceset2xy(tset)
         tset2 = xy2traceset(x, y, ncoeff=tset.ncoeff)
         assert tset2.xmin == tset.xmin
         assert tset2.xmax == tset.xmax
@@ -250,7 +250,7 @@ class TestTrace(object):
         assert tset.xRange == tset.xmax - tset.xmin
         assert tset.nx == int(tset.xmax - tset.xmin + 1)
         assert tset.xmid == 0.5 * (tset.xmin + tset.xmax)
-        x,y = traceset2xy(tset)
+        x, y = traceset2xy(tset)
         tset2 = xy2traceset(x, y, ncoeff=tset.ncoeff,
                             xjumplo=tset.xjumplo,
                             xjumphi=tset.xjumphi,

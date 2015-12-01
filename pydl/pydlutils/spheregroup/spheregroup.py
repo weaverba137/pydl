@@ -1,7 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
+
+
 def spheregroup(ra,dec,linklength,chunksize=None):
     """Perform friends-of-friends grouping given ra/dec coordinates.
 

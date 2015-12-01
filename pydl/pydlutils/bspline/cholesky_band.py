@@ -1,7 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
+
+
 def cholesky_band(l,mininf=0.0,verbose=False):
     """Compute Cholesky decomposition of banded matrix.
 

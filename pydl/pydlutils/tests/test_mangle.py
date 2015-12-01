@@ -4,6 +4,7 @@ import numpy as np
 from astropy.tests.helper import raises
 from ..mangle import is_cap_used
 
+
 class TestMangle(object):
     """Test the functions in pydl.pydlutils.mangle.
     """

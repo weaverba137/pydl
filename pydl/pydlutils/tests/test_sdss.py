@@ -8,6 +8,7 @@ from ..sdss import (default_skyversion, sdss_flagexist, sdss_flagname,
                     sdss_flagval, set_maskbits, sdss_astrombad,
                     sdss_objid)
 
+
 class TestSDSS(object):
     """Test the functions in pydl.pydlutils.sdss.
     """

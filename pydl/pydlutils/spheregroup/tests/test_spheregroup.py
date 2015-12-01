@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def test_spheregroup(recwarn):
     import numpy as np
     from astropy.tests.helper import raises
@@ -51,10 +53,10 @@ def test_spheregroup(recwarn):
     # Exceptions
     #
     with raises(PydlutilsException):
-        group = spheregroup(np.array([137.0]),np.array([55.0]),linklength)
+        group = spheregroup(np.array([137.0]), np.array([55.0]), linklength)
     #
     # warnings
     #
-    group = spheregroup(ra,dec,linklength,chunksize=linklength)
+    group = spheregroup(ra, dec, linklength, chunksize=linklength)
     w = recwarn.pop(PydlutilsUserWarning)
     assert "chunksize changed to" in str(w.message)
