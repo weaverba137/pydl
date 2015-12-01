@@ -10,14 +10,3 @@ This subpackage implements functions from the photoop package.
 
 class PhotoopException(Exception):
     pass
-
-#
-# Import subpackages
-#
-from . import photoobj
-from . import sdssio
-from . import window
-#
-# Set __all__
-#
-__all__ = ['PhotoopException', 'photoobj', 'sdssio', 'window']
