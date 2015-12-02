@@ -1,6 +1,5 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 
 
 def readspec(platein, mjd=None, fiber='all', **kwargs):
@@ -36,6 +35,7 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
     """
     import os
     import os.path
+    from astropy import log
     from astropy.io import fits as pyfits
     import numpy as np
     from . import number_of_fibers, latest_mjd, spec_path, spec_append
@@ -97,10 +97,10 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
     #
     pmjd = ((np.array(platevec, dtype='u8') << 16) +
             np.array(mjdvec, dtype='u8'))
-    # print(pmjd)
+    # log.debug(pmjd)
     upmjd = np.unique(pmjd)
     zupmjd = list(zip(upmjd >> 16, upmjd & ((1 << 16) - 1)))
-    # print(zupmjd)
+    # log.debug(zupmjd)
     spplate_data = dict()
     hdunames = ('flux', 'invvar', 'andmask', 'ormask', 'disp', 'plugmap',
                 'sky', 'loglam',)
@@ -110,14 +110,14 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
         pmjdindex = ((platevec == thisplate) &
                     (mjdvec == thismjd)).nonzero()[0]
         thisfiber = fibervec[pmjdindex]
-        # print(type(thisplate), type(thismjd))
+        # log.debug(type(thisplate), type(thismjd))
         pmjdstr = "{0:04d}-{1:05d}".format(int(thisplate), int(thismjd))
         if 'path' in kwargs:
             sppath = [kwargs['path']]
         else:
             sppath = spec_path(thisplate, run2d=run2d)
         spfile = os.path.join(sppath[0], "spPlate-{0}.fits".format(pmjdstr))
-        print(spfile)
+        log.info(spfile)
         spplate = pyfits.open(spfile)
         #
         # Get wavelength coefficients from primary header
@@ -136,7 +136,7 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
             try:
                 tmp = spplate[k].data[thisfiber-1, :]
             except IndexError:
-                tmp = loglam
+                tmp = spplate[k].data[thisfiber-1]
             if hdunames[k] not in spplate_data:
                 if k == 0:
                     allpmjdindex = pmjdindex
@@ -147,8 +147,8 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
                 #
                 if hdunames[k] == 'plugmap':
                     spplate_data['plugmap'] = dict()
-                    for c in spplate[5].columns.names:
-                        spplate_data['plugmap'][c] = tmp.field(c)
+                    for c in spplate[k].columns.names:
+                        spplate_data['plugmap'][c] = tmp[c]
                 else:
                     spplate_data[hdunames[k]] = tmp
             else:
@@ -177,7 +177,7 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
                 if hdunames[k] == 'plugmap':
                     for c in spplate[5].columns.names:
                         spplate_data['plugmap'][c] = np.concatenate(
-                            (spplate_data['plugmap'][c], tmp.field(c)))
+                            (spplate_data['plugmap'][c], tmp[c]))
                 else:
                     spplate_data[hdunames[k]] = spec_append(
                                 spplate_data[hdunames[k]], tmp, pixshift=ps)
@@ -201,11 +201,11 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
             if 'tsobj' not in spplate_data:
                 spplate_data['tsobj'] = dict()
                 for c in photop[1].columns.names:
-                    spplate_data['tsobj'][c] = tmp.field(c)
+                    spplate_data['tsobj'][c] = tmp[c]
             else:
                 for c in photop[1].columns.names:
                     spplate_data['tsobj'][c] = np.concatenate(
-                        (spplate_data['tsobj'][c], tmp.field(c)))
+                        (spplate_data['tsobj'][c], tmp[c]))
             photop.close()
 
         #
@@ -228,11 +228,11 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
             if 'zans' not in spplate_data:
                 spplate_data['zans'] = dict()
                 for c in spz[1].columns.names:
-                    spplate_data['zans'][c] = tmp.field(c)
+                    spplate_data['zans'][c] = tmp[c]
             else:
                 for c in spz[1].columns.names:
                     spplate_data['zans'][c] = np.concatenate(
-                        (spplate_data['zans'][c], tmp.field(c)))
+                        (spplate_data['zans'][c], tmp[c]))
             spz.close()
     #
     # Reorder the data.  At this point allpmjdindex is an index for which
