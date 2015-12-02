@@ -1,6 +1,5 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 
 
 def template_input(options):
@@ -85,7 +84,7 @@ def template_input(options):
             pcaflux = pickle.load(f)
     else:
         slist = par['EIGENOBJ']
-        spplate = readspec(slist.plate, slist.fiberid, mjd=slist.mjd, align=True)
+        spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid)
         #
         # Insist that all of the requested spectra exist.
         #
@@ -296,4 +295,4 @@ def template_input_main():  # pragma: no cover
 
 if __name__ == "__main__":
     from sys import exit
-    exit(template_input_main)
+    exit(template_input_main())
