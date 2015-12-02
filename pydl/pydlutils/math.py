@@ -108,33 +108,6 @@ class computechi2(object):
         return np.diag(self.covar)
 
 
-def _fix_medfilt(array, width):
-    """Wrap medfilt so that the results more closely resemble IDL MEDIAN().
-    """
-    from scipy.signal import medfilt
-    medarray = medfilt(array, min(width, array.size))
-    istart = int((width - 1)/2)
-    iend = array.size - int((width + 1)/2)
-    i = np.arange(array.size)
-    w = (i < istart) | (i > iend)
-    medarray[w] = array[w]
-    return medarray
-
-
-def _fix_medfilt2d(array, width):
-    """Wrap medfilt2d so that the results more closely resemble IDL MEDIAN().
-    """
-    from scipy.signal import medfilt2d
-    medarray = medfilt2d(array, min(width, array.size))
-    istart = int((width-1)/2)
-    iend = (array.shape[0] - int((width+1)/2), array.shape[1] - int((width+1)/2))
-    i = np.arange(array.shape[0])
-    j = np.arange(array.shape[1])
-    w = ((i < istart) | (i > iend[0]), (j < istart) | (j > iend[1]))
-    medarray[w[0], w[1]] = array[w[0], w[1]]
-    return medarray
-
-
 def djs_median(array, dimension=None, width=None, boundary='none'):
     """Compute the median of an array.
 
@@ -165,6 +138,7 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
         then the result simply ``numpy.median(array,dimension)``.
         If `width` is set, the result has the same shape as the input array.
     """
+    from ..median import median
     if dimension is None and width is None:
         return np.median(array)
     elif width is None:
@@ -174,9 +148,9 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
             return array
         if boundary == 'none':
             if array.ndim == 1:
-                return _fix_medfilt(array, width)
+                return median(array, width)
             elif array.ndim == 2:
-                return _fix_medfilt2d(array, width)
+                return median(array, width)
             else:
                 raise ValueError('Unsupported number of dimensions with ' +
                                 'this boundary condition.')
@@ -188,7 +162,7 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 bigarr[0:padsize] = array[0:padsize][::-1]
                 bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (
                         array[array.shape[0]-padsize:array.shape[0]][::-1])
-                f = _fix_medfilt(bigarr, width)
+                f = median(bigarr, width)
                 medarray = f[padsize:padsize+array.shape[0]]
                 return medarray
             elif array.ndim == 2:
@@ -210,7 +184,7 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 bigarr[bigarr.shape[0]-padsize:bigarr.shape[0], 0:padsize] = array[array.shape[0]-padsize:array.shape[0], 0:padsize][::-1, ::-1]
                 # Copy into bottom right
                 bigarr[bigarr.shape[0]-padsize:bigarr.shape[0], bigarr.shape[1]-padsize:bigarr.shape[1]] = array[array.shape[0]-padsize:array.shape[0], array.shape[1]-padsize:array.shape[1]][::-1, ::-1]
-                f = _fix_medfilt2d(bigarr, min(width, array.size))
+                f = median(bigarr, min(width, array.size))
                 medarray = f[padsize:array.shape[0]+padsize, padsize:array.shape[1]+padsize]
                 return medarray
             else:

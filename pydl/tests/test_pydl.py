@@ -9,6 +9,7 @@ except ImportError:
 from astropy.tests.helper import raises
 from os.path import basename, dirname, join
 from ..file_lines import file_lines
+from ..median import median
 from ..pcomp import pcomp
 from ..smooth import smooth
 from ..uniq import uniq
@@ -53,6 +54,22 @@ class TestPydl(object):
         #
         n = file_lines(join(self.data_dir, 'this-file-is-empty.txt'))
         assert n == 0
+
+    def test_median(self):
+        odd_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], dtype=np.float32)
+        even_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=np.float32)
+        assert median(odd_data) == 7
+        assert median(odd_data, even=True) == 7
+        assert median(even_data) == 7
+        assert median(even_data, even=True) == 6.5
+        assert (median(odd_data, 3) == odd_data).all()
+        with raises(ValueError):
+            foo = median(np.ones((9,9,9)),3)
+        odd_data2 = np.vstack((odd_data, odd_data, odd_data, odd_data, odd_data))
+        assert (median(odd_data2, 3) == odd_data2).all()
+        assert (median(odd_data2, axis=0) == odd_data).all()
+        assert (median(odd_data2, axis=1) ==
+            7*np.ones((odd_data2.shape[0],), dtype=odd_data2.dtype)).all()
 
     def test_pcomp(self):
         test_data_file = join(self.data_dir, 'pcomp_data.txt')
