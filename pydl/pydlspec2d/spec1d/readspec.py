@@ -111,6 +111,8 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
                     (mjdvec == thismjd)).nonzero()[0]
         thisfiber = fibervec[pmjdindex]
         # log.debug(type(thisplate), type(thismjd))
+        log.info(repr(thisfiber))
+        log.info(type(thisfiber))
         pmjdstr = "{0:04d}-{1:05d}".format(int(thisplate), int(thismjd))
         if 'path' in kwargs:
             sppath = [kwargs['path']]
@@ -133,10 +135,13 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
         # Read the data images
         #
         for k in range(len(hdunames)):
-            try:
-                tmp = spplate[k].data[thisfiber-1, :]
-            except IndexError:
-                tmp = spplate[k].data[thisfiber-1]
+            if hdunames[k] == 'loglam':
+                tmp = loglam
+            else:
+                try:
+                    tmp = spplate[k].data[thisfiber-1, :]
+                except IndexError:
+                    tmp = spplate[k].data[thisfiber-1]
             if hdunames[k] not in spplate_data:
                 if k == 0:
                     allpmjdindex = pmjdindex
