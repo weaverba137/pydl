@@ -39,7 +39,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
     #
     # Log
     #
-    log.enable_warnings_logging()
+    # log.enable_warnings_logging()
     if verbose:
         log.setLevel('DEBUG')
     #
