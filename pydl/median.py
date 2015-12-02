@@ -1,10 +1,9 @@
-"""This module corresponds to the math directory in idlutils.
-"""
-import numpy as np
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
 
 
 def median(array, width=None, axis=None, even=False):
-    """Wrap medfilt so that the results more closely resemble IDL MEDIAN().
+    """Wrap medfilt so that the results more closely resemble IDL ``MEDIAN()``.
 
     Parameters
     ----------
@@ -37,10 +36,12 @@ def median(array, width=None, axis=None, even=False):
     * For arrays with an even number of elements, the :func:`numpy.median`
       function behaves like ``MEDIAN(array, /EVEN)``, so the absence of
       the `even` keyword has to turn *off* that behavior.
-    * For median filtering, this uses :func:`~scipy.signal.medfilt` under the
-      hood, but patches up the values on the array boundaries to match the
-      return values of the IDL MEDIAN() function.
+    * For median filtering, this uses :func:`scipy.signal.medfilt` and
+      :func:`scipy.signal.medfilt2d` under the hood, but patches up the
+      values on the array boundaries to match the return values of the
+      IDL ``MEDIAN()`` function.
     """
+    import numpy as np
     from scipy.signal import medfilt, medfilt2d
     if width is None:
         if axis is None:

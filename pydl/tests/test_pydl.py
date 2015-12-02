@@ -64,7 +64,7 @@ class TestPydl(object):
         assert median(even_data, even=True) == 6.5
         assert (median(odd_data, 3) == odd_data).all()
         with raises(ValueError):
-            foo = median(np.ones((9,9,9)),3)
+            foo = median(np.ones((9, 9, 9)), 3)
         odd_data2 = np.vstack((odd_data, odd_data, odd_data, odd_data, odd_data))
         assert (median(odd_data2, 3) == odd_data2).all()
         assert (median(odd_data2, axis=0) == odd_data).all()

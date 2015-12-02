@@ -1,11 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 
 
 def uniq(x, index=None):
-    """Replicates the IDL UNIQ() function.
+    """Replicates the IDL ``UNIQ()`` function.
 
     Returns the *subscripts* of the unique elements of an array.  The elements
     must actually be *sorted* before being passed to this function.  This can

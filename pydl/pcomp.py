@@ -1,13 +1,11 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 import numpy as np
 from astropy.utils import lazyproperty
 
 
 class pcomp(object):
-    """Replicates the IDL PCOMP() function.
+    """Replicates the IDL ``PCOMP()`` function.
 
     Parameters
     ----------

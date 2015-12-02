@@ -1,12 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-from astropy.extern import six
 
 
 def file_lines(path, compress=False):
-    """Replicates the IDL FILE_LINES() function.
+    """Replicates the IDL ``FILE_LINES()`` function.
 
     Given a path to a file name or a list of such paths, returns the number of
     lines in the file(s).
@@ -27,7 +24,7 @@ def file_lines(path, compress=False):
 
     Notes
     -----
-    The ``/NOEXPAND_PATH`` option in IDL's FILE_LINES() is not implemented.
+    The ``/NOEXPAND_PATH`` option in IDL's ``FILE_LINES()`` is not implemented.
 
     References
     ----------
@@ -40,8 +37,9 @@ def file_lines(path, compress=False):
     >>> file_lines(join(dirname(__file__),'tests','t','this-file-contains-42-lines.txt'))
     42
     """
+    from astropy.extern.six import string_types
     scalar = False
-    if isinstance(path, six.string_types):
+    if isinstance(path, string_types):
         working_path = [path]
         scalar = True
     else:
