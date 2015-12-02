@@ -81,7 +81,7 @@ def pca_solve(flux, ivar, loglam=None, zfit=None, **kwargs):
                 indx = loglam[iobj, :] > 0
                 rowloglam = loglam[iobj, indx]
             flux1, ivar1 = pydl.pydlspec2d.spec2d.combine1fiber(rowloglam-logshift[iobj], flux[iobj, indx],
-                ivar[iobj, indx], newloglam=fullloglam, binsz=dloglam, aesthetics='mean')  # ,verbose=True)
+                fullloglam, objivar=ivar[iobj, indx], binsz=dloglam, aesthetics='mean')  # ,verbose=True)
             fullflux[iobj, :] = flux1
             fullivar[iobj, :] = ivar1
         #
