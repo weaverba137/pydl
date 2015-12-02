@@ -21,7 +21,7 @@ def test_filter_thru():
     assert waveimg.shape == flux.shape
     f = filter_thru(flux, waveimg=waveimg)
     idl_data_file = join(dirname(__file__), 't', 'filter_thru_idl_data.txt')
-    idl_data = np.loadtxt(test_data_file, dtype='f', delimiter=',').T
+    idl_data = np.loadtxt(idl_data_file, dtype='f', delimiter=',').T
     assert f.shape == (20, 5)
     assert np.allclose(f, idl_data, atol=1.0e-6)
     #
