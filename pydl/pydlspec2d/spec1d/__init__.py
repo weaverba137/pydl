@@ -17,6 +17,7 @@ from .readspec import readspec
 from .skymask import skymask
 from .spec_append import spec_append
 from .spec_path import spec_path
+from .template_input import template_input
 from .wavevector import wavevector
 #
 # Used by findspec
