@@ -111,8 +111,8 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
                     (mjdvec == thismjd)).nonzero()[0]
         thisfiber = fibervec[pmjdindex]
         # log.debug(type(thisplate), type(thismjd))
-        log.info(repr(thisfiber))
-        log.info(type(thisfiber))
+        # log.debug(repr(thisfiber))
+        # log.debug(type(thisfiber))
         pmjdstr = "{0:04d}-{1:05d}".format(int(thisplate), int(thismjd))
         if 'path' in kwargs:
             sppath = [kwargs['path']]

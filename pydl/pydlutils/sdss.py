@@ -160,7 +160,6 @@ def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
     """
     global maskbits
     if maskbits is None:  # pragma: no cover
-        from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     #
     # Make sure label is a list
@@ -217,7 +216,6 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     """
     global maskbits
     if maskbits is None:  # pragma: no cover
-        from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     flagu = flagname.upper()
     flagvaluint = np.uint64(flagvalue)
@@ -268,7 +266,6 @@ def sdss_flagval(flagname, bitname):
     """
     global maskbits
     if maskbits is None:  # pragma: no cover
-        from .set_maskbits import set_maskbits
         maskbits = set_maskbits()
     #
     # Make sure inlabel is a list
