@@ -3,7 +3,7 @@
 
 
 def median(array, width=None, axis=None, even=False):
-    """Wrap medfilt so that the results more closely resemble IDL ``MEDIAN()``.
+    """Replicate the IDL ``MEDIAN()`` function.
 
     Parameters
     ----------
@@ -29,7 +29,7 @@ def median(array, width=None, axis=None, even=False):
     Raises
     ------
     ValueError
-        If the input `array` is not 1 or 2 dimensional.
+        If `width` is set, and the input `array` is not 1 or 2 dimensional.
 
     Notes
     -----

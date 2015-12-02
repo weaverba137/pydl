@@ -45,7 +45,7 @@ def pca_gal(**kwargs):
     from ...goddard.astro import get_juldate
     from ...pydlutils.image import djs_maskinterp
     from ...pydlutils.math import djs_median
-    from . import pca_solve, plot_eig, readspec, skymask, wavevector
+    from . import hmf_solve, pca_solve, plot_eig, readspec, skymask, wavevector
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:
