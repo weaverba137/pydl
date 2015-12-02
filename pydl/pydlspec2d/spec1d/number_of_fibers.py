@@ -1,6 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def number_of_fibers(plate,**kwargs):
+
+
+def number_of_fibers(plate, **kwargs):
     """Returns the total number of fibers per plate.
 
     Parameters
@@ -23,11 +25,11 @@ def number_of_fibers(plate,**kwargs):
     # Get mjd values
     #
     if isinstance(plate, integer_types) or plate.shape == ():
-        platevec = np.array([plate],dtype='i4')
+        platevec = np.array([plate], dtype='i4')
     else:
         platevec = plate
-    mjd = latest_mjd(plate,**kwargs)
-    nfiber = np.zeros(mjd.size,dtype='i4')
+    mjd = latest_mjd(plate, **kwargs)
+    nfiber = np.zeros(mjd.size, dtype='i4')
     #
     # SDSS-I,II plates
     #
@@ -41,9 +43,9 @@ def number_of_fibers(plate,**kwargs):
     # Not all BOSS plates have 1000 fibers
     #
     if 'path' in kwargs:
-        platelistpath = os.path.join(kwargs['path'],'platelist.fits')
+        platelistpath = os.path.join(kwargs['path'], 'platelist.fits')
     else:
-        platelistpath = os.path.join(os.getenv('BOSS_SPECTRO_REDUX'),'platelist.fits')
+        platelistpath = os.path.join(os.getenv('BOSS_SPECTRO_REDUX'), 'platelist.fits')
     platelist = pyfits.open(platelistpath)
     platentotal = platelist[1].data.field('N_TOTAL')
     plateplate = platelist[1].data.field('PLATE')
@@ -60,6 +62,8 @@ def number_of_fibers(plate,**kwargs):
     else:
         run1d = os.getenv('RUN1D')
     for k in range(mjd.size):
-        nfiber[k] = platentotal[(plateplate==platevec[k]) & (platemjd==mjd[k]) &
-        (platerun2d==run2d) & (platerun1d==run1d)]
+        nfiber[k] = platentotal[(plateplate == platevec[k]) &
+                                (platemjd == mjd[k]) &
+                                (platerun2d == run2d) &
+                                (platerun1d == run1d)]
     return nfiber

@@ -241,7 +241,7 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
     #
     j = allpmjdindex.argsort()
     for k in spplate_data:
-        if isinstance(spplate_data[k],dict):
+        if isinstance(spplate_data[k], dict):
             for c in spplate_data[k]:
                 if spplate_data[k][c].ndim == 2:
                     spplate_data[k][c] = spplate_data[k][c][j, :]
