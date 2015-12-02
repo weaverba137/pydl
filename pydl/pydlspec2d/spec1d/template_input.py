@@ -26,7 +26,7 @@ def template_input(options):
     from astropy.io import fits
     from astropy import log
     from warnings import warn
-    from . import pca_solve, readspec, skymask
+    from . import pca_solve, plot_eig, readspec, skymask, wavevector
     from .. import Pydlspec2dException, Pydlspec2dUserWarning
     from ... import uniq
     from ... import __version__ as pydl_version
