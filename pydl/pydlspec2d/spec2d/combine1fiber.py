@@ -1,8 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-#
-def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
+
+
+def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **kwargs):
     """Combine several spectra of the same object, or resample a single spectrum.
 
     Parameters
@@ -11,27 +11,41 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         Vector of log wavelength.
     objflux : :class:`numpy.ndarray`
         Input flux.
+    newloglam : :class:`numpy.ndarray`
+        Output wavelength pixels, vector of log wavelength.
     objivar : :class:`numpy.ndarray`, optional
         Inverse variance of the flux.
+    verbose : :class:`bool`, optional
+        If ``True``, set log level to DEBUG.
 
     Returns
     -------
     combine1fiber : :func:`tuple` of :class:`numpy.ndarray`
         The resulting flux and inverse variance.
+
+    Raises
+    ------
+    ValueError
+        If input dimensions don't match.
     """
     import numpy as np
-    import pydl.pydlutils.bspline
-    import pydl.pydlutils.sdss
-    from pydl import smooth
+    from astropy import log
+    from warnings import warn
     from . import aesthetics
+    from .. import Pydlspec2dUserWarning
+    from ... import smooth
+    from ...pydlutils.bspline import iterfit
+    from ...pydlutils.sdss import sdss_flagval
+    #
+    # Log
+    #
+    log.enable_warnings_logging()
+    if verbose:
+        log.setLevel('DEBUG')
     #
     # Check that dimensions of inputs are valid.
     #
-    if 'newloglam' in kwargs:
-        newloglam = kwargs['newloglam']
-        nfinalpix = len(newloglam)
-    else:
-        raise ValueError('newloglam is required.')
+    nfinalpix = len(newloglam)
     if objflux.shape != inloglam.shape:
         raise ValueError('Dimensions of inloglam and objflux do not agree.')
     if objivar is not None:
@@ -69,22 +83,22 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         #
         npix = inloglam.shape[0]
         nspec = 1
-        specnum = np.zeros(inloglam.shape,dtype=inloglam.dtype)
+        specnum = np.zeros(inloglam.shape, dtype=inloglam.dtype)
     else:
-        nspec,npix = inloglam.shape
-        specnum = np.tile(np.arange(nspec),npix).reshape(npix,nspec).transpose()
+        nspec, npix = inloglam.shape
+        specnum = np.tile(np.arange(nspec), npix).reshape(npix, nspec).transpose()
     #
     # Use fullcombmask for modifying the pixel masks in the original input files.
     #
     fullcombmask = np.zeros(npix)
-    newflux = np.zeros(nfinalpix,dtype=inloglam.dtype)
-    newmask = np.zeros(nfinalpix,dtype='i4')
-    newivar = np.zeros(nfinalpix,dtype=inloglam.dtype)
-    newdisp = np.zeros(nfinalpix,dtype=inloglam.dtype)
-    newsky = np.zeros(nfinalpix,dtype=inloglam.dtype)
-    newdispweight = np.zeros(nfinalpix,dtype=inloglam.dtype)
+    newflux = np.zeros(nfinalpix, dtype=inloglam.dtype)
+    newmask = np.zeros(nfinalpix, dtype='i4')
+    newivar = np.zeros(nfinalpix, dtype=inloglam.dtype)
+    newdisp = np.zeros(nfinalpix, dtype=inloglam.dtype)
+    newsky = np.zeros(nfinalpix, dtype=inloglam.dtype)
+    newdispweight = np.zeros(nfinalpix, dtype=inloglam.dtype)
     if objivar is None:
-        nonzero = np.arange(npix,dtype='i4')
+        nonzero = np.arange(npix, dtype='i4')
         ngood = npix
     else:
         nonzero = (objivar > 0).nonzero()[0]
@@ -92,8 +106,8 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     # ormask is needed to create andmask
     #
-    andmask = np.zeros(nfinalpix,dtype='i4')
-    ormask = np.zeros(nfinalpix,dtype='i4')
+    andmask = np.zeros(nfinalpix, dtype='i4')
+    ormask = np.zeros(nfinalpix, dtype='i4')
     if ngood == 0:
         #
         # In this case of no good points, set the nodata bit everywhere.
@@ -101,15 +115,14 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         # should be set everywhere in the output bit masks.  No other bits
         # are set.
         #
-        if 'verbose' in kwargs:
-            print('No good points')
-        bitval = pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
+        warn('No good points!', Pydlspec2dUserWarning)
+        bitval = sdss_flagval('SPPIXMASK', 'NODATA')
         if 'finalmask' in kwargs:
-            bitval = bitval | (pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NOPLUG') *
-                (finalmask[0] & pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')))
+            bitval = bitval | (sdss_flagval('SPPIXMASK', 'NOPLUG') *
+                (finalmask[0] & sdss_flagval('SPPIXMASK', 'NODATA')))
         andmask = andmask | bitval
         ormask = ormask | bitval
-        return (newflux,newivar)
+        return (newflux, newivar)
     else:
         #
         # Now let's break sorted wavelengths into groups where pixel
@@ -117,8 +130,8 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         #
         isort = nonzero[inloglam[nonzero].argsort()]
         wavesort = inloglam[isort]
-        padwave = np.insert(wavesort,0,wavesort.min() - 2.0*maxsep)
-        padwave = np.append(padwave,wavesort.max() + 2.0*maxsep)
+        padwave = np.insert(wavesort, 0, wavesort.min() - 2.0*maxsep)
+        padwave = np.append(padwave, wavesort.max() + 2.0*maxsep)
         ig1 = ((padwave[1:ngood+1]-padwave[0:ngood]) > maxsep).nonzero()[0]
         ig2 = ((padwave[2:ngood+2]-padwave[1:ngood+1]) > maxsep).nonzero()[0]
         if ig1.size != ig2.size:
@@ -130,27 +143,26 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                     #
                     # Fit without variance
                     #
-                    sset,bmask = pydl.pydlutils.bspline.iterfit(inloglam[ss],objflux[ss],
-                        nord=nord,groupbadpix=True,requiren=1,bkspace=bkptbin,
+                    sset, bmask = iterfit(inloglam[ss], objflux[ss],
+                        nord=nord, groupbadpix=True, requiren=1, bkspace=bkptbin,
                         silent=True)
                 else:
                     #
                     # Fit with variance
                     #
-                    sset,bmask = pydl.pydlutils.bspline.iterfit(inloglam[ss],objflux[ss],
+                    sset, bmask = iterfit(inloglam[ss], objflux[ss],
                         invvar=objivar[ss],
-                        nord=nord,groupbadpix=True,requiren=1,bkspace=bkptbin,
+                        nord=nord, groupbadpix=True, requiren=1, bkspace=bkptbin,
                         silent=True)
                 if np.sum(np.absolute(sset.coeff)) == 0:
                     sset = None
                     bmask = np.zeros(len(ss))
-                    if 'verbose' in kwargs:
-                        print('WARNING: All B-spline coefficients have been set to zero!')
+                    warn('All B-spline coefficients have been set to zero!',
+                         Pydlspec2dUserWarning)
             else:
                 bmask = np.zeros(len(ss))
                 sset = None
-                if 'verbose' in kwargs:
-                    print('WARNING: Not enough data for B-spline fit!')
+                warn('Not enough data for B-spline fit!', Pydlspec2dUserWarning)
             inside = ((newloglam >= inloglam[ss].min()-EPS) &
                 (newloglam <= inloglam[ss].max()+EPS)).nonzero()[0]
             #
@@ -159,11 +171,10 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
             # no output wavelengths.
             #
             if sset is not None and len(inside) > 0:
-                newflux[inside],bvalumask = sset.value(newloglam[inside])
+                newflux[inside], bvalumask = sset.value(newloglam[inside])
                 if bvalumask.any():
                     newmask[inside[bvalumask]] = 1
-                if 'verbose' in kwargs:
-                    print('Masked {0:d} of {1:d} pixels.'.format(bmask.sum()-bmask.size,bmask.size))
+                log.debug('Masked {0:d} of {1:d} pixels.'.format(bmask.sum()-bmask.size, bmask.size))
                 #
                 # Determine which pixels should be masked based upon the spline
                 # fit. Set the combinerej bit.
@@ -180,11 +191,10 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                     #
                     if objivar is not None:
                         objivar[ss[ireplace]] = 0.0
-                        if 'verbose' in kwargs:
-                            print('Replaced {0:d} pixels in objivar.'.format(len(ss[ireplace])))
+                        log.debug('Replaced {0:d} pixels in objivar.'.format(len(ss[ireplace])))
                     if 'finalmask' in kwargs:
                         finalmask[ss[ireplace]] = (finalmask[ss[ireplace]] |
-                            pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','COMBINEREJ'))
+                            sdss_flagval('SPPIXMASK', 'COMBINEREJ'))
             fullcombmask[ss] = bmask
         #
         # Combine inverse variance and pixel masks.
@@ -204,12 +214,12 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                     # on that quantity.
                     #
                     result = np.interp(newloglam[jnbetween],
-                        inloglam[these],objivar[these]*fullcombmask[these])
+                        inloglam[these], objivar[these]*fullcombmask[these])
                     #
                     # Grow the fullcombmask below to reject any new sampling
                     # containing even a partial masked pixel.
                     #
-                    smask = np.interp(newloglam[jnbetween],inloglam[these],
+                    smask = np.interp(newloglam[jnbetween], inloglam[these],
                         fullcombmask[these].astype(inloglam.dtype))
                     result *= smask >= (1.0 - EPS)
                     newivar[jnbetween] += result*newmask[jnbetween]
@@ -227,26 +237,23 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
                 if 'indisp' in kwargs:
                     newdispweight[jnbetween] += result
                     newdisp[jnbetween] += result * np.interp(newloglam[jnbetween],
-                        inloglam[these],indisp[these])
+                        inloglam[these], indisp[these])
                     newsky[jnbetween] += result * np.interp(newloglam[jnbetween],
-                        inloglam[these],skyflux[these])
+                        inloglam[these], skyflux[these])
         if 'indisp' in kwargs:
             newdisp /= newdispweight + (newdispweight == 0)
             newsky /= newdispweight + (newdispweight == 0)
     #
     # Grow regions where 3 or more pixels are rejected together ???
     #
-    # print(newivar)
-    foo = smooth(newivar,3)
-    # print(foo)
-    # sys.exit(1)
+    foo = smooth(newivar, 3)
     badregion = np.absolute(foo) < EPS
     if badregion.any():
-        if 'verbose' in kwargs:
-            print('WARNING: Growing bad pixel region, {0:d} pixels found.'.format(badregion.sum()))
+        warn('Growing bad pixel region, {0:d} pixels found.'.format(badregion.sum()),
+             Pydlspec2dUserWarning)
         ibad = badregion.nonzero()[0]
-        lowerregion = np.where(ibad-2 < 0,0,ibad-2)
-        upperregion = np.where(ibad+2 > nfinalpix-1,nfinalpix-1,ibad+2)
+        lowerregion = np.where(ibad-2 < 0, 0, ibad-2)
+        upperregion = np.where(ibad+2 > nfinalpix-1, nfinalpix-1, ibad+2)
         newivar[lowerregion] = 0.0
         newivar[upperregion] = 0.0
     #
@@ -254,7 +261,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     inff = ((~np.isfinite(newflux)) | (~np.isfinite(newivar)))
     if inff.any():
-        print('WARNING: {0:d} NaNs in combined spectra.'.format(inff.sum()))
+        warn('{0:d} NaNs in combined spectra.'.format(inff.sum()), Pydlspec2dUserWarning)
         newflux[inff] = 0.0
         newivar[inff] = 0.0
     #
@@ -265,7 +272,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         amethod = kwargs['aesthetics']
     else:
         amethod = 'traditional'
-    newflux = aesthetics(newflux,newivar,method=amethod)
+    newflux = aesthetics(newflux, newivar, method=amethod)
     # if 'interpolate' in kwargs:
     #     newflux = pydlutils.image.djs_maskinterp(newflux,~goodpts,const=True)
     # else:
@@ -275,7 +282,7 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
         maxglam = newloglam[goodpts].max()
         ibad = ((newloglam < minglam) | (newloglam > maxglam))
         if ibad.any():
-            ormask[ibad] |= pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
+            ormask[ibad] |= sdss_flagval('SPPIXMASK', 'NODATA')
     #
     # Replace values of -1 in the andmask with 0.
     #
@@ -283,5 +290,5 @@ def combine1fiber(inloglam,objflux,objivar=None,**kwargs):
     #
     # Copy the nodata bad pixels from the ormask to the andmask.
     #
-    andmask |= ormask & pydl.pydlutils.sdss.sdss_flagval('SPPIXMASK','NODATA')
-    return (newflux,newivar)
+    andmask |= ormask & sdss_flagval('SPPIXMASK', 'NODATA')
+    return (newflux, newivar)
