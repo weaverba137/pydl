@@ -69,6 +69,12 @@ def template_input(options):
         raise KeyError('The niter keyword was not found in {0}!'.format(options.inputfile))
     except ValueError:
         raise ValueError('The niter keyword has invalid value, {0}!'.format(par['niter']))
+    try:
+        nkeep = int(par['nkeep'])
+    except KeyError:
+        raise KeyError('The nkeep keyword was not found in {0}!'.format(options.inputfile))
+    except ValueError:
+        raise ValueError('The nkeep keyword has invalid value, {0}!'.format(par['nkeep']))
     cspeed = 2.99792458e5
     #
     # Name the output files.
