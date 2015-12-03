@@ -32,6 +32,7 @@ def template_input(options):
     from ... import __version__ as pydl_version
     from ...goddard.astro import get_juldate
     from ...pydlutils.image import djs_maskinterp
+    from ...pydlutils.math import djs_median
     from ...pydlutils.yanny import yanny
     #
     # Read input data
