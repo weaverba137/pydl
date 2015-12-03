@@ -137,10 +137,15 @@ def template_input(options):
             aesthetics='mean')
         #
         # Fill in bad data with a running median of the good data.
+        # The presence of boundary='nearest' means that this code snippet
+        # was never meant to be called!  In other words it should always
+        # be the case that qgood.all() is True.
         #
         qgood = pcaflux['usemask'] >= minuse
-        medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
-        if not qgood.all():
+        log.debug(qgood)
+        # if not qgood.all():
+        if False:
+            medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
             for i in range(nkeep):
                 medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
                     width=51, boundary='nearest')
