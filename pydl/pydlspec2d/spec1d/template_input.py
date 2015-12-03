@@ -233,7 +233,7 @@ def template_input(options):
     #
     if os.path.exists(outfile+'.fits'):
         os.remove(outfile+'.fits')
-    hdu0 = fits.PrimaryHDU(fullflux)
+    hdu0 = fits.PrimaryHDU(pcaflux['flux'])
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
     hdu0.header.update('OBJECT', objtypes['objtype'], 'Type of template')
     hdu0.header.update('COEFF0', pcaflux['newloglam'][0])
