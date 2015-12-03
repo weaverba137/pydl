@@ -155,7 +155,7 @@ def template_input(options):
         # Dump input fluxes to a file for debugging purposes.
         #
         if not os.path.exists(options.dump):
-            with open(kwargs['dump'], 'w') as f:
+            with open(options.dump, 'w') as f:
                 pickle.dump(pcaflux, f)
     #
     # Make plots

@@ -247,7 +247,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
     # Grow regions where 3 or more pixels are rejected together ???
     #
     foo = smooth(newivar, 3)
-    badregion = np.absolute(foo) < EPS
+    # badregion = np.absolute(foo) < EPS
+    badregion = foo == 0.0
     if badregion.any():
         warn('Growing bad pixel region, {0:d} pixels found.'.format(badregion.sum()),
              Pydlspec2dUserWarning)
