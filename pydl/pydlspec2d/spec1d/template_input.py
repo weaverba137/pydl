@@ -75,6 +75,12 @@ def template_input(options):
         raise KeyError('The nkeep keyword was not found in {0}!'.format(options.inputfile))
     except ValueError:
         raise ValueError('The nkeep keyword has invalid value, {0}!'.format(par['nkeep']))
+    try:
+        minuse = int(par['minuse'])
+    except KeyError:
+        raise KeyError('The minuse keyword was not found in {0}!'.format(options.inputfile))
+    except ValueError:
+        raise ValueError('The minuse keyword has invalid value, {0}!'.format(par['minuse']))
     cspeed = 2.99792458e5
     #
     # Name the output files.
