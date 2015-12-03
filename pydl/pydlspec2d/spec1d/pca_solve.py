@@ -2,32 +2,56 @@
 # -*- coding: utf-8 -*-
 
 
-def pca_solve(flux, ivar, loglam=None, zfit=None, **kwargs):
+def pca_solve(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
+              newloglam=None, wavemin=None, wavemax=None,
+              maxiter=0, niter=10, nkeep=3, nreturn=None, verbose=False):
     """Replacement for idlspec2d pca_solve.pro.
+
+    Parameters
+    ----------
+    flux : array-like
+        The input spectral flux.
+    ivar : array-like
+        The inverse variance of the spectral flux.
+    loglam : array-like, optional
+        The input wavelength solution.
+    zfit : array-like, optional
+        The redshift of each input spectrum.
+    aesthetics : :class:`str`, optional
+        This parameter will be passed to
+        :func:`~pydl.pydlspec2d.spec2d.combine1fiber`.
+    newloglam : array-like, optional
+        The output wavelength solution.
+    wavemin : :class:`float`, optional
+        Minimum wavelength if `newloglam` is not specified.
+    wavemax : :class:`float`, optional
+        Maximum wavelength if `newloglam` is not specified.
+    maxiter : :class:`int`, optional
+        Stop PCA+reject iterations after this number.
+    niter : :class:`int`, optional
+        Stop PCA iterations after this number.
+    nkeep : :class:`int`, optional
+        Number of PCA components to keep.
+    nreturn : :class:`int`, optional
+        Number of PCA components to return, usually the same as `nkeep`.
+    verbose : :class:`bool`, optional
+        If ``True``, print extra information.
+
+    Returns
+    -------
+    pca_solve : :class:`dict`
+        The PCA solution.
     """
     import time
     import numpy as np
-    import pydl.pydlspec2d.spec1d
-    import pydl.pydlspec2d.spec2d
     from astropy import log
+    from . import wavevector
+    from ..spec2d import combine1fiber
     from ... import pcomp
     from ...pydlutils.math import computechi2, djs_reject
-    log.setLevel('INFO')
-    if 'maxiter' in kwargs:
-        maxiter = kwargs['maxiter']
-    else:
-        maxiter = 0
-    if 'niter' in kwargs:
-        niter = kwargs['niter']
-    else:
-        niter = 10
-    if 'nkeep' in kwargs:
-        nkeep = kwargs['nkeep']
-    else:
-        nkeep = 3
-    if 'nreturn' in kwargs:
-        nreturn = kwargs['nreturn']
-    else:
+    if verbose:
+        log.setLevel('DEBUG')
+    if nreturn is None:
         nreturn = nkeep
     if len(flux.shape) == 1:
         nobj = 1
@@ -48,22 +72,23 @@ def pca_solve(flux, ivar, loglam=None, zfit=None, **kwargs):
     if loglam is None:
         newflux = flux
         newivar = ivar
-        newloglam = kwargs['newloglam']
+        if newloglam is None:
+            raise ValueError("newloglam must be set if loglam is not!")
         nnew = flux.shape[1]
     else:
-        if 'newloglam' in kwargs:
-            fullloglam = kwargs['newloglam']
-            dloglam = fullloglam[1] - fullloglam[0]
-        else:
+        if newloglam is None:
             igood = loglam != 0
             dloglam = loglam[1] - loglam[0]
             logmin = loglam[igood].min() - logshift.max()
             logmax = loglam[igood].max() - logshift.min()
-            if 'wavemin' in kwargs:
+            if wavemin is not None:
                 logmin = max(logmin, np.log10(wavemin))
-            if 'wavemax' in kwargs:
+            if wavemax is not None:
                 logmax = min(logmax, np.log10(wavemax))
-            fullloglam = pydl.pydlspec2d.spec1d.wavevector(logmin, logmax, binsz=dloglam)
+            fullloglam = wavevector(logmin, logmax, binsz=dloglam)
+        else:
+            fullloglam = newloglam
+            dloglam = fullloglam[1] - fullloglam[0]
         nnew = fullloglam.size
         fullflux = np.zeros((nobj, nnew), dtype='d')
         fullivar = np.zeros((nobj, nnew), dtype='d')
@@ -80,8 +105,9 @@ def pca_solve(flux, ivar, loglam=None, zfit=None, **kwargs):
                     raise ValueError('Wrong number of dimensions for loglam.')
                 indx = loglam[iobj, :] > 0
                 rowloglam = loglam[iobj, indx]
-            flux1, ivar1 = pydl.pydlspec2d.spec2d.combine1fiber(rowloglam-logshift[iobj], flux[iobj, indx],
-                fullloglam, objivar=ivar[iobj, indx], binsz=dloglam, aesthetics='mean')  # ,verbose=True)
+            flux1, ivar1 = combine1fiber(rowloglam-logshift[iobj],
+                flux[iobj, indx], fullloglam, objivar=ivar[iobj, indx],
+                binsz=dloglam, aesthetics=aesthetics, verbose=verbose)
             fullflux[iobj, :] = flux1
             fullivar[iobj, :] = ivar1
         #

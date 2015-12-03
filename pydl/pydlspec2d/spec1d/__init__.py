@@ -8,7 +8,6 @@ from .hmf_gal import hmf_gal
 from .hmf_solve import hmf_solve
 from .latest_mjd import latest_mjd
 from .number_of_fibers import number_of_fibers
-from .pca_gal import pca_gal
 from .pca_qso import pca_qso
 from .pca_solve import pca_solve
 from .pca_star import pca_star

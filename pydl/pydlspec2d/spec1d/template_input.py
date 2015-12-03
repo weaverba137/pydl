@@ -2,14 +2,23 @@
 # -*- coding: utf-8 -*-
 
 
-def template_input(options):
+def template_input(inputfile, dumpfile, flux, verbose):
     """Collect spectra and pass them to PCA or HMF solvers to compute
     spectral templates.
 
+    This function replaces the various ``PCA_GAL()``, ``PCA_STAR()``, etc.,
+    functions from idlspec2d.
+
     Parameters
     ----------
-    options : parsed options
-        A parsed set of command-line options.
+    inputfile : :class:`str`
+        Name of a Parameter file containing the input data and metadata.
+    dumpfile : :class:`str`
+        Name of a Pickle file used to store intermediate data.
+    flux : :class:`bool`, optional
+        If ``True``, plot the individual input spectra.
+    verbose : :class:`bool`, optional
+        If ``True``, print lots of extra information.
 
     Returns
     -------
@@ -35,66 +44,49 @@ def template_input(options):
     from ...pydlutils.math import djs_median
     from ...pydlutils.yanny import yanny
     #
+    # Logging
+    #
+    if verbose:
+        log.setLevel('DEBUG')
+    #
     # Read input data
     #
-    par = yanny(options.inputfile)
-    try:
-        objtype = par['object']
-    except KeyError:
-        raise KeyError('The object keyword was not found in {0}!'.format(options.inputfile))
-    try:
-        method = par['method']
-    except KeyError:
-        raise KeyError('The method keyword was not found in {0}!'.format(options.inputfile))
-    try:
-        wavemin = float(par['wavemin'])
-    except KeyError:
-        raise KeyError('The wavemin keyword was not found in {0}!'.format(options.inputfile))
-    except ValueError:
-        raise ValueError('The wavemin keyword has invalid value, {0}!'.format(par['wavemin']))
-    try:
-        wavemax = float(par['wavemax'])
-    except KeyError:
-        raise KeyError('The wavemax keyword was not found in {0}!'.format(options.inputfile))
-    except ValueError:
-        raise ValueError('The wavemax keyword has invalid value, {0}!'.format(par['wavemax']))
-    try:
-        snmax = float(par['snmax'])
-    except KeyError:
-        raise KeyError('The snmax keyword was not found in {0}!'.format(options.inputfile))
-    except ValueError:
-        raise ValueError('The snmax keyword has invalid value, {0}!'.format(par['snmax']))
-    try:
-        niter = int(par['niter'])
-    except KeyError:
-        raise KeyError('The niter keyword was not found in {0}!'.format(options.inputfile))
-    except ValueError:
-        raise ValueError('The niter keyword has invalid value, {0}!'.format(par['niter']))
-    try:
-        nkeep = int(par['nkeep'])
-    except KeyError:
-        raise KeyError('The nkeep keyword was not found in {0}!'.format(options.inputfile))
-    except ValueError:
-        raise ValueError('The nkeep keyword has invalid value, {0}!'.format(par['nkeep']))
-    try:
-        minuse = int(par['minuse'])
-    except KeyError:
-        raise KeyError('The minuse keyword was not found in {0}!'.format(options.inputfile))
-    except ValueError:
-        raise ValueError('The minuse keyword has invalid value, {0}!'.format(par['minuse']))
+    if not os.path.exists(inputfile):
+        raise Pydlspec2dException("Could not find {0}!".format(inputfile))
+    log.debug("Reading input data from {0}.".format(inputfile))
+    par = yanny(inputfile)
+    required_metadata = {'object': str, 'method': str, 'aesthetics': str,
+        'run2d': str, 'run1d': str,
+        'wavemin': float, 'wavemax': float, 'snmax': float,
+        'niter': int, 'nkeep': int, 'minuse': int}
+    metadata = dict()
+    for key in required_metadata:
+        try:
+            metadata[key] = required_metadata[key](par[key])
+            log.debug('{0} = {1}'.format(key, par[key]))
+        except KeyError:
+            raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
+        except ValueError:
+            raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
     slist = par['EIGENOBJ']
-    cspeed = 2.99792458e5
+    cspeed = 2.99792458e5  # km/s
+    for r in ('run2d', 'run1d'):
+        try:
+            metadata['orig_'+r] = os.environ[r.upper()]
+        except KeyError:
+            metadata['orig_'+r] = None
+        os.environ[r.upper()] = metadata[r]
     #
     # Name the output files.
     #
     jd = get_juldate()
-    outfile = "spEigen{0}-{1:d}".format(objtype.title(), int(jd - 2400000.5))
+    outfile = "spEigen{0}-{1:d}".format(metadata['object'].title(), int(jd - 2400000.5))
     #
     # Read the input spectra
     #
-    if os.path.exists(options.dump):
-        log.info("Loading data from {0}.".format(options.dump))
-        with open(options.dump) as f:
+    if os.path.exists(dumpfile):
+        log.info("Loading data from {0}.".format(dumpfile))
+        with open(dumpfile) as f:
             pcaflux = pickle.load(f)
     else:
         spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid)
@@ -113,9 +105,9 @@ def template_input(options):
         #
         objinvvar = skymask(spplate['invvar'], spplate['andmask'],
                             spplate['ormask'])
-        ifix = spplate['flux']**2 * objinvvar > snmax**2
+        ifix = spplate['flux']**2 * objinvvar > metadata['snmax']**2
         if ifix.any():
-            objinvvar[ifix.nonzero()] = (snmax/spplate['flux'][ifix.nonzero()])**2
+            objinvvar[ifix.nonzero()] = (metadata['snmax']/spplate['flux'][ifix.nonzero()])**2
         #
         # Set the new wavelength mapping here.  If the binsz keyword is not set,
         # then bin size is determined from the first spectrum returned by readspec.
@@ -127,26 +119,28 @@ def template_input(options):
             objdloglam = float(par['binsz'])
         except:
             objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
-        newloglam = wavevector(np.log10(wavemin), np.log10(wavemax),
-            binsz=objdloglam)
+        newloglam = wavevector(np.log10(metadata['wavemin']),
+            np.log10(metadata['wavemax']), binsz=objdloglam)
         #
         # Do PCA solution.
         #
         pcaflux = pca_solve(spplate['flux'], objinvvar, spplate['loglam'],
-            slist.zfit, niter=niter, nkeep=nkeep, newloglam=newloglam,
-            aesthetics='mean')
+            slist.zfit, niter=metadata['niter'], nkeep=metadata['nkeep'],
+            newloglam=newloglam, aesthetics=metadata['aesthetics'],
+            verbose=verbose)
         #
         # Fill in bad data with a running median of the good data.
         # The presence of boundary='nearest' means that this code snippet
         # was never meant to be called!  In other words it should always
         # be the case that qgood.all() is True.
         #
-        qgood = pcaflux['usemask'] >= minuse
+        log.debug(pcaflux['usemask'])
+        qgood = pcaflux['usemask'] >= metadata['minuse']
         log.debug(qgood)
         # if not qgood.all():
         if False:
             medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
-            for i in range(nkeep):
+            for i in range(metadata['nkeep']):
                 medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
                     width=51, boundary='nearest')
                 medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
@@ -154,8 +148,8 @@ def template_input(options):
         #
         # Dump input fluxes to a file for debugging purposes.
         #
-        if not os.path.exists(options.dump):
-            with open(options.dump, 'w') as f:
+        if not os.path.exists(dumpfile):
+            with open(dumpfile, 'w') as f:
                 pickle.dump(pcaflux, f)
     #
     # Make plots
@@ -163,7 +157,7 @@ def template_input(options):
     colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
     smallfont = FontProperties(size='xx-small')
     nspectra = pcaflux['newflux'].shape[0]
-    if options.flux:
+    if flux:
         nfluxes = 30
         separation = 5.0
         nplots = nspectra/nfluxes
@@ -235,24 +229,24 @@ def template_input(options):
         os.remove(outfile+'.fits')
     hdu0 = fits.PrimaryHDU(pcaflux['flux'])
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
-    hdu0.header['OBJECT'] = (objtypes[objtype], 'Type of template')
+    hdu0.header['OBJECT'] = (objtypes[metadata['object']], 'Type of template')
     hdu0.header['COEFF0'] = (pcaflux['newloglam'][0], 'Wavelength zeropoint')
     hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
     hdu0.header['IDLUTILS'] = ('pydl-{0}'.format(pydl_version), 'Version of idlutils')
     hdu0.header['SPEC2D'] = ('pydl-{0}'.format(pydl_version), 'Version of idlspec2d')
     hdu0.header['RUN2D'] = (os.getenv('RUN2D'), 'Version of 2d reduction')
     hdu0.header['RUN1D'] = (os.getenv('RUN1D'), 'Version of 1d reduction')
-    hdu0.header['FILENAME'] = (options.inputfile, 'Input file')
-    hdu0.header['METHOD'] = (method.upper(), 'Method used')
-    if method == 'hmf':
-        hdu0.header['NONNEG'] = (nonnegative, 'Was nonnegative HMF used?')
-        hdu0.header['EPSILON'] = (epsilon, 'Regularization parameter used.')
+    hdu0.header['FILENAME'] = (inputfile, 'Input file')
+    hdu0.header['METHOD'] = (metadata['method'].upper(), 'Method used')
+    if metadata['method'] == 'hmf':
+        hdu0.header['NONNEG'] = (metadata['nonnegative'], 'Was nonnegative HMF used?')
+        hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
     # for i in range(len(namearr)):
     #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
     c = [fits.Column(name='plate', format='J', array=slist.plate),
          fits.Column(name='mjd', format='J', array=slist.mjd),
          fits.Column(name='fiberid', format='J', array=slist.fiberid)]
-    if objtype == 'star':
+    if metadata['object'] == 'star':
         c.append(fits.Column(name='cz', format='D', unit='km/s',
             array=slist.cz))
     else:
@@ -260,7 +254,15 @@ def template_input(options):
     hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c))
     hdulist = fits.HDUList([hdu0, hdu1])
     hdulist.writeto(outfile+'.fits')
-    # plot_eig(outfile+'.fits')
+    plot_eig(outfile+'.fits')
+    #
+    # Clean up
+    #
+    for r in ('run2d', 'run1d'):
+        if metadata['orig_'+r] is None:
+            del os.environ[r.upper()]
+        else:
+            os.environ[r.upper()] = metadata['orig_'+r]
     return
 
 
@@ -293,19 +295,21 @@ def template_input_main():  # pragma: no cover
     # parser.add_argument('-D', '--dims', action='store', type=int, dest='K',
     #     metavar='K', default=4, help='Set the number of functions to model (default 4).')
     parser.add_argument('-d', '--dump', action='store', dest='dump',
-        metavar='FILE', default=os.path.join(os.getenv('HOME'), 'scratch', 'compute_templates.dump'),
+        metavar='FILE', default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.dump'),
         help='Dump data to a pickle file.')
     # parser.add_argument('-e', '--epsilon', action='store', type=float, dest='epsilon',
     #     metavar='EPSILON', default=1.0, help='Set the epsilon parameter (default 1.0). Set to 0 to turn off entirely')
     parser.add_argument('-F', '--flux', action='store_true', dest='flux',
         help='Plot input spectra.')
     parser.add_argument('-f', '--file', action='store', dest='inputfile',
-        metavar='FILE', default=os.path.join(os.getenv('HOME'), 'scratch', 'compute_templates.par'),
+        metavar='FILE', default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.par'),
         help='Read input spectra and redshifts from FILE.')
     # parser.add_argument('-n', '--nonnegative', action='store_true', dest='nonnegative',
     #     help='Use non-negative HMF method.')
+    parser.add_argument('-v', '--verbose', action='store_true', dest='verbose',
+        help='Print lots of extra information.')
     options = parser.parse_args()
-    template_input(options)
+    template_input(options.inputfile, options.dump, options.flux, options.verbose)
     return 0
 
 

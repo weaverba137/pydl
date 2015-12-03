@@ -21,8 +21,13 @@ def plot_eig(filename, title='Unknown'):
     ValueError
         If an unknown template type was input in `filename`.
     """
-    from astropy.io import fits as pyfits
-    import pylab
+    from astropy.io import fits
+    import numpy as np
+    import matplotlib
+    matplotlib.use('Agg')
+    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
+    import matplotlib.pyplot as plt
+    # from matplotlib.font_manager import fontManager, FontProperties
     #
     # Set title based on filename
     #
@@ -38,20 +43,20 @@ def plot_eig(filename, title='Unknown'):
         else:
             raise ValueError('Unknown template type!')
     base, ext = filename.split('.')
-    spectrum = pyfits.open(filename)
+    spectrum = fits.open(filename)
     newloglam0 = spectrum[0].header['COEFF0']
     objdloglam = spectrum[0].header['COEFF1']
     spectro_data = spectrum[0].data
     spectrum.close()
     (neig, ndata) = spectro_data.shape
-    newloglam = pylab.arange(ndata) * objdloglam + newloglam0
+    newloglam = np.arange(ndata) * objdloglam + newloglam0
     lam = 10.0**newloglam
-    fig = pylab.figure(dpi=100)
+    fig = plt.figure(dpi=100)
     ax = fig.add_subplot(111)
     colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
     for l in range(neig):
         p = ax.plot(lam, spectro_data[l, :],
-                    '%s-' % colorvec[l % len(colorvec)], linewidth=1)
+                    colorvec[l % len(colorvec)]+'-', linewidth=1)
     ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Flux [Arbitrary Units]')
     ax.set_title(title)
@@ -59,5 +64,5 @@ def plot_eig(filename, title='Unknown'):
     # ax.set_ylim([-400.0,500.0])
     # fig.savefig(base+'.zoom.png')
     fig.savefig(base+'.png')
-    pylab.close(fig)
+    plt.close(fig)
     return
