@@ -235,7 +235,7 @@ def template_input(options):
         os.remove(outfile+'.fits')
     hdu0 = fits.PrimaryHDU(pcaflux['flux'])
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
-    hdu0.header.update('OBJECT', objtypes['objtype'], 'Type of template')
+    hdu0.header.update('OBJECT', objtypes[objtype], 'Type of template')
     hdu0.header.update('COEFF0', pcaflux['newloglam'][0])
     hdu0.header.update('COEFF1', objdloglam)
     hdu0.header.update('IDLUTILS', 'pydl-{0}'.format(pydl_version), 'Version of idlutils')
