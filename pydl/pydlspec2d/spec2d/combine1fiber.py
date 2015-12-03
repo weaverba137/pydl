@@ -174,7 +174,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
                 newflux[inside], bvalumask = sset.value(newloglam[inside])
                 if bvalumask.any():
                     newmask[inside[bvalumask]] = 1
-                log.debug('Masked {0:d} of {1:d} pixels.'.format(bmask.sum()-bmask.size, bmask.size))
+                log.debug('Masked {0:d} of {1:d} pixels.'.format((1-bmask).sum(), bmask.size))
                 #
                 # Determine which pixels should be masked based upon the spline
                 # fit. Set the combinerej bit.
@@ -247,8 +247,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
     # Grow regions where 3 or more pixels are rejected together ???
     #
     foo = smooth(newivar, 3)
-    # badregion = np.absolute(foo) < EPS
-    badregion = foo == 0.0
+    badregion = np.absolute(foo) < EPS
+    # badregion = foo == 0.0
     if badregion.any():
         warn('Growing bad pixel region, {0:d} pixels found.'.format(badregion.sum()),
              Pydlspec2dUserWarning)

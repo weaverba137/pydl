@@ -134,10 +134,9 @@ def template_input(inputfile, dumpfile, flux, verbose):
         # was never meant to be called!  In other words it should always
         # be the case that qgood.all() is True.
         #
-        log.debug(pcaflux['usemask'])
         qgood = pcaflux['usemask'] >= metadata['minuse']
-        log.debug(qgood)
-        # if not qgood.all():
+        if not qgood.all():
+            warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
         if False:
             medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
             for i in range(metadata['nkeep']):
@@ -185,7 +184,17 @@ def template_input(inputfile, dumpfile, flux, verbose):
     ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Fraction of spectra with missing data')
     ax.set_title('Missing Data')
+    ax.grid(True)
     fig.savefig(outfile+'.missing.png')
+    plt.close(fig)
+    fig = plt.figure(dpi=100)
+    ax = fig.add_subplot(111)
+    p = ax.plot(10.0**pcaflux['newloglam'], pcaflux['usemask'], 'k-')
+    ax.set_xlabel(r'Wavelength [$\AA$]')
+    ax.set_ylabel('Usemask')
+    ax.set_title('UseMask')
+    ax.grid(True)
+    fig.savefig(outfile+'.usemask.png')
     plt.close(fig)
     aratio10 = pcaflux['acoeff'][:, 1]/pcaflux['acoeff'][:, 0]
     aratio20 = pcaflux['acoeff'][:, 2]/pcaflux['acoeff'][:, 0]
