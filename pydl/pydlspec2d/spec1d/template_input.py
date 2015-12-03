@@ -82,6 +82,7 @@ def template_input(options):
         raise KeyError('The minuse keyword was not found in {0}!'.format(options.inputfile))
     except ValueError:
         raise ValueError('The minuse keyword has invalid value, {0}!'.format(par['minuse']))
+    slist = par['EIGENOBJ']
     cspeed = 2.99792458e5
     #
     # Name the output files.
@@ -96,7 +97,6 @@ def template_input(options):
         with open(options.dump) as f:
             pcaflux = pickle.load(f)
     else:
-        slist = par['EIGENOBJ']
         spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid)
         #
         # Insist that all of the requested spectra exist.
