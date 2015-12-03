@@ -244,7 +244,7 @@ def template_input(options):
                             'Version of 2d reduction')
     hdu0.header.update('RUN1D', os.getenv('RUN1D'),
                             'Version of 1d reduction')
-    hdu0.header.update('FILENAME', inputfile)
+    hdu0.header.update('FILENAME', options.inputfile)
     hdu0.header.update('METHOD', method.upper(), 'Method used')
     if method == 'hmf':
         hdu0.header.update('NONNEG', nonnegative, 'Was nonnegative HMF used?')
