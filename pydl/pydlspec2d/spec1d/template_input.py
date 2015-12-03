@@ -235,22 +235,20 @@ def template_input(options):
         os.remove(outfile+'.fits')
     hdu0 = fits.PrimaryHDU(pcaflux['flux'])
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
-    hdu0.header.update('OBJECT', objtypes[objtype], 'Type of template')
-    hdu0.header.update('COEFF0', pcaflux['newloglam'][0])
-    hdu0.header.update('COEFF1', pcaflux['newloglam'][1]-pcaflux['newloglam'][0])
-    hdu0.header.update('IDLUTILS', 'pydl-{0}'.format(pydl_version), 'Version of idlutils')
-    hdu0.header.update('SPEC2D', 'pydl-{0}'.format(pydl_version), 'Version of idlspec2d')
-    hdu0.header.update('RUN2D', os.getenv('RUN2D'),
-                            'Version of 2d reduction')
-    hdu0.header.update('RUN1D', os.getenv('RUN1D'),
-                            'Version of 1d reduction')
-    hdu0.header.update('FILENAME', options.inputfile)
-    hdu0.header.update('METHOD', method.upper(), 'Method used')
+    hdu0.header['OBJECT'] = (objtypes[objtype], 'Type of template')
+    hdu0.header['COEFF0'] = (pcaflux['newloglam'][0], 'Wavelength zeropoint')
+    hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
+    hdu0.header['IDLUTILS'] = ('pydl-{0}'.format(pydl_version), 'Version of idlutils')
+    hdu0.header['SPEC2D'] = ('pydl-{0}'.format(pydl_version), 'Version of idlspec2d')
+    hdu0.header['RUN2D'] = (os.getenv('RUN2D'), 'Version of 2d reduction')
+    hdu0.header['RUN1D'] = (os.getenv('RUN1D'), 'Version of 1d reduction')
+    hdu0.header['FILENAME'] = (options.inputfile, 'Input file')
+    hdu0.header['METHOD'] = (method.upper(), 'Method used')
     if method == 'hmf':
-        hdu0.header.update('NONNEG', nonnegative, 'Was nonnegative HMF used?')
-        hdu0.header.update('EPSILON', epsilon, 'Regularization parameter used.')
+        hdu0.header['NONNEG'] = (nonnegative, 'Was nonnegative HMF used?')
+        hdu0.header['EPSILON'] = (epsilon, 'Regularization parameter used.')
     # for i in range(len(namearr)):
-    #     hdu0.header.update("NAME{0:d}".format(i), namearr[i]+' ')
+    #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
     c = [fits.Column(name='plate', format='J', array=slist.plate),
          fits.Column(name='mjd', format='J', array=slist.mjd),
          fits.Column(name='fiberid', format='J', array=slist.fiberid)]
@@ -259,7 +257,7 @@ def template_input(options):
             array=slist.cz))
     else:
         c.append(fits.Column(name='zfit', format='D', array=slist.zfit))
-    hdu1 = fits.new_table(fits.ColDefs(c))
+    hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c))
     hdulist = fits.HDUList([hdu0, hdu1])
     hdulist.writeto(outfile+'.fits')
     # plot_eig(outfile+'.fits')
