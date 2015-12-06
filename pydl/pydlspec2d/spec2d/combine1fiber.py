@@ -136,6 +136,17 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
         ig2 = ((padwave[2:ngood+2]-padwave[1:ngood+1]) > maxsep).nonzero()[0]
         if ig1.size != ig2.size:
             raise ValueError('Grouping tricks did not work!')
+        #
+        # Avoid flux-dependent bias when combining multiple spectra.
+        #
+        if objivar is not None and objivar.ndim > 1:
+            saved_objivar = objivar
+            for spec in range(nspec):
+                igood = (objivar[spec, :] > 0).nonzero()[0]
+                if igood.size > 0:
+                    objivar[spec, igood] = djs_median(saved_objivar[spec, igood], width=100.)
+        else:
+            saved_objivar = None
         for igrp in range(ig1.size):
             ss = isort[ig1[igrp]:ig2[igrp]+1]
             if ss.size > 2:
@@ -196,6 +207,11 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
                         finalmask[ss[ireplace]] = (finalmask[ss[ireplace]] |
                             sdss_flagval('SPPIXMASK', 'COMBINEREJ'))
             fullcombmask[ss] = bmask
+        #
+        # Restore objivar
+        #
+        if saved_objivar is not None:
+            objivar = saved_objivar * (objivar > 0)
         #
         # Combine inverse variance and pixel masks.
         #
@@ -284,12 +300,9 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
         ibad = ((newloglam < minglam) | (newloglam > maxglam))
         if ibad.any():
             ormask[ibad] |= sdss_flagval('SPPIXMASK', 'NODATA')
+            andmask[ibad] |= sdss_flagval('SPPIXMASK', 'NODATA')
     #
     # Replace values of -1 in the andmask with 0.
     #
     andmask *= (andmask != -1)
-    #
-    # Copy the nodata bad pixels from the ormask to the andmask.
-    #
-    andmask |= ormask & sdss_flagval('SPPIXMASK', 'NODATA')
     return (newflux, newivar)

@@ -33,6 +33,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
     import matplotlib.pyplot as plt
     from matplotlib.font_manager import fontManager, FontProperties
     from astropy.io import fits
+    from astropy.constants import c as cspeed
     from astropy import log
     from warnings import warn
     from . import pca_solve, plot_eig, readspec, skymask, wavevector
@@ -69,7 +70,6 @@ def template_input(inputfile, dumpfile, flux, verbose):
         except ValueError:
             raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
     slist = par['EIGENOBJ']
-    cspeed = 2.99792458e5  # km/s
     for r in ('run2d', 'run1d'):
         try:
             metadata['orig_'+r] = os.environ[r.upper()]
@@ -189,7 +189,12 @@ def template_input(inputfile, dumpfile, flux, verbose):
     plt.close(fig)
     fig = plt.figure(dpi=100)
     ax = fig.add_subplot(111)
-    p = ax.plot(10.0**pcaflux['newloglam'], pcaflux['usemask'], 'k-')
+    p = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
+                    pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-'
+                    10.0**pcaflux['newloglam'],
+                    np.zeros(pcaflux['newloglam'].shape,
+                    dtype=pcaflux['newloglam'].dtype) + metadata['minuse'],
+                    'k--')
     ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Usemask')
     ax.set_title('UseMask')
