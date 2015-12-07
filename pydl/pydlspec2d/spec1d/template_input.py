@@ -190,7 +190,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
     fig = plt.figure(dpi=100)
     ax = fig.add_subplot(111)
     p = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
-                    pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-'
+                    pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-',
                     10.0**pcaflux['newloglam'],
                     np.zeros(pcaflux['newloglam'].shape,
                     dtype=pcaflux['newloglam'].dtype) + metadata['minuse'],
