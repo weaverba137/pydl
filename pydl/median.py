@@ -23,7 +23,7 @@ def median(array, width=None, axis=None, even=False):
 
     Returns
     -------
-    median : array-like
+    array-like
         The median of the array.
 
     Raises

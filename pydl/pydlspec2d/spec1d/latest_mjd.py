@@ -12,7 +12,7 @@ def latest_mjd(plate, **kwargs):
 
     Returns
     -------
-    latest_mjd : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         An array of MJD values for each plate.
     """
     import glob

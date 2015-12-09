@@ -12,7 +12,7 @@ def number_of_fibers(plate, **kwargs):
 
     Returns
     -------
-    number_of_fibers : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         The number of fibers on each plate.
     """
     import os

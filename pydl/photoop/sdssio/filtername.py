@@ -12,7 +12,7 @@ def filtername(f):
 
     Returns
     -------
-    filtername : :class:`str`
+    :class:`str`
         The corresponding filter name.
 
     Examples

@@ -19,7 +19,7 @@ def sdssflux2ab(flux, magnitude=False, ivar=False):
 
     Returns
     -------
-    sdssflux2ab : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         Array of fluxes or magnitudes on the AB system.
 
     Notes

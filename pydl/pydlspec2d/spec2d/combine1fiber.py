@@ -20,7 +20,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
 
     Returns
     -------
-    combine1fiber : :func:`tuple` of :class:`numpy.ndarray`
+    :func:`tuple` of :class:`numpy.ndarray`
         The resulting flux and inverse variance.
 
     Raises

@@ -18,7 +18,7 @@ def sdss_path(ftype, run, camcol=0, rerun=''):
 
     Returns
     -------
-    sdss_name : :class:`str`
+    :class:`str`
         The directory in which file `ftype` lives.
 
     Raises

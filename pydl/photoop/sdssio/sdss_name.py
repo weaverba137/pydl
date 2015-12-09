@@ -26,7 +26,7 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',
 
     Returns
     -------
-    sdss_name : :class:`str`
+    :class:`str`
         The full file name, normally including the full path.
 
     Raises

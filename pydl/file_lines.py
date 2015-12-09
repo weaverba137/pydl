@@ -18,7 +18,7 @@ def file_lines(path, compress=False):
 
     Returns
     -------
-    file_lines : :class:`int` or :class:`list` of :class:`int`
+    :class:`int` or :class:`list` of :class:`int`
         The number of lines in `path`.  Returns a list of lengths if a list of
         files is supplied.
 

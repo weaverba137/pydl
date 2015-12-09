@@ -30,7 +30,7 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
 
     Returns
     -------
-    readspec : :class:`dict`
+    :class:`dict`
         A dictionary containing the data read.
     """
     import os

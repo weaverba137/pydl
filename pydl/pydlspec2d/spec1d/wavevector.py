@@ -23,7 +23,7 @@ def wavevector(minfullwave, maxfullwave, zeropoint=3.5, binsz=1.0e-4,
 
     Returns
     -------
-    wavevector : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         Depending on the values of `minfullwave`, `binsz`, etc., the resulting
         array could be interpreted as an array of wavelengths or an array of
         log(wavelength).

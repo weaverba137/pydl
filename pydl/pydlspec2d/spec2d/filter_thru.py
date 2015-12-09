@@ -24,7 +24,7 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
 
     Returns
     -------
-    filter_thru : array-like
+    array-like
         Integrated flux in the filter bands.
 
     Raises

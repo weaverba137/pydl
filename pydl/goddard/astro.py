@@ -15,7 +15,7 @@ def airtovac(air):
 
     Returns
     -------
-    airtovac : array-like
+    array-like
         Values of wavelength in vacuum in Angstroms.
 
     Notes
@@ -58,7 +58,7 @@ def gcirc(ra1, dec1, ra2, dec2, units=2):
 
     Returns
     -------
-    gcirc : :class:`float` or array-like
+    :class:`float` or array-like
         The angular distance.  Units of the value returned depend on the
         input value of `units`.
 
@@ -110,7 +110,7 @@ def get_juldate(seconds=None):
 
     Returns
     -------
-    get_juldate : :class:`float`
+    :class:`float`
         The Julian Day number as a floating point number.
 
     Notes
@@ -145,7 +145,7 @@ def vactoair(vacuum):
 
     Returns
     -------
-    vactoair : array-like
+    array-like
         Values of wavelength in air in Angstroms.
 
     Notes

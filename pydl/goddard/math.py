@@ -19,7 +19,7 @@ def flegendre(x, m):
 
     Returns
     -------
-    flegendre : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
     """
     import numpy as np
     from scipy.special import legendre

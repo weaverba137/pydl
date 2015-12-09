@@ -4,6 +4,23 @@
 
 def skymask(invvar, andmask, ormask=None, ngrow=2):
     """Mask regions where sky-subtraction errors are expected to dominate.
+
+    Parameters
+    ----------
+    invvar : :class:`numpy.ndarray`
+        Inverse variance.
+    andmask : :class:`numpy.ndarray`
+        An "and" mask.  For historical reasons, this input is ignored.
+    ormask : :class:`numpy.ndarray`, optional
+        An "or" mask.  Although technically this is optional, if it is
+        not supplied, this function will have no effect.
+    ngrow : :class:`int`, optional
+        Expand bad areas by this number of pixels.
+
+    Returns
+    -------
+    :class:`numpy.ndarray`
+        The `invvar` multiplied by the bad areas.
     """
     from numpy import zeros
     from ...pydlutils.sdss import sdss_flagval

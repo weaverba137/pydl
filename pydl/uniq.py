@@ -19,7 +19,7 @@ def uniq(x, index=None):
 
     Returns
     -------
-    uniq : array-like
+    array-like
         The subscripts of `x` that are the unique elements of `x`.
 
     Notes

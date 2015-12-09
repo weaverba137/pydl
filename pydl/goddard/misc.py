@@ -19,7 +19,7 @@ def cirrange(ang, radians=False):
 
     Returns
     -------
-    cirrange : :class:`float` or array-like
+    :class:`float` or array-like
         Angle in the restricted range.
 
     Examples

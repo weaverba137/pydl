@@ -18,7 +18,7 @@ def smooth(signal, owidth, edge_truncate=False):
 
     Returns
     -------
-    smooth : array-like
+    array-like
         A smoothed array with the same dimesions and type as `signal`.
 
     Notes

@@ -16,7 +16,7 @@ def aesthetics(flux, invvar, method='traditional'):
 
     Returns
     -------
-    aesthetics : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         A cleaned-up spectrum.
     """
     import numpy as np

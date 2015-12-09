@@ -19,7 +19,7 @@ def sdss_calib(run, camcol, field, rerun='', **kwargs):
 
     Returns
     -------
-    sdss_calib : :class:`dict`
+    :class:`dict`
         A dictionary containing the 'NMGYPERCOUNT' keyword.
 
     Notes

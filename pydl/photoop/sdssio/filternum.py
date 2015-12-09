@@ -12,7 +12,7 @@ def filternum(filt='foo'):
 
     Returns
     -------
-    filternum : :class:`int`
+    :class:`int`
         The corresponding filter number
 
     Examples

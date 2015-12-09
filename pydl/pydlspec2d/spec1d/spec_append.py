@@ -21,7 +21,7 @@ def spec_append(spec1, spec2, pixshift=0):
 
     Returns
     -------
-    spec_append : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         A new array containing both `spec1` and `spec2`.
     """
     from numpy import zeros

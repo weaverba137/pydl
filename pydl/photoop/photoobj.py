@@ -9,7 +9,7 @@ def sdss_calibv():
 
     Returns
     -------
-    sdss_calibv : :class:`float`
+    :class:`float`
         The conversion from pixels per frame to degrees per day
 
     Notes
@@ -28,7 +28,7 @@ def sdss_calibv():
 def unwrap_objid(objid):
     """Unwrap CAS-style objID into run, camcol, field, id, rerun.
 
-    See pydl.pydlutils.sdss.sdss_objid() for details on how the bits
+    See :func:`~pydl.pydlutils.sdss.sdss_objid` for details on how the bits
     within an objID are assigned.
 
     Parameters
@@ -39,7 +39,7 @@ def unwrap_objid(objid):
 
     Returns
     -------
-    unwrap_objid : :class:`numpy.recarray`
+    :class:`numpy.recarray`
         A record array with the same length as objid, with the columns
         'run', 'camcol', 'frame', 'id', 'rerun', 'skyversion'.
 
