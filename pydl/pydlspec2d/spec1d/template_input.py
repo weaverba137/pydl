@@ -193,6 +193,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
         except KeyError:
             metadata['orig_'+r] = None
         os.environ[r.upper()] = metadata[r]
+    good_columns = False
     if metadata['method'].lower() == 'hmf':
         good_columns = True
         nonnegative = bool(metadata['nonnegative'])
@@ -265,19 +266,23 @@ def template_input(inputfile, dumpfile, flux, verbose):
         # was never meant to be called!  In other words it should always
         # be the case that qgood.all() is True.
         #
-        qgood = pcaflux['usemask'] >= metadata['minuse']
-        if not qgood.all():
-            warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
-        if False:
-            medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
-            for i in range(metadata['nkeep']):
-                medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
-                    width=51, boundary='nearest')
-                medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
-            pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
+        if 'usemask' in pcaflux:
+            qgood = pcaflux['usemask'] >= metadata['minuse']
+            if not qgood.all():
+                warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
+            if False:
+                medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
+                for i in range(metadata['nkeep']):
+                    medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
+                        width=51, boundary='nearest')
+                    medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
+                pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
         #
         # Dump input fluxes to a file for debugging purposes.
         #
+        pcaflux['newflux'] = newflux
+        pcaflux['newivar'] = newivar
+        pcaflux['newloglam'] = newloglam
         if not os.path.exists(dumpfile):
             with open(dumpfile, 'w') as f:
                 pickle.dump(pcaflux, f)
@@ -318,20 +323,21 @@ def template_input(inputfile, dumpfile, flux, verbose):
     ax.grid(True)
     fig.savefig(outfile+'.missing.png')
     plt.close(fig)
-    fig = plt.figure(dpi=100)
-    ax = fig.add_subplot(111)
-    p = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
-                    pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-',
-                    10.0**pcaflux['newloglam'],
-                    np.zeros(pcaflux['newloglam'].shape,
-                    dtype=pcaflux['newloglam'].dtype) + metadata['minuse'],
-                    'k--')
-    ax.set_xlabel(r'Wavelength [$\AA$]')
-    ax.set_ylabel('Usemask')
-    ax.set_title('UseMask')
-    ax.grid(True)
-    fig.savefig(outfile+'.usemask.png')
-    plt.close(fig)
+    if 'usemask' in pcaflux:
+        fig = plt.figure(dpi=100)
+        ax = fig.add_subplot(111)
+        p = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
+                        pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-',
+                        10.0**pcaflux['newloglam'],
+                        np.zeros(pcaflux['newloglam'].shape,
+                        dtype=pcaflux['newloglam'].dtype) + metadata['minuse'],
+                        'k--')
+        ax.set_xlabel(r'Wavelength [$\AA$]')
+        ax.set_ylabel('Usemask')
+        ax.set_title('UseMask')
+        ax.grid(True)
+        fig.savefig(outfile+'.usemask.png')
+        plt.close(fig)
     aratio10 = pcaflux['acoeff'][:, 1]/pcaflux['acoeff'][:, 0]
     aratio20 = pcaflux['acoeff'][:, 2]/pcaflux['acoeff'][:, 0]
     aratio30 = pcaflux['acoeff'][:, 3]/pcaflux['acoeff'][:, 0]
@@ -384,8 +390,8 @@ def template_input(inputfile, dumpfile, flux, verbose):
     hdu0.header['FILENAME'] = (inputfile, 'Input file')
     hdu0.header['METHOD'] = (metadata['method'].upper(), 'Method used')
     if metadata['method'] == 'hmf':
-        hdu0.header['NONNEG'] = (metadata['nonnegative'], 'Was nonnegative HMF used?')
-        hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
+        hdu0.header['NONNEG'] = (nonnegative, 'Was nonnegative HMF used?')
+        hdu0.header['EPSILON'] = (epsilon, 'Regularization parameter used.')
     # for i in range(len(namearr)):
     #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
     c = [fits.Column(name='plate', format='J', array=slist.plate),

@@ -256,11 +256,7 @@ def hmf_solve(newflux, newivar, newloglam,
     else:
         nobj, npix = newflux.shape
     log.info("Building HMF from {0:d} object spectra.".format(nobj))
-    fluxdict = {'flux': newflux, 'eigenval': 1.0, 'acoeff': 1.0,
-        'outmask': np.ones((nnew,), dtype='i4'),
-        'usemask': np.ones((nnew,), dtype='i4'),
-        'newflux': newflux, 'newivar': newivar,
-        'newloglam': newloglam, }   # 'emevecs': 1.0, 'emevals': 1.0}
+    fluxdict = dict()
     #
     # If there is only one object spectrum, then all we can do is return it.
     #
@@ -269,5 +265,6 @@ def hmf_solve(newflux, newivar, newloglam,
         return fluxdict
     a, g = hmf_iterate(newflux, newivar,
         K=K, nonnegative=nonnegative, epsilon=epsilon)
+    fluxdict['acoeff'] = a
     fluxdict['flux'] = g
     return fluxdict

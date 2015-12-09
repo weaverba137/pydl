@@ -59,11 +59,7 @@ def pca_solve(newflux, newivar, newloglam,
         indx = newivar[:, ipix] != 0
         if indx.any():
             synwvec[ipix] = newivar[indx, ipix].mean()
-    fluxdict = {'flux': newflux, 'eigenval': 1.0, 'acoeff': 1.0,
-        'outmask': np.ones((nnew,), dtype='i4'),
-        'usemask': np.ones((nnew,), dtype='i4'),
-        'newflux': newflux, 'newivar': newivar,
-        'newloglam': newloglam, }   # 'emevecs': 1.0, 'emevals': 1.0}
+    fluxdict = dict()
     #
     # If there is only one object spectrum, then all we can do is return it.
     #
