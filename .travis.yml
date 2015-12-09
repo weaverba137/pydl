@@ -62,7 +62,7 @@ matrix:
 
         # PEP 8 Compliance
         - python: 2.7
-          env: MAIN_CMD='pep8' SETUP_CMD='--count pydl/goddard pydl/photoop pydl/pydlutils'
+          env: MAIN_CMD='pep8' SETUP_CMD='--count pydl'
 
 before_install:
 

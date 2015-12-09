@@ -3,7 +3,8 @@
 
 
 def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
-              newloglam=None, wavemin=None, wavemax=None, verbose=False):
+              newloglam=None, wavemin=None, wavemax=None,
+              good_columns=False, verbose=False):
     """Handle the processing of input spectra through the
     :func:`~pydl.pydlspec2d.spec2d.combine1fiber` stage.
 
@@ -251,11 +252,58 @@ def template_input(inputfile, dumpfile, flux, verbose):
             newloglam=newloglam, aesthetics=metadata['aesthetics'],
             good_columns=good_columns, verbose=verbose)
         if metadata['method'].lower() == 'pca':
-            pcaflux = pca_solve(newflux, newivar, newloglam,
-                niter=metadata['niter'], nkeep=metadata['nkeep'],
-                verbose=verbose)
+            if metadata['object'].lower() == 'qso':
+                #
+                # Solve for one component at a time, like the old pca_qso.pro
+                #
+                objflux = newflux.copy()
+                for ikeep in range(nkeep):
+                    log.info("Solving for eigencomponent #{0:d} of {1:d}".format(ikeep+1, nkeep))
+                    pcaflux1 = pca_solve(objflux, newivar,
+                        niter=metadata['niter'], nkeep=1, verbose=verbose)
+                    if ikeep == 0:
+                        #
+                        # Create new pcaflux dict
+                        #
+                        pcaflux = dict()
+                        for k in pcaflux1:
+                            pcaflux[k] = pcaflux1[k].copy()
+                    else:
+                        #
+                        # Add to existing dict
+                        #
+                        # for k in pcaflux1:
+                        #     pcaflux[k] = np.vstack((pcaflux[k],pcaflux1[k]))
+                        pcaflux['flux'] = np.vstack((pcaflux['flux'], pcaflux1['flux']))
+                        pcaflux['eigenval'] = np.concatenate((pcaflux['eigenval'], pcaflux1['eigenval']))
+                    #
+                    # Re-solve for the coefficients using all PCA components so far
+                    #
+                    acoeff = np.zeros((nobj, ikeep+1), dtype=pcaflux1['acoeff'].dtype)
+                    for iobj in range(nobj):
+                        out = computechi2(newflux[iobj, :], np.sqrt(pcaflux1['newivar'][iobj, :]),
+                            pcaflux['flux'].T)
+                        acoeff[iobj, :] = out['acoeff']
+                    #
+                    # Prevent re-binning of spectra on subsequent calls to pca_solve()
+                    #
+                    objloglam = None
+                    if ikeep == 0:
+                        objflux = newflux - np.outer(acoeff, pcaflux['flux'])
+                    else:
+                        objflux = newflux - np.dot(acoeff, pcaflux['flux'])
+                    # objflux = newflux - np.outer(acoeff,pcaflux['flux'])
+                    # objinvvar = pcaflux1['newivar']
+                    pcaflux['acoeff'] = acoeff
+            else:
+                #
+                # Do a normal simultaneous PCA solution
+                #
+                pcaflux = pca_solve(newflux, newivar,
+                    niter=metadata['niter'], nkeep=metadata['nkeep'],
+                    verbose=verbose)
         elif metadata['method'].lower() == 'hmf':
-            pcaflux = hmf_solve(newflux, newivar, newloglam,
+            pcaflux = hmf_solve(newflux, newivar,
                 K=metadata['nkeep'], nonnegative=nonnegative, epsilon=epsilon,
                 verbose=verbose)
         else:

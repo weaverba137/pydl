@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-def pca_solve(newflux, newivar, newloglam,
-              maxiter=0, niter=10, nkeep=3, nreturn=None, verbose=False):
+def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
+              nreturn=None, verbose=False):
     """Replacement for idlspec2d pca_solve.pro.
 
     Parameters
@@ -13,8 +13,6 @@ def pca_solve(newflux, newivar, newloglam,
         redshift system.
     newivar : array-like
         The inverse variance of the spectral flux.
-    newloglam : array-like, optional
-        The output wavelength solution.
     maxiter : :class:`int`, optional
         Stop PCA+reject iterations after this number.
     niter : :class:`int`, optional
@@ -46,7 +44,6 @@ def pca_solve(newflux, newivar, newloglam,
     else:
         nobj, npix = newflux.shape
     log.info("Building PCA from {0:d} object spectra.".format(nobj))
-    nnew = newloglam.size
     nzi = newivar.nonzero()
     first_nonzero = (np.arange(nobj, dtype=nzi[0].dtype),
         np.array([nzi[1][nzi[0] == k].min() for k in range(nobj)]))
@@ -54,8 +51,8 @@ def pca_solve(newflux, newivar, newloglam,
     # Construct the synthetic weight vector, to be used when replacing the
     # low-S/N object pixels with the reconstructions.
     #
-    synwvec = np.ones((nnew,), dtype='d')
-    for ipix in range(nnew):
+    synwvec = np.ones((npix,), dtype='d')
+    for ipix in range(npix):
         indx = newivar[:, ipix] != 0
         if indx.any():
             synwvec[ipix] = newivar[indx, ipix].mean()
@@ -97,8 +94,8 @@ def pca_solve(newflux, newivar, newloglam,
             #
             # eigenval = 1
             # coeff = 1
-            flux0 = np.tile(filtflux[first_nonzero], nnew).reshape(nnew, nobj).transpose()
-            # flux0 = np.tile(filtflux, nnew).reshape(nnew, nobj).transpose()
+            flux0 = np.tile(filtflux[first_nonzero], npix).reshape(npix, nobj).transpose()
+            # flux0 = np.tile(filtflux, npix).reshape(npix, nobj).transpose()
             totflux = np.absolute(filtflux - flux0).sum(1)
             goodobj = totflux > 0
             if goodobj.all():
@@ -107,7 +104,7 @@ def pca_solve(newflux, newivar, newloglam,
                 eigenval = tmp.eigenvalues
             else:
                 tmp = pcomp(filtflux[goodobj, :].T)  # , standardize=True)
-                pres = np.zeros((nobj, nnew), dtype='d')
+                pres = np.zeros((nobj, npix), dtype='d')
                 pres[goodobj, :] = tmp.derived
                 eigenval = np.zeros((nobj,), dtype='d')
                 eigenval[goodobj] = tmp.eigenvalues

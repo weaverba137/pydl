@@ -217,7 +217,7 @@ def hmf_iterate(spectra, invvar, K=4, nonnegative=False, epsilon=None,
     return (a, g)
 
 
-def hmf_solve(newflux, newivar, newloglam,
+def hmf_solve(newflux, newivar,
               K=4, nonnegative=False, epsilon=None, verbose=False):
     """Drop-in replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
 
@@ -228,8 +228,6 @@ def hmf_solve(newflux, newivar, newloglam,
         redshift system.
     newivar : array-like
         The inverse variance of the spectral flux.
-    newloglam : array-like, optional
-        The output wavelength solution.
     K : :class:`int`, optional
         The number of dimensions of the factorization (default 4).
     nonnegative : :class:`bool`, optional
