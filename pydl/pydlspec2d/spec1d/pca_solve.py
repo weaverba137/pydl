@@ -2,30 +2,19 @@
 # -*- coding: utf-8 -*-
 
 
-def pca_solve(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
-              newloglam=None, wavemin=None, wavemax=None,
+def pca_solve(newflux, newivar, newloglam,
               maxiter=0, niter=10, nkeep=3, nreturn=None, verbose=False):
     """Replacement for idlspec2d pca_solve.pro.
 
     Parameters
     ----------
-    flux : array-like
-        The input spectral flux.
-    ivar : array-like
+    newflux : array-like
+        The input spectral flux, assumed to have a common wavelength and
+        redshift system.
+    newivar : array-like
         The inverse variance of the spectral flux.
-    loglam : array-like, optional
-        The input wavelength solution.
-    zfit : array-like, optional
-        The redshift of each input spectrum.
-    aesthetics : :class:`str`, optional
-        This parameter will be passed to
-        :func:`~pydl.pydlspec2d.spec2d.combine1fiber`.
     newloglam : array-like, optional
         The output wavelength solution.
-    wavemin : :class:`float`, optional
-        Minimum wavelength if `newloglam` is not specified.
-    wavemax : :class:`float`, optional
-        Maximum wavelength if `newloglam` is not specified.
     maxiter : :class:`int`, optional
         Stop PCA+reject iterations after this number.
     niter : :class:`int`, optional
@@ -39,90 +28,25 @@ def pca_solve(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
 
     Returns
     -------
-    pca_solve : :class:`dict`
+    :class:`dict`
         The PCA solution.
     """
     import time
     import numpy as np
     from astropy import log
-    from . import wavevector
-    from ..spec2d import combine1fiber
     from ... import pcomp
     from ...pydlutils.math import computechi2, djs_reject
     if verbose:
         log.setLevel('DEBUG')
     if nreturn is None:
         nreturn = nkeep
-    if len(flux.shape) == 1:
+    if len(newflux.shape) == 1:
         nobj = 1
-        npix = flux.shape[0]
+        npix = newflux.shape[0]
     else:
-        nobj, npix = flux.shape
+        nobj, npix = newflux.shape
     log.info("Building PCA from {0:d} object spectra.".format(nobj))
-    #
-    # The redshift of each object in pixels would be logshift/objdloglam.
-    #
-    if zfit is None:
-        logshift = np.zeros((nobj,), dtype=flux.dtype)
-    else:
-        logshift = np.log10(1.0 + zfit)
-    #
-    # Determine the new wavelength mapping.
-    #
-    if loglam is None:
-        newflux = flux
-        newivar = ivar
-        if newloglam is None:
-            raise ValueError("newloglam must be set if loglam is not!")
-        nnew = flux.shape[1]
-    else:
-        if newloglam is None:
-            igood = loglam != 0
-            dloglam = loglam[1] - loglam[0]
-            logmin = loglam[igood].min() - logshift.max()
-            logmax = loglam[igood].max() - logshift.min()
-            if wavemin is not None:
-                logmin = max(logmin, np.log10(wavemin))
-            if wavemax is not None:
-                logmax = min(logmax, np.log10(wavemax))
-            fullloglam = wavevector(logmin, logmax, binsz=dloglam)
-        else:
-            fullloglam = newloglam
-            dloglam = fullloglam[1] - fullloglam[0]
-        nnew = fullloglam.size
-        fullflux = np.zeros((nobj, nnew), dtype='d')
-        fullivar = np.zeros((nobj, nnew), dtype='d')
-        #
-        # Shift each spectrum to z = 0 and sample at the output wavelengths
-        #
-        if loglam.ndim == 1:
-            indx = loglam > 0
-            rowloglam = loglam[indx]
-        for iobj in range(nobj):
-            log.info("OBJECT {0:5d}".format(iobj))
-            if loglam.ndim > 1:
-                if loglam.shape[0] != nobj:
-                    raise ValueError('Wrong number of dimensions for loglam.')
-                indx = loglam[iobj, :] > 0
-                rowloglam = loglam[iobj, indx]
-            flux1, ivar1 = combine1fiber(rowloglam-logshift[iobj],
-                flux[iobj, indx], fullloglam, objivar=ivar[iobj, indx],
-                binsz=dloglam, aesthetics=aesthetics, verbose=verbose)
-            fullflux[iobj, :] = flux1
-            fullivar[iobj, :] = ivar1
-        #
-        # Find the columns out side of which there is no data at all
-        #
-        # nzi = fullivar.nonzero()
-        # firstcol = nzi[1].min()
-        # lastcol = nzi[1].max()
-        # newflux = fullflux[:, firstcol:lastcol+1]
-        # newivar = fullivar[:, firstcol:lastcol+1]
-        # newloglam = fullloglam[firstcol:lastcol+1]
-        # nnew = newloglam.size
-        newflux = fullflux
-        newivar = fullivar
-        newloglam = fullloglam
+    nnew = newloglam.size
     nzi = newivar.nonzero()
     first_nonzero = (np.arange(nobj, dtype=nzi[0].dtype),
         np.array([nzi[1][nzi[0] == k].min() for k in range(nobj)]))

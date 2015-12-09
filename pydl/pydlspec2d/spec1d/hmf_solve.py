@@ -129,8 +129,10 @@ def reorder(a, g):
     return (np.dot(a, U), np.dot(U.T, g))
 
 
-def hmf_solve(spectra, invvar, K=4, nonnegative=False, epsilon=None):
-    """Handle the HMF iteration, analogous to pca_solve.
+def hmf_iterate(spectra, invvar, K=4, nonnegative=False, epsilon=None,
+                verbose=False):
+    """Handle the HMF iteration, assuming spectra have been pre-processed
+    through :func:`pydl.pydlspec2d.spec2d.combine1fiber`.
 
     Parameters
     ----------
@@ -144,14 +146,19 @@ def hmf_solve(spectra, invvar, K=4, nonnegative=False, epsilon=None):
         Set this to ``True`` to perform nonnegative HMF.
     epsilon : :class:`float`, optional
         Regularization parameter.  Set to any non-zero float value to turn it on.
+    verbose : :class:`bool`, optional
+        If ``True``, print extra information.
 
     Returns
     -------
-    a,g : :func:`tuple` of :class:`numpy.ndarray`
+    :func:`tuple` of :class:`numpy.ndarray`
         The fitting coefficients and fitted functions, respectively.
     """
+    import time
     from astropy import log
     from scipy.cluster.vq import kmeans, whiten
+    if verbose:
+        log.setLevel('DEBUG')
     N, M = spectra.shape
     #
     # Make spectra non-negative
@@ -192,6 +199,7 @@ def hmf_solve(spectra, invvar, K=4, nonnegative=False, epsilon=None):
     #
     # Iterate!
     #
+    t0 = time.time()
     for m in range(n_iter):
         log.info(m)
         if nonnegative:
@@ -205,4 +213,61 @@ def hmf_solve(spectra, invvar, K=4, nonnegative=False, epsilon=None):
         g /= np.repeat(norm, M).reshape(g.shape)
         a = (a.T*np.repeat(norm, N).reshape(K, N)).T
         log.debug(badness(a, g, spectra, invvar, epsilon))
+        log.info("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(m+1, time.time()-t0))
     return (a, g)
+
+
+def hmf_solve(newflux, newivar, newloglam,
+              K=4, nonnegative=False, epsilon=None, verbose=False):
+    """Drop-in replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
+
+    Parameters
+    ----------
+    newflux : array-like
+        The input spectral flux, assumed to have a common wavelength and
+        redshift system.
+    newivar : array-like
+        The inverse variance of the spectral flux.
+    newloglam : array-like, optional
+        The output wavelength solution.
+    K : :class:`int`, optional
+        The number of dimensions of the factorization (default 4).
+    nonnegative : :class:`bool`, optional
+        Set this to ``True`` to perform nonnegative HMF.
+    epsilon : :class:`float`, optional
+        Regularization parameter.  Set to any non-zero float value to turn it on.
+    verbose : :class:`bool`, optional
+        If ``True``, print extra information.
+
+    Returns
+    -------
+    :class:`dict`
+        The HMF solution.
+    """
+    import numpy as np
+    from astropy import log
+    if verbose:
+        log.setLevel('DEBUG')
+    if nreturn is None:
+        nreturn = nkeep
+    if len(newflux.shape) == 1:
+        nobj = 1
+        npix = newflux.shape[0]
+    else:
+        nobj, npix = newflux.shape
+    log.info("Building HMF from {0:d} object spectra.".format(nobj))
+    fluxdict = {'flux': newflux, 'eigenval': 1.0, 'acoeff': 1.0,
+        'outmask': np.ones((nnew,), dtype='i4'),
+        'usemask': np.ones((nnew,), dtype='i4'),
+        'newflux': newflux, 'newivar': newivar,
+        'newloglam': newloglam, }   # 'emevecs': 1.0, 'emevals': 1.0}
+    #
+    # If there is only one object spectrum, then all we can do is return it.
+    #
+    if nobj == 1:
+        fluxdict['flux'] = newflux.astype('f')
+        return fluxdict
+    a, g = hmf_iterate(newflux, newivar,
+        K=K, nonnegative=nonnegative, epsilon=epsilon)
+    fluxdict['flux'] = g
+    return fluxdict

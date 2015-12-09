@@ -2,6 +2,123 @@
 # -*- coding: utf-8 -*-
 
 
+def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
+              newloglam=None, wavemin=None, wavemax=None, verbose=False):
+    """Handle the processing of input spectra through the
+    :func:`~pydl.pydlspec2d.spec2d.combine1fiber` stage.
+
+    Parameters
+    ----------
+    flux : array-like
+        The input spectral flux.
+    ivar : array-like
+        The inverse variance of the spectral flux.
+    loglam : array-like, optional
+        The input wavelength solution.
+    zfit : array-like, optional
+        The redshift of each input spectrum.
+    aesthetics : :class:`str`, optional
+        This parameter will be passed to
+        :func:`~pydl.pydlspec2d.spec2d.combine1fiber`.
+    newloglam : array-like, optional
+        The output wavelength solution.
+    wavemin : :class:`float`, optional
+        Minimum wavelength if `newloglam` is not specified.
+    wavemax : :class:`float`, optional
+        Maximum wavelength if `newloglam` is not specified.
+    good_columns : :class:`bool`, optional
+        If ``True``, ensure that the data contain no columns that are
+        all zero.
+    verbose : :class:`bool`, optional
+        If ``True``, print extra information.
+
+    Returns
+    -------
+    :func:`tuple` of :class:`numpy.ndarray`
+        The resampled flux, inverse variance and wavelength solution,
+        respectively.
+    """
+    import numpy as np
+    from astropy import log
+    from . import wavevector
+    from ..spec2d import combine1fiber
+    from ...pydlutils.math import find_contiguous
+    if verbose:
+        log.setLevel('DEBUG')
+    if len(flux.shape) == 1:
+        nobj = 1
+        npix = flux.shape[0]
+    else:
+        nobj, npix = flux.shape
+    #
+    # The redshift of each object in pixels would be logshift/objdloglam.
+    #
+    if zfit is None:
+        logshift = np.zeros((nobj,), dtype=flux.dtype)
+    else:
+        logshift = np.log10(1.0 + zfit)
+    #
+    # Determine the new wavelength mapping.
+    #
+    if loglam is None:
+        if newloglam is None:
+            raise ValueError("newloglam must be set if loglam is not!")
+        return (flux, ivar, newloglam)
+    else:
+        if newloglam is None:
+            igood = loglam != 0
+            dloglam = loglam[1] - loglam[0]
+            logmin = loglam[igood].min() - logshift.max()
+            logmax = loglam[igood].max() - logshift.min()
+            if wavemin is not None:
+                logmin = max(logmin, np.log10(wavemin))
+            if wavemax is not None:
+                logmax = min(logmax, np.log10(wavemax))
+            fullloglam = wavevector(logmin, logmax, binsz=dloglam)
+        else:
+            fullloglam = newloglam
+            dloglam = fullloglam[1] - fullloglam[0]
+        nnew = fullloglam.size
+        fullflux = np.zeros((nobj, nnew), dtype='d')
+        fullivar = np.zeros((nobj, nnew), dtype='d')
+        #
+        # Shift each spectrum to z = 0 and sample at the output wavelengths
+        #
+        if loglam.ndim == 1:
+            indx = loglam > 0
+            rowloglam = loglam[indx]
+        for iobj in range(nobj):
+            log.info("OBJECT {0:5d}".format(iobj))
+            if loglam.ndim > 1:
+                if loglam.shape[0] != nobj:
+                    raise ValueError('Wrong number of dimensions for loglam.')
+                indx = loglam[iobj, :] > 0
+                rowloglam = loglam[iobj, indx]
+            flux1, ivar1 = combine1fiber(rowloglam-logshift[iobj],
+                flux[iobj, indx], fullloglam, objivar=ivar[iobj, indx],
+                binsz=dloglam, aesthetics=aesthetics, verbose=verbose)
+            fullflux[iobj, :] = flux1
+            fullivar[iobj, :] = ivar1
+        #
+        # Find the columns out side of which there is no data at all.
+        #
+        if good_columns:
+            si = fullflux*fullivar
+            zerocol = ((newflux.sum(0) == 0) | (newivar.sum(0) == 0) |
+                       (si.sum(0) == 0))
+            #
+            # Find the largest set of contiguous pixels
+            #
+            goodcol = find_contiguous(~zerocol)
+            newflux = fullflux[:, goodcol]
+            newivar = fullivar[:, goodcol]
+            # si = si[:, goodcol]
+            newloglam = fullloglam[goodcol]
+            return (newflux, newivar, newloglam)
+        else:
+            return (fullflux, fullivar, fullloglam)
+
+
 def template_input(inputfile, dumpfile, flux, verbose):
     """Collect spectra and pass them to PCA or HMF solvers to compute
     spectral templates.
@@ -36,7 +153,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
     from astropy.constants import c as cspeed
     from astropy import log
     from warnings import warn
-    from . import pca_solve, plot_eig, readspec, skymask, wavevector
+    from . import hmf_solve, pca_solve, plot_eig, readspec, skymask, wavevector
     from .. import Pydlspec2dException, Pydlspec2dUserWarning
     from ... import uniq
     from ... import __version__ as pydl_version
@@ -76,6 +193,10 @@ def template_input(inputfile, dumpfile, flux, verbose):
         except KeyError:
             metadata['orig_'+r] = None
         os.environ[r.upper()] = metadata[r]
+    if metadata['method'].lower() == 'hmf':
+        good_columns = True
+        nonnegative = bool(metadata['nonnegative'])
+        epsilon = float(metadata['epsilon'])
     #
     # Name the output files.
     #
@@ -124,10 +245,20 @@ def template_input(inputfile, dumpfile, flux, verbose):
         #
         # Do PCA solution.
         #
-        pcaflux = pca_solve(spplate['flux'], objinvvar, spplate['loglam'],
-            slist.zfit, niter=metadata['niter'], nkeep=metadata['nkeep'],
+        newflux, newivar, newloglam = preprocess_spectra(spplate['flux'],
+            objinvvar, loglam=spplate['loglam'], zfit=slist.zfit,
             newloglam=newloglam, aesthetics=metadata['aesthetics'],
-            verbose=verbose)
+            good_columns=good_columns, verbose=verbose)
+        if metadata['method'].lower() == 'pca':
+            pcaflux = pca_solve(newflux, newivar, newloglam,
+                niter=metadata['niter'], nkeep=metadata['nkeep'],
+                verbose=verbose)
+        elif metadata['method'].lower() == 'hmf':
+            pcaflux = hmf_solve(newflux, newivar, newloglam,
+                K=metadata['nkeep'], nonnegative=nonnegative, epsilon=epsilon,
+                verbose=verbose)
+        else:
+            raise ValueError("Unknown method: {0}!".format(metadata['method']))
         #
         # Fill in bad data with a running median of the good data.
         # The presence of boundary='nearest' means that this code snippet
