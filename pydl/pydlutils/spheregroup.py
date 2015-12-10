@@ -496,7 +496,7 @@ def spheregroup(ra, dec, linklength, chunksize=None):
 
     Returns
     -------
-    spheregroup : :func:`tuple`
+    :func:`tuple`
         A tuple containing the group number of each object, the multiplicity
         of each group, the first member of each group, and the next
         member of the group for each object.
@@ -584,7 +584,7 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
 
     Returns
     -------
-    spherematch : :func:`tuple`
+    :func:`tuple`
         A tuple containing the indices into the first set of points, the
         indices into the second set of points and the match distance in
         decimal degrees.

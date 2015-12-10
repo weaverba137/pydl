@@ -146,7 +146,7 @@ class bspline(object):
 
         Returns
         -------
-        fit : :func:`tuple`
+        :func:`tuple`
             A tuple containing an integer error code, and the evaluation of the
             b-spline at the input values.  An error code of -2 is a failure,
             -1 indicates dropped breakpoints, 0 is success, and positive
@@ -217,7 +217,7 @@ class bspline(object):
 
         Returns
         -------
-        action : :func:`tuple`
+        :func:`tuple`
             A tuple containing the b-spline action matrix; the 'lower' parameter,
             a list of pixel positions, each corresponding to the first
             occurence of position greater than breakpoint indx; and 'upper',
@@ -282,7 +282,7 @@ class bspline(object):
 
         Returns
         -------
-        intrv : :class:`numpy.ndarray`
+        :class:`numpy.ndarray`
             Position of array elements with respect to breakpoints.
         """
         gb = self.breakpoints[self.mask]
@@ -307,7 +307,7 @@ class bspline(object):
 
         Returns
         -------
-        bsplvn : :class:`numpy.ndarray`
+        :class:`numpy.ndarray`
             To be documented.
         """
         bkpt = self.breakpoints[self.mask]
@@ -350,7 +350,7 @@ class bspline(object):
 
         Returns
         -------
-        value : :func:`tuple`
+        :func:`tuple`
             A tuple containing the results of the bspline evaluation and a
             mask indicating where the evaluation was good.
         """
@@ -407,7 +407,7 @@ class bspline(object):
 
         Returns
         -------
-        maskpoints : :class:`int`
+        :class:`int`
             An integer indicating the results of the masking.  -1 indicates
             that the error points were successfully masked.  -2 indicates
             failure; the calculation should be aborted.
@@ -455,7 +455,7 @@ def cholesky_band(l, mininf=0.0, verbose=False):
 
     Returns
     -------
-    cholesky_band : :func:`tuple`
+    :func:`tuple`
         If problems were detected, the first item will be the index or
         indexes where the problem was detected, and the second item will simply
         be the input matrix.  If no problems were detected, the first item
@@ -500,7 +500,7 @@ def cholesky_solve(a, bb):
 
     Returns
     -------
-    cholesky_solve : :func:`tuple`
+    :func:`tuple`
         A tuple containing the status and the result of the solution.  The
         status is always -1.
     """
@@ -543,7 +543,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
 
     Returns
     -------
-    iterfit : :func:`tuple`
+    :func:`tuple`
         A tuple containing the fitted bspline object and an output mask.
     """
     from .math import djs_reject

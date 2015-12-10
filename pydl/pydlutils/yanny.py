@@ -103,7 +103,7 @@ class yanny(dict):
 
         Returns
         -------
-        get_token : :func:`tuple`
+        :func:`tuple`
             A tuple containing the first word and the remainder of the string.
 
         Examples
@@ -140,7 +140,7 @@ class yanny(dict):
 
         Returns
         -------
-        protect : :class:`str`
+        :class:`str`
             The data with white space protected by quotes.
 
         Examples
@@ -175,7 +175,7 @@ class yanny(dict):
 
         Returns
         -------
-        trailing_comment : :class:`str`
+        :class:`str`
             The line with any trailing comment and any residual white space
             trimmed off.
 
@@ -233,7 +233,7 @@ class yanny(dict):
 
         Returns
         -------
-        dtype_to_struct : :class:`dict`
+        :class:`dict`
             A dictionary suitable for setting the 'symbols' dictionary of a
             new yanny object.
 
@@ -384,7 +384,7 @@ class yanny(dict):
 
         Returns
         -------
-        type : :class:`str`
+        :class:`str`
             The type of the variable.
         """
         if structure not in self:
@@ -439,7 +439,7 @@ class yanny(dict):
 
         Returns
         -------
-        basetype : :class:`str`
+        :class:`str`
             The type of the variable, stripped of array information.
         """
         typ = self.type(structure, variable)
@@ -465,7 +465,7 @@ class yanny(dict):
 
         Returns
         -------
-        isarray : :class:`bool`
+        :class:`bool`
             ``True`` if the variable is an array.
         """
         try:
@@ -499,7 +499,7 @@ class yanny(dict):
 
         Returns
         -------
-        isenum : :class:`bool`
+        :class:`bool`
             ``True`` if the variable is enum type.
         """
         if self._enum_cache is None:
@@ -529,7 +529,7 @@ class yanny(dict):
 
         Returns
         -------
-        array_length : :class:`int`
+        :class:`int`
             The length of the array variable
         """
         if self.isarray(structure, variable):
@@ -555,7 +555,7 @@ class yanny(dict):
 
         Returns
         -------
-        char_length : :class:`int` or None
+        :class:`int` or None
             The length of the char variable.
         """
         typ = self.type(structure, variable)
@@ -583,7 +583,7 @@ class yanny(dict):
 
         Returns
         -------
-        dtype : :class:`numpy.dtype`
+        :class:`numpy.dtype`
             A dtype object suitable for describing the yanny structure as a
             record array.
         """
@@ -628,7 +628,7 @@ class yanny(dict):
 
         Returns
         -------
-        convert : :class:`int`, :class:`long`, :class:`float` or :class:`str`
+        :class:`int`, :class:`long`, :class:`float` or :class:`str`
             `value` converted to a Python numerical type.
         """
         typ = self.basetype(structure, variable)
@@ -674,7 +674,7 @@ class yanny(dict):
 
         Returns
         -------
-        columns : :class:`list`
+        :class:`list`
             The list of column names.
         """
         foo = list()
@@ -692,7 +692,7 @@ class yanny(dict):
 
         Returns
         -------
-        size : :class:`int`
+        :class:`int`
             The number of rows in `table`.
         """
         foo = self.columns(table)
@@ -731,7 +731,7 @@ class yanny(dict):
 
         Returns
         -------
-        row : :class:`list`
+        :class:`list`
             A row from `table`.
         """
         datarow = list()
@@ -759,7 +759,7 @@ class yanny(dict):
 
         Returns
         -------
-        list_of_dicts : :class:`list`
+        :class:`list`
             A list containing the rows of `table` converted to :class:`dict`.
         """
         return_list = list()
@@ -1157,7 +1157,7 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
 
     Returns
     -------
-    par : `yanny`
+    :class:`yanny`
         The `yanny` object resulting from writing the file.
 
     Raises

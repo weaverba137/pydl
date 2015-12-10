@@ -25,7 +25,7 @@ def is_cap_used(use_caps, i):
 
     Returns
     -------
-    is_cap_used : :class:`bool`
+    :class:`bool`
     """
     return (use_caps & 1 << i) != 0
 
@@ -44,7 +44,7 @@ def read_fits_polygons(filename):
 
     Returns
     -------
-    read_fits_polygons : :class:`~astropy.io.fits.FITS_rec`
+    :class:`~astropy.io.fits.FITS_rec`
         The data contained in HDU 1 of the FITS file.
     """
     with fits.open(filename) as hdulist:
@@ -85,7 +85,7 @@ def set_use_caps(x, cm, polygon_use_caps, add=False, tol=1.0e-10,
 
     Returns
     -------
-    set_use_caps : :class:`long`
+    :class:`long`
         Value of use_caps.
     """
     if add:

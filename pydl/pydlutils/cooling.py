@@ -20,7 +20,7 @@ def read_ds_cooling(fname, logT=None):
 
     Returns
     -------
-    read_ds_cooling : :func:`tuple`
+    :func:`tuple`
         A tuple containing `logT` and `loglambda`, respectively.
 
     Raises

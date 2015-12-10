@@ -17,9 +17,9 @@ def decode_mixed(x):
 
     Returns
     -------
-    decode_mixed : object
-        If ``x`` has a ``decode()`` method, ``x.decode()`` will be returned.
-        Otherwise ``x`` will be returned unchanged.
+    object
+        If `x` has a ``decode()`` method, ``x.decode()`` will be returned.
+        Otherwise `x` will be returned unchanged.
     """
     try:
         return x.decode()
@@ -40,7 +40,7 @@ def djs_laxisgen(dims, iaxis=0):
 
     Returns
     -------
-    djs_laxisgen : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         An array of indexes with ``dtype=int32``.
 
     Raises
@@ -81,7 +81,7 @@ def djs_laxisnum(dims, iaxis=0):
 
     Returns
     -------
-    djs_laxisnum : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         An array of indexes with ``dtype=int32``.
 
     Raises
@@ -150,7 +150,7 @@ def hogg_iau_name(ra, dec, prefix='SDSS', precision=1):
 
     Returns
     -------
-    hogg_iau_name : :class:`str` or :class:`list`
+    :class:`str` or :class:`list`
         The IAU name for the coordinates.
 
     Examples
@@ -264,7 +264,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
         If ``True``, do not print the table, just return it.
     Returns
     -------
-    struct_print : :func:`tuple`
+    :func:`tuple`
         A tuple containing a list of the lines in the table.  If `html` is
         ``True``, also returns a list of lines of CSS for formatting the
         table.

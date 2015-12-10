@@ -21,7 +21,7 @@ def fchebyshev(x, m):
 
     Returns
     -------
-    fchebyshev : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
     """
     from scipy.special import chebyt
     if isinstance(x, np.ndarray):
@@ -59,7 +59,7 @@ def fchebyshev_split(x, m):
 
     Returns
     -------
-    fchebyshev_split : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
     """
     import numpy as np
     if isinstance(x, np.ndarray):
@@ -99,7 +99,7 @@ def fpoly(x, m):
 
     Returns
     -------
-    fpoly : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
     """
     if isinstance(x, np.ndarray):
         n = x.size
@@ -147,7 +147,7 @@ def func_fit(x, y, ncoeff, invvar=None, function_name='legendre', ia=None,
 
     Returns
     -------
-    func_fit : :func:`tuple` of array-like
+    :func:`tuple` of array-like
         Fit coefficients, length `ncoeff`; fitted values.
 
     Raises
@@ -376,7 +376,7 @@ class TraceSet(object):
 
         Returns
         -------
-        xy : :func:`tuple` of array-like
+        :func:`tuple` of array-like
             The x, y positions.
         """
         from .misc import djs_laxisgen
@@ -427,7 +427,7 @@ class TraceSet(object):
 
         Returns
         -------
-        xnorm : array-like
+        array-like
             Normalized coordinates.
         """
         if jump:
@@ -456,7 +456,7 @@ def traceset2xy(tset, xpos=None, ignore_jump=False):
 
     Returns
     -------
-    traceset2xy : :func:`tuple` of array-like
+    :func:`tuple` of array-like
         The x, y positions.
     """
     return tset.xy(xpos, ignore_jump)
@@ -498,7 +498,7 @@ def xy2traceset(xpos, ypos, **kwargs):
 
     Returns
     -------
-    xy2traceset : :class:`TraceSet`
+    :class:`TraceSet`
         A :class:`TraceSet` object.
     """
     return TraceSet(xpos, ypos, **kwargs)

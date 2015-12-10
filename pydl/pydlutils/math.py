@@ -132,7 +132,7 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
 
     Returns
     -------
-    djs_median : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         The output.  If neither `dimension` nor `width` are set, this is a scalar
         value, just the output of ``numpy.median()``.  If `dimension` is set,
         then the result simply ``numpy.median(array,dimension)``.
@@ -252,7 +252,7 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
 
     Returns
     -------
-    djs_reject : :func:`tuple`
+    :func:`tuple`
         A tuple containing a mask where rejected data values are ``False`` and
         a boolean value set to ``True`` if `djs_reject` believes there is no
         further rejection to be done.
@@ -462,7 +462,7 @@ def find_contiguous(x):
 
     Returns
     -------
-    find_contiguous : :class:`list`
+    :class:`list`
         A list of indices of the longest contiguous non-zero sequence.
 
     Examples

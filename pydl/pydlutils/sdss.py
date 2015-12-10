@@ -26,7 +26,7 @@ def default_skyversion():
 
     Returns
     -------
-    default_skyversion : :class:`int`
+    :class:`int`
         The default skyversion number.
 
     Notes
@@ -48,16 +48,16 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
 
     Parameters
     ----------
-    run, camcol, field : int or array of int
+    run, camcol, field : :class:`int` or array of :class:`int`
         Run, camcol and field.  If arrays are passed,
         all must have the same length.
-    photolog_version : str, optional
+    photolog_version : :class:`str`, optional
         Use this version of photolog to obtain the obBadfields.par file,
         if $PHOTOLOG_DIR is not set.
 
     Returns
     -------
-    sdss_astrombad : ndarray of bool
+    :class:`numpy.ndarray` of :class:`bool`
         Array of bool.  ``True`` indicates the field is bad.
 
     Raises
@@ -155,7 +155,7 @@ def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
 
     Returns
     -------
-    sdss_flagexist : :class:`bool` or :func:`tuple`
+    :class:`bool` or :func:`tuple`
         A boolean value or a tuple of bool.
     """
     global maskbits
@@ -200,7 +200,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
 
     Returns
     -------
-    sdss_flagname : :class:`str` or :class:`list`
+    :class:`str` or :class:`list`
         The names of the bitmasks encoded in `flagvalue`.
 
     Raises
@@ -250,7 +250,7 @@ def sdss_flagval(flagname, bitname):
 
     Returns
     -------
-    sdss_flagval : :class:`numpy.uint64`
+    :class:`numpy.uint64`
         The value of the bitmask name(s).
 
     Raises
@@ -316,7 +316,7 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
 
     Returns
     -------
-    sdss_objid : :class:`numpy.ndarray` of :class:`numpy.int64`
+    :class:`numpy.ndarray` of :class:`numpy.int64`
         The ObjIDs of the objects.
 
     Raises
@@ -415,7 +415,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
 
     Returns
     -------
-    sdss_sweep_circle : `numpy.ndarray`
+    :class:`numpy.ndarray`
         The data extracted from the sweep files.
 
     Raises
@@ -544,7 +544,7 @@ def set_maskbits(idlutils_version='v5_5_8', maskbits_file=None):
 
     Returns
     -------
-    set_maskbits : :class:`dict`
+    :class:`dict`
         A dictionary of bitmasks suitable for caching.
 
     Raises

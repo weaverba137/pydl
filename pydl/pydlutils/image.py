@@ -23,7 +23,7 @@ def djs_maskinterp1(yval, mask, xval=None, const=False):
 
     Returns
     -------
-    djs_maskinterp1 : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         The `yval` array with masked values replaced by interpolated values.
     """
     import numpy as np
@@ -80,7 +80,7 @@ def djs_maskinterp(yval, mask, xval=None, axis=None, const=False):
 
     Returns
     -------
-    djs_maskinterp : :class:`numpy.ndarray`
+    :class:`numpy.ndarray`
         The interpolated array.
     """
     import numpy as np

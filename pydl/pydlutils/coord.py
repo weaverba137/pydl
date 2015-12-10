@@ -74,7 +74,7 @@ def munu_to_radec(munu, icrs_frame):
 
     Returns
     -------
-    munu_to_radec : :class:`~astropy.coordinates.ICRS`
+    :class:`~astropy.coordinates.ICRS`
         Equatorial coordinates (RA, Dec).
     """
     # from pydlutils.coord import stripe_to_eta
@@ -120,7 +120,7 @@ def radec_to_munu(icrs_frame, munu):
 
     Returns
     -------
-    radec_to_munu : :class:`~pydl.pydlutils.coord.SDSSMuNu`
+    :class:`~pydl.pydlutils.coord.SDSSMuNu`
         SDSS great circle coordinates (mu, nu).
     """
     # from pydlutils.coord import stripe_to_eta
@@ -172,7 +172,7 @@ def stripe_to_eta(stripe):
 
     Returns
     -------
-    stripe_to_eta : :class:`float` or :class:`numpy.ndarray`
+    :class:`float` or :class:`numpy.ndarray`
         The eta value in the SDSS (lambda,eta) coordinate system.
     """
     stripe_sep = 2.5
@@ -193,7 +193,7 @@ def stripe_to_incl(stripe):
 
     Returns
     -------
-    stripe_to_incl : :class:`float` or :class:`numpy.ndarray`
+    :class:`float` or :class:`numpy.ndarray`
         Inclination of the stripe relative to the equator (Dec = 0).
     """
     dec_center = 32.5
