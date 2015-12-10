@@ -20,8 +20,8 @@ def window_score(**kwargs):
     try:
         calib_dir_save = environ['PHOTO_CALIB']
     except KeyError:
-        raise PhotoopException(
-              'You have not set the environment variable PHOTO_CALIB!')
+        raise PhotoopException(('You have not set the environment variable ' +
+                               'PHOTO_CALIB!'))
     del environ['PHOTO_CALIB']
     #
     # Read the file
@@ -29,8 +29,8 @@ def window_score(**kwargs):
     try:
         resolve_dir = environ['PHOTO_RESOLVE']
     except KeyError:
-        raise PhotoopException(
-              'You have not set the environment variable PHOTO_RESOLVE!')
+        raise PhotoopException(('You have not set the environment variable ' +
+                               'PHOTO_RESOLVE!'))
     filename = join(resolve_dir, 'window_flist.fits')
     if 'rescore' in kwargs:
         fitsmode = 'readonly'

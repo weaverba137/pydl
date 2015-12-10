@@ -3,8 +3,8 @@
 
 
 def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
-              newloglam=None, wavemin=None, wavemax=None,
-              good_columns=False, verbose=False):
+                       newloglam=None, wavemin=None, wavemax=None,
+                       good_columns=False, verbose=False):
     """Handle the processing of input spectra through the
     :func:`~pydl.pydlspec2d.spec2d.combine1fiber` stage.
 
@@ -96,8 +96,10 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
                 indx = loglam[iobj, :] > 0
                 rowloglam = loglam[iobj, indx]
             flux1, ivar1 = combine1fiber(rowloglam-logshift[iobj],
-                flux[iobj, indx], fullloglam, objivar=ivar[iobj, indx],
-                binsz=dloglam, aesthetics=aesthetics, verbose=verbose)
+                                         flux[iobj, indx], fullloglam,
+                                         objivar=ivar[iobj, indx],
+                                         binsz=dloglam, aesthetics=aesthetics,
+                                         verbose=verbose)
             fullflux[iobj, :] = flux1
             fullivar[iobj, :] = ivar1
         #
@@ -175,9 +177,9 @@ def template_input(inputfile, dumpfile, flux, verbose):
     log.debug("Reading input data from {0}.".format(inputfile))
     par = yanny(inputfile)
     required_metadata = {'object': str, 'method': str, 'aesthetics': str,
-        'run2d': str, 'run1d': str,
-        'wavemin': float, 'wavemax': float, 'snmax': float,
-        'niter': int, 'nkeep': int, 'minuse': int}
+                         'run2d': str, 'run1d': str,
+                         'wavemin': float, 'wavemax': float, 'snmax': float,
+                         'niter': int, 'nkeep': int, 'minuse': int}
     metadata = dict()
     for key in required_metadata:
         try:
@@ -221,7 +223,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
             imissing = missing.nonzero()[0]
             for k in imissing:
                 log.error("Missing plate={0:d} mjd={1:d} fiberid={2:d}".format(
-                        slist.plate[k], slist.mjd[k], slist.fiberid[k]))
+                          slist.plate[k], slist.mjd[k], slist.fiberid[k]))
             raise ValueError("{0:d} missing object(s).".format(missing.sum()))
         #
         # Do not fit where the spectrum may be dominated by sky-sub residuals.
@@ -243,14 +245,18 @@ def template_input(inputfile, dumpfile, flux, verbose):
         except:
             objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
         newloglam = wavevector(np.log10(metadata['wavemin']),
-            np.log10(metadata['wavemax']), binsz=objdloglam)
+                               np.log10(metadata['wavemax']), binsz=objdloglam)
         #
         # Do PCA solution.
         #
         newflux, newivar, newloglam = preprocess_spectra(spplate['flux'],
-            objinvvar, loglam=spplate['loglam'], zfit=slist.zfit,
-            newloglam=newloglam, aesthetics=metadata['aesthetics'],
-            good_columns=good_columns, verbose=verbose)
+                                                         objinvvar,
+                                                         loglam=spplate['loglam'],
+                                                         zfit=slist.zfit,
+                                                         newloglam=newloglam,
+                                                         aesthetics=metadata['aesthetics'],
+                                                         good_columns=good_columns,
+                                                         verbose=verbose)
         if metadata['method'].lower() == 'pca':
             if metadata['object'].lower() == 'qso':
                 #
@@ -260,7 +266,8 @@ def template_input(inputfile, dumpfile, flux, verbose):
                 for ikeep in range(nkeep):
                     log.info("Solving for eigencomponent #{0:d} of {1:d}".format(ikeep+1, nkeep))
                     pcaflux1 = pca_solve(objflux, newivar,
-                        niter=metadata['niter'], nkeep=1, verbose=verbose)
+                                         niter=metadata['niter'], nkeep=1,
+                                         verbose=verbose)
                     if ikeep == 0:
                         #
                         # Create new pcaflux dict
@@ -281,8 +288,9 @@ def template_input(inputfile, dumpfile, flux, verbose):
                     #
                     acoeff = np.zeros((nobj, ikeep+1), dtype=pcaflux1['acoeff'].dtype)
                     for iobj in range(nobj):
-                        out = computechi2(newflux[iobj, :], np.sqrt(pcaflux1['newivar'][iobj, :]),
-                            pcaflux['flux'].T)
+                        out = computechi2(newflux[iobj, :],
+                                          np.sqrt(pcaflux1['newivar'][iobj, :]),
+                                          pcaflux['flux'].T)
                         acoeff[iobj, :] = out['acoeff']
                     #
                     # Prevent re-binning of spectra on subsequent calls to pca_solve()
@@ -300,12 +308,14 @@ def template_input(inputfile, dumpfile, flux, verbose):
                 # Do a normal simultaneous PCA solution
                 #
                 pcaflux = pca_solve(newflux, newivar,
-                    niter=metadata['niter'], nkeep=metadata['nkeep'],
-                    verbose=verbose)
+                                    niter=metadata['niter'],
+                                    nkeep=metadata['nkeep'],
+                                    verbose=verbose)
         elif metadata['method'].lower() == 'hmf':
             pcaflux = hmf_solve(newflux, newivar,
-                K=metadata['nkeep'], nonnegative=nonnegative, epsilon=epsilon,
-                verbose=verbose)
+                                K=metadata['nkeep'],
+                                nonnegative=nonnegative, epsilon=epsilon,
+                                verbose=verbose)
         else:
             raise ValueError("Unknown method: {0}!".format(metadata['method']))
         #
@@ -322,7 +332,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
                 medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
                 for i in range(metadata['nkeep']):
                     medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
-                        width=51, boundary='nearest')
+                                                   width=51, boundary='nearest')
                     medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
                 pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
         #
@@ -353,9 +363,9 @@ def template_input(inputfile, dumpfile, flux, verbose):
             ax = fig.add_subplot(111)
             for l in range(istart, iend+1):
                 p = ax.plot(10.0**pcaflux['newloglam'],
-                    pcaflux['newflux'][l, :] + separation*(l % nfluxes),
-                    colorvec[l % len(colorvec)]+'-',
-                    linewidth=1)
+                            pcaflux['newflux'][l, :] + separation*(l % nfluxes),
+                            colorvec[l % len(colorvec)]+'-',
+                            linewidth=1)
             ax.set_xlabel(r'Wavelength [$\AA$]')
             ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')
             ax.set_title('Input Spectra {0:04d}-{1:04d}'.format(istart+1, iend+1))
@@ -394,10 +404,10 @@ def template_input(inputfile, dumpfile, flux, verbose):
     p = ax.plot(aratio10, aratio20, marker='None', linestyle='None')
     for k in range(len(aratio10)):
         t = ax.text(aratio10[k], aratio20[k],
-            '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
-            horizontalalignment='center', verticalalignment='center',
-            color=colorvec[k % len(colorvec)],
-            fontproperties=smallfont)
+                    '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
+                    horizontalalignment='center', verticalalignment='center',
+                    color=colorvec[k % len(colorvec)],
+                    fontproperties=smallfont)
     # ax.set_xlim([aratio10.min(), aratio10.max])
     # ax.set_xlim([aratio20.min(), aratio20.max])
     ax.set_xlabel('Eigenvalue Ratio, $a_1/a_0$')
@@ -410,10 +420,10 @@ def template_input(inputfile, dumpfile, flux, verbose):
     p = ax.plot(aratio20, aratio30, marker='None', linestyle='None')
     for k in range(len(aratio10)):
         t = ax.text(aratio20[k], aratio30[k],
-            '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
-            horizontalalignment='center', verticalalignment='center',
-            color=colorvec[k % len(colorvec)],
-            fontproperties=smallfont)
+                    '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
+                    horizontalalignment='center', verticalalignment='center',
+                    color=colorvec[k % len(colorvec)],
+                    fontproperties=smallfont)
     # ax.set_xlim([aratio10.min(), aratio10.max])
     # ax.set_xlim([aratio20.min(), aratio20.max])
     ax.set_xlabel('Eigenvalue Ratio, $a_2/a_0$')
@@ -447,7 +457,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
          fits.Column(name='fiberid', format='J', array=slist.fiberid)]
     if metadata['object'] == 'star':
         c.append(fits.Column(name='cz', format='D', unit='km/s',
-            array=slist.cz))
+                 array=slist.cz))
     else:
         c.append(fits.Column(name='zfit', format='D', array=slist.zfit))
     hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c))
@@ -490,23 +500,19 @@ def template_input_main():  # pragma: no cover
     # Get Options
     #
     parser = argparse.ArgumentParser(description="Compute spectral templates.",
-        prog=os.path.basename(sys.argv[0]))
-    # parser.add_argument('-D', '--dims', action='store', type=int, dest='K',
-    #     metavar='K', default=4, help='Set the number of functions to model (default 4).')
+                                     prog=os.path.basename(sys.argv[0]))
     parser.add_argument('-d', '--dump', action='store', dest='dump',
-        metavar='FILE', default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.dump'),
-        help='Dump data to a pickle file.')
-    # parser.add_argument('-e', '--epsilon', action='store', type=float, dest='epsilon',
-    #     metavar='EPSILON', default=1.0, help='Set the epsilon parameter (default 1.0). Set to 0 to turn off entirely')
+                        metavar='FILE',
+                        default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.dump'),
+                        help='Dump data to a pickle file.')
     parser.add_argument('-F', '--flux', action='store_true', dest='flux',
-        help='Plot input spectra.')
+                        help='Plot input spectra.')
     parser.add_argument('-f', '--file', action='store', dest='inputfile',
-        metavar='FILE', default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.par'),
-        help='Read input spectra and redshifts from FILE.')
-    # parser.add_argument('-n', '--nonnegative', action='store_true', dest='nonnegative',
-    #     help='Use non-negative HMF method.')
+                        metavar='FILE',
+                        default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.par'),
+                        help='Read input spectra and redshifts from FILE.')
     parser.add_argument('-v', '--verbose', action='store_true', dest='verbose',
-        help='Print lots of extra information.')
+                        help='Print lots of extra information.')
     options = parser.parse_args()
     template_input(options.inputfile, options.dump, options.flux, options.verbose)
     return 0

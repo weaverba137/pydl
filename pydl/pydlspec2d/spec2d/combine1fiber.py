@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **kwargs):
+def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
+                  **kwargs):
     """Combine several spectra of the same object, or resample a single spectrum.
 
     Parameters
@@ -118,8 +119,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
         warn('No good points!', Pydlspec2dUserWarning)
         bitval = sdss_flagval('SPPIXMASK', 'NODATA')
         if 'finalmask' in kwargs:
-            bitval = bitval | (sdss_flagval('SPPIXMASK', 'NOPLUG') *
-                (finalmask[0] & sdss_flagval('SPPIXMASK', 'NODATA')))
+            bitval |= (sdss_flagval('SPPIXMASK', 'NOPLUG') *
+                       (finalmask[0] & sdss_flagval('SPPIXMASK', 'NODATA')))
         andmask = andmask | bitval
         ormask = ormask | bitval
         return (newflux, newivar)
@@ -155,16 +156,18 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
                     # Fit without variance
                     #
                     sset, bmask = iterfit(inloglam[ss], objflux[ss],
-                        nord=nord, groupbadpix=True, requiren=1, bkspace=bkptbin,
-                        silent=True)
+                                          nord=nord, groupbadpix=True,
+                                          requiren=1, bkspace=bkptbin,
+                                          silent=True)
                 else:
                     #
                     # Fit with variance
                     #
                     sset, bmask = iterfit(inloglam[ss], objflux[ss],
-                        invvar=objivar[ss],
-                        nord=nord, groupbadpix=True, requiren=1, bkspace=bkptbin,
-                        silent=True)
+                                          invvar=objivar[ss],
+                                          nord=nord, groupbadpix=True,
+                                          requiren=1, bkspace=bkptbin,
+                                          silent=True)
                 if np.sum(np.absolute(sset.coeff)) == 0:
                     sset = None
                     bmask = np.zeros(len(ss))
@@ -175,7 +178,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
                 sset = None
                 warn('Not enough data for B-spline fit!', Pydlspec2dUserWarning)
             inside = ((newloglam >= inloglam[ss].min()-EPS) &
-                (newloglam <= inloglam[ss].max()+EPS)).nonzero()[0]
+                      (newloglam <= inloglam[ss].max()+EPS)).nonzero()[0]
             #
             # It is possible for numinside to be zero, if the input data points
             # span an extremely small wavelength range, within which there are
@@ -205,7 +208,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
                         log.debug('Replaced {0:d} pixels in objivar.'.format(len(ss[ireplace])))
                     if 'finalmask' in kwargs:
                         finalmask[ss[ireplace]] = (finalmask[ss[ireplace]] |
-                            sdss_flagval('SPPIXMASK', 'COMBINEREJ'))
+                                                   sdss_flagval('SPPIXMASK',
+                                                   'COMBINEREJ'))
             fullcombmask[ss] = bmask
         #
         # Restore objivar
@@ -222,21 +226,21 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
             these = specnum == j
             if these.any():
                 inbetween = ((newloglam >= inloglam[these].min()) &
-                    (newloglam <= inloglam[these].max()))
+                             (newloglam <= inloglam[these].max()))
                 if inbetween.any():
                     jnbetween = inbetween.nonzero()[0]
                     #
                     # Conserve inverse variance by doing a linear interpolation
                     # on that quantity.
                     #
-                    result = np.interp(newloglam[jnbetween],
-                        inloglam[these], objivar[these]*fullcombmask[these])
+                    result = np.interp(newloglam[jnbetween], inloglam[these],
+                                       objivar[these]*fullcombmask[these])
                     #
                     # Grow the fullcombmask below to reject any new sampling
                     # containing even a partial masked pixel.
                     #
                     smask = np.interp(newloglam[jnbetween], inloglam[these],
-                        fullcombmask[these].astype(inloglam.dtype))
+                                      fullcombmask[these].astype(inloglam.dtype))
                     result *= smask >= (1.0 - EPS)
                     newivar[jnbetween] += result*newmask[jnbetween]
                 lowside = np.floor((inloglam[these]-newloglam[0])/binsz).astype('i4')
@@ -252,10 +256,14 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False, **k
                 #
                 if 'indisp' in kwargs:
                     newdispweight[jnbetween] += result
-                    newdisp[jnbetween] += result * np.interp(newloglam[jnbetween],
-                        inloglam[these], indisp[these])
-                    newsky[jnbetween] += result * np.interp(newloglam[jnbetween],
-                        inloglam[these], skyflux[these])
+                    newdisp[jnbetween] += (result *
+                                           np.interp(newloglam[jnbetween],
+                                                     inloglam[these],
+                                                     indisp[these]))
+                    newsky[jnbetween] += (result *
+                                          np.interp(newloglam[jnbetween],
+                                                    inloglam[these],
+                                                    skyflux[these]))
         if 'indisp' in kwargs:
             newdisp /= newdispweight + (newdispweight == 0)
             newsky /= newdispweight + (newdispweight == 0)

@@ -68,9 +68,9 @@ def unwrap_objid(objid):
     else:
         raise ValueError('Unrecognized type for objid!')
     unwrap = np.recarray(objid.shape,
-                      dtype=[('skyversion', 'i4'), ('rerun', 'i4'),
-                             ('run', 'i4'), ('camcol', 'i4'),
-                             ('frame', 'i4'), ('id', 'i4')])
+                         dtype=[('skyversion', 'i4'), ('rerun', 'i4'),
+                                ('run', 'i4'), ('camcol', 'i4'),
+                                ('frame', 'i4'), ('id', 'i4')])
     unwrap.skyversion = np.bitwise_and(tempobjid >> 59, 2**4 - 1)
     unwrap.rerun = np.bitwise_and(tempobjid >> 48, 2**11 - 1)
     unwrap.run = np.bitwise_and(tempobjid >> 32, 2**16 - 1)

@@ -56,8 +56,10 @@ class TestPydl(object):
         assert n == 0
 
     def test_median(self):
-        odd_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], dtype=np.float32)
-        even_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=np.float32)
+        odd_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+                            dtype=np.float32)
+        even_data = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                             dtype=np.float32)
         assert median(odd_data) == 7
         assert median(odd_data, even=True) == 7
         assert median(even_data) == 7
@@ -69,7 +71,7 @@ class TestPydl(object):
         assert (median(odd_data2, 3) == odd_data2).all()
         assert (median(odd_data2, axis=0) == odd_data).all()
         assert (median(odd_data2, axis=1) ==
-            7*np.ones((odd_data2.shape[0],), dtype=odd_data2.dtype)).all()
+                7*np.ones((odd_data2.shape[0],), dtype=odd_data2.dtype)).all()
 
     def test_pcomp(self):
         test_data_file = join(self.data_dir, 'pcomp_data.txt')

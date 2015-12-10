@@ -64,8 +64,8 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
         flux_interp = djs_maskinterp(flux, mask, iaxis=0)
     res = np.zeros((nTrace, len(ffiles)), dtype=flux.dtype)
     for i, f in enumerate(ffiles):
-        filter_data = ascii.read(f, comment='#.*',
-            names=('lam', 'respt', 'resbig', 'resnoa', 'xatm'))
+        filter_data = ascii.read(f, comment='#.*', names=('lam', 'respt',
+                                 'resbig', 'resnoa', 'xatm'))
         filtimg = logdiff * np.interp(newwaveimg.flatten(),
                                       filter_data['lam'].data,
                                       filter_data['respt'].data).reshape(logdiff.shape)

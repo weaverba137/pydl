@@ -46,7 +46,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
     log.info("Building PCA from {0:d} object spectra.".format(nobj))
     nzi = newivar.nonzero()
     first_nonzero = (np.arange(nobj, dtype=nzi[0].dtype),
-        np.array([nzi[1][nzi[0] == k].min() for k in range(nobj)]))
+                     np.array([nzi[1][nzi[0] == k].min() for k in range(nobj)]))
     #
     # Construct the synthetic weight vector, to be used when replacing the
     # low-S/N object pixels with the reconstructions.
@@ -112,9 +112,10 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
             sqivar = np.sqrt(maskivar)
             for iobj in range(nobj):
                 out = computechi2(newflux[iobj, :], sqivar[iobj, :],
-                    pres[:, 0:nkeep])
+                                  pres[:, 0:nkeep])
                 filtflux[iobj, :] = (maskivar[iobj, :] * newflux[iobj, :] +
-                    synwvec*out.yfit) / (maskivar[iobj, :] + synwvec)
+                                     synwvec*out.yfit) / (maskivar[iobj, :] +
+                                                          synwvec)
                 acoeff[iobj, :] = out.acoeff
             log.info("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(ipiter+1, time.time()-t0))
         #

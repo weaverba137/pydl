@@ -95,13 +95,13 @@ def findspec(*args, **kwargs):
     # Create output structure
     #
     slist_type = np.dtype([('PLATE', 'i4'), ('MJD', 'i4'), ('FIBERID', 'i4'),
-        ('RA', 'f8'), ('DEC', 'f8'), ('MATCHRAD', 'f8')])
+                          ('RA', 'f8'), ('DEC', 'f8'), ('MATCHRAD', 'f8')])
     #
     # Match all plates with objects
     #
-    imatch1, itmp, dist12 = spherematch(ra, dec,
-        plist[qfinal].field('RACEN'), plist[qfinal].field('DECCEN'),
-        searchrad+1.55, maxmatch=0)
+    imatch1, itmp, dist12 = spherematch(ra, dec, plist[qfinal].field('RACEN'),
+                                        plist[qfinal].field('DECCEN'),
+                                        searchrad+1.55, maxmatch=0)
     if imatch1.size == 0:
         return None
     imatch2 = idone[itmp]
@@ -114,13 +114,14 @@ def findspec(*args, **kwargs):
         n_total = np.zeros(plist.size, dtype='i4') + 640
     iplate = imatch2[uniq(imatch2, imatch2.argsort())]
     i0 = 0
-    plugmap = np.zeros(n_total[iplate].sum(),
-        dtype=[('PLATE', 'i4'), ('MJD', 'i4'), ('FIBERID', 'i4'),
-        ('RA', 'd'), ('DEC', 'd')])
+    plugmap = np.zeros(n_total[iplate].sum(), dtype=[('PLATE', 'i4'),
+                       ('MJD', 'i4'), ('FIBERID', 'i4'),
+                       ('RA', 'd'), ('DEC', 'd')])
     for i in range(iplate.size):
         spplate = pydl.pydlspec2d.spec1d.readspec(plist[iplate[i]].field('PLATE'),
-            mjd=plist[iplate[i]].field('MJD'),
-            topdir=topdir, run2d=run2d, run1d=run1d)
+                                                  mjd=plist[iplate[i]].field('MJD'),
+                                                  topdir=topdir,
+                                                  run2d=run2d, run1d=run1d)
         index_to = i0 + np.arange(n_total[iplate[i]], dtype='i4')
         plugmap['PLATE'][index_to] = plist[iplate[i]].field('PLATE')
         plugmap['MJD'][index_to] = plist[iplate[i]].field('MJD')
@@ -136,8 +137,11 @@ def findspec(*args, **kwargs):
         # Return only best match per object
         #
         slist = np.zeros(ra.size, dtype=slist_type)
-        spplate = pydl.pydlspec2d.spec1d.readspec(plugmap[i2]['PLATE'], plugmap[i2]['FIBERID'],
-            mjd=plugmap[i2]['MJD'], topdir=topdir, run2d=run2d, run1d=run1d)
+        spplate = pydl.pydlspec2d.spec1d.readspec(plugmap[i2]['PLATE'],
+                                                  plugmap[i2]['FIBERID'],
+                                                  mjd=plugmap[i2]['MJD'],
+                                                  topdir=topdir,
+                                                  run2d=run2d, run1d=run1d)
         sn = spplate['zans']['SN_MEDIAN']
         isort = (i1 + np.where(sn > 0, sn, 0)/(sn+1.0).max()).argsort()
         i1 = i1[isort]

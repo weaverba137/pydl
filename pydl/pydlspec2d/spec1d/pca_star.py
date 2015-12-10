@@ -22,7 +22,7 @@ def pca_star(**kwargs):
         inputfile = kwargs['inputfile']
     else:
         inputfile = os.path.join(os.getenv('IDLSPEC2D_DIR'),
-            'templates', 'eigeninput_star.par')
+                                 'templates', 'eigeninput_star.par')
     wavemin = 0
     wavemax = 0
     snmax = 100.0
@@ -42,7 +42,7 @@ def pca_star(**kwargs):
     par = yanny.yanny(inputfile, np=True)
     slist = par['EIGENOBJ']
     spplate = readspec(slist['plate'], slist['fiberid'], mjd=slist['mjd'],
-                        align=True, **kwargs)
+                       align=True, **kwargs)
     objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
     #
     # Insist that all of the requested spectra exist.
@@ -52,7 +52,7 @@ def pca_star(**kwargs):
         imissing = missing.nonzero()[0]
         for k in imissing:
             print("Missing plate={0:d} mjd={1:d} fiber={2:d}".format(
-                    plate[k], mjd[k], fiber[k]))
+                  plate[k], mjd[k], fiber[k]))
         raise ValueError("{0:d} missing object(s).".format(missing.sum()))
     #
     # Do not fit where the spectrum may be dominated by sky-sub residuals.
@@ -95,9 +95,9 @@ def pca_star(**kwargs):
             nkeep = 2
         newloglam = spplate['loglam'][0, :]
         pcaflux = pca_solve(spplate['flux'][indx, :], objinvvar[indx, :],
-            spplate['loglam'][indx, :], slist['cz'][indx]/cspeed,
-            wavemin=wavemin, wavemax=wavemax, niter=niter, nkeep=nkeep,
-            newloglam=newloglam)
+                            spplate['loglam'][indx, :], slist['cz'][indx]/cspeed,
+                            wavemin=wavemin, wavemax=wavemax, niter=niter, nkeep=nkeep,
+                            newloglam=newloglam)
         #
         # Interpolate over bad flux values in the middle of a spectrum,
         # and set fluxes to zero at the blue+red ends of the spectrum
@@ -110,7 +110,7 @@ def pca_star(**kwargs):
         #
         for j in range(nkeep):
             pcaflux['flux'][j, :] = djs_maskinterp(pcaflux['flux'][j, :],
-                                                    qbad, const=True)
+                                                   qbad, const=True)
         #
         # Set bad pixels at the very start or end of the spectrum to zero
         # instead.
@@ -173,9 +173,9 @@ def pca_star(**kwargs):
                 ax.set_ylabel('Flux [arbitrary units]')
                 ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
             t = ax.text(10.0**pcaflux['newloglam'][-1], plotflux[-1],
-                subclasslist[isub],
-                horizontalalignment='right', verticalalignment='center',
-                color=colorvec[isub % len(colorvec)], fontproperties=smallfont)
+                        subclasslist[isub],
+                        horizontalalignment='right', verticalalignment='center',
+                        color=colorvec[isub % len(colorvec)], fontproperties=smallfont)
         fig.savefig(outfile+'.{0}.png'.format(c))
         pylab.close(fig)
         #
@@ -190,11 +190,10 @@ def pca_star(**kwargs):
                         marker='None', linestyle='None')
             for k in range(len(indx)):
                 t = ax.text(thesesubclassnum[isort[k]], allratio[isort[k]],
-                    "%04d-%04d" % (slist['plate'][indx[isort[k]]],
-                    slist['fiberid'][indx[isort[k]]]),
-                    horizontalalignment='center', verticalalignment='center',
-                    color=colorvec[k % len(colorvec)],
-                    fontproperties=smallfont)
+                            "%04d-%04d" % (slist['plate'][indx[isort[k]]], slist['fiberid'][indx[isort[k]]]),
+                            horizontalalignment='center', verticalalignment='center',
+                            color=colorvec[k % len(colorvec)],
+                            fontproperties=smallfont)
             ax.set_xlabel('Subclass')
             ax.set_xticks(np.arange(nsubclass))
             ax.set_xticklabels(subclasslist)
@@ -213,7 +212,7 @@ def pca_star(**kwargs):
         pyfits.Column(name='mjd', format='J', array=slist['mjd']),
         pyfits.Column(name='fiber', format='J', array=slist['fiberid']),
         pyfits.Column(name='redshift', format='D', unit='km/s',
-                        array=slist['cz'])]))
+                      array=slist['cz'])]))
     hdulist = pyfits.HDUList([hdu0, hdu1])
     hdulist[0].header.update('OBJECT', 'STAR')
     hdulist[0].header.update('COEFF0', pcaflux['newloglam'][0])
@@ -221,9 +220,9 @@ def pca_star(**kwargs):
     hdulist[0].header.update('IDLUTILS', 'pydlutils', 'Version of idlutils')
     hdulist[0].header.update('SPEC2D', 'eigenspectra', 'Version of idlspec2d')
     hdulist[0].header.update('RUN2D', os.getenv('RUN2D'),
-                            'Version of 2d reduction')
+                             'Version of 2d reduction')
     hdulist[0].header.update('RUN1D', os.getenv('RUN1D'),
-                            'Version of 1d reduction')
+                             'Version of 1d reduction')
     for i in range(len(namearr)):
         hdulist[0].header.update("NAME%d" % i, namearr[i]+' ')
     hdulist[1].header.update('FILENAME', inputfile)

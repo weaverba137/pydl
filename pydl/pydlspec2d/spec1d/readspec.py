@@ -108,7 +108,7 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
         # thisplate = int(p>>16)
         # thismjd = int(np.bitwise_and(p, (1<<16)-1))
         pmjdindex = ((platevec == thisplate) &
-                    (mjdvec == thismjd)).nonzero()[0]
+                     (mjdvec == thismjd)).nonzero()[0]
         thisfiber = fibervec[pmjdindex]
         # log.debug(type(thisplate), type(thismjd))
         # log.debug(repr(thisfiber))
@@ -184,22 +184,21 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
                         spplate_data['plugmap'][c] = np.concatenate(
                             (spplate_data['plugmap'][c], tmp[c]))
                 else:
-                    spplate_data[hdunames[k]] = spec_append(
-                                spplate_data[hdunames[k]], tmp, pixshift=ps)
+                    spplate_data[hdunames[k]] = spec_append(spplate_data[hdunames[k]], tmp, pixshift=ps)
         spplate.close()
         #
         # Read photoPlate information, if available
         #
         photofile = os.path.join(sppath[0],
-                                "photoPlate-{0}.fits".format(pmjdstr))
+                                 "photoPlate-{0}.fits".format(pmjdstr))
         if not os.path.exists(photofile):
             #
             # Hmm, maybe this is an SDSS-I,II plate
             #
             photofile = os.path.join(os.getenv('SPECTRO_MATCH'), run2d,
-                os.path.basename(os.getenv('PHOTO_RESOLVE')),
-                    "{0:04d}".format(int(thisplate)),
-                    "photoPlate-{0}.fits".format(pmjdstr))
+                                     os.path.basename(os.getenv('PHOTO_RESOLVE')),
+                                     "{0:04d}".format(int(thisplate)),
+                                     "photoPlate-{0}.fits".format(pmjdstr))
         if os.path.exists(photofile):
             photop = pyfits.open(photofile)
             tmp = photop[1].data[thisfiber-1]
@@ -218,10 +217,10 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
         #
         if 'znum' in kwargs:
             zfile = os.path.join(sppath[0], run1d,
-                                "spZall-{0}.fits".format(pmjdstr))
+                                 "spZall-{0}.fits".format(pmjdstr))
         else:
             zfile = os.path.join(sppath[0], run1d,
-                                "spZbest-{0}.fits".format(pmjdstr))
+                                 "spZbest-{0}.fits".format(pmjdstr))
         if os.path.exists(zfile):
             spz = pyfits.open(zfile)
             if 'znum' in kwargs:

@@ -261,8 +261,8 @@ def hmf_solve(newflux, newivar,
     if nobj == 1:
         fluxdict['flux'] = newflux.astype('f')
         return fluxdict
-    a, g = hmf_iterate(newflux, newivar,
-        K=K, nonnegative=nonnegative, epsilon=epsilon)
+    a, g = hmf_iterate(newflux, newivar, K=K, nonnegative=nonnegative,
+                       epsilon=epsilon)
     fluxdict['acoeff'] = a
     fluxdict['flux'] = g
     return fluxdict

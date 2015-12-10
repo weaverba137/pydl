@@ -14,8 +14,8 @@ def window_read(**kwargs):
     import numpy as np
     resolve_dir = getenv('PHOTO_RESOLVE')
     if resolve_dir is None:
-        raise PhotoopException(
-              'You have not set the environment variable PHOTO_RESOLVE!')
+        raise PhotoopException(('You have not set the environment variable ' +
+                               'PHOTO_RESOLVE!'))
     if 'silent' not in kwargs:
         kwargs['silent'] = True
     r = dict()
