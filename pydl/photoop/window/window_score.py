@@ -4,7 +4,7 @@
 
 def window_score(**kwargs):
     """For uber-resolve, score all the fields from zero to one.
-    
+
     If 'rescore' is set, then write a new file 'window_flist_rescore.fits'
     rather than over-writing the file 'window_flist.fits'
     """
