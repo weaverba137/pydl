@@ -61,7 +61,7 @@ class bspline(object):
             rangex = x.max() - startx
             if 'placed' in kwargs:
                 w = ((kwargs['placed'] >= startx) &
-                    (kwargs['placed'] <= startx+rangex))
+                     (kwargs['placed'] <= startx+rangex))
                 if w.sum() < 2:
                     bkpt = np.arange(2, dtype='f') * rangex + startx
                 else:
@@ -106,7 +106,7 @@ class bspline(object):
         for i in np.arange(1, nord, dtype=np.float32):
             fullbkpt = np.insert(fullbkpt, 0, bkpt[0]-bkspace*i)
             fullbkpt = np.insert(fullbkpt, fullbkpt.shape[0],
-                bkpt[nshortbkpt-1] + bkspace*i)
+                                 bkpt[nshortbkpt-1] + bkspace*i)
         #
         # Set the attributes
         #
@@ -385,14 +385,13 @@ class bspline(object):
         yy[xsort] = yfit
         mask = np.ones(x.shape, dtype='bool')
         gb = self.breakpoints[goodbk]
-        outside = ((x < gb[self.nord-1]) |
-            (x > gb[n]))
+        outside = ((x < gb[self.nord-1]) | (x > gb[n]))
         if outside.any():
             mask[outside] = False
         hmm = ((np.diff(goodbk) > 2).nonzero())[0]
         for jj in range(hmm.size):
             inside = ((x >= self.breakpoints[goodbk[hmm[jj]]]) &
-                (x <= self.breakpoints[goodbk[hmm[jj]+1]-1]))
+                      (x <= self.breakpoints[goodbk[hmm[jj]+1]-1]))
             if inside.any():
                 mask[inside] = False
         return (yy, mask)
@@ -634,14 +633,15 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
                     else:
                         sset.mask[goodbk[ileft]] = False
             error, yfit = sset.fit(xwork, ywork, invwork*maskwork,
-                x2=x2work)
+                                   x2=x2work)
         iiter += 1
         inmask = maskwork
         if error == -2:
             return (sset, outmask)
         elif error == 0:
-            maskwork, qdone = djs_reject(ywork, yfit, invvar=invwork, inmask=inmask,
-                outmask=maskwork, upper=upper, lower=lower)
+            maskwork, qdone = djs_reject(ywork, yfit, invvar=invwork,
+                                         inmask=inmask, outmask=maskwork,
+                                         upper=upper, lower=lower)
         else:
             pass
     outmask[xsort] = maskwork

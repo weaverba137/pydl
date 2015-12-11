@@ -94,8 +94,7 @@ def djs_maskinterp(yval, mask, xval=None, axis=None, const=False):
         ynew = djs_maskinterp1(yval, mask, xval=xval, const=const)
     else:
         if axis is None:
-            raise ValueError(
-                  'Must set axis if yval has more than one dimension.')
+            raise ValueError('Must set axis if yval has more than one dimension.')
         if axis < 0 or axis > ndim-1 or axis - int(axis) != 0:
             raise ValueError('Invalid axis value.')
         ynew = np.zeros(yval.shape, dtype=yval.dtype)

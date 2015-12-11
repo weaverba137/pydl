@@ -105,7 +105,7 @@ def set_use_caps(x, cm, polygon_use_caps, add=False, tol=1.0e-10,
                         if np.sum((x[i]-x[j])**2) < t2:
                             if ((np.absolute(cm[i]-cm[j]) < tol) or
                                     ((cm[i] + cm[j]) < tol and not
-                                    allow_neg_doubles)):
+                                     allow_neg_doubles)):
                                 #
                                 # Don't use
                                 #
