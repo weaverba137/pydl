@@ -1,12 +1,11 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-#
 import numpy as np
 from astropy.utils import lazyproperty
-#
+
+
 class pcomp(object):
-    """Replicates the IDL PCOMP() function.
+    """Replicates the IDL ``PCOMP()`` function.
 
     Parameters
     ----------
@@ -29,15 +28,16 @@ class pcomp(object):
     Examples
     --------
     """
-    def __init__(self,x,standardize=False,covariance=False):
+
+    def __init__(self, x, standardize=False, covariance=False):
         from scipy.linalg import eigh
         if x.ndim != 2:
             raise ValueError('Input array must be two-dimensional')
-        no,nv = x.shape
+        no, nv = x.shape
         self._nv = nv
         if standardize:
-            xstd = x - np.tile(x.mean(0),no).reshape(x.shape)
-            s = np.tile(xstd.std(0),no).reshape(x.shape)
+            xstd = x - np.tile(x.mean(0), no).reshape(x.shape)
+            s = np.tile(xstd.std(0), no).reshape(x.shape)
             self._array = xstd/s
             self._xstd = xstd
         else:
@@ -45,9 +45,9 @@ class pcomp(object):
             self._xstd = None
         self._standardize = standardize
         if covariance:
-            self._c = np.cov(self._array,rowvar=0)
+            self._c = np.cov(self._array, rowvar=0)
         else:
-            self._c = np.corrcoef(self._array,rowvar=0)
+            self._c = np.corrcoef(self._array, rowvar=0)
         self._covariance = covariance
         #
         # eigh is used for symmetric matrices
@@ -58,41 +58,34 @@ class pcomp(object):
         #
         ie = evals.argsort()[::-1]
         self._evals = evals[ie]
-        self._evecs = evecs[:,ie]
+        self._evecs = evecs[:, ie]
         #
         # If necessary, add code to fix the signs of the eigenvectors.
         # http://www3.interscience.wiley.com/journal/117912150/abstract
         #
         return
-    #
-    #
-    #
+
     @lazyproperty
     def coefficients(self):
         """The principal components.  These are the coefficients of `derived`.
         Basically, they are a re-scaling of the eigenvectors.
         """
-        return self._evecs * np.tile(np.sqrt(self._evals),self._nv).reshape(self._nv,self._nv)
-    #
-    #
-    #
+        return self._evecs * np.tile(np.sqrt(self._evals), self._nv).reshape(
+            self._nv, self._nv)
+
     @lazyproperty
     def derived(self):
         """An N x M array containing the derived variables."""
-        derived_data = np.dot(self._array,self.coefficients)
+        derived_data = np.dot(self._array, self.coefficients)
         if self._standardize:
             derived_data += self._xstd
         return derived_data
-    #
-    #
-    #
+
     @lazyproperty
     def variance(self):
         """An array of the M variances of each derived variable."""
         return self._evals/self._c.trace()
-    #
-    #
-    #
+
     @lazyproperty
     def eigenvalues(self):
         """An array of the M eigenvalues that correspond to the principal

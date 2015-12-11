@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def filtername(f):
     """Return the name of a filter given its number.
 
@@ -10,7 +12,7 @@ def filtername(f):
 
     Returns
     -------
-    filtername : :class:`str`
+    :class:`str`
         The corresponding filter name.
 
     Examples
@@ -19,7 +21,7 @@ def filtername(f):
     'u'
     """
     from astropy.extern.six import string_types
-    if isinstance(f,string_types):
+    if isinstance(f, string_types):
         return f
-    fname = ('u','g','r','i','z')
+    fname = ('u', 'g', 'r', 'i', 'z')
     return fname[f]

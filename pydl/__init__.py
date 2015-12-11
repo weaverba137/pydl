@@ -22,15 +22,17 @@ from ._astropy_init import *
 # For egg_info test builds to pass, put package imports here.
 if not _ASTROPY_SETUP_:
     from .file_lines import file_lines
+    from .median import median
     from .pcomp import pcomp
     from .smooth import smooth
     from .uniq import uniq
-    from . import goddard
-    from . import photoop
-    from . import pydlutils
-    from . import pydlspec2d
+    # from . import goddard
+    # from . import photoop
+    # from . import pydlutils
+    # from . import pydlspec2d
+
 
 class PydlException(Exception):
     pass
 
-__all__ = ['file_lines', 'pcomp', 'smooth', 'uniq', 'PydlException']
+__all__ = ['file_lines', 'median', 'pcomp', 'smooth', 'uniq', 'PydlException']

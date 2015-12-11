@@ -1,5 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def test_aesthetics():
     from .. import aesthetics
     from ... import Pydlspec2dException
@@ -11,7 +13,7 @@ def test_aesthetics():
     #
     # No bad
     #
-    f = aesthetics(flux,ivar)
+    f = aesthetics(flux, ivar)
     assert (f == flux).all()
     #
     # Bad points
@@ -21,9 +23,9 @@ def test_aesthetics():
     # Bad method
     #
     with raises(Pydlspec2dException):
-        f = aesthetics(flux,ivar,'badmethod')
+        f = aesthetics(flux, ivar, 'badmethod')
     #
     # Nothing
     #
-    f = aesthetics(flux,ivar,'nothing')
+    f = aesthetics(flux, ivar, 'nothing')
     assert (f == flux).all()

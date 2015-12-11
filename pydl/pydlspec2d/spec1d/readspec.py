@@ -1,8 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import print_function
-#
-def readspec(platein,mjd=None,fiber='all',**kwargs):
+
+
+def readspec(platein, mjd=None, fiber='all', **kwargs):
     """Read SDSS/BOSS spec2d & spec1d files.
 
     Parameters
@@ -10,9 +10,11 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
     platein : :class:`int` or :class:`numpy.ndarray`
         Plate number(s).
     mjd : :class:`int` or :class:`numpy.ndarray`, optional
-        MJD numbers.  If not provided, they will be calculated by :func:`latest_mjd`.
+        MJD numbers.  If not provided, they will be calculated by
+        :func:`latest_mjd`.
     fiber : array-like, optional
-        Fibers to read.  If not set, all fibers from all plates will be returned.
+        Fibers to read.  If not set, all fibers from all plates will be
+        returned.
     topdir : :class:`str`, optional
         Override the value of :envvar:`BOSS_SPECTRO_REDUX`.
     run2d : :class:`str`, optional
@@ -28,11 +30,12 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
 
     Returns
     -------
-    readspec : :class:`dict`
+    :class:`dict`
         A dictionary containing the data read.
     """
     import os
     import os.path
+    from astropy import log
     from astropy.io import fits as pyfits
     import numpy as np
     from . import number_of_fibers, latest_mjd, spec_path, spec_append
@@ -41,7 +44,7 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
         plate = platein
     except TypeError:
         nplate = 1
-        plate = np.array([platein],dtype='i4')
+        plate = np.array([platein], dtype='i4')
     if 'run2d' in kwargs:
         run2d = kwargs['run2d']
     else:
@@ -54,10 +57,10 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
         #
         # Read all fibers
         #
-        nfibers = number_of_fibers(plate,**kwargs)
+        nfibers = number_of_fibers(plate, **kwargs)
         total_fibers = nfibers.sum()
-        platevec = np.zeros(total_fibers,dtype='i4')
-        fibervec = np.zeros(total_fibers,dtype='i4')
+        platevec = np.zeros(total_fibers, dtype='i4')
+        fibervec = np.zeros(total_fibers, dtype='i4')
         k = 0
         for p in np.unique(plate):
             n = np.unique(nfibers[plate == p])[0]
@@ -72,15 +75,15 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
         if nplate > 1 and nfiber > 1 and nplate != nfiber:
             raise TypeError("Plate & Fiber must have the same length!")
         if nplate > 1:
-            platevec = np.array(plate,dtype='i4')
+            platevec = np.array(plate, dtype='i4')
         else:
-            platevec = np.zeros(nfiber,dtype='i4') + plate
+            platevec = np.zeros(nfiber, dtype='i4') + plate
         if nfiber > 1:
-            fibervec = np.array(fiber,dtype='i4')
+            fibervec = np.array(fiber, dtype='i4')
         else:
-            fibervec = np.zeros(nplate,dtype='i4') + fiber
+            fibervec = np.zeros(nplate, dtype='i4') + fiber
     if 'mjd' is None:
-        mjdvec = latest_mjd(platevec,**kwargs)
+        mjdvec = latest_mjd(platevec, **kwargs)
     else:
         try:
             nmjd = len(mjd)
@@ -88,31 +91,35 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
             nmjd = 1
         if nmjd != nplate:
             raise TypeError("Plate & MJD must have the same length!")
-        mjdvec = np.zeros(nplate,dtype='i4') + mjd
+        mjdvec = np.zeros(nplate, dtype='i4') + mjd
     #
     # Now select unique plate-mjd combinations & read them
     #
-    pmjd = ((np.array(platevec,dtype='u8') << 16) +
-        np.array(mjdvec,dtype='u8'))
-    #print(pmjd)
+    pmjd = ((np.array(platevec, dtype='u8') << 16) +
+            np.array(mjdvec, dtype='u8'))
+    # log.debug(pmjd)
     upmjd = np.unique(pmjd)
-    zupmjd = list(zip(upmjd>>16,upmjd&((1<<16)-1)))
-    #print(zupmjd)
+    zupmjd = list(zip(upmjd >> 16, upmjd & ((1 << 16) - 1)))
+    # log.debug(zupmjd)
     spplate_data = dict()
-    hdunames = ('flux','invvar','andmask','ormask','disp','plugmap','sky','loglam',)
-    for thisplate,thismjd in zupmjd:
-        #thisplate = int(p>>16)
-        #thismjd = int(np.bitwise_and(p,(1<<16)-1))
-        pmjdindex = ((platevec==thisplate) & (mjdvec==thismjd)).nonzero()[0]
+    hdunames = ('flux', 'invvar', 'andmask', 'ormask', 'disp', 'plugmap',
+                'sky', 'loglam',)
+    for thisplate, thismjd in zupmjd:
+        # thisplate = int(p>>16)
+        # thismjd = int(np.bitwise_and(p, (1<<16)-1))
+        pmjdindex = ((platevec == thisplate) &
+                     (mjdvec == thismjd)).nonzero()[0]
         thisfiber = fibervec[pmjdindex]
-        #print(type(thisplate),type(thismjd))
-        pmjdstr = "{0:04d}-{1:05d}".format(int(thisplate),int(thismjd))
+        # log.debug(type(thisplate), type(thismjd))
+        # log.debug(repr(thisfiber))
+        # log.debug(type(thisfiber))
+        pmjdstr = "{0:04d}-{1:05d}".format(int(thisplate), int(thismjd))
         if 'path' in kwargs:
-            sppath = [ kwargs['path'] ]
+            sppath = [kwargs['path']]
         else:
-            sppath = spec_path(thisplate,run2d=run2d)
-        spfile = os.path.join(sppath[0],"spPlate-{0}.fits".format(pmjdstr))
-        print(spfile)
+            sppath = spec_path(thisplate, run2d=run2d)
+        spfile = os.path.join(sppath[0], "spPlate-{0}.fits".format(pmjdstr))
+        log.info(spfile)
         spplate = pyfits.open(spfile)
         #
         # Get wavelength coefficients from primary header
@@ -120,18 +127,21 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
         npix = spplate[0].header['NAXIS1']
         c0 = spplate[0].header['COEFF0']
         c1 = spplate[0].header['COEFF1']
-        coeff0 = np.zeros(thisfiber.size,dtype='d') + c0
-        coeff1 = np.zeros(thisfiber.size,dtype='d') + c1
-        loglam0 = c0 + c1*np.arange(npix,dtype='d')
-        loglam = np.resize(loglam0,(thisfiber.size,npix))
+        coeff0 = np.zeros(thisfiber.size, dtype='d') + c0
+        coeff1 = np.zeros(thisfiber.size, dtype='d') + c1
+        loglam0 = c0 + c1*np.arange(npix, dtype='d')
+        loglam = np.resize(loglam0, (thisfiber.size, npix))
         #
         # Read the data images
         #
         for k in range(len(hdunames)):
-            try:
-                tmp = spplate[k].data[thisfiber-1,:]
-            except IndexError:
+            if hdunames[k] == 'loglam':
                 tmp = loglam
+            else:
+                try:
+                    tmp = spplate[k].data[thisfiber-1, :]
+                except IndexError:
+                    tmp = spplate[k].data[thisfiber-1]
             if hdunames[k] not in spplate_data:
                 if k == 0:
                     allpmjdindex = pmjdindex
@@ -142,8 +152,8 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
                 #
                 if hdunames[k] == 'plugmap':
                     spplate_data['plugmap'] = dict()
-                    for c in spplate[5].columns.names:
-                        spplate_data['plugmap'][c] = tmp.field(c)
+                    for c in spplate[k].columns.names:
+                        spplate_data['plugmap'][c] = tmp[c]
                 else:
                     spplate_data[hdunames[k]] = tmp
             else:
@@ -151,7 +161,7 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
                 # Append data
                 #
                 if k == 0:
-                    allpmjdindex = np.concatenate((allpmjdindex,pmjdindex))
+                    allpmjdindex = np.concatenate((allpmjdindex, pmjdindex))
                     if 'align' in kwargs:
                         mincoeff0 = min(allcoeff0)
                         if mincoeff0 == 0 and coeff0[0] > 0:
@@ -160,53 +170,57 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
                         if mincoeff0 > 0 and coeff0[0] == 0:
                             coeff0 = mincoeff0
                             coeff1 = allcoeff1[0]
-                        ps = np.floor( (coeff0[0] - mincoeff0)/coeff1[0] + 0.5)
+                        ps = np.floor((coeff0[0] - mincoeff0)/coeff1[0] + 0.5)
                         if ps > 0:
                             coeff0 = coeff0 - ps*coeff1
                         else:
                             allcoeff0 = allcoeff0 + ps*allcoeff1
                     else:
                         ps = 0
-                    allcoeff0 = np.concatenate((allcoeff0,coeff0))
-                    allcoeff1 = np.concatenate((allcoeff1,coeff1))
+                    allcoeff0 = np.concatenate((allcoeff0, coeff0))
+                    allcoeff1 = np.concatenate((allcoeff1, coeff1))
                 if hdunames[k] == 'plugmap':
                     for c in spplate[5].columns.names:
                         spplate_data['plugmap'][c] = np.concatenate(
-                            (spplate_data['plugmap'][c],tmp.field(c)))
+                            (spplate_data['plugmap'][c], tmp[c]))
                 else:
-                    spplate_data[hdunames[k]] = spec_append(spplate_data[hdunames[k]],tmp,pixshift=ps)
+                    spplate_data[hdunames[k]] = spec_append(spplate_data[hdunames[k]], tmp, pixshift=ps)
         spplate.close()
         #
         # Read photoPlate information, if available
         #
-        photofile = os.path.join(sppath[0],"photoPlate-{0}.fits".format(pmjdstr))
+        photofile = os.path.join(sppath[0],
+                                 "photoPlate-{0}.fits".format(pmjdstr))
         if not os.path.exists(photofile):
             #
             # Hmm, maybe this is an SDSS-I,II plate
             #
-            photofile = os.path.join(os.getenv('SPECTRO_MATCH'),run2d,
-                os.path.basename(os.getenv('PHOTO_RESOLVE')),"{0:04d}".format(int(thisplate)),
-                "photoPlate-{0}.fits".format(pmjdstr))
+            photofile = os.path.join(os.getenv('SPECTRO_MATCH'), run2d,
+                                     os.path.basename(os.getenv('PHOTO_RESOLVE')),
+                                     "{0:04d}".format(int(thisplate)),
+                                     "photoPlate-{0}.fits".format(pmjdstr))
         if os.path.exists(photofile):
             photop = pyfits.open(photofile)
             tmp = photop[1].data[thisfiber-1]
             if 'tsobj' not in spplate_data:
                 spplate_data['tsobj'] = dict()
                 for c in photop[1].columns.names:
-                    spplate_data['tsobj'][c] = tmp.field(c)
+                    spplate_data['tsobj'][c] = tmp[c]
             else:
                 for c in photop[1].columns.names:
                     spplate_data['tsobj'][c] = np.concatenate(
-                        (spplate_data['tsobj'][c],tmp.field(c)))
+                        (spplate_data['tsobj'][c], tmp[c]))
             photop.close()
 
         #
         # Read redshift information, if available.
         #
         if 'znum' in kwargs:
-            zfile = os.path.join(sppath[0],run1d,"spZall-{0}.fits".format(pmjdstr))
+            zfile = os.path.join(sppath[0], run1d,
+                                 "spZall-{0}.fits".format(pmjdstr))
         else:
-            zfile = os.path.join(sppath[0],run1d,"spZbest-{0}.fits".format(pmjdstr))
+            zfile = os.path.join(sppath[0], run1d,
+                                 "spZbest-{0}.fits".format(pmjdstr))
         if os.path.exists(zfile):
             spz = pyfits.open(zfile)
             if 'znum' in kwargs:
@@ -218,11 +232,11 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
             if 'zans' not in spplate_data:
                 spplate_data['zans'] = dict()
                 for c in spz[1].columns.names:
-                    spplate_data['zans'][c] = tmp.field(c)
+                    spplate_data['zans'][c] = tmp[c]
             else:
                 for c in spz[1].columns.names:
                     spplate_data['zans'][c] = np.concatenate(
-                        (spplate_data['zans'][c],tmp.field(c)))
+                        (spplate_data['zans'][c], tmp[c]))
             spz.close()
     #
     # Reorder the data.  At this point allpmjdindex is an index for which
@@ -231,21 +245,21 @@ def readspec(platein,mjd=None,fiber='all',**kwargs):
     #
     j = allpmjdindex.argsort()
     for k in spplate_data:
-        if isinstance(spplate_data[k],dict):
+        if isinstance(spplate_data[k], dict):
             for c in spplate_data[k]:
                 if spplate_data[k][c].ndim == 2:
-                    spplate_data[k][c] = spplate_data[k][c][j,:]
+                    spplate_data[k][c] = spplate_data[k][c][j, :]
                 else:
                     spplate_data[k][c] = spplate_data[k][c][j]
         else:
-            spplate_data[k] = spplate_data[k][j,:]
+            spplate_data[k] = spplate_data[k][j, :]
     allcoeff0 = allcoeff0[j]
     allcoeff1 = allcoeff1[j]
     #
     # If necessary, recompute the wavelengths
     #
-    nfibers,npixmax = spplate_data['flux'].shape
+    nfibers, npixmax = spplate_data['flux'].shape
     if 'align' in kwargs:
-        loglam0 = allcoeff0[0] + allcoeff1[1]*np.arange(npixmax,dtype='d')
-        spplate_data['loglam'] = np.resize(loglam0,(nfibers,npixmax))
+        loglam0 = allcoeff0[0] + allcoeff1[1]*np.arange(npixmax, dtype='d')
+        spplate_data['loglam'] = np.resize(loglam0, (nfibers, npixmax))
     return spplate_data

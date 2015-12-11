@@ -1,7 +1,10 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-def sdss_calib(run,camcol,field,rerun='',**kwargs):
-    """Read photometric calibration solutions from calibPhotom or calibPhotomGlobal files.
+
+
+def sdss_calib(run, camcol, field, rerun='', **kwargs):
+    """Read photometric calibration solutions from calibPhotom or
+    calibPhotomGlobal files.
 
     Parameters
     ----------
@@ -16,11 +19,11 @@ def sdss_calib(run,camcol,field,rerun='',**kwargs):
 
     Returns
     -------
-    sdss_calib : :class:`dict`
+    :class:`dict`
         A dictionary containing the 'NMGYPERCOUNT' keyword.
 
     Notes
     -----
     Currently, this is just a placeholder.
     """
-    return { 'NMGYPERCOUNT':1.0 }
+    return {'NMGYPERCOUNT': 1.0}

@@ -1,8 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 from __future__ import print_function
-#
-def findspec(*args,**kwargs):
+
+
+def findspec(*args, **kwargs):
     """Find SDSS/BOSS spectra that match a given RA, Dec.
 
     Parameters
@@ -20,7 +21,7 @@ def findspec(*args,**kwargs):
     from ...pydlutils.misc import struct_print
     from ...pydlutils.spheregroup import spherematch
     from .. import Pydlspec2dException
-    import pydl.pydlspec2d.spec1d # get the findspec_cache dictionary
+    import pydl.pydlspec2d.spec1d   # get the findspec_cache dictionary
     #
     # Set up default values
     #
@@ -42,13 +43,13 @@ def findspec(*args,**kwargs):
         else:
             run1d = os.getenv('RUN1D')
     if pydl.pydlspec2d.spec1d.findspec_cache is None:
-        pydl.pydlspec2d.spec1d.findspec_cache = { 'lasttopdir':topdir,
-            'plist':None }
+        pydl.pydlspec2d.spec1d.findspec_cache = {'lasttopdir': topdir,
+                                                 'plist': None}
     if (pydl.pydlspec2d.spec1d.findspec_cache['plist'] is None or
-        topdir != pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir']):
+            topdir != pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir']):
         pydl.pydlspec2d.spec1d.findspec_cache['lasttopdir'] = topdir
-        platelist_file = os.path.join(topdir,"platelist.fits")
-        plates_files = glob.glob(os.path.join(topdir,"plates-*.fits"))
+        platelist_file = os.path.join(topdir, "platelist.fits")
+        plates_files = glob.glob(os.path.join(topdir, "plates-*.fits"))
         plist = None
         if os.path.exists(platelist_file):
             platelist = fits.open(platelist_file)
@@ -65,7 +66,7 @@ def findspec(*args,**kwargs):
     qdone = plist.field('STATUS1D') == 'Done'
     qdone2d = plist.field('RUN2D').strip() == run2d
     if run1d == '':
-        qdone1d = np.ones(plist.size,dtype='bool')
+        qdone1d = np.ones(plist.size, dtype='bool')
     else:
         qdone1d = plist.field('RUN1D').strip() == run1d
     qfinal = qdone & qdone2d & qdone1d
@@ -83,7 +84,7 @@ def findspec(*args,**kwargs):
     # Read RA, Dec from infile if set
     #
     if 'infile' in kwargs:
-        infile_data = ascii.read(kwargs['infile'],names=['ra','dec'])
+        infile_data = ascii.read(kwargs['infile'], names=['ra', 'dec'])
         ra = infile_data["ra"].data
         dec = infile_data["dec"].data
     if 'searchrad' in kwargs:
@@ -93,14 +94,14 @@ def findspec(*args,**kwargs):
     #
     # Create output structure
     #
-    slist_type = np.dtype([('PLATE','i4'),('MJD','i4'),('FIBERID','i4'),
-        ('RA','f8'),('DEC','f8'),('MATCHRAD','f8')])
+    slist_type = np.dtype([('PLATE', 'i4'), ('MJD', 'i4'), ('FIBERID', 'i4'),
+                          ('RA', 'f8'), ('DEC', 'f8'), ('MATCHRAD', 'f8')])
     #
     # Match all plates with objects
     #
-    imatch1, itmp, dist12 = spherematch(ra, dec,
-        plist[qfinal].field('RACEN'), plist[qfinal].field('DECCEN'),
-        searchrad+1.55,maxmatch=0)
+    imatch1, itmp, dist12 = spherematch(ra, dec, plist[qfinal].field('RACEN'),
+                                        plist[qfinal].field('DECCEN'),
+                                        searchrad+1.55, maxmatch=0)
     if imatch1.size == 0:
         return None
     imatch2 = idone[itmp]
@@ -110,16 +111,18 @@ def findspec(*args,**kwargs):
     try:
         n_total = plist.field('N_TOTAL')
     except KeyError:
-        n_total = np.zeros(plist.size,dtype='i4') + 640
-    iplate = imatch2[uniq(imatch2,imatch2.argsort())]
+        n_total = np.zeros(plist.size, dtype='i4') + 640
+    iplate = imatch2[uniq(imatch2, imatch2.argsort())]
     i0 = 0
-    plugmap = np.zeros(n_total[iplate].sum(),
-        dtype=[('PLATE','i4'),('MJD','i4'),('FIBERID','i4'),
-        ('RA','d'),('DEC','d')])
+    plugmap = np.zeros(n_total[iplate].sum(), dtype=[('PLATE', 'i4'),
+                       ('MJD', 'i4'), ('FIBERID', 'i4'),
+                       ('RA', 'd'), ('DEC', 'd')])
     for i in range(iplate.size):
-        spplate = pydl.pydlspec2d.spec1d.readspec(plist[iplate[i]].field('PLATE'),mjd=plist[iplate[i]].field('MJD'),
-            topdir=topdir,run2d=run2d,run1d=run1d)
-        index_to = i0 + np.arange(n_total[iplate[i]],dtype='i4')
+        spplate = pydl.pydlspec2d.spec1d.readspec(plist[iplate[i]].field('PLATE'),
+                                                  mjd=plist[iplate[i]].field('MJD'),
+                                                  topdir=topdir,
+                                                  run2d=run2d, run1d=run1d)
+        index_to = i0 + np.arange(n_total[iplate[i]], dtype='i4')
         plugmap['PLATE'][index_to] = plist[iplate[i]].field('PLATE')
         plugmap['MJD'][index_to] = plist[iplate[i]].field('MJD')
         plugmap['FIBERID'][index_to] = spplate['plugmap']['FIBERID']
@@ -133,9 +136,12 @@ def findspec(*args,**kwargs):
         #
         # Return only best match per object
         #
-        slist = np.zeros(ra.size,dtype=slist_type)
-        spplate = pydl.pydlspec2d.spec1d.readspec(plugmap[i2]['PLATE'],plugmap[i2]['FIBERID'],
-            mjd=plugmap[i2]['MJD'],topdir=topdir, run2d=run2d, run1d=run1d)
+        slist = np.zeros(ra.size, dtype=slist_type)
+        spplate = pydl.pydlspec2d.spec1d.readspec(plugmap[i2]['PLATE'],
+                                                  plugmap[i2]['FIBERID'],
+                                                  mjd=plugmap[i2]['MJD'],
+                                                  topdir=topdir,
+                                                  run2d=run2d, run1d=run1d)
         sn = spplate['zans']['SN_MEDIAN']
         isort = (i1 + np.where(sn > 0, sn, 0)/(sn+1.0).max()).argsort()
         i1 = i1[isort]
@@ -152,7 +158,7 @@ def findspec(*args,**kwargs):
         #
         # Return all matches
         #
-        slist = np.zeros(i1.size,dtype=slist_type)
+        slist = np.zeros(i1.size, dtype=slist_type)
         slist['PLATE'] = plugmap[i2]['PLATE']
         slist['MJD'] = plugmap[i2]['MJD']
         slist['FIBERID'] = plugmap[i2]['FIBERID']
@@ -165,5 +171,5 @@ def findspec(*args,**kwargs):
     if 'print' in kwargs:
         foo = struct_print(slist)
     if 'outfile' in kwargs:
-        foo = struct_print(slist,filename=outfile)
+        foo = struct_print(slist, filename=outfile)
     return slist

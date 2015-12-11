@@ -1,9 +1,11 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+
+
 def window_score(**kwargs):
-    """
-    For uber-resolve, score all the fields from zero to one.  If
-    'rescore' is set, then write a new file 'window_flist_rescore.fits'
+    """For uber-resolve, score all the fields from zero to one.
+
+    If 'rescore' is set, then write a new file 'window_flist_rescore.fits'
     rather than over-writing the file 'window_flist.fits'
     """
     # import time
@@ -18,7 +20,8 @@ def window_score(**kwargs):
     try:
         calib_dir_save = environ['PHOTO_CALIB']
     except KeyError:
-        raise PhotoopException('You have not set the environment variable PHOTO_CALIB!')
+        raise PhotoopException(('You have not set the environment variable ' +
+                               'PHOTO_CALIB!'))
     del environ['PHOTO_CALIB']
     #
     # Read the file
@@ -26,14 +29,15 @@ def window_score(**kwargs):
     try:
         resolve_dir = environ['PHOTO_RESOLVE']
     except KeyError:
-        raise PhotoopException('You have not set the environment variable PHOTO_RESOLVE!')
-    filename = join(resolve_dir,'window_flist.fits')
+        raise PhotoopException(('You have not set the environment variable ' +
+                               'PHOTO_RESOLVE!'))
+    filename = join(resolve_dir, 'window_flist.fits')
     if 'rescore' in kwargs:
         fitsmode = 'readonly'
     else:
         fitsmode = 'update'
     try:
-        flist = pyfits.open(filename,mode=fitsmode)
+        flist = pyfits.open(filename, mode=fitsmode)
     except IOError:
         raise PhotoopException('Unable to read FLIST file.')
     #
@@ -41,7 +45,7 @@ def window_score(**kwargs):
     #
     flist.field('SCORE')[:] = sdss_score(flist)
     if 'rescore' in kwargs:
-        flist.writeto(join(resolve_dir,'window_flist_rescore.fits'))
+        flist.writeto(join(resolve_dir, 'window_flist_rescore.fits'))
     flist.close()
     #
     # Restore the PHOTO_CALIB variable

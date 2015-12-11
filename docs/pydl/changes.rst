@@ -2,7 +2,7 @@
 pydl Changelog
 ==============
 
-0.4.2 (unreleased)
+0.5.0 (unreleased)
 ------------------
 
 * Ongoing review and upgrade of docstrings.
@@ -11,6 +11,11 @@ pydl Changelog
   to :class:`numpy.ndarray` with named columns, which is a slightly different
   thing.
 * Added additional tests on :class:`~pydl.pydlutils.yanny.yanny` objects.
+* Improving `PEP 8`_ compliance
+* Restructuing sub-packages to reduce the number of files.
+* Improvements to template processing code, deduplicated some code.
+
+.. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 
 0.4.1 (2015-09-22)
 ------------------

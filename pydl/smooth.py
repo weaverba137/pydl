@@ -1,24 +1,24 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-#
-def smooth(signal,owidth,edge_truncate=False):
-    """Replicates the IDL SMOOTH() function.
+
+
+def smooth(signal, owidth, edge_truncate=False):
+    """Replicates the IDL ``SMOOTH()`` function.
 
     Parameters
     ----------
     signal : array-like
         The array to be smoothed.
     owidth : :class:`int` or array-like
-        Width of the smoothing window.  Can be a scalar or an array with length
-        equal to the number of dimensions of `signal`.
+        Width of the smoothing window.  Can be a scalar or an array with
+        length equal to the number of dimensions of `signal`.
     edge_truncate : :class:`bool`, optional
-        Set `edge_truncate` to ``True`` to apply smoothing to all points.  Points
-        near the edge are normally excluded from smoothing.
+        Set `edge_truncate` to ``True`` to apply smoothing to all points.
+        Points near the edge are normally excluded from smoothing.
 
     Returns
     -------
-    smooth : array-like
+    array-like
         A smoothed array with the same dimesions and type as `signal`.
 
     Notes
@@ -32,9 +32,9 @@ def smooth(signal,owidth,edge_truncate=False):
     --------
     """
     if owidth % 2 == 0:
-       width = owidth + 1
+        width = owidth + 1
     else:
-       width = owidth
+        width = owidth
     if width < 3:
         return signal
     n = signal.size
@@ -45,10 +45,12 @@ def smooth(signal,owidth,edge_truncate=False):
     for i in range(n):
         if i < istart:
             if edge_truncate:
-                s[i] = (signal[0:istart+i+1].sum() + (istart-i)*signal[0])/float(width)
+                s[i] = (signal[0:istart+i+1].sum() +
+                        (istart-i)*signal[0])/float(width)
         elif i > iend:
             if edge_truncate:
-                s[i] = (signal[i-istart:n].sum() + (i-iend)*signal[n-1])/float(width)
+                s[i] = (signal[i-istart:n].sum() +
+                        (i-iend)*signal[n-1])/float(width)
         else:
             s[i] = signal[i-w2:i+w2+1].sum()/float(width)
     return s

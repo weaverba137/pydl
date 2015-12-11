@@ -1,0 +1,108 @@
+{
+    "tempfile1.par": {
+        "pairs": {
+            "keyword1": "value1",
+            "keyword2": "value2"
+        },
+        "structures": {
+            "MYSTRUCT0": {
+                "dtype": [
+                    ["ra", "f8"],
+                    ["dec", "f8"],
+                    ["mag", "f4", [5]],
+                    ["flags", "i4"],
+                    ["new_flag", "|S5"]
+                ],
+                "size": 4,
+                "columns": {
+                    "ra": "double",
+                    "dec": "double",
+                    "mag": "float[5]",
+                    "flags": "int",
+                    "new_flag": "BOOLEAN"
+                },
+                "data": {
+                    "ra": [10.0, 20.5, 30.75, 40.55],
+                    "dec": [-5.1234, -10.74832, 67.994523, 11.437281],
+                    "mag": [
+                        [0.0, 1.0, 2.0, 3.0, 4.0],
+                        [5.1, 6.2, 7.3, 8.4, 9.5],
+                        [22.123, 23.95, 22.6657, 21.0286, 22.9876],
+                        [13.54126, 15.37456, 14.52647, 12.648640, 12.0218]
+                    ],
+                    "flags": [4, 16, 64, 264],
+                    "new_flag": ["FALSE", "TRUE", "TRUE", "FALSE"]
+                }
+            },
+            "MY_STATUS": {
+                "dtype": [
+                    ["timestamp", "i8"],
+                    ["state", "S10"]
+                ],
+                "size": 4,
+                "columns": {
+                    "timestamp": "long",
+                    "state": "STATUS"
+                },
+                "data": {
+                    "timestamp": [1382384327,1382384527,1382384727,1382384927],
+                    "state": ["SUCCESS","SUCCESS","FAILURE","INCOMPLETE"]
+                }
+            }
+        },
+        "enums": {
+            "new_flag": ["BOOLEAN", ["FALSE", "TRUE"]],
+            "state": ["STATUS", ["FAILURE", "INCOMPLETE", "SUCCESS"]]
+        }
+    },
+    "test.par": {
+        "pairs": {
+            "mjd": "54579",
+            "alpha": "beta gamma delta",
+            "semicolon": "This pair contains a semicolon;"
+        },
+        "structures": {
+            "MYSTRUCT": {
+                "dtype": [
+                    ["mag", "<f4", [5]],
+                    ["b", "S33", [5]],
+                    ["foo", "S25"],
+                    ["c", "<f8"],
+                    ["flags", "<i4", [2]],
+                    ["new_flag", "S5"]
+                ],
+                "size": 7,
+                "columns": {
+                    "mag": "float[5]",
+                    "b": "char[5][]",
+                    "foo": "char[25]",
+                    "c": "double",
+                    "flags": "int[2]",
+                    "new_flag": "BOOLEAN"
+                }
+            },
+            "OLD": {
+                "dtype":[
+                    ["foo", "<f4", [3]],
+                    ["bar", "S10"]
+                ],
+                "size": 2,
+                "columns": {
+                    "foo": "float[3]",
+                    "bar": "char[10]"
+                }
+            },
+            "STATUS_UPDATE": {
+                "dtype": [
+                    ["state", "S10"],
+                    ["timestamp", "S19"]
+                ],
+                "size": 11,
+                "columns": {
+                    "state": "STATUS",
+                    "timestamp": "char[]"
+                }
+            }
+        }
+    }
+}
