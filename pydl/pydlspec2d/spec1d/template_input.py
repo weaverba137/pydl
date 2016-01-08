@@ -496,6 +496,9 @@ def template_input_main():  # pragma: no cover
     import os
     import sys
     from astropy.utils.compat import argparse
+
+    # Get home directory in platform-independent way
+    home_dir = os.path.expanduser('~')
     #
     # Get Options
     #
@@ -503,13 +506,13 @@ def template_input_main():  # pragma: no cover
                                      prog=os.path.basename(sys.argv[0]))
     parser.add_argument('-d', '--dump', action='store', dest='dump',
                         metavar='FILE',
-                        default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.dump'),
+                        default=os.path.join(home_dir, 'scratch', 'templates', 'compute_templates.dump'),
                         help='Dump data to a pickle file.')
     parser.add_argument('-F', '--flux', action='store_true', dest='flux',
                         help='Plot input spectra.')
     parser.add_argument('-f', '--file', action='store', dest='inputfile',
                         metavar='FILE',
-                        default=os.path.join(os.getenv('HOME'), 'scratch', 'templates', 'compute_templates.par'),
+                        default=os.path.join(home_dir, 'scratch', 'templates', 'compute_templates.par'),
                         help='Read input spectra and redshifts from FILE.')
     parser.add_argument('-v', '--verbose', action='store_true', dest='verbose',
                         help='Print lots of extra information.')
