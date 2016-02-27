@@ -13,10 +13,11 @@ pydl Changelog
 * Added additional tests on :class:`~pydl.pydlutils.yanny.yanny` objects.
 * Improving `PEP 8`_ compliance
 * Restructuing sub-packages to reduce the number of files.
-* Improvements to template processing code, deduplicated some code.
-* Support platform-independent home directory (PR #7).
+* Improvements to spectral template processing code, deduplicated some code.
+* Support platform-independent home directory (`PR #7`_).
 
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
+.. _`PR #7`: https://github.com/weaverba137/pydl/pull/7
 
 0.4.1 (2015-09-22)
 ------------------
