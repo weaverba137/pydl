@@ -1,5 +1,5 @@
 ==============
-pydl Changelog
+PyDL Changelog
 ==============
 
 0.5.0 (unreleased)
@@ -15,6 +15,8 @@ pydl Changelog
 * Restructuing sub-packages to reduce the number of files.
 * Improvements to spectral template processing code, deduplicated some code.
 * Support platform-independent home directory (`PR #7`_).
+* Uppercase the package name (in documentation only).
+* Upgrade to `astropy_helpers`_/v1.1.1.
 
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 .. _`PR #7`: https://github.com/weaverba137/pydl/pull/7

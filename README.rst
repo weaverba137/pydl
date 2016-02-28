@@ -1,5 +1,5 @@
 ====
-pydl
+PyDL
 ====
 
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
@@ -36,7 +36,7 @@ This package affiliated with the astropy_ project and is registered with PyPI_.
 Full Documentation
 ------------------
 
-Please visit `pydl on Read the Docs`_
+Please visit `PyDL on Read the Docs`_
 
 .. image:: https://readthedocs.org/projects/pydl/badge/?version=latest
     :target: http://pydl.readthedocs.org/en/latest/
@@ -73,7 +73,7 @@ License
     :target: https://pypi.python.org/pypi/pydl
     :alt: License
 
-Pydl is free software licensed under a 3-clause BSD-style license. For details see
+PyDL is free software licensed under a 3-clause BSD-style license. For details see
 the ``licenses/LICENSE.rst`` file.
 
 
@@ -92,7 +92,7 @@ Legal
 .. _photoop: http://www.sdss3.org/svn/repo/photoop/trunk/
 .. _astropy: http://www.astropy.org
 .. _PyPI: https://pypi.python.org/pypi/pydl/
-.. _`pydl on Read the Docs`: http://pydl.readthedocs.org/en/latest/
+.. _`PyDL on Read the Docs`: http://pydl.readthedocs.org/en/latest/
 .. _SDSS-III: http://www.sdss3.org
 .. _`svn repository`: http://www.sdss.org/dr12/software/products/
 .. _GitHub: http://github.com

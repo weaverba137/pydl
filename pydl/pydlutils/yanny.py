@@ -1197,3 +1197,36 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
             par[key] = hdr[key]
     par.write(filename, comments=comments)
     return par
+
+
+def is_yanny(origin, path, fileobj, *args, **kwargs):
+    """Identifies Yanny files or objects.
+
+    This function is for use with
+    :func:`~astropy.io.registry.register_identifier`.
+
+    Parameters
+    ----------
+    origin : :class:`str`
+        'read' or 'write'
+    path : :class:`str`
+        Path to the file.
+    fileobj : file object
+        Open file object, if available.
+
+    Returns
+    -------
+    :class:`bool`
+        ``True`` if the file or object is a Yanny file.
+    """
+    if fileobj is not None:
+        loc = fileobj.tell()
+        fileobj.seek(0)
+        try:
+            signature = fileobj.read(7)
+        finally:
+            fileobj.seek(loc)
+        return signature == b'#%yanny'
+    elif path is not None:
+        return path.endswith('.par')
+    return isinstance(args[0], yanny)

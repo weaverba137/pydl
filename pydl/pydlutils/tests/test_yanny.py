@@ -11,7 +11,7 @@ from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
 from .. import PydlutilsException
-from ..yanny import write_ndarray_to_yanny, yanny
+from ..yanny import write_ndarray_to_yanny, yanny, is_yanny
 
 
 class YannyTestCase(object):
@@ -80,6 +80,15 @@ class TestYanny(YannyTestCase):
     """Test class for yanny files.
     """
     save_temp = False
+
+    def test_is_yanny(self):
+        """Test the yanny identifier.
+        """
+        par = yanny(self.data('test.par'))
+        assert is_yanny('read', None, None, par)
+        assert is_yanny('read', 'test.par', None)
+        with open(self.data('test.par')) as fileobj:
+            assert is_yanny('read', None, fileobj)
 
     def test_write_single_ndarray_to_yanny(self):
         """Test the write_ndarray_to_yanny function.

@@ -1,16 +1,16 @@
 ====
-pydl
+PyDL
 ====
 
 Introduction
 ++++++++++++
 
-This is the documentation for pydl.
+This is the documentation for PyDL.
 
 Components
 ++++++++++
 
-Most of the functionality of pydl is in sub-packages.
+Most of the functionality of PyDL is in sub-packages.
 
 .. toctree::
    :maxdepth: 1
