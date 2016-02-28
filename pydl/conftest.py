@@ -13,16 +13,23 @@ from astropy.tests.pytest_plugins import *
 # when running the tests
 try:
     PYTEST_HEADER_MODULES['Astropy'] = 'astropy'
-    PYTEST_HEADER_MODULES['pydl'] = 'pydl'
-    del PYTEST_HEADER_MODULES['h5py']
+    PYTEST_HEADER_MODULES['PyDL'] = 'pydl'
+    try:
+        del PYTEST_HEADER_MODULES['h5py']
+    except KeyError:
+        pass
+    try:
+        del PYTEST_HEADER_MODULES['Pandas']
+    except KeyError:
+        pass
 except NameError:  # needed to support Astropy < 1.0
     pass
 
 # Uncomment the following lines to display the version number of the
 # package rather than the version number of Astropy in the top line when
 # running the tests.
-# import os
-#
+import os
+
 # This is to figure out the affiliated package version, rather than
 # using Astropy's
 from . import version
