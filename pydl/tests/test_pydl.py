@@ -76,6 +76,8 @@ class TestPydl(object):
     def test_pcomp(self):
         test_data_file = join(self.data_dir, 'pcomp_data.txt')
         test_data = np.loadtxt(test_data_file, dtype='d', delimiter=',')
+        with raises(ValueError):
+            foo = pcomp(np.arange(10))
         pcomp_data = test_data[0:20, :]
         m = 4
         n = 20

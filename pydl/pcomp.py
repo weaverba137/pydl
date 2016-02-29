@@ -7,6 +7,9 @@ from astropy.utils import lazyproperty
 class pcomp(object):
     """Replicates the IDL ``PCOMP()`` function.
 
+    The attributes of this class are all read-only properties, implemented
+    with :class:`~astropy.utils.decorators.lazyproperty`.
+
     Parameters
     ----------
     x : array-like
@@ -67,7 +70,8 @@ class pcomp(object):
 
     @lazyproperty
     def coefficients(self):
-        """The principal components.  These are the coefficients of `derived`.
+        """(:class:`~numpy.ndarray`) The principal components.
+        These are the coefficients of `derived`.
         Basically, they are a re-scaling of the eigenvectors.
         """
         return self._evecs * np.tile(np.sqrt(self._evals), self._nv).reshape(
@@ -75,7 +79,8 @@ class pcomp(object):
 
     @lazyproperty
     def derived(self):
-        """An N x M array containing the derived variables."""
+        """(:class:`~numpy.ndarray`) A :math:`N \times M` array containing
+        the derived variables."""
         derived_data = np.dot(self._array, self.coefficients)
         if self._standardize:
             derived_data += self._xstd
@@ -83,12 +88,13 @@ class pcomp(object):
 
     @lazyproperty
     def variance(self):
-        """An array of the M variances of each derived variable."""
+        """(:class:`~numpy.ndarray`) An array of the :math:`M` variances of
+        each derived variable."""
         return self._evals/self._c.trace()
 
     @lazyproperty
     def eigenvalues(self):
-        """An array of the M eigenvalues that correspond to the principal
-        components.
+        """(:class:`~numpy.ndarray`) An array of the :math:`M` eigenvalues
+        that correspond to the principal components.
         """
         return self._evals

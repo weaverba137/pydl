@@ -7,38 +7,22 @@ import astropy.utils as au
 
 
 class computechi2(object):
-    """Solve the linear set of equations Ax=b using SVD.
+    """Solve the linear set of equations :math:`A x = b` using SVD.
 
-    The attributes of this class are all implemented as read-only
-    (lazy)properties.
+    The attributes of this class are all read-only properties, implemented
+    with :class:`~astropy.utils.decorators.lazyproperty`.
 
     Parameters
     ----------
     bvec : :class:`numpy.ndarray`
-        The b vector in Ax=b. This vector has length N.
+        The :math:`b` vector in :math:`A x = b`. This vector has length
+        :math:`N`.
     sqivar : :class:`numpy.ndarray`
-        The reciprocal of the errors in `b`.  The name comes from the square
+        The reciprocal of the errors in `bvec`.  The name comes from the square
         root of the inverse variance, which is what this is.
     amatrix : :class:`numpy.ndarray`
-        The matrix A in Ax=b.  The shape of this matrix is (N,M).
-
-    Attributes
-    ----------
-    chi2 : :class:`float`
-        The chi**2 value of the fit.
-    acoeff : :class:`numpy.ndarray`
-        The fit parameters, x, in Ax=b.  This vector has length M.
-    yfit : :class:`numpy.ndarray`
-        The evaluated best-fit at each point.  This vector has length N.
-    dof : :class:`int`
-        The degrees of freedom of the fit.  This is the number of values of
-        `bvec` that have `sqivar` > 0 minus the number of fit paramaters,
-        which is equal to M.
-    covar : :class:`numpy.ndarray`
-        The covariance matrix.  The shape of this matrix is (M,M).
-    var : :class:`numpy.ndarray`
-        The variances of the fit.  This is identical to the diagonal of the
-        covariance matrix.  This vector has length M.
+        The matrix :math:`A` in :math:`A x = b`.
+        The shape of this matrix is (:math:`N`, :math:`M`).
     """
 
     def __init__(self, bvec, sqivar, amatrix):
@@ -66,31 +50,36 @@ class computechi2(object):
 
     @au.lazyproperty
     def acoeff(self):
-        """Computes the x values in Ax=b.
+        """(:class:`~numpy.ndarray`) The fit parameters, :math:`x`,
+        in :math:`A x = b`. This vector has length :math:`M`.
         """
         return np.dot(self.mmi, np.dot(self.mmatrix.T, self.bvec))
 
     @au.lazyproperty
     def chi2(self):
-        """Computes the chi**2 value.
+        """(:class:`float <numpy.generic>`) The :math:`\chi^2` value of the fit.
         """
         return np.sum((np.dot(self.mmatrix, self.acoeff) - self.bvec)**2)
 
     @au.lazyproperty
     def yfit(self):
-        """Computes the best fit.
+        """(:class:`~numpy.ndarray`) The evaluated best-fit at each point.
+        This vector has length :math:`N`.
         """
         return np.dot(self.amatrix, self.acoeff)
 
     @au.lazyproperty
     def dof(self):
-        """Computes the degrees of freedom.
+        """(:class:`int <numpy.generic>`) The degrees of freedom of the fit.
+        This is the number of values of `bvec` that have `sqivar` > 0 minus
+        the number of fit paramaters, which is equal to :math:`M`.
         """
         return (self.sqivar > 0).sum() - self.nstar
 
     @au.lazyproperty
     def covar(self):
-        """Computes the covariance matrix.
+        """(:class:`~numpy.ndarray`) The covariance matrix.
+        The shape of this matrix is (:math:`M`, :math:`M`).
         """
         wwt = self.ww.copy()
         wwt[self.ww > 0] = 1.0/self.ww[self.ww > 0]
@@ -103,7 +92,9 @@ class computechi2(object):
 
     @au.lazyproperty
     def var(self):
-        """Computes the variances of the fit parameters.
+        """(:class:`~numpy.ndarray`) The variances of the fit.
+        This is identical to the diagonal of the covariance matrix.
+        This vector has length :math:`M`.
         """
         return np.diag(self.covar)
 
