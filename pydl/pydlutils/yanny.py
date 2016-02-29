@@ -361,7 +361,10 @@ class yanny(OrderedDict):
                 # Assume file-like
                 #
                 self.filename = 'in_memory.par'
-                self._contents = filename.read()
+                contents = filename.read()
+                if 'b' in filename.mode:
+                    contents = str(contents)
+                self._contents = contents
             self._parse()
         return
 
@@ -1306,6 +1309,10 @@ def read_table_yanny(filename, tablename=None):
     """
     if tablename is None:
         raise PydlutilsException("The name of the table is required!")
+    #
+    # When opened by Table.read(), the filename will actually be a file-like
+    # object opened in *binary* mode.
+    #
     par = yanny(filename)
     try:
         t0 = par[tablename.upper()]

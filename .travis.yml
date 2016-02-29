@@ -1,7 +1,8 @@
 language: python
 
 python:
-    - 2.6
+    # 2.6 doesn't have OrderedDict, needed for yanny, so dropping tests.
+    # - 2.6
     - 2.7
     - 3.3
     - 3.4
