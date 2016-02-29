@@ -363,7 +363,7 @@ class yanny(OrderedDict):
                 self.filename = 'in_memory.par'
                 contents = filename.read()
                 if 'b' in filename.mode:
-                    contents = str(contents)
+                    contents = contents.decode('ascii')
                 self._contents = contents
             self._parse()
         return
