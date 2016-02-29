@@ -14,7 +14,7 @@ def spec_append(spec1, spec2, pixshift=0):
         Append `spec2` to `spec1`.
     pixshift : :class:`int`, optional
         If `pixshift` is set to a positive integer, `spec2` will be padded with
-        `pixshift` zeros on the left size.  If `pixshift` is set to a
+        `pixshift` zeros on the left side.  If `pixshift` is set to a
         negative integer, `spec1` will be padded with ``abs(pixshift)`` zeros
         on the left side.  If not set, all zeros will be padded on the right
         side.

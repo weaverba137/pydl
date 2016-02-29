@@ -13,7 +13,7 @@ class pcomp(object):
     Parameters
     ----------
     x : array-like
-        A 2-D array with N rows and M columns.
+        A 2-D array with :math:`N` rows and :math:`M` columns.
     standardize : :class:`bool`, optional
         If set to ``True``, the input data will have its mean subtracted off
         and will be scaled to unit variance.
@@ -79,8 +79,8 @@ class pcomp(object):
 
     @lazyproperty
     def derived(self):
-        """(:class:`~numpy.ndarray`) A :math:`N \times M` array containing
-        the derived variables."""
+        """(:class:`~numpy.ndarray`) The derived variables.
+        """
         derived_data = np.dot(self._array, self.coefficients)
         if self._standardize:
             derived_data += self._xstd
@@ -88,13 +88,14 @@ class pcomp(object):
 
     @lazyproperty
     def variance(self):
-        """(:class:`~numpy.ndarray`) An array of the :math:`M` variances of
-        each derived variable."""
+        """(:class:`~numpy.ndarray`) The variances of each derived variable.
+        """
         return self._evals/self._c.trace()
 
     @lazyproperty
     def eigenvalues(self):
-        """(:class:`~numpy.ndarray`) An array of the :math:`M` eigenvalues
-        that correspond to the principal components.
+        """(:class:`~numpy.ndarray`) The eigenvalues.
+        There is one eigenvalue for that correspond each the principal
+        component.
         """
         return self._evals

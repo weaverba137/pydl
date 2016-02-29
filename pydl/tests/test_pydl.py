@@ -81,7 +81,7 @@ class TestPydl(object):
         pcomp_data = test_data[0:20, :]
         m = 4
         n = 20
-        means = np.tile(pcomp_data.mean(0), 20).reshape(pcomp_data.shape)
+        means = np.tile(pcomp_data.mean(0), n).reshape(pcomp_data.shape)
         newarray = pcomp_data - means
         foo = pcomp(newarray, covariance=True)
         #
@@ -100,6 +100,20 @@ class TestPydl(object):
         eigenvalues = test_data[44, :]
         assert_allclose(foo.eigenvalues, eigenvalues, 1e-4)
         variance = test_data[45, :]
+        assert_allclose(foo.variance, variance, 1e-4)
+        #
+        # Test the standardization.
+        #
+        foo = pcomp(pcomp_data, standardize=True, covariance=True)
+        # for k in range(m):
+        #     assert_allclose(abs(foo.derived[:, k]), abs(derived[:, k]), 1e-4)
+        # for k in range(m):
+        #     assert_allclose(abs(foo.coefficients[:, k]),
+        #                     abs(coefficientsT[:, k]),
+        #                     1e-4)
+        eigenvalues = test_data[46, :]
+        assert_allclose(foo.eigenvalues, eigenvalues, 1e-4)
+        variance = test_data[47, :]
         assert_allclose(foo.variance, variance, 1e-4)
 
     def test_smooth(self):
