@@ -10,7 +10,7 @@ Parameter files typically have the extension ``.par``.
 
 Because Parameter files can contain multiple tables, as well as
 metadata, there is no simple, one-to-one correspondence between these
-files and, say, an astropy :class:`~astropy.table.Table` objects.
+files and, say, an astropy :class:`~astropy.table.Table` object.
 
 Currently multidimensional arrays are only supported for type ``char``, and a
 close reading of the specifications indicates that multidimensional arrays

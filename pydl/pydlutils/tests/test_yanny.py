@@ -87,7 +87,7 @@ class TestYanny(YannyTestCase):
         par = yanny(self.data('test.par'))
         assert is_yanny('read', None, None, par)
         assert is_yanny('read', 'test.par', None)
-        with open(self.data('test.par')) as fileobj:
+        with open(self.data('test.par'), 'rb') as fileobj:
             assert is_yanny('read', None, fileobj)
 
     def test_write_single_ndarray_to_yanny(self):
