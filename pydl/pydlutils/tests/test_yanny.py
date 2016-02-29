@@ -117,7 +117,7 @@ class TestYanny(YannyTestCase):
         filename = self.data('table.par')
         a = [1, 4, 5]
         b = [2.0, 5.0, 8.2]
-        c = ['x', 'y', 'z']
+        c = [b'x', b'y', b'z']
         t = Table([a, b, c], names=('a', 'b', 'c'),
                   meta={'name': 'first table'})
         t.write(filename, tablename='test')
