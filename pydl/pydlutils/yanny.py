@@ -19,9 +19,25 @@ exist as file objects.
 Because Parameter files can contain multiple tables, as well as
 metadata, there is no simple, one-to-one correspondence between these
 files and, say, an astropy :class:`~astropy.table.Table` object.  Thus,
-:class:`yanny` objects are implemented as a subclass of :class:`dict`,
-and the actual data are values accessed by keyword.  Still, it is
+:class:`yanny` objects are implemented as a subclass of
+:class:`~collections.OrderedDict` (to remember the order of keyword-value
+pairs), and the actual data are values accessed by keyword.  Still, it is
 certainly possible to *write* a table-like object to a yanny file.
+
+Given the caveats above, we have introduced *experimental* support for
+reading and writing yanny files directly to/from :class:`~astropy.table.Table`
+objects.  Because of the experimental nature of this support, it must be
+activated "by hand" by including this snippet in your code::
+
+    from astropy.table import Table
+    from astropy.io.registry import (register_identifier, register_reader,
+                                     register_writer)
+    from pydl.pydlutils.yanny import (is_yanny, read_table_yanny,
+                                      write_table_yanny)
+
+    register_identifier('yanny', Table, is_yanny)
+    register_reader('yanny', Table, read_table_yanny)
+    register_writer('yanny', Table, write_table_yanny)
 
 Currently multidimensional arrays are only supported for type ``char``, and a
 close reading of the specifications indicates that multidimensional arrays
@@ -35,6 +51,7 @@ import re
 import os
 import datetime
 import numpy
+from collections import OrderedDict
 from astropy.extern import six
 from astropy.table import Table
 # from astropy.io.registry import register_identifier, register_writer
@@ -44,7 +61,7 @@ if six.PY3:
     long = int
 
 
-class yanny(dict):
+class yanny(OrderedDict):
     """An object interface to a yanny file.
 
     Create a yanny object using a yanny file, `filename`.  If the file exists,
@@ -301,6 +318,7 @@ class yanny(dict):
     def __init__(self, filename=None, raw=False, debug=False):
         """Create a yanny object using a yanny file.
         """
+        super(yanny, self).__init__()
         #
         # The symbol hash is inherited from the old read_yanny
         #
@@ -802,6 +820,12 @@ class yanny(dict):
           present
         * a simple yanny file can be read with no further processing
 
+        Returns
+        -------
+        :class:`~collections.OrderedDict`
+            A dictionary of the keyword-value pairs that remembers the order
+            in which they were defined in the file.
+
         Examples
         --------
 
@@ -817,7 +841,7 @@ class yanny(dict):
 
         added: Demitri Muna, NYU 2009-04-28
         """
-        new_dictionary = dict()
+        new_dictionary = OrderedDict()
         for key in self.pairs():
             new_dictionary[key] = self[key]
         return new_dictionary
@@ -1251,6 +1275,47 @@ def is_yanny(origin, path, fileobj, *args, **kwargs):
     return isinstance(args[0], yanny)
 
 
+def read_table_yanny(filename, tablename=None):
+    """Read a yanny file into a :class:`~astropy.table.Table`.
+
+    Because yanny files can contain multiple tables, it is necessary
+    to specify the table name to return.  However, all "headers"
+    (keyword-value pairs) will be included in the Table metadata.
+
+    This function is for use with
+    :func:`~astropy.io.registry.register_reader`.
+
+    Parameters
+    ----------
+    filename : :class:`str`
+        Name of the file to read.
+    tablename : :class:`str`
+        The name of the table to read from the file.
+
+    Returns
+    -------
+    :class:`~astropy.table.Table`
+        The table read from the file.
+
+    Raises
+    ------
+    PydlutilsException
+        If `tablename` is not set.
+    KeyError
+        If `tablename` does not exist in the file.
+    """
+    if tablename is None:
+        raise PydlutilsException("The name of the table is required!")
+    par = yanny(filename)
+    try:
+        t0 = par[tablename.upper()]
+    except KeyError:
+        raise KeyError("No table named {0} in {1}!".format(tablename, filename))
+    t = Table(t0)
+    t.meta = par.new_dict_from_pairs()
+    return t
+
+
 def write_table_yanny(table, filename, tablename=None, overwrite=False):
     """Write a :class:`~astropy.table.Table` to a yanny file.
 
@@ -1278,7 +1343,3 @@ def write_table_yanny(table, filename, tablename=None, overwrite=False):
         hdr = None
     write_ndarray_to_yanny(filename, table, structnames=tablename,
                            hdr=hdr, comments='Table')
-
-
-# register_identifier('yanny', Table, is_yanny)
-# register_writer('yanny', Table, write_table_yanny)

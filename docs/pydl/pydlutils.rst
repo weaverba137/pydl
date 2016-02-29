@@ -38,4 +38,4 @@ API
     :skip: PydlutilsException, flegendre
 
 .. automodapi:: pydl.pydlutils.yanny
-    :skip: PydlutilsException, Table
+    :skip: OrderedDict, PydlutilsException, Table

@@ -6,17 +6,20 @@ import numpy as np
 from astropy.tests.helper import raises
 from astropy.extern import six
 from astropy.table import Table
-from astropy.io.registry import register_identifier, register_writer
+from astropy.io.registry import (register_identifier, register_reader,
+                                 register_writer)
 from os import chmod, remove
 from os.path import dirname, exists, join
 from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
 from .. import PydlutilsException
-from ..yanny import write_ndarray_to_yanny, yanny, is_yanny, write_table_yanny
+from ..yanny import (write_ndarray_to_yanny, yanny, is_yanny,
+                     read_table_yanny, write_table_yanny)
 
 
 register_identifier('yanny', Table, is_yanny)
+register_reader('yanny', Table, read_table_yanny)
 register_writer('yanny', Table, write_table_yanny)
 
 
@@ -96,11 +99,22 @@ class TestYanny(YannyTestCase):
         with open(self.data('test.par'), 'rb') as fileobj:
             assert is_yanny('read', None, fileobj)
 
+    def test_read_table_yanny(self):
+        """Test reading to an astropy Table.
+        """
+        filename = self.data('test_table.par')
+        with raises(PydlutilsException):
+            t = Table.read(filename)
+        with raises(KeyError):
+            t = Table.read(filename, tablename='foo')
+        t = Table.read(filename, tablename='test')
+        assert t.meta['name'] == 'first table'
+        assert (t['a'] == np.array([1, 4, 5])).all()
+
     def test_write_table_yanny(self):
         """Test writing an astropy Table to yanny.
         """
         filename = self.data('table.par')
-        # filename = join('/Users', 'weaver', 'Desktop', 'table.par')
         a = [1, 4, 5]
         b = [2.0, 5.0, 8.2]
         c = ['x', 'y', 'z']
