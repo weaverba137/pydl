@@ -5,13 +5,19 @@ import json
 import numpy as np
 from astropy.tests.helper import raises
 from astropy.extern import six
-from os import chmod
+from astropy.table import Table
+from astropy.io.registry import register_identifier, register_writer
+from os import chmod, remove
 from os.path import dirname, exists, join
 from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
 from .. import PydlutilsException
-from ..yanny import write_ndarray_to_yanny, yanny, is_yanny
+from ..yanny import write_ndarray_to_yanny, yanny, is_yanny, write_table_yanny
+
+
+register_identifier('yanny', Table, is_yanny)
+register_writer('yanny', Table, write_table_yanny)
 
 
 class YannyTestCase(object):
@@ -89,6 +95,22 @@ class TestYanny(YannyTestCase):
         assert is_yanny('read', 'test.par', None)
         with open(self.data('test.par'), 'rb') as fileobj:
             assert is_yanny('read', None, fileobj)
+
+    def test_write_table_yanny(self):
+        """Test writing an astropy Table to yanny.
+        """
+        filename = self.data('table.par')
+        # filename = join('/Users', 'weaver', 'Desktop', 'table.par')
+        a = [1, 4, 5]
+        b = [2.0, 5.0, 8.2]
+        c = ['x', 'y', 'z']
+        t = Table([a, b, c], names=('a', 'b', 'c'),
+                  meta={'name': 'first table'})
+        t.write(filename, tablename='test')
+        par1 = yanny(filename)
+        par2 = yanny(self.data('test_table.par'))
+        assert par1 == par2
+        remove(filename)
 
     def test_write_single_ndarray_to_yanny(self):
         """Test the write_ndarray_to_yanny function.

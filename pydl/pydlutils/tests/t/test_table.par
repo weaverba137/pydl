@@ -1,0 +1,13 @@
+#%yanny
+# Table
+name first table
+
+typedef struct {
+    long a;
+    double b;
+    char c[1];
+} TEST;
+
+TEST 1 2.0 x
+TEST 4 5.0 y
+TEST 5 8.2 z

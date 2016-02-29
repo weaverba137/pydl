@@ -4,13 +4,24 @@
 
 This is a Python library for reading & writing yanny files.
 
-yanny is an object-oriented interface to SDSS Parameter files
+:class:`yanny` is an object-oriented interface to SDSS Parameter files
 (a.k.a. "FTCL" or "yanny" files) following these specifications_.
-Parameter files typically have the extension ``.par``.
+Parameter files typically have and can be recognized by the extension
+``.par``.  These files may also be recognized if the first line of the
+file is::
+
+    #%yanny
+
+This is not part of the standard specification, but it suffices to
+identify, *e.g.*, files that have not yet been written to disk, but only
+exist as file objects.
 
 Because Parameter files can contain multiple tables, as well as
 metadata, there is no simple, one-to-one correspondence between these
-files and, say, an astropy :class:`~astropy.table.Table` object.
+files and, say, an astropy :class:`~astropy.table.Table` object.  Thus,
+:class:`yanny` objects are implemented as a subclass of :class:`dict`,
+and the actual data are values accessed by keyword.  Still, it is
+certainly possible to *write* a table-like object to a yanny file.
 
 Currently multidimensional arrays are only supported for type ``char``, and a
 close reading of the specifications indicates that multidimensional arrays
@@ -25,6 +36,8 @@ import os
 import datetime
 import numpy
 from astropy.extern import six
+from astropy.table import Table
+# from astropy.io.registry import register_identifier, register_writer
 from . import PydlutilsException
 
 if six.PY3:
@@ -243,7 +256,9 @@ class yanny(dict):
         dtmap = {'i2': 'short', 'i4': 'int', 'i8': 'long', 'f4': 'float',
                  'f8': 'double'}
         returnenums = list()
-        if enums is not None:
+        if enums is None:
+            enums = dict()
+        else:
             for e in enums:
                 lines = list()
                 lines.append('typedef enum {')
@@ -339,13 +354,15 @@ class yanny(dict):
         """
         return self._contents
 
+    __repr__ = __str__
+
     def __eq__(self, other):
         """Test two yanny objects for equality.
 
         Two yanny objects are assumed to be equal if their contents are equal.
         """
         if isinstance(other, yanny):
-            return str(other) == str(self)
+            return self._contents == other._contents
         return NotImplemented
 
     def __ne__(self, other):
@@ -845,10 +862,12 @@ class yanny(dict):
             if isinstance(comments, six.string_types):
                 if not comments.startswith('#'):
                     comments = '# ' + comments
+                if not comments.endswith('\n'):
+                    comments += '\n'
             else:
                 comments = ("\n".join(["# {0}".format(c) for c in comments]) +
                             "\n")
-        contents = comments
+        contents = "#%yanny\n" + comments
         #
         # Print any key/value pairs
         #
@@ -1174,7 +1193,7 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
         #
         raise PydlutilsException(
               "Apparently {0} already exists.".format(filename))
-    if isinstance(datatables, (ndarray, recarray)):
+    if isinstance(datatables, (ndarray, recarray, Table)):
         datatables = (datatables,)
     if structnames is None:
         structnames = ["MYSTRUCT{0:d}".format(k)
@@ -1230,3 +1249,34 @@ def is_yanny(origin, path, fileobj, *args, **kwargs):
     elif path is not None:
         return path.endswith('.par')
     return isinstance(args[0], yanny)
+
+
+def write_table_yanny(table, filename, tablename=None, overwrite=False):
+    """Write a :class:`~astropy.table.Table` to a yanny file.
+
+    This function is for use with
+    :func:`~astropy.io.registry.register_writer`.
+
+    Parameters
+    ----------
+    table : :class:`astropy.table.Table`
+        The object to be written.
+    filename : :class:`str`
+        Name of the file to write to.
+    tablename : :class:`str`, optional
+        Name to give `table` within the file.
+    overwrite : :class:`bool`, optional
+        If ``True``, any existing file will be silently overwritten.
+    """
+    if overwrite and os.path.exists(filename):
+        os.remove(filename)
+    if table.meta:
+        hdr = table.meta
+    else:
+        hdr = None
+    write_ndarray_to_yanny(filename, table, structnames=tablename,
+                           hdr=hdr, comments='Table')
+
+
+# register_identifier('yanny', Table, is_yanny)
+# register_writer('yanny', Table, write_table_yanny)
