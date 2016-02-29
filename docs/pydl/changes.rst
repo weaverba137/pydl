@@ -5,6 +5,10 @@ PyDL Changelog
 0.5.0 (unreleased)
 ------------------
 
+* Dropped support for Python 2.6.  Python 2.6 does not contain
+  :class:`collections.OrderedDict`, which is needed to support
+  :class:`~pydl.pydlutils.yanny.yanny` objects, and at this point it is not
+  worth going to the trouble to support this with an external package.
 * Ongoing review and upgrade of docstrings.
 * Yanny files can now be converted into *genuine* NumPy
   :class:`record arrays <numpy.recarray>`, previously, the conversion was only

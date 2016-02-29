@@ -3,6 +3,7 @@
 import warnings
 import json
 import numpy as np
+from collections import OrderedDict
 from astropy.tests.helper import raises
 from astropy.extern import six
 from astropy.table import Table
@@ -108,8 +109,10 @@ class TestYanny(YannyTestCase):
         with raises(KeyError):
             t = Table.read(filename, tablename='foo')
         t = Table.read(filename, tablename='test')
+        assert isinstance(t.meta, OrderedDict)
         assert t.meta['name'] == 'first table'
         assert (t['a'] == np.array([1, 4, 5])).all()
+        assert (t['c'] == np.array([b'x', b'y', b'z'])).all()
 
     def test_write_table_yanny(self):
         """Test writing an astropy Table to yanny.

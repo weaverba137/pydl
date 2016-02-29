@@ -1125,7 +1125,7 @@ class yanny(OrderedDict):
                 #
                 (key, value) = self.get_token(line)
                 uckey = key.upper()
-                if uckey in self._symbols.keys():
+                if uckey in self._symbols:
                     #
                     # Structure data
                     #
