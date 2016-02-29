@@ -280,7 +280,7 @@ class yanny(dict):
                 l = 0
                 s = dt[c].itemsize
             line = '    '
-            if t[0] == 'S':
+            if t[0] in 'SU':
                 if c in enums:
                     line += enums[c][0].upper()
                 else:
@@ -290,7 +290,7 @@ class yanny(dict):
             line += ' {0}'.format(c)
             if l > 0:
                 line += "[{0:d}]".format(l)
-            if t[0] == 'S' and c not in enums:
+            if t[0] in 'SU' and c not in enums:
                 line += "[{0:d}]".format(s)
             line += ';'
             lines.append(line)
@@ -1253,6 +1253,8 @@ def is_yanny(origin, path, fileobj, *args, **kwargs):
 
 def write_table_yanny(table, filename, tablename=None, overwrite=False):
     """Write a :class:`~astropy.table.Table` to a yanny file.
+
+    If `table` has any metadata, it will be written to the file as well.
 
     This function is for use with
     :func:`~astropy.io.registry.register_writer`.
