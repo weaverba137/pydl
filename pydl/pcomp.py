@@ -95,7 +95,6 @@ class pcomp(object):
     @lazyproperty
     def eigenvalues(self):
         """(:class:`~numpy.ndarray`) The eigenvalues.
-        There is one eigenvalue for that correspond each the principal
-        component.
+        There is one eigenvalue for each principal component.
         """
         return self._evals
