@@ -24,6 +24,7 @@ if not _ASTROPY_SETUP_:
     from .file_lines import file_lines
     from .median import median
     from .pcomp import pcomp
+    from .rebin import rebin
     from .smooth import smooth
     from .uniq import uniq
     # from . import goddard
@@ -35,4 +36,5 @@ if not _ASTROPY_SETUP_:
 class PydlException(Exception):
     pass
 
-__all__ = ['file_lines', 'median', 'pcomp', 'smooth', 'uniq', 'PydlException']
+__all__ = ['file_lines', 'median', 'pcomp', 'rebin', 'smooth', 'uniq',
+           'PydlException']

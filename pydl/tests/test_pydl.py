@@ -11,6 +11,7 @@ from os.path import basename, dirname, join
 from ..file_lines import file_lines
 from ..median import median
 from ..pcomp import pcomp
+from ..rebin import rebin
 from ..smooth import smooth
 from ..uniq import uniq
 
@@ -115,6 +116,32 @@ class TestPydl(object):
         assert_allclose(foo.eigenvalues, eigenvalues, 1e-4)
         variance = test_data[47, :]
         assert_allclose(foo.variance, variance, 1e-4)
+
+    def test_rebin(self):
+        x = np.arange(40)
+        with raises(ValueError):
+            r = rebin(x, d=(10, 10))
+        with raises(ValueError):
+            r = rebin(x, d=(70,))
+        with raises(ValueError):
+            r = rebin(x, d=(30,))
+        x = np.array([[1.0, 2.0], [2.0, 3.0]])
+        rexpect = np.array([[1.0, 2.0], [1.5, 2.5], [2.0, 3.0], [2.0, 3.0]])
+        r = rebin(x, d=(4, 2))
+        assert np.allclose(r, rexpect)
+        rexpect = np.array([[1.0, 1.5, 2.0, 2.0], [2.0, 2.5, 3.0, 3.0]])
+        r = rebin(x, d=(2, 4))
+        assert np.allclose(r, rexpect)
+        rexpect = np.array([[1.0, 2.0], [1.0, 2.0], [2.0, 3.0], [2.0, 3.0]])
+        r = rebin(x, d=(4, 2), sample=True)
+        assert np.allclose(r, rexpect)
+        rexpect = np.array([[1.0, 1.0, 2.0, 2.0], [2.0, 2.0, 3.0, 3.0]])
+        r = rebin(x, d=(2, 4), sample=True)
+        assert np.allclose(r, rexpect)
+        x = np.arange(10)
+        rexpect = np.array([0.0, 2.0, 4.0, 6.0, 8.0])
+        r = rebin(x, d=(5,), sample=True)
+        assert np.allclose(r, rexpect)
 
     def test_smooth(self):
         test_data_file = join(self.data_dir, 'smooth_data.txt')
