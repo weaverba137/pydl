@@ -21,6 +21,7 @@ PyDL Changelog
 * Support platform-independent home directory (`PR #7`_).
 * Uppercase the package name (in documentation only).
 * Upgrade to `astropy_helpers`_/v1.1.1.
+* Add functions from the idlutils rgbcolor directory.
 
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
 .. _`PR #7`: https://github.com/weaverba137/pydl/pull/7
