@@ -29,6 +29,8 @@ API
 
 .. automodapi:: pydl.pydlutils.misc
 
+.. automodapi:: pydl.pydlutils.rgbcolor
+
 .. automodapi:: pydl.pydlutils.sdss
 
 .. automodapi:: pydl.pydlutils.spheregroup
