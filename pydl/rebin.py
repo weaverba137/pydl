@@ -7,6 +7,15 @@ def rebin(x, d, sample=False):
     """Resize `x` to new dimensions given by `d`.  The new dimensions must
     be integer multiples or factors of the original dimensions.
 
+    Although there are some elegant solutions out there for rebinning, this
+    function is intended to replace the IDL ``REBIN()`` function, which
+    has a number of special properties:
+
+    * It refuses to perform extrapolation when rebinning to a larger size
+      in a particular dimension.
+    * It can simultaneously rebin to a larger size in one dimension while
+      rebinning to a smaller size in another dimension.
+
     Parameters
     ----------
     x : :class:`~numpy.ndarray`
@@ -56,8 +65,11 @@ def rebin(x, d, sample=False):
             if d0[k] % d[k] != 0:
                 raise ValueError(("{0:d} is not a multiple " +
                                   "of {1:d}!").format(d0[k], d[k]))
-    r = zeros(d, dtype=x.dtype)
+    xx = x.copy()
+    new_shape = list(d0)
     for k in range(len(d0)):
+        new_shape[k] = d[k]
+        r = zeros(new_shape, dtype=xx.dtype)
         sliceobj0 = [slice(None)]*len(d0)
         sliceobj1 = [slice(None)]*len(d0)
         sliceobj = [slice(None)]*len(d)
@@ -69,28 +81,32 @@ def rebin(x, d, sample=False):
                 sliceobj0[k] = slice(fp, fp + 1)
                 sliceobj[k] = slice(i, i + 1)
                 if sample:
-                    r[sliceobj] = x[sliceobj0]
+                    r[sliceobj] = xx[sliceobj0]
                 else:
                     if p < d0[k] - 1:
                         sliceobj1[k] = slice(fp + 1, fp + 2)
-                        r[sliceobj] = x[sliceobj0] + (p - fp)*(x[sliceobj1] -
-                                                               x[sliceobj0])
+                        rshape = r[sliceobj].shape
+                        r[sliceobj] = (xx[sliceobj0].reshape(rshape) +
+                                       (p - fp)*(xx[sliceobj1] -
+                                                 xx[sliceobj0]).reshape(rshape)
+                                      )
                     else:
-                        r[sliceobj] = x[sliceobj0]
+                        r[sliceobj] = xx[sliceobj0]
         elif d[k] == d0[k]:
-            pass
-            # for i in range(d[k]):
-            #     sliceobj0[k] = slice(i, i + 1)
-            #     sliceobj[k] = slice(i, i + 1)
-            #     r[sliceobj] = x[sliceobj0]
+            for i in range(d[k]):
+                sliceobj0[k] = slice(i, i + 1)
+                sliceobj[k] = slice(i, i + 1)
+                r[sliceobj] = xx[sliceobj0]
         else:
             for i in range(d[k]):
                 sliceobj[k] = slice(i, i + 1)
                 if sample:
                     fp = int(floor(f*i))
                     sliceobj0[k] = slice(fp, fp + 1)
-                    r[sliceobj] = x[sliceobj0]
+                    r[sliceobj] = xx[sliceobj0]
                 else:
                     sliceobj0[k] = slice(int(f*i), int(f*(i+1)))
-                    r[sliceobj] = x[sliceobj0].sum(k)/f
+                    rshape = r[sliceobj].shape
+                    r[sliceobj] = xx[sliceobj0].sum(k).reshape(rshape)/f
+        xx = r
     return r

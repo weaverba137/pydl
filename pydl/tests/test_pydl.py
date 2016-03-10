@@ -142,6 +142,17 @@ class TestPydl(object):
         rexpect = np.array([0.0, 2.0, 4.0, 6.0, 8.0])
         r = rebin(x, d=(5,), sample=True)
         assert np.allclose(r, rexpect)
+        x = np.array([[1.0, 2.0, 3.0, 4.0],
+                      [2.0, 3.0, 4.0, 5.0],
+                      [3.0, 4.0, 5.0, 6.0],
+                      [4.0, 5.0, 6.0, 7.0]])
+        rexpect = np.array([[2.0, 4.0], [4.0, 6.0]])
+        r = rebin(x, d=(2, 2))
+        assert np.allclose(r, rexpect)
+        rexpect = np.array([[1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 4.5],
+                            [3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 6.5]])
+        r = rebin(x, d=(2,8))
+        assert np.allclose(r, rexpect)
 
     def test_smooth(self):
         test_data_file = join(self.data_dir, 'smooth_data.txt')
