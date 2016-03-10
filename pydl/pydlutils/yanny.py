@@ -57,9 +57,6 @@ from astropy.table import Table
 # from astropy.io.registry import register_identifier, register_writer
 from . import PydlutilsException
 
-if six.PY3:
-    long = int
-
 
 class yanny(OrderedDict):
     """An object interface to a yanny file.
@@ -669,18 +666,27 @@ class yanny(OrderedDict):
         :class:`int`, :class:`long`, :class:`float` or :class:`str`
             `value` converted to a Python numerical type.
         """
+        if six.PY3:
+            intTypes = set(['short', 'int', 'long'])
+            longTypes = set()
+            mylong = int
+        else:
+            intTypes = set(['short', 'int'])
+            longTypes = set(['long'])
+            mylong = long
+        floatTypes = set(['float', 'double'])
         typ = self.basetype(structure, variable)
-        if (typ == 'short' or typ == 'int'):
+        if typ in intTypes:
             if self.isarray(structure, variable):
                 return [int(v) for v in value]
             else:
                 return int(value)
-        if typ == 'long':
+        if typ in longTypes:
             if self.isarray(structure, variable):
-                return [long(v) for v in value]
+                return [mylong(v) for v in value]
             else:
-                return long(value)
-        if (typ == 'float' or typ == 'double'):
+                return mylong(value)
+        if typ in floatTypes:
             if self.isarray(structure, variable):
                 return [float(v) for v in value]
             else:
