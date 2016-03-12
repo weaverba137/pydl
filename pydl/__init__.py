@@ -34,6 +34,8 @@ if not _ASTROPY_SETUP_:
 
 
 class PydlException(Exception):
+    """Base class for exceptions raised in PyDL functions.
+    """
     pass
 
 __all__ = ['file_lines', 'median', 'pcomp', 'rebin', 'smooth', 'uniq',

@@ -10,8 +10,13 @@ import astropy.utils.exceptions as aue
 
 
 class PydlutilsException(Exception):
+    """Exceptions raised by :mod:`pydl.pydlutils` that don't fit into a
+    standard exception class like :class:`ValueError`.
+    """
     pass
 
 
 class PydlutilsUserWarning(aue.AstropyUserWarning):
+    """Class for warnings issued by :mod:`pydl.pydlutils`.
+    """
     pass
