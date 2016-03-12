@@ -15,6 +15,9 @@ PyDL Changelog
   to :class:`numpy.ndarray` with named columns, which is a slightly different
   thing.
 * Added additional tests on :class:`~pydl.pydlutils.yanny.yanny` objects.
+* Experimental support for interconversion of
+  :class:`~pydl.pydlutils.yanny.yanny` objects and
+  :class:`~astropy.table.Table` objects.
 * Improving `PEP 8`_ compliance
 * Restructuing sub-packages to reduce the number of files.
 * Improvements to spectral template processing code, deduplicated some code.
