@@ -22,4 +22,5 @@ class PydlutilsUserWarning(aue.AstropyUserWarning):
     """
     pass
 
+
 __all__ = ['PydlutilsException', 'PydlutilsUserWarning']

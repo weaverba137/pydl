@@ -22,4 +22,5 @@ class Pydlspec2dUserWarning(aue.AstropyUserWarning):
     """
     pass
 
+
 __all__ = ['Pydlspec2dException', 'Pydlspec2dUserWarning']

@@ -8,10 +8,12 @@ This subpackage implements functions from the photoop package.
 #
 from .. import PydlException
 
+
 class PhotoopException(PydlException):
     """Exceptions raised by :mod:`pydl.photoop` that don't fit into a
     standard exception class like :exc:`ValueError`.
     """
     pass
+
 
 __all__ = ['PhotoopException']
