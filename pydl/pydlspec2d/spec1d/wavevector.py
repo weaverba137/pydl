@@ -3,7 +3,7 @@
 
 
 def wavevector(minfullwave, maxfullwave, zeropoint=3.5, binsz=1.0e-4,
-               wavemin=None, wavemax=None):
+               wavemin=None):
     """Return an array of wavelengths.
 
     Parameters
@@ -18,8 +18,6 @@ def wavevector(minfullwave, maxfullwave, zeropoint=3.5, binsz=1.0e-4,
         Separation between wavelength values.
     wavemin : :class:`float`, optional
         If this is set the values of `minfullwave` and `zeropoint` are ignored.
-    wavemax : :class:`float`, optional
-        If this is set the value of `maxfullwave` is ignored.
 
     Returns
     -------
@@ -31,11 +29,8 @@ def wavevector(minfullwave, maxfullwave, zeropoint=3.5, binsz=1.0e-4,
     from numpy import arange
     if wavemin is not None:
         spotmin = 0
-        if wavemax is not None:
-            spotmax = int((wavemax - wavemin)/binsz)
-        else:
-            spotmax = int((maxfullwave - wavemin)/binsz)
-            wavemax = spotmax * binsz + wavemin
+        spotmax = int((maxfullwave - wavemin)/binsz)
+        wavemax = spotmax * binsz + wavemin
     else:
         spotmin = int((minfullwave - zeropoint)/binsz) + 1
         spotmax = int((maxfullwave - zeropoint)/binsz)
