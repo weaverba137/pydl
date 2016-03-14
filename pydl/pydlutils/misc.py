@@ -190,18 +190,8 @@ def hogg_iau_name(ra, dec, prefix='SDSS', precision=1):
     dem = dem.astype(np.int32)
     adformat = "{{0:02d}}{{1:02d}}{ras}{{3:s}}{{4:02d}}{{5:02d}}{des}".format(
                 ras=rasformat, des=desformat)
-    #
-    # The easy way doesn't work if numpy version is less than 1.7.0.  Prior
-    # to this version, numpy scalars didn't support __format__.  See
-    # http://projects.scipy.org/numpy/ticket/1675
-    #
-    try:
-        adstr = [adformat.format(*x) for x in zip(
-                rah, ram, ras, desgn, ded, dem, des)]
-    except ValueError:
-        adstr = [adformat.format(*x) for x in zip(
-            rah.tolist(), ram.tolist(), ras.tolist(), desgn.tolist(),
-            ded.tolist(), dem.tolist(), des.tolist())]
+    adstr = [adformat.format(*x) for x in zip(
+            rah, ram, ras, desgn, ded, dem, des)]
     if prefix == '':
         jstr = 'J'
     else:
@@ -235,7 +225,7 @@ def hogg_iau_name_main():  # pragma: no cover
 
 def struct_print(array, filename=None, formatcodes=None, alias=None,
                  fdigit=5, ddigit=7, html=False, no_head=False,
-                 debug=False, silent=False):
+                 silent=False):
     """Print a NumPy record array (analogous to an IDL structure) in a
     nice way.
 
@@ -258,10 +248,9 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
         If ``True``, print an html table.
     no_head : :class:`bool`, optional
         If ``True``, *don't* print a header line.
-    debug : :class:`bool`, optional
-        If ``True``, print some extra debugging information.
     silent : :class:`bool`, optional
         If ``True``, do not print the table, just return it.
+
     Returns
     -------
     :func:`tuple`
@@ -276,12 +265,6 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
     >>> struct_print(np.array([(1,2.34,'five'),(2,3.456,'seven'),(3,4.5678,'nine')],dtype=[('a','i4'),('bb','f4'),('ccc','S5')]),silent=True)
     (['a bb          ccc  ', '- ----------- -----', '1        2.34 five ', '2       3.456 seven', '3      4.5678 nine '], [])
     """
-    f = None   # This variable will store a file handle
-    if filename is not None:
-        if isinstance(filename, file):
-            f = filename
-        else:
-            f = open(filename, 'w')
     if html:
         headstart = '<tr><th>'
         headsep = '</th><th>'
@@ -346,7 +329,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
             thisn = len(thiscode.format(array[tag][0]))
         else:
             d = array.dtype.fields[tag][0]
-            if d.kind == 'i':
+            if d.kind == 'i' or d.kind == 'u':
                 thisn = max(max(len(str(array[tag].min())),
                             len(str(array[tag].max()))), len(tag))
                 thiscode = "{{{0:d}:{1:d}d}}".format(k, thisn)
@@ -359,7 +342,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
                 if array[tag].min() < 0:
                     thisn += 1
                 thiscode = "{{{0:d}:{1:d}.{2:d}g}}".format(k, thisn, prec)
-            elif d.kind == 'S':
+            elif d.kind == 'S' or d.kind == 'U':
                 thisn = max(d.itemsize, len(tag))
                 thiscode = "{{{0:d}:{1:d}s}}".format(k, thisn)
             else:
@@ -393,17 +376,24 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
     #
     rowformat = (colstart + colsep.join([formatcodes[tag]
                 for tag in array.dtype.names]) + colend)
-    if debug:
-        print(rowformat)
     for k in range(array.size):
         lines.append(rowformat.format(
                     *([decode_mixed(l) for l in array[k].tolist()])))
     if html:
         lines.append('</table>')
+    f = None   # This variable will store a file handle
+    close_file = False
+    if filename is not None:
+        if isinstance(filename, file):
+            f = filename
+        else:
+            f = open(filename, 'w')
+            close_file = True
     if f is None:
         if not silent:
             print("\n".join(lines)+"\n")
     else:
         f.write("\n".join(lines)+"\n")
-        f.close()
+        if close_file:
+            f.close()
     return (lines, css)

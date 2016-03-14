@@ -1,7 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+import os
 import numpy as np
 from astropy.tests.helper import raises
+from .. import PydlutilsException
 from ..misc import djs_laxisgen, djs_laxisnum, hogg_iau_name, struct_print
 
 
@@ -10,10 +12,17 @@ class TestMisc(object):
     """
 
     def setup(self):
-        pass
+        self.data_dir = os.path.join(os.path.dirname(__file__), 't')
+        self.struct_print_file = os.path.join(self.data_dir,
+                                              'struct_print.txt')
+        self.struct_print_file2 = os.path.join(self.data_dir,
+                                               'struct_print2.txt')
 
     def teardown(self):
-        pass
+        if os.path.exists(self.struct_print_file):
+            os.remove(self.struct_print_file)
+        if os.path.exists(self.struct_print_file2):
+            os.remove(self.struct_print_file2)
 
     def test_djs_laxisgen(self):
         #
@@ -105,26 +114,83 @@ class TestMisc(object):
                                 'SDSS J072147.35+392112.6')
 
     def test_struct_print(self):
-        n = 20
-        slist = np.zeros(n, dtype=[('PLATE', 'i4'), ('MJD', 'i4'),
-                                    ('FIBERID', 'i4'), ('RA', 'f8'),
-                                    ('DEC', 'f8'), ('MATCHRAD', 'f4'),
-                                    ('RERUN', 'S8')])
-        slist['RERUN'][0:int(n/2)] = 'v1_2_3'
-        slist['RERUN'][int(n/2):n] = 'v1_3_34'
-        slist['PLATE'] = np.random.random_integers(10, 10000, (n,))
-        slist['MJD'] = np.random.random_integers(51000, 56000, (n,))
-        slist['FIBERID'] = np.random.random_integers(1, 1000, (n,))
-        slist['RA'] = 360.0*np.random.random((n,))
-        slist['DEC'] = (90.0 -
-                        np.rad2deg(np.arccos(
-                        2.0*np.random.random((n,)) - 1.0)))
-        slist['MATCHRAD'] = np.random.random((n,))
-        # print(slist)
-        # lines, css = struct_print(slist, debug=True)
-        # print(lines)
-        # print(css)
-        # lines, css = struct_print(slist, debug=True, html=True)
-        # print(lines)
-        # print(css)
-        assert slist.size == n
+        slist = np.zeros((5,), dtype=[('a', 'c16'), ('b', np.bool)])
+        with raises(PydlutilsException):
+            lines, css = struct_print(slist, silent=True)
+        slist = np.array([(1, 2.34, 'five'),
+                          (2, 3.456, 'seven'),
+                          (3, -4.5678, 'nine')],
+                          dtype=[('a', 'i4'), ('bb', 'f4'), ('ccc', 'S5')])
+        lines, css = struct_print(slist, silent=True)
+        assert lines[0] == 'a bb           ccc  '
+        assert lines[1] == '- ------------ -----'
+        assert lines[2] == '1         2.34 five '
+        assert lines[3] == '2        3.456 seven'
+        assert lines[4] == '3      -4.5678 nine '
+        assert len(css) == 0
+        lines, css = struct_print(slist, silent=True, alias={'ccc': 'c'})
+        assert lines[0] == 'a bb           c    '
+        assert lines[1] == '- ------------ -----'
+        assert lines[2] == '1         2.34 five '
+        assert lines[3] == '2        3.456 seven'
+        assert lines[4] == '3      -4.5678 nine '
+        assert len(css) == 0
+        lines, css = struct_print(slist, silent=True,
+                                  formatcodes={'a': '{0:02d}'})
+        assert lines[0] == 'a  bb           ccc  '
+        assert lines[1] == '-- ------------ -----'
+        assert lines[2] == '01         2.34 five '
+        assert lines[3] == '02        3.456 seven'
+        assert lines[4] == '03      -4.5678 nine '
+        assert len(css) == 0
+        lines, css = struct_print(slist, silent=True, fdigit=3)
+        assert lines[0] == 'a bb         ccc  '
+        assert lines[1] == '- ---------- -----'
+        assert lines[2] == '1       2.34 five '
+        assert lines[3] == '2       3.46 seven'
+        assert lines[4] == '3      -4.57 nine '
+        assert len(css) == 0
+        lines, css = struct_print(slist, silent=True, html=True)
+        assert lines[0] == '<table>'
+        assert lines[1] == '<tr><th>a</th><th>bb</th><th>ccc</th></tr>'
+        assert lines[2] == '<tr><td>1</td><td>        2.34</td><td>five </td></tr>'
+        assert lines[3] == '<tr><td>2</td><td>       3.456</td><td>seven</td></tr>'
+        assert lines[4] == '<tr><td>3</td><td>     -4.5678</td><td>nine </td></tr>'
+        assert lines[5] == '</table>'
+        assert css[0] == '<style type="text/css">'
+        assert css[1] == 'table {'
+        assert css[2] == '    border-collapse: collapse;'
+        assert css[3] == '}'
+        assert css[4] == 'th {'
+        assert css[5] == '    padding: 2px;'
+        assert css[6] == '    text-align: right;'
+        assert css[7] == '    border: 1px solid black;'
+        assert css[8] == '    font-weight: bold;'
+        assert css[9] == '}'
+        assert css[10] == 'td {'
+        assert css[11] == '    padding: 2px;'
+        assert css[12] == '    text-align: right;'
+        assert css[13] == '    border: 1px solid black;'
+        assert css[14] == '}'
+        assert css[15] == '</style>'
+        slist = np.array([(1, 2.34, 'five'),
+                          (2, 3.456, 'seven'),
+                          (3, -4.5678, 'nine')],
+                          dtype=[('a', 'i4'), ('bb', 'f8'), ('ccc', 'S5')])
+        lines, css = struct_print(slist, silent=True, ddigit=3)
+        assert lines[0] == 'a bb         ccc  '
+        assert lines[1] == '- ---------- -----'
+        assert lines[2] == '1       2.34 five '
+        assert lines[3] == '2       3.46 seven'
+        assert lines[4] == '3      -4.57 nine '
+        assert len(css) == 0
+        lines, css = struct_print(slist, silent=True,
+            filename=self.struct_print_file)
+        with open(self.struct_print_file) as f:
+            data = f.read()
+        assert "\n".join(lines)+"\n" == data
+        with open(self.struct_print_file2, 'w') as f:
+            lines, css = struct_print(slist, silent=True, filename=f)
+        with open(self.struct_print_file2) as f:
+            data = f.read()
+        assert "\n".join(lines)+"\n" == data
