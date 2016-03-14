@@ -390,7 +390,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
             f = open(filename, 'w')
             close_file = True
     if f is None:
-        if not silent:
+        if not silent:  # pragma: no cover
             print("\n".join(lines)+"\n")
     else:
         f.write("\n".join(lines)+"\n")

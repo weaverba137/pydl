@@ -3,21 +3,23 @@
 from __future__ import print_function
 
 
-def pca_star(**kwargs):
+def pca_star(**kwargs):  # pragma: no cover
     """Wrapper on pca_solve to handle stellar eigenspectra.
+
+    **This function is only retained for reference and eventual merging
+    into other code.  Do not use! **
     """
     import os
-    import os.path
     import pickle
     import pylab
     from astropy.io import fits as pyfits
     import numpy as np
     import pydl.pydlutils.yanny as yanny
     from matplotlib.font_manager import fontManager, FontProperties
-    from ... import uniq
-    from ...pydlutils.goddard.astro import get_juldate
-    from ...pydlutils.image import djs_maskinterp
-    from . import pca_solve, readspec, skymask
+    from .. import uniq
+    from ..goddard.astro import get_juldate
+    from ..pydlutils.image import djs_maskinterp
+    from .spec1d import pca_solve, readspec, skymask
     if 'inputfile' in kwargs:
         inputfile = kwargs['inputfile']
     else:

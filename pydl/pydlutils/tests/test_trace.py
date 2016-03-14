@@ -260,6 +260,16 @@ class TestTrace(object):
         assert tset2.func == tset.func
         assert np.allclose(tset2.coeff, tset.coeff)
 
+    def test_traceset_keywords(self):
+        tset = TraceSet(self.boss[1].data)
+        x, y = traceset2xy(tset)
+        iv = 2.0 * np.ones(x.shape, dtype=x.dtype)
+        im = np.ones(x.shape, dtype=np.bool)
+        im[1] = False
+        tset2 = TraceSet(x, y, func='chebyshev', invvar=iv, maxiter=20,
+                         inmask=im)
+        assert tset2.func == 'chebyshev'
+
     def test_traceset_bad(self):
         with raises(PydlutilsException):
             tset = TraceSet(1, 2, 3)

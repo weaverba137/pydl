@@ -4,7 +4,7 @@ import warnings
 import json
 import numpy as np
 from collections import OrderedDict
-from astropy.tests.helper import raises
+from astropy.tests.helper import catch_warnings, raises
 from astropy.extern import six
 from astropy.table import Table
 from astropy.io.registry import (register_identifier, register_reader,
@@ -14,7 +14,7 @@ from os.path import dirname, exists, join
 from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
-from .. import PydlutilsException
+from .. import PydlutilsException, PydlutilsUserWarning
 from ..yanny import (write_ndarray_to_yanny, yanny, is_yanny,
                      read_table_yanny, write_table_yanny)
 
@@ -254,10 +254,29 @@ class TestYanny(YannyTestCase):
     SUCCESS
 } STATUS;""",
             ]
+        with open(self.data('test.par')) as f:
+            file_data = f.read()
         #
         # Open the object
         #
         par = yanny(self.data('test.par'))
+        #
+        # Test some static methods, etc.
+        #
+        assert par.get_token('abcd') == ('abcd', '')
+        assert str(par) == file_data
+        assert repr(par) == file_data
+        par2 = yanny(self.data('test_table.par'))
+        assert par != par2
+        #
+        # Test types
+        #
+        assert par.type('MYSTRUCT', 'c') == 'double'
+        assert par.type('FOOBAR', 'd') is None
+        assert par.type('MYSTRUCT', 'foobar') is None
+        assert not par2.isenum('TEST', 'a')
+        assert par.array_length('MYSTRUCT', 'c') == 1
+        assert par.char_length('MYSTRUCT', 'c') is None
         #
         # Test the pairs
         #
@@ -307,6 +326,8 @@ class TestYanny(YannyTestCase):
         # This should fail, since test.par already exists.
         with raises(PydlutilsException):
             par.write()
+        with catch_warnings(PydlutilsUserWarning) as w:
+            par.append({})
         datatable = {'status_update': {'state': ['SUCCESS', 'SUCCESS'],
             'timestamp': ['2008-06-22 01:27:33', '2008-06-22 01:27:36']},
             'new_keyword': 'new_value'}

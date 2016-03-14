@@ -46,16 +46,16 @@ multidimensional arrays, sorry.
 
 .. _specifications: http://www.sdss.org/dr12/software/par/
 """
-from __future__ import print_function
 import re
 import os
 import datetime
 import numpy
+import warnings
 from collections import OrderedDict
 from astropy.extern import six
 from astropy.table import Table
 # from astropy.io.registry import register_identifier, register_writer
-from . import PydlutilsException
+from . import PydlutilsException, PydlutilsUserWarning
 
 
 class yanny(OrderedDict):
@@ -78,9 +78,6 @@ class yanny(OrderedDict):
         If ``True``, data in a yanny file will *not* be converted into
         astropy :class:`~astropy.table.Table` objects, but will instead be
         retained as raw Python lists.
-    debug : :class:`bool`, optional
-        If ``True``, some simple debugging statements will be turned on.
-        Default is ``False``.
 
     Attributes
     ----------
@@ -88,8 +85,6 @@ class yanny(OrderedDict):
         If ``True``, data in a yanny file will *not* be converted into
         astropy :class:`~astropy.table.Table` objects, but will instead be
         retained as raw Python lists.
-    debug : :class:`bool`
-        If ``True``, some simple debugging statements will be turned on.
     filename : :class:`str`
         The name of a yanny parameter file.  If a file-like object was used
         to initialize the object, this will have the value 'in_memory.par'.
@@ -150,8 +145,8 @@ class yanny(OrderedDict):
                 (word, remainder) = re.split(r'\s+', string, 1)
             except ValueError:
                 (word, remainder) = (string, '')
-        if remainder is None:
-            remainder = ''
+        # if remainder is None:
+        #     remainder = ''
         return (word, remainder)
 
     @staticmethod
@@ -312,7 +307,7 @@ class yanny(OrderedDict):
         return {structname.upper(): list(dt.names),
                 'enum': returnenums, 'struct': ["\n".join(lines)]}
 
-    def __init__(self, filename=None, raw=False, debug=False):
+    def __init__(self, filename=None, raw=False):
         """Create a yanny object using a yanny file.
         """
         super(yanny, self).__init__()
@@ -337,10 +332,6 @@ class yanny(OrderedDict):
         # Optionally convert numeric data into NumPy arrays
         #
         self.raw = raw
-        #
-        # Turn on simple debugging
-        #
-        self.debug = debug
         #
         # If the file exists, read it
         #
@@ -390,7 +381,7 @@ class yanny(OrderedDict):
         unequal.
         """
         if isinstance(other, yanny):
-            return str(other) != str(self)
+            return self._contents != other._contents
         return NotImplemented
 
     def __bool__(self):
@@ -443,8 +434,6 @@ class yanny(OrderedDict):
         try:
             var_type = cache[variable]
         except KeyError:
-            if self.debug:
-                print(variable)
             defl = [x for x in self._symbols['struct']
                     if x.find(structure.lower()) > 0]
             defu = [x for x in self._symbols['struct']
@@ -478,8 +467,6 @@ class yanny(OrderedDict):
             The type of the variable, stripped of array information.
         """
         typ = self.type(structure, variable)
-        if self.debug:
-            print(variable, typ)
         try:
             return typ[0:typ.index('[')]
         except ValueError:
@@ -1008,14 +995,10 @@ class yanny(OrderedDict):
                 self._contents += contents
                 self._parse()
             else:
-                if self.debug:
-                    print("For reference, " +
-                          "here's what would have been written:")
-                    print(contents)
                 raise PydlutilsException(self.filename +
                                          " does not exist, aborting append!")
         else:
-            print("Nothing to be appended!")
+            warnings.warn("Nothing to be appended!", PydlutilsUserWarning)
         return
 
     def _parse(self):
@@ -1110,8 +1093,6 @@ class yanny(OrderedDict):
         double_braces = re.compile(r'\{\s*\{\s*\}\s*\}')
         if len(lines) > 0:
             for line in lines.split('\n'):
-                if self.debug:
-                    print(line)
                 if len(line) == 0:
                     continue
                 if comments.search(line) is not None:
