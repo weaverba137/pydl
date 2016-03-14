@@ -4,8 +4,8 @@ import numpy as np
 import os
 from astropy.io import fits
 from astropy.tests.helper import raises
-from .. import aesthetics, filter_thru
-from ... import Pydlspec2dException
+from ..spec2d import aesthetics, combine1fiber, filter_thru
+from .. import Pydlspec2dException
 
 
 class TestSpec2d(object):
@@ -58,6 +58,9 @@ class TestSpec2d(object):
         #
         f = aesthetics(flux, ivar, 'nothing')
         assert (f == flux).all()
+
+    def test_combine1fiber(self):
+        pass
 
     def test_filter_thru(self):
         with fits.open(os.path.join(self.data_dir,
