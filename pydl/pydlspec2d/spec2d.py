@@ -414,7 +414,7 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
     if filter_prefix != 'sdss_jun2001':
         raise ValueError("Filters other than {0} are not available!".format('sdss_jun2001'))
     ffiles = [resource_filename('pydl.pydlutils',
-                                'data/filters/{0}_{1}_atm.dat'.format(filter_prefix, f))) for f in 'ugriz']
+                                'data/filters/{0}_{1}_atm.dat'.format(filter_prefix, f)) for f in 'ugriz']
     if waveimg is None and wset is None:
         raise ValueError("Either waveimg or wset must be specified!")
     if waveimg is None:

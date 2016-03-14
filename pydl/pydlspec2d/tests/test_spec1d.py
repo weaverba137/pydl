@@ -3,7 +3,7 @@
 import numpy as np
 import os
 # from astropy.tests.helper import raises
-from .. import findspec, spec_append, spec_path, wavevector
+from ..spec1d import findspec, spec_append, spec_path, wavevector
 
 
 class TestSpec1d(object):
