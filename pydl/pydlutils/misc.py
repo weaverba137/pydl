@@ -384,7 +384,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
     f = None   # This variable will store a file handle
     close_file = False
     if filename is not None:
-        if isinstance(filename, file):
+        if hasattr(filename, 'write'):
             f = filename
         else:
             f = open(filename, 'w')

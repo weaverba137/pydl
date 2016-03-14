@@ -1602,17 +1602,10 @@ def template_input(inputfile, dumpfile, flux, verbose):
 def template_input_main():  # pragma: no cover
     """Entry point for the compute_templates script.
 
-    Parameters
-    ----------
-    None
-
     Returns
     -------
-    None
-
-    Side-Effects
-    ------------
-    Creates a FITS file and some PNG plots.
+    :class:`int`
+        An integer suitable for passing to :func:`sys.exit`.
     """
     #
     # Imports for main()
