@@ -3,8 +3,6 @@
 """This module corresponds to the cooling directory in idlutils.
 """
 
-__doctest_skip__ = ['read_ds_cooling']
-
 
 def read_ds_cooling(fname, logT=None):
     """Read in the `Sutherland & Dopita (1993)
@@ -32,8 +30,8 @@ def read_ds_cooling(fname, logT=None):
 
     Notes
     -----
-    Retrieves data from http://www.mso.anu.edu.au/~ralph/data/cool/ and caches
-    the data locally.
+    The data have been retrieved from
+    http://www.mso.anu.edu.au/~ralph/data/cool/ and stored in the package.
 
     Examples
     --------
@@ -44,14 +42,13 @@ def read_ds_cooling(fname, logT=None):
     >>> loglambda[0:5]
     array([-26.  , -24.66, -23.52, -22.62, -22.11])
     """
-    from astropy.utils.data import download_file
+    from pkg_resources import resource_filename
     from numpy import interp
     from astropy.io import ascii
-    baseurl = 'http://www.mso.anu.edu.au/~ralph/data/cool/'
     if fname not in ('m-00.cie', 'm-05.cie', 'm+05.cie', 'm-10.cie',
                      'm-15.cie', 'm-20.cie', 'm-30.cie', 'mzero.cie'):
         raise ValueError('Invalid value for data file: {0}'.format(fname))
-    filename = download_file(baseurl+fname, cache=True, show_progress=False)
+    filename = resource_filename('pydl.pydlutils', 'data/cooling/' + fname)
     with open(filename) as coolingfile:
         coolingfile = coolingfile.read()
     data = ascii.read(coolingfile.split('\n')[2:], delimiter='\t')

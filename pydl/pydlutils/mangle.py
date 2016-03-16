@@ -3,8 +3,13 @@
 """This module corresponds to the mangle directory in idlutils.
 """
 import numpy as np
+from collections import namedtuple
 from astropy.io import fits
 from astropy.extern import six
+import astropy.utils as au
+
+
+MangleCaps = namedtuple('MangleCaps', ['X', 'CM'])
 
 
 class ManglePolygon(object):
@@ -12,13 +17,13 @@ class ManglePolygon(object):
 
     Parameters
     ----------
-    row : :class:`astropy.iofits.fitsrec.FITS_record`
+    row : :class:`~astropy.io.fits.fitsrec.FITS_record`
         A row from a :class:`FITS_polygon` object.
 
     Attributes
     ----------
-    CAPS : :class:`numpy.recarray`
-        Array containing the ``X`` and ``CM`` attributes.  ``X`` is the
+    CAPS : :class:`MangleCaps`
+        Named tuple containing the ``X`` and ``CM`` attributes.  ``X`` is the
         direction of the cap on the unit sphere, and ``CM`` is the
         cap's size.
     NCAPS : :class:`int`
@@ -41,14 +46,66 @@ class ManglePolygon(object):
             self.STR = float(args[0]['STR'])
             self.USE_CAPS = int(args[0]['USE_CAPS'])
             x = args[0]['XCAPS'][0:self.NCAPS, :].copy()
+            assert x.shape == (self.NCAPS, 3)
             cm = args[0]['CMCAPS'][0:self.NCAPS].copy()
-            caps = np.empty((1,), dtype=[('X', x.dtype, x.shape),
-                                         ('CM', cm.dtype, cm.shape)])
-            self.CAPS = caps.view(np.recarray)
-            self.CAPS.X = x
-            self.CAPS.CM = cm
+            assert cm.shape == (self.NCAPS,)
+            self.CAPS = MangleCaps(x, cm)
+        if kwargs:
+            if 'x' in kwargs and 'cm' in kwargs:
+                xs = kwargs['x'].shape
+                cm = kwargs['cm'].shape
+                assert xs[0] == cm[0]
+            else:
+                raise ValueError('Input values are missing!')
+            self.NCAPS = xs[0]
+            if 'weight' in kwargs:
+                self.WEIGHT = float(kwargs['weight'])
+            else:
+                self.WEIGHT = 1.0
+            if 'pixel' in kwargs:
+                self.PIXEL = int(kwargs['pixel'])
+            else:
+                self.PIXEL = -1
+            if 'use_caps' in kwargs:
+                self.USE_CAPS = int(kwargs['use_caps'])
+            else:
+                # Use all caps by default
+                self.USE_CAPS = (1 << self.NCAPS) - 1
+            self.CAPS = MangleCaps(kwargs['x'], kwargs['cm'])
+            self.STR = 1.0
         return
 
+    @au.lazyproperty
+    def cmminf(self):
+        """Find the smallest cap in a polygon, accounting for negative
+        caps.
+
+        Returns
+        -------
+        :class:`int`
+            The index of the smallest cap.
+        """
+        cmmin = 2.0
+        kmin = -1
+        for k in range(self.NCAPS):
+            if self.CAPS.CM[k] >= 0:
+                cmk = self.CAPS.CM[k]
+            else:
+                cmk = 2.0 + self.CAPS.CM[k]
+            if cmk < cmmin:
+                cmmin = cmk
+                kmin = k
+        return kmin
+
+    def garea(self):
+        """Compute the area of a polygon.
+        """
+        cmmin = self.CAPS.CM[self.cmminf]
+        if self.NCAPS >= 2 and cmmin > 1.0:
+            np = self.NCAPS + 1
+        else:
+            np = self.NCAPS
+        return cmmin
 
 class FITS_polygon(fits.FITS_rec):
     """Handle polygons read in from a FITS file.
@@ -109,6 +166,7 @@ def is_cap_used(use_caps, i):
     Returns
     -------
     :class:`bool`
+        ``True`` if a cap is used.
     """
     return (use_caps & 1 << i) != 0
 

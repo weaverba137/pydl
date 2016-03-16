@@ -8,7 +8,7 @@ def get_package_data():
     return {
         'pydl.tests': ['coveragerc', 't/*'],
         'pydl.pydlspec2d.tests': ['t/*'],
-        'pydl.pydlutils': ['data/filters/*'],
+        'pydl.pydlutils': ['data/cooling/*', 'data/filters/*'],
         'pydl.pydlutils.tests': ['t/*'],
     }
 
