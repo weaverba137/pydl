@@ -253,13 +253,13 @@ def read_mangle_polygons(filename):
         meta = g[1].strip().split(',')
         m1 = [m.strip().split()[1] for m in meta]
         m0 = [mtypes[m1[i]](m.strip().split()[0]) for i, m in enumerate(meta)]
-        metad = dict(zip(m1,m0))
+        metad = dict(zip(m1, m0))
         metad['x'] = list()
         metad['cm'] = list()
         for cap in lines[p+1:p+1+metad['caps']]:
-            data = map(float, re.split(r'\s+', cap.strip()))
-            metad['x'].append(map(float, data[0:3]))
-            metad['cm'].append(float(data[-1]))
+            data = [float(d) for d in re.split(r'\s+', cap.strip())]
+            metad['x'].append(data[0:3])
+            metad['cm'].append(data[-1])
         metad['x'] = np.array(metad['x'])
         assert metad['x'].shape == (metad['caps'], 3)
         metad['cm'] = np.array(metad['cm'])

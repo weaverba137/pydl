@@ -24,7 +24,7 @@ API
 .. automodapi:: pydl.pydlutils.image
 
 .. automodapi:: pydl.pydlutils.mangle
-    :skip: PydlutilsException
+    :skip: PydlutilsException, namedtuple
 
 .. automodapi:: pydl.pydlutils.math
 

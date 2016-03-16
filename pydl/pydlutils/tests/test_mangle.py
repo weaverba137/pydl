@@ -66,7 +66,7 @@ class TestMangle(object):
         assert len(header) == 3
         assert header[0] == 'pixelization 6s'
         assert len(poly) == 4
-        assert np.allclose(poly[0].CAPS.X[0,:],
+        assert np.allclose(poly[0].CAPS.X[0, :],
                            np.array([0.0436193873653360, 0.9990482215818578,
                                      0.0]))
         assert poly[3].NCAPS == 3
