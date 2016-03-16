@@ -23,8 +23,6 @@ def read_ds_cooling(fname, logT=None):
 
     Raises
     ------
-    URLError
-        If the data file could not be retrieved.
     ValueError
         If the input file name is invalid.
 
