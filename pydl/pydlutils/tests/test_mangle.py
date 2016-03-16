@@ -3,6 +3,7 @@
 import os
 import numpy as np
 from astropy.tests.helper import raises
+from .. import PydlutilsException
 from ..mangle import (ManglePolygon, is_cap_used, read_fits_polygons,
                       read_mangle_polygons, set_use_caps)
 
@@ -15,6 +16,7 @@ class TestMangle(object):
         self.data_dir = os.path.join(os.path.dirname(__file__), 't')
         self.poly_fits = os.path.join(self.data_dir, 'polygon.fits')
         self.poly_ply = os.path.join(self.data_dir, 'polygon.ply')
+        self.bad_ply = os.path.join(self.data_dir, 'median_data.txt')
 
     def teardown(self):
         pass
@@ -58,9 +60,16 @@ class TestMangle(object):
         assert poly[0].cmminf == 4
 
     def test_read_mangle_polygons(self):
+        with raises(PydlutilsException):
+            poly, header = read_mangle_polygons(self.bad_ply)
         poly, header = read_mangle_polygons(self.poly_ply)
         assert len(header) == 3
+        assert header[0] == 'pixelization 6s'
         assert len(poly) == 4
+        assert np.allclose(poly[0].CAPS.X[0,:],
+                           np.array([0.0436193873653360, 0.9990482215818578,
+                                     0.0]))
+        assert poly[3].NCAPS == 3
 
     def test_set_use_caps(self):
         poly = read_fits_polygons(self.poly_fits, convert=True)

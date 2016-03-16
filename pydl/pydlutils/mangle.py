@@ -233,16 +233,15 @@ def read_mangle_polygons(filename):
         containing the header metadata, if any.
     """
     import re
-    with open(filename, universal_newlines=True) as ply:
-        data = ply.read()
-    lines = data.split("\n")
+    with open(filename, 'rU') as ply:
+        lines = ply.read().split(ply.newlines)
     try:
-        npoly = int(line[0].split()[0])
+        npoly = int(lines[0].split()[0])
     except ValueError:
         raise PydlutilsException(("Invalid first line of {0}!  " +
                                   "Are you sure this is a Mangle " +
                                   "polygon file?").format(filename))
-    p_lines = [i for i, l in enumerate(lines) if lines.startswith('polygon')]
+    p_lines = [i for i, l in enumerate(lines) if l.startswith('polygon')]
     header = lines[1:p_lines[0]]
     poly = list()
     r1 = re.compile(r'polygon\s+(\d+)\s+\(([^)]+)\):')
@@ -254,7 +253,7 @@ def read_mangle_polygons(filename):
         meta = g[1].strip().split(',')
         m1 = [m.strip().split()[1] for m in meta]
         m0 = [mtypes[m1[i]](m.strip().split()[0]) for i, m in enumerate(meta)]
-        metad = dict(zip(m2,m1))
+        metad = dict(zip(m1,m0))
         metad['x'] = list()
         metad['cm'] = list()
         for cap in lines[p+1:p+1+metad['caps']]:
