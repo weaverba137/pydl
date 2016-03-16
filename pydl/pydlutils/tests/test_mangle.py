@@ -3,7 +3,7 @@
 import os
 import numpy as np
 from astropy.tests.helper import raises
-from ..mangle import is_cap_used, read_fits_polygons
+from ..mangle import is_cap_used, read_fits_polygons, set_use_caps
 
 
 class TestMangle(object):
@@ -29,6 +29,18 @@ class TestMangle(object):
         cm0 = np.array([-1.0, -0.99369437, 1.0, -1.0, 0.00961538])
         assert np.allclose(poly.CAPS.CM[0][0:poly.NCAPS[0]], cm0)
         assert poly[0]['NCAPS'] == 5
+        poly = read_fits_polygons(os.path.join(self.data_dir, 'polygon.fits'),
+                                  convert=True)
+        assert poly[0].USE_CAPS == 31
+        assert np.allclose(poly[0].CAPS.CM, cm0)
+
+    def test_set_use_caps(self):
+        poly = read_fits_polygons(os.path.join(self.data_dir, 'polygon.fits'),
+                                  convert=True)
+        old_use_caps = poly[0].USE_CAPS
+        index_list = list(range(poly[0].NCAPS))
+        use_caps = set_use_caps(poly[0], index_list, allow_doubles=True)
+        assert use_caps == poly[0].USE_CAPS
 
 
 def fits_polygon_file():
