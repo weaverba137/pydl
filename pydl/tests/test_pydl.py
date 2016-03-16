@@ -128,10 +128,10 @@ class TestPydl(object):
                                                    1.00127640e+00,
                                                    1.48380121e-01,
                                                    6.57156222e-04]))
-        # assert_allclose(foo.variance, np.array([7.12421581e-01,
-        #                                         2.50319100e-01,
-        #                                         3.70950302e-02,
-        #                                         1.64289056e-04]))
+        assert_allclose(foo.variance, np.array([7.12421581e-01,
+                                                2.50319100e-01,
+                                                3.70950302e-02,
+                                                1.64289056e-04]))
 
     def test_rebin(self):
         x = np.arange(40)
