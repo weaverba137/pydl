@@ -7,6 +7,7 @@ from collections import namedtuple
 from astropy.io import fits
 from astropy.extern import six
 import astropy.utils as au
+from . import PydlutilsException
 
 
 MangleCaps = namedtuple('MangleCaps', ['X', 'CM'])
@@ -39,7 +40,11 @@ class ManglePolygon(object):
     """
 
     def __init__(self, *args, **kwargs):
-        if isinstance(args[0], fits.fitsrec.FITS_record):
+        try:
+            a0 = args[0]
+        except IndexError:
+            a0 = None
+        if isinstance(a0, fits.fitsrec.FITS_record):
             self.NCAPS = int(args[0]['NCAPS'])
             self.WEIGHT = float(args[0]['WEIGHT'])
             self.PIXEL = int(args[0]['PIXEL'])
@@ -50,7 +55,7 @@ class ManglePolygon(object):
             cm = args[0]['CMCAPS'][0:self.NCAPS].copy()
             assert cm.shape == (self.NCAPS,)
             self.CAPS = MangleCaps(x, cm)
-        if kwargs:
+        elif kwargs:
             if 'x' in kwargs and 'cm' in kwargs:
                 xs = kwargs['x'].shape
                 cm = kwargs['cm'].shape
@@ -73,6 +78,14 @@ class ManglePolygon(object):
                 self.USE_CAPS = (1 << self.NCAPS) - 1
             self.CAPS = MangleCaps(kwargs['x'], kwargs['cm'])
             self.STR = 1.0
+        else:
+            # Empty polygon object
+            self.NCAPS = 0
+            self.WEIGHT = 0.0
+            self.PIXEL = -1
+            self.STR = 0.0
+            self.USE_CAPS = 0
+            self.CAPS = MangleCaps(None, None)
         return
 
     @au.lazyproperty
@@ -106,6 +119,7 @@ class ManglePolygon(object):
         else:
             np = self.NCAPS
         return cmmin
+
 
 class FITS_polygon(fits.FITS_rec):
     """Handle polygons read in from a FITS file.
@@ -201,6 +215,58 @@ def read_fits_polygons(filename, convert=False):
     else:
         poly = data.view(FITS_polygon)
     return poly
+
+
+def read_mangle_polygons(filename):
+    """Read a "polygon" format ASCII file in Mangle's own format.  These
+    files typically have extension ``.ply`` or ``.pol``.
+
+    Parameters
+    ----------
+    filename : :class:`str`
+        Name of FITS file to read.
+
+    Returns
+    -------
+    :func:`tuple`
+        A tuple containing the list polygons read and a list of strings
+        containing the header metadata, if any.
+    """
+    import re
+    with open(filename, universal_newlines=True) as ply:
+        data = ply.read()
+    lines = data.split("\n")
+    try:
+        npoly = int(line[0].split()[0])
+    except ValueError:
+        raise PydlutilsException(("Invalid first line of {0}!  " +
+                                  "Are you sure this is a Mangle " +
+                                  "polygon file?").format(filename))
+    p_lines = [i for i, l in enumerate(lines) if lines.startswith('polygon')]
+    header = lines[1:p_lines[0]]
+    poly = list()
+    r1 = re.compile(r'polygon\s+(\d+)\s+\(([^)]+)\):')
+    mtypes = {'str': float, 'weight': float, 'pixel': int, 'caps': int}
+    for p in p_lines:
+        m = r1.match(lines[p])
+        g = m.groups()
+        pid = int(g[0])
+        meta = g[1].strip().split(',')
+        m1 = [m.strip().split()[1] for m in meta]
+        m0 = [mtypes[m1[i]](m.strip().split()[0]) for i, m in enumerate(meta)]
+        metad = dict(zip(m2,m1))
+        metad['x'] = list()
+        metad['cm'] = list()
+        for cap in lines[p+1:p+1+metad['caps']]:
+            data = map(float, re.split(r'\s+', cap.strip()))
+            metad['x'].append(map(float, data[0:3]))
+            metad['cm'].append(float(data[-1]))
+        metad['x'] = np.array(metad['x'])
+        assert metad['x'].shape == (metad['caps'], 3)
+        metad['cm'] = np.array(metad['cm'])
+        assert metad['cm'].shape == (metad['caps'],)
+        poly.append(ManglePolygon(**metad))
+    return (poly, header)
 
 
 def set_use_caps(polygon, index_list, add=False, tol=1.0e-10,
