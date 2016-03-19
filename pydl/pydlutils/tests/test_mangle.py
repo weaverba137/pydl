@@ -29,7 +29,7 @@ class TestMangle(object):
         x = np.array([[0.0, 0.0, 1.0],
                       [1.0, 0.0, 0.0],
                       [0.0, 1.0, 1.0]])
-        cm = np.array([1.0, 1.0, 1.0])
+        cm = np.array([0.0, 0.0, 0.0])
         poly = ManglePolygon(x=x, cm=cm)
         assert poly.NCAPS == 3
         assert poly.WEIGHT == 1.0
@@ -61,10 +61,10 @@ class TestMangle(object):
 
     def test_read_mangle_polygons(self):
         with raises(PydlutilsException):
-            poly, header = read_mangle_polygons(self.bad_ply)
-        poly, header = read_mangle_polygons(self.poly_ply)
-        assert len(header) == 3
-        assert header[0] == 'pixelization 6s'
+            poly = read_mangle_polygons(self.bad_ply)
+        poly = read_mangle_polygons(self.poly_ply)
+        assert len(poly.header) == 3
+        assert poly.header[0] == 'pixelization 6s'
         assert len(poly) == 4
         assert np.allclose(poly[0].CAPS.X[0, :],
                            np.array([0.0436193873653360, 0.9990482215818578,
