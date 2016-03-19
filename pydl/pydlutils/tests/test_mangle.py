@@ -57,7 +57,7 @@ class TestMangle(object):
         poly = read_fits_polygons(self.poly_fits, convert=True)
         assert poly[0].USE_CAPS == 31
         assert np.allclose(poly[0].CAPS.CM, cm0)
-        assert poly[0].cmminf == 4
+        assert poly[0].cmminf() == 4
 
     def test_read_mangle_polygons(self):
         with raises(PydlutilsException):
