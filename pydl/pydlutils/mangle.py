@@ -14,8 +14,8 @@ MangleCaps = namedtuple('MangleCaps', ['X', 'CM'])
 
 
 class PolygonList(list):
-    """A :class:`list` that contains :class:`ManglePolygon`s and possibly
-    some metadata.
+    """A :class:`list` that contains :class:`ManglePolygon` objects and
+    possibly some metadata.
 
     Parameters
     ----------
@@ -47,7 +47,7 @@ class ManglePolygon(object):
 
     Attributes
     ----------
-    CAPS : :class:`MangleCaps`
+    CAPS : :class:`~pydl.pydlutils.mangle.MangleCaps`
         Named tuple containing the ``X`` and ``CM`` attributes.  ``X`` is the
         direction of the cap on the unit sphere, and ``CM`` is the
         cap's size.
@@ -234,11 +234,11 @@ class ManglePolygon(object):
             return other
 
     def polyn(self, other, n, complement=False):
-        """Intersection of a polygon with the `n`th cap.
+        """Intersection of a polygon with the `n` th cap of another polygon.
 
         Parameters
         ----------
-        other : :class:`ManglePolygon`
+        other : :class:`~pydl.pydlutils.mangle.ManglePolygon`
             Polygon containing a cap to intersect the first polygon with.
         n : :class:`int`
             Index of the cap in `other`.
@@ -248,7 +248,7 @@ class ManglePolygon(object):
 
         Returns
         -------
-        :class:`ManglePolygon`
+        :class:`~pydl.pydlutils.mangle.ManglePolygon`
             A polygon containing the intersected caps.
         """
         polydata = dict()
@@ -373,9 +373,10 @@ def read_mangle_polygons(filename):
 
     Returns
     -------
-    :class:`PolygonList`
-        A list-like object containing :class:`ManglePolygon`s and any
-        metadata.
+    :class:`~pydl.pydlutils.mangle.PolygonList`
+        A list-like object containing
+        :class:`~pydl.pydlutils.mangle.ManglePolygon` objectss and
+        any metadata.
     """
     import re
     with open(filename, 'rU') as ply:
