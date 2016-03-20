@@ -29,8 +29,8 @@ class TestMangle(object):
         x = np.array([[0.0, 0.0, 1.0],
                       [1.0, 0.0, 0.0],
                       [0.0, 1.0, 1.0]])
-        cm = np.array([0.0, 0.0, 0.0])
-        poly = ManglePolygon(x=x, cm=cm)
+        cm = np.array([1.0, 1.0, 1.0])
+        poly = ManglePolygon(x=x, cm=cm, str=np.pi/2.0)
         assert poly.ncaps == 3
         assert poly.weight == 1.0
         assert poly.use_caps == (1 << 3) - 1
@@ -38,8 +38,12 @@ class TestMangle(object):
         assert poly.weight == 0.5
         poly = ManglePolygon(x=x, cm=cm, pixel=20)
         assert poly.pixel == 20
-        poly = ManglePolygon(x=x, cm=cm, use_caps=3)
+        poly = ManglePolygon(x=x, cm=cm, use_caps=3, str=np.pi/2.0)
         assert poly.use_caps == 3
+        poly2 = poly.copy()
+        assert poly2.use_caps == poly.use_caps
+        assert (poly2.cm == poly.cm).all()
+        assert np.allclose(poly2.str, np.pi/2.0)
 
     def test_is_cap_used(self):
         assert is_cap_used(1 << 2, 2)
@@ -54,6 +58,9 @@ class TestMangle(object):
         # Attribute access doesn't work on unsigned columns.
         #
         assert (poly['USE_CAPS'] == use_caps).all()
+        assert (poly['use_caps'] == use_caps).all()
+        with raises(AttributeError):
+            foo = poly.no_such_attribute
         cm0 = np.array([-1.0, -0.99369437, 1.0, -1.0, 0.00961538])
         assert np.allclose(poly.cm[0][0:poly.ncaps[0]], cm0)
         assert poly[0]['NCAPS'] == 5

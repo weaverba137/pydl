@@ -264,12 +264,6 @@ class ManglePolygon(object):
         -------
         :class:`ManglePolygon`
             A new polygon object.
-
-        Raises
-        ------
-        ValueError
-            If the object to copy into has insufficient caps to contain
-            the original object.
         """
         ncaps = self.ncaps + cm.size
         newdata = dict()
@@ -317,14 +311,14 @@ class FITS_polygon(fits.FITS_rec):
     This class provides aliases for the columns in a typical FITS polygons
     file.
     """
-    keymap = {'X': 'XCAPS', 'x': 'XCAPS',
-              'CM': 'CMCAPS', 'cm': 'CMCAPS',
-              'ID': 'IFIELD', 'id': 'IFIELD',
-              'ncaps': 'NCAPS',
-              'weight': 'WEIGHT',
-              'pixel': 'PIXEL',
-              'str': 'STR',
-              'use_caps': 'USE_CAPS'}
+    _pkey = {'X': 'XCAPS', 'x': 'XCAPS',
+             'CM': 'CMCAPS', 'cm': 'CMCAPS',
+             'ID': 'IFIELD', 'id': 'IFIELD',
+             'ncaps': 'NCAPS',
+             'weight': 'WEIGHT',
+             'pixel': 'PIXEL',
+             'str': 'STR',
+             'use_caps': 'USE_CAPS'}
     #
     # Right now, this class is only instantiated by calling .view() on
     # a FITS_rec object, so only __array_finalize__ is needed.
@@ -339,18 +333,13 @@ class FITS_polygon(fits.FITS_rec):
 
     def __getitem__(self, key):
         if isinstance(key, six.string_types):
-            if key in self.keymap:
-                return super(FITS_polygon, self).__getitem__(keymap[key])
+            if key in self._pkey:
+                return super(FITS_polygon, self).__getitem__(self._pkey[key])
         return super(FITS_polygon, self).__getitem__(key)
 
-    # def __getattribute__(self, key):
-    #     if key in self.keymap:
-    #         return super(FITS_polygon, self).__getattribute__(keymap[key])
-    #     return super(FITS_polygon, self).__getattribute__(key)
-
     def __getattr__(self, key):
-        if key in self.keymap:
-            return super(FITS_polygon, self).__getattribute__(self.keymap[key])
+        if key in self._pkey:
+            return super(FITS_polygon, self).__getattribute__(self._pkey[key])
         raise AttributeError("FITS_polygon has no attribute {0}.".format(key))
 
 
