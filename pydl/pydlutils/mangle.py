@@ -343,6 +343,107 @@ class FITS_polygon(fits.FITS_rec):
         raise AttributeError("FITS_polygon has no attribute {0}.".format(key))
 
 
+def angles_to_x(points, latitude=False):
+    """Convert spherical angles to unit Cartesian vectors.
+
+    Parameters
+    ----------
+    points : :class:`~numpy.ndarray`
+        A set of angles in the form phi, theta (in degrees).
+    latitude : :class:`bool`, optional
+        If ``True``, assume that the angles actually represent longitude,
+        latitude, or equivalently, RA, Dec.
+
+    Returns
+    -------
+    :class:`~numpy.ndarray`
+        The corresponding Cartesian vectors.
+    """
+    npoints, ncol = points.shape
+    x = np.zeros((npoints, 3), dtype=points.dtype)
+    phi = np.radians(points[:, 0])
+    if latitude:
+        theta = np.radians(90.0 - points[:, 1])
+    else:
+        theta = np.radians(points[:, 1])
+    st = np.sin(np.radians(theta))
+    x[:, 0] = np.cos(phi) * st
+    x[:, 1] = np.sin(phi) * st
+    x[:, 2] = np.cos(theta)
+    return x
+
+
+def cap_distance(x, cm, points):
+    """Compute the distance from a point to a cap, and also determine
+    whether the point is inside or outside the cap.
+
+    Parameters
+    ----------
+    x : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        ``X`` value of the cap (3-vector).
+    cm : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        ``CM`` value of the cap.
+    points : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        If `points` is a 3-vector, or set of 3-vectors, then assume the point
+        is a Cartesian unit vector.  If `point` is a 2-vector or set
+        of 2-vectors, assume the point is RA, Dec.
+
+    Returns
+    -------
+    :class:`~numpy.ndarray`
+        The distance(s) to the point(s) in degrees.  If the distance is
+        negative, the point is outside the cap.
+    """
+    npoints, ncol = points.shape
+    if ncol == 2:
+        xyz = angles_to_x(points, latitude=True)
+    elif ncol == 3:
+        xyz = point
+    else:
+        raise ValueError("Inappropriate shape for point!")
+    dotprod = np.dot(points, x)
+    cdist = np.degrees(np.arccos(1.0 - np.abs(cm)) - np.arccos(dotprod))
+    if cm < 0:
+        cdist *= -1.0
+    return cdist
+
+
+def circle_cap(radius, points):
+    """Construct caps based on input points (directions on the unit sphere).
+
+    Parameters
+    ----------
+    radius : :class:`float` or :class:`~numpy.ndarray`
+        Radii of the caps in degrees.  This will become the ``CM`` value.
+    points : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        If `points` is a 3-vector, or set of 3-vectors, then assume the point
+        is a Cartesian unit vector.  If `point` is a 2-vector or set
+        of 2-vectors, assume the point is RA, Dec.
+
+    Returns
+    -------
+    :func:`tuple`
+        A tuple containing ``X`` and ``CM`` values for the cap.
+    """
+    npoints, ncol == points.shape
+    if ncol == 2:
+        x = angles_to_x(points, latitude=True)
+    elif ncol == 3:
+        x = points.copy()
+    else:
+        raise ValueError("Inappropriate shape for point!")
+    if isinstance(radius, float):
+        radius = np.zeros((npoints,), dtype=points.dtype) + radius
+    elif radius.shape == ():
+        radius = np.zeros((npoints,), dtype=points.dtype) + radius
+    elif radius.size == npoints:
+        pass
+    else:
+        raise ValueError("radius does not appear to be the correct shape.")
+    cm = 1.0 - np.cos(np.radians(radius))
+    return (x, cm)
+
+
 def is_cap_used(use_caps, i):
     """Returns ``True`` if a cap is used.
 
@@ -359,6 +460,59 @@ def is_cap_used(use_caps, i):
         ``True`` if a cap is used.
     """
     return (use_caps & 1 << i) != 0
+
+
+def is_in_cap(x, cm, points):
+    """Are the points in a (single) given cap?
+
+    Parameters
+    ----------
+    x : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        ``X`` value of the cap (3-vector).
+    cm : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        ``CM`` value of the cap.
+    points : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        If `points` is a 3-vector, or set of 3-vectors, then assume the point
+        is a Cartesian unit vector.  If `point` is a 2-vector or set
+        of 2-vectors, assume the point is RA, Dec.
+
+    Returns
+    -------
+    :class:`~numpy.ndarray`
+        A boolean vector giving the result for each point.
+    """
+    return cap_distance(x, cm, points) >= 0.0
+
+
+def is_in_polygon(polygon, points, ncaps=0):
+    """Are the points in a given (single) polygon?
+
+    Parameters
+    ----------
+    polygon : :class:`~pydl.pydlutils.mangle.ManglePolygon`
+        A polygon object.
+    points : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        If `points` is a 3-vector, or set of 3-vectors, then assume the point
+        is a Cartesian unit vector.  If `point` is a 2-vector or set
+        of 2-vectors, assume the point is RA, Dec.
+    ncaps : :class:`int`, optional
+        If set, use only the first `ncaps` caps in `polygon`.
+
+    Returns
+    -------
+    :class:`~numpy.ndarray`
+        A boolean vector giving the result for each point.
+    """
+    npoints, ncol = points.shape
+    usencaps = polygon.ncaps
+    if ncaps > 0:
+        usencaps = min(ncaps, polygon.ncaps)
+    in_polygon = np.ones((npoints,), dtype=np.bool)
+    for icap in range(usencaps):
+        if is_cap_used(polygon.use_caps, icap):
+            in_polygon &= is_in_cap(polygon.x[icap, :],
+                                    polygon.cm[icap], points)
+    return in_polygon
 
 
 def read_fits_polygons(filename, convert=False):
@@ -499,3 +653,31 @@ def set_use_caps(polygon, index_list, add=False, tol=1.0e-10,
                                 #
                                 polygon.use_caps -= 1 << j
     return polygon.use_caps
+
+
+def x_to_angles(points, latitude=False):
+    """Convert unit Cartesian vectors to spherical angles.
+
+    Parameters
+    ----------
+    points : :class:`~numpy.ndarray`
+        A set of x, y, z coordinates.
+    latitude : :class:`bool`, optional
+        If ``True``, convert the angles to longitude,
+        latitude, or equivalently, RA, Dec.
+
+    Returns
+    -------
+    :class:`~numpy.ndarray`
+        The corresponding spherical angles.
+    """
+    npoints, ncol = points.shape
+    phi = np.degrees(np.arctan2(points[:, 1], points[:, 0]))
+    r = (points**2).sum(1)
+    theta = np.degrees(np.arccos(points[:, 2]/r))
+    if latitude:
+        theta = 90.0 - theta
+    x = np.zeros((npoints, 2), dtype=points.dtype)
+    x[:, 0] = phi
+    x[:, 1] = theta
+    return x
