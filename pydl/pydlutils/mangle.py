@@ -1,16 +1,36 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 """This module corresponds to the mangle directory in idlutils.
+
+Mangle_ is a software suite that supports the concept of spherical polygons,
+and is used to, for example, describe the `window function`_ of the
+Sloan Digital Sky Survey.
+
+This implementation is intended to support the portions of Mangle that
+are included in idlutils.  To simplify the coding somewhat, unlike
+idlutils:
+
+* The caps information is accessed through ``polygon.x`` and
+  ``polygon.cm``, not ``polygon.caps.x`` or ``polygon.caps.cm``.
+* The caps information is immutable, however, other attributes, such
+  as ``polygon.set_use_caps`` may be modified.  As a result of this,
+  it is not possible to define an "empty" polygon.
+
+.. _Mangle: http://space.mit.edu/~molly/mangle/
+.. _`window function`: http://www.sdss.org/dr12/algorithms/resolve/
+
+References
+----------
+
+..  [1] `Swanson, M. E. C.; Tegmark, Max; Hamilton, Andrew J. S.;
+    Hill, J. Colin, 2008 MNRAS 387, 1391
+    <http://adsabs.harvard.edu/abs/2008MNRAS.387.1391S>`_.
 """
 import numpy as np
-from collections import namedtuple
 from astropy.io import fits
 from astropy.extern import six
 # import astropy.utils as au
 from . import PydlutilsException
-
-
-MangleCaps = namedtuple('MangleCaps', ['X', 'CM'])
 
 
 class PolygonList(list):
@@ -27,9 +47,8 @@ class PolygonList(list):
     header : :class:`list`
         A list of strings containing metadata.
     """
-
     def __init__(self, *args, **kwargs):
-        super(list, self).__init__(*args)
+        super(list, self).__init__(*args, **kwargs)
         if 'header' in kwargs:
             self.header = kwargs['header']
         else:
@@ -47,19 +66,13 @@ class ManglePolygon(object):
 
     Attributes
     ----------
-    CAPS : :class:`~pydl.pydlutils.mangle.MangleCaps`
-        Named tuple containing the ``X`` and ``CM`` attributes.  ``X`` is the
-        direction of the cap on the unit sphere, and ``CM`` is the
-        cap's size.
-    NCAPS : :class:`int`
-        Number of caps in the polygon.
-    PIXEL : :class:`int`
+    id : :class:`int`
+        An arbitrary ID number.
+    pixel : :class:`int`
         Pixel this polygon is in.
-    STR : :class:`float`
-        Solid angle of this polygon (steradians).
-    USE_CAPS : :class:`int`
+    use_caps : :class:`int`
         Bitmask indicating which caps to use.
-    WEIGHT : :class:`float`
+    weight : :class:`float`
         Weight factor assigned to the polygon.
     """
 
@@ -69,23 +82,27 @@ class ManglePolygon(object):
         except IndexError:
             a0 = None
         if isinstance(a0, fits.fitsrec.FITS_record):
-            self.NCAPS = int(args[0]['NCAPS'])
-            self.WEIGHT = float(args[0]['WEIGHT'])
-            self.PIXEL = int(args[0]['PIXEL'])
-            self.STR = float(args[0]['STR'])
-            self.USE_CAPS = int(args[0]['USE_CAPS'])
-            x = args[0]['XCAPS'][0:self.NCAPS, :].copy()
-            assert x.shape == (self.NCAPS, 3)
-            cm = args[0]['CMCAPS'][0:self.NCAPS].copy()
-            assert cm.shape == (self.NCAPS,)
-            self.CAPS = MangleCaps(x, cm)
+            self._ncaps = int(args[0]['NCAPS'])
+            self.weight = float(args[0]['WEIGHT'])
+            self.pixel = int(args[0]['PIXEL'])
+            self.id = int(args[0]['IFIELD'])
+            self._str = float(args[0]['STR'])
+            self.use_caps = int(args[0]['USE_CAPS'])
+            self._x = args[0]['XCAPS'][0:self.ncaps, :].copy()
+            # assert x.shape == (self.ncaps, 3)
+            self._cm = args[0]['CMCAPS'][0:self.ncaps].copy()
+            # assert cm.shape == (self.ncaps,)
+            self._cmminf = None
         elif isinstance(a0, ManglePolygon):
-            self.NCAPS = a0.NCAPS
-            self.WEIGHT = a0.WEIGHT
-            self.PIXEL = a0.PIXEL
-            self.STR = a0.STR
-            self.USE_CAPS = a0.USE_CAPS
-            self.CAPS = MangleCaps(a0.CAPS.X.copy(), a0.CAPS.CM.copy())
+            self._ncaps = a0._ncaps
+            self.weight = a0.weight
+            self.pixel = a0.pixel
+            self.id = a0.id
+            self._str = a0._str
+            self.use_caps = a0.use_caps
+            self._x = a0._x.copy()
+            self._cm = a0._cm.copy()
+            self._cmminf = None
         elif kwargs:
             if 'x' in kwargs and 'cm' in kwargs:
                 xs = kwargs['x'].shape
@@ -93,56 +110,80 @@ class ManglePolygon(object):
                 assert xs[0] == cm[0]
             else:
                 raise ValueError('Input values are missing!')
-            self.NCAPS = xs[0]
+            self._ncaps = xs[0]
             if 'weight' in kwargs:
-                self.WEIGHT = float(kwargs['weight'])
+                self.weight = float(kwargs['weight'])
             else:
-                self.WEIGHT = 1.0
+                self.weight = 1.0
             if 'pixel' in kwargs:
-                self.PIXEL = int(kwargs['pixel'])
+                self.pixel = int(kwargs['pixel'])
             else:
-                self.PIXEL = -1
+                self.pixel = -1
+            if 'id' in kwargs:
+                self.id = int(kwargs['id'])
+            else:
+                self.id = -1
             if 'use_caps' in kwargs:
-                self.USE_CAPS = int(kwargs['use_caps'])
+                self.use_caps = int(kwargs['use_caps'])
             else:
                 # Use all caps by default
-                self.USE_CAPS = (1 << self.NCAPS) - 1
-            self.CAPS = MangleCaps(kwargs['x'].copy(), kwargs['cm'].copy())
+                self.use_caps = (1 << self.ncaps) - 1
+            self._x = kwargs['x'].copy()
+            self._cm = kwargs['cm'].copy()
             if 'str' in kwargs:
-                self.STR = float(kwargs['str'])
+                self._str = float(kwargs['str'])
             else:
-                self.STR = self.garea()
+                self._str = None
+            self._cmminf = None
         else:
-            # Empty polygon object
-            self.NCAPS = 0
-            self.WEIGHT = 0.0
-            self.PIXEL = -1
-            self.STR = 0.0
-            self.USE_CAPS = 0
-            self.CAPS = MangleCaps(None, None)
+            raise ValueError("Insufficient data to initialize object!")
         return
 
-    # @au.lazyproperty
-    def cmminf(self):
-        """Find the smallest cap in a polygon, accounting for negative
-        caps.
-
-        Returns
-        -------
-        :class:`int`
-            The index of the smallest cap.
+    @property
+    def ncaps(self):
+        """Number of caps in the polygon.
         """
-        cmmin = 2.0
-        kmin = -1
-        for k in range(self.NCAPS):
-            if self.CAPS.CM[k] >= 0:
-                cmk = self.CAPS.CM[k]
-            else:
-                cmk = 2.0 + self.CAPS.CM[k]
-            if cmk < cmmin:
-                cmmin = cmk
-                kmin = k
-        return kmin
+        return self._ncaps
+
+    @property
+    def cm(self):
+        """The size of each cap in the polygon.
+        """
+        return self._cm
+
+    @property
+    def x(self):
+        """The orientation of each cap in the polygon.  The direction is
+        specified by a unit 3-vector.
+        """
+        return self._x
+
+    @property
+    def str(self):
+        """Solid angle of this polygon (steradians).
+        """
+        if self._str is None:
+            self._str = self.garea()
+        return self._str
+
+    @property
+    def cmminf(self):
+        """The index of the smallest cap in the polygon, accounting for
+        negative caps.
+        """
+        if self._cmminf is None:
+            cmmin = 2.0
+            kmin = -1
+            for k in range(self.ncaps):
+                if self.cm[k] >= 0:
+                    cmk = self.cm[k]
+                else:
+                    cmk = 2.0 + self.cm[k]
+                if cmk < cmmin:
+                    cmmin = cmk
+                    kmin = k
+            self._cmminf = kmin
+        return self._cmminf
 
     def garea(self):
         """Compute the area of a polygon.
@@ -152,13 +193,12 @@ class ManglePolygon(object):
         :class:`float`
             The area of the polygon.
         """
-        cmminf = self.cmminf()
-        cmmin = self.CAPS.CM[cmminf]
-        if self.NCAPS >= 2 and cmmin > 1.0:
-            np = self.NCAPS + 1
+        cmmin = self.cm[self.cmminf]
+        if self.ncaps >= 2 and cmmin > 1.0:
+            np = self.ncaps + 1
         else:
-            np = self.NCAPS
-        if np == self.NCAPS:
+            np = self.ncaps
+        if np == self.ncaps:
             #
             # One or fewer? caps, or all caps have area < pi.
             #
@@ -168,9 +208,9 @@ class ManglePolygon(object):
             # More than one cap, and at least one has area > pi.
             #
             dpoly = self.polyn(self, self.cmminf)
-            dpoly.CAPS.CM[self.NCAPS] = cmmin / 2.0
+            dpoly.cm[self.ncaps] = cmmin / 2.0
             area1 = dpoly._garea_helper()
-            dpoly.CAPS.CM[self.NCAPS] = -1.0 * dpoly.CAPS.CM[self.NCAPS]
+            dpoly.cm[self.ncaps] = -1.0 * dpoly.cm[self.ncaps]
             area2 = dpoly._garea_helper()
             return area1 + area2
 
@@ -197,17 +237,28 @@ class ManglePolygon(object):
         :class:`bool`
             ``True`` if the area is zero.
         """
-        return (self.CAPS.CM == 0.0).any() or (self.CAPS.CM <= -2.0).any()
+        return (self.cm == 0.0).any() or (self.cm <= -2.0).any()
 
-    def copy(self, other=None):
-        """Copy a polygon into another polygon which could have a different
-        number of caps.
+    def copy(self):
+        """Return an exact copy of the polygon.
+
+        Returns
+        -------
+        :class:`ManglePolygon`
+            A new polygon object.
+        """
+        return ManglePolygon(self)
+
+    def add_caps(self, x, cm):
+        """Create a new polygon that contains additional caps.  The caps
+        are appended to the existing polygon's caps.
 
         Parameters
         ----------
-        other : :class:`ManglePolygon`, optional
-            Copy into another polygon.  If omitted, a new polygon will
-            be created as an *exact* copy.
+        x : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+            ``X`` values of the new caps.
+        cm : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+            ``CM`` values of the new caps.
 
         Returns
         -------
@@ -220,18 +271,19 @@ class ManglePolygon(object):
             If the object to copy into has insufficient caps to contain
             the original object.
         """
-        if other is None:
-            return ManglePolygon(self)
-        else:
-            if other.NCAPS < self.NCAPS:
-                raise ValueError("Can't copy into a polygon with fewer caps!")
-            other.WEIGHT = self.WEIGHT
-            other.PIXEL = self.PIXEL
-            other.USE_CAPS = self.USE_CAPS
-            other.STR = self.STR
-            other.CAPS.X[0:self.NCAPS, :] = self.CAPS.X.copy()
-            other.CAPS.CM[0:self.NCAPS] = self.CAPS.CM.copy()
-            return other
+        ncaps = self.ncaps + cm.size
+        newdata = dict()
+        newdata['weight'] = self.weight
+        newdata['pixel'] = self.pixel
+        newdata['id'] = self.id
+        newdata['use_caps'] = self.use_caps
+        newdata['x'] = np.zeros((ncaps, 3), dtype=self.x.dtype)
+        newdata['cm'] = np.zeros((ncaps,), dtype=self.cm.dtype)
+        newdata['x'][0:self.ncaps, :] = self.x.copy()
+        newdata['cm'][0:self.ncaps] = self.cm.copy()
+        newdata['x'][self.ncaps:, :] = x.copy()
+        newdata['cm'][self.ncaps:] = cm.copy()
+        return ManglePolygon(**newdata)
 
     def polyn(self, other, n, complement=False):
         """Intersection of a polygon with the `n` th cap of another polygon.
@@ -251,28 +303,28 @@ class ManglePolygon(object):
         :class:`~pydl.pydlutils.mangle.ManglePolygon`
             A polygon containing the intersected caps.
         """
-        polydata = dict()
-        polydata['pixel'] = self.PIXEL
-        polydata['weight'] = self.WEIGHT
-        polydata['x'] = np.zeros((self.NCAPS + 1, 3), dtype=self.CAPS.X.dtype)
-        polydata['x'][0:self.NCAPS, :] = self.CAPS.X.copy()
-        polydata['cm'] = np.zeros((self.NCAPS + 1,), dtype=self.CAPS.CM.dtype)
-        polydata['cm'][0:self.NCAPS] = self.CAPS.CM.copy()
-        polydata['x'][self.NCAPS, :] = other.CAPS.X[n, :].copy()
+        x = other.x[n, :]
         sign = 1.0
         if complement:
             sign = -1.0
-        polydata['cm'][self.NCAPS] = sign * other.CAPS.CM[n].copy()
-        return ManglePolygon(**polydata)
+        cm = sign * other.cm[n]
+        return self.add_caps(x, cm)
 
 
 class FITS_polygon(fits.FITS_rec):
     """Handle polygons read in from a FITS file.
 
-    This class creates a copy of the ``XCAPS`` and ``CMCAPS`` columns.
-    This isn't especially efficient, but we can optimize later.
+    This class provides aliases for the columns in a typical FITS polygons
+    file.
     """
-
+    keymap = {'X': 'XCAPS', 'x': 'XCAPS',
+              'CM': 'CMCAPS', 'cm': 'CMCAPS',
+              'ID': 'IFIELD', 'id': 'IFIELD',
+              'ncaps': 'NCAPS',
+              'weight': 'WEIGHT',
+              'pixel': 'PIXEL',
+              'str': 'STR',
+              'use_caps': 'USE_CAPS'}
     #
     # Right now, this class is only instantiated by calling .view() on
     # a FITS_rec object, so only __array_finalize__ is needed.
@@ -284,32 +336,22 @@ class FITS_polygon(fits.FITS_rec):
 
     def __array_finalize__(self, obj):
         super(FITS_polygon, self).__array_finalize__(obj)
-        self._caps = None
 
     def __getitem__(self, key):
         if isinstance(key, six.string_types):
-            if key.upper() == 'CAPS':
-                #
-                # 'CAPS' is a container with two columns: 'X', 'CM'.
-                #
-                if self._caps is None:
-                    xdt = self['XCAPS'].dtype
-                    cmdt = self['CMCAPS'].dtype
-                    self._caps = np.empty((self.size,),
-                                          dtype=[('X', xdt, (9, 3)),
-                                                 ('CM', cmdt, (9,))]
-                                         ).view(np.recarray)
-                    self._caps['X'] = self['XCAPS']
-                    self._caps['CM'] = self['CMCAPS']
-                return self._caps
-            return super(FITS_polygon, self).__getitem__(key)
-        else:
-            return super(FITS_polygon, self).__getitem__(key)
+            if key in self.keymap:
+                return super(FITS_polygon, self).__getitem__(keymap[key])
+        return super(FITS_polygon, self).__getitem__(key)
 
-    def __getattribute__(self, key):
-        if key.upper() == 'CAPS':
-            return self.__getitem__(key)
-        return super(FITS_polygon, self).__getattribute__(key)
+    # def __getattribute__(self, key):
+    #     if key in self.keymap:
+    #         return super(FITS_polygon, self).__getattribute__(keymap[key])
+    #     return super(FITS_polygon, self).__getattribute__(key)
+
+    def __getattr__(self, key):
+        if key in self.keymap:
+            return super(FITS_polygon, self).__getattribute__(self.keymap[key])
+        raise AttributeError("FITS_polygon has no attribute {0}.".format(key))
 
 
 def is_cap_used(use_caps, i):
@@ -334,9 +376,8 @@ def read_fits_polygons(filename, convert=False):
     """Read a "polygon" format FITS file.
 
     This function returns a subclass of :class:`~astropy.io.fits.FITS_rec`
-    that simulates a "subcolumn" for compatibility with IDL code.
-    For example, if ``poly`` is the object returned by this function, then
-    the column ``XCAPS`` is accessible as ``poly.CAPS.X``.
+    that provides some convenient aliases for the columns of a typical
+    FITS polygon file (which might be all upper-case).
 
     Parameters
     ----------
@@ -400,6 +441,7 @@ def read_mangle_polygons(filename):
         m1 = [m.strip().split()[1] for m in meta]
         m0 = [mtypes[m1[i]](m.strip().split()[0]) for i, m in enumerate(meta)]
         metad = dict(zip(m1, m0))
+        metad['id'] = pid
         metad['x'] = list()
         metad['cm'] = list()
         for cap in lines[p+1:p+1+metad['caps']]:
@@ -416,16 +458,16 @@ def read_mangle_polygons(filename):
 
 def set_use_caps(polygon, index_list, add=False, tol=1.0e-10,
                  allow_doubles=False, allow_neg_doubles=False):
-    """Set the bits in USE_CAPS for a set of polygons.
+    """Set the bits in use_caps for a polygon.
 
     Parameters
     ----------
-    polygon : polygon-like
-        A polygon object, such as :class:`~pydl.pydlutils.mangle.FITS_polygon`.
+    polygon : :class:`~pydl.pydlutils.mangle.ManglePolygon`
+        A polygon object.
     index_list : array-like
         A list of indices of caps to set in the polygon.  Should be no
         longer, nor contain indices greater than the number of caps
-        (``NCAPS``).
+        (``polygon.ncaps``).
     add : :class:`bool`, optional
         If ``True``, don't initialize the use_caps value to zero, use the
         existing value associated with `polygon` instead.
@@ -444,27 +486,27 @@ def set_use_caps(polygon, index_list, add=False, tol=1.0e-10,
         Value of use_caps.
     """
     if not add:
-        polygon.USE_CAPS = 0
+        polygon.use_caps = 0
     t2 = tol**2
     for i in index_list:
-        polygon.USE_CAPS |= (1 << index_list[i])
+        polygon.use_caps |= (1 << index_list[i])
     if not allow_doubles:
         #
         # Check for doubles
         #
-        for i in range(polygon.NCAPS):
-            if is_cap_used(polygon.USE_CAPS, i):
-                for j in range(i+1, polygon.NCAPS):
-                    if is_cap_used(polygon.USE_CAPS, j):
-                        if np.sum((polygon.CAPS.X[i, :] -
-                                   polygon.CAPS.X[j, :])**2) < t2:
-                            if ((np.absolute(polygon.CAPS.CM[i] -
-                                             polygon.CAPS.CM[j]) < tol) or
-                                ((polygon.CAPS.CM[i] +
-                                  polygon.CAPS.CM[j]) < tol and
+        for i in range(polygon.ncaps):
+            if is_cap_used(polygon.use_caps, i):
+                for j in range(i+1, polygon.ncaps):
+                    if is_cap_used(polygon.use_caps, j):
+                        if np.sum((polygon.x[i, :] -
+                                   polygon.x[j, :])**2) < t2:
+                            if ((np.absolute(polygon.cm[i] -
+                                             polygon.cm[j]) < tol) or
+                                ((polygon.cm[i] +
+                                  polygon.cm[j]) < tol and
                                   not allow_neg_doubles)):
                                 #
                                 # Don't use
                                 #
-                                polygon.USE_CAPS -= 1 << j
-    return polygon.USE_CAPS
+                                polygon.use_caps -= 1 << j
+    return polygon.use_caps

@@ -24,22 +24,22 @@ class TestMangle(object):
     def test_ManglePolygon(self):
         with raises(ValueError):
             poly = ManglePolygon(weight=1.0)
-        poly = ManglePolygon()
-        assert poly.NCAPS == 0
+        with raises(ValueError):
+            poly = ManglePolygon()
         x = np.array([[0.0, 0.0, 1.0],
                       [1.0, 0.0, 0.0],
                       [0.0, 1.0, 1.0]])
         cm = np.array([0.0, 0.0, 0.0])
         poly = ManglePolygon(x=x, cm=cm)
-        assert poly.NCAPS == 3
-        assert poly.WEIGHT == 1.0
-        assert poly.USE_CAPS == (1 << 3) - 1
+        assert poly.ncaps == 3
+        assert poly.weight == 1.0
+        assert poly.use_caps == (1 << 3) - 1
         poly = ManglePolygon(x=x, cm=cm, weight=0.5)
-        assert poly.WEIGHT == 0.5
+        assert poly.weight == 0.5
         poly = ManglePolygon(x=x, cm=cm, pixel=20)
-        assert poly.PIXEL == 20
+        assert poly.pixel == 20
         poly = ManglePolygon(x=x, cm=cm, use_caps=3)
-        assert poly.USE_CAPS == 3
+        assert poly.use_caps == 3
 
     def test_is_cap_used(self):
         assert is_cap_used(1 << 2, 2)
@@ -50,14 +50,17 @@ class TestMangle(object):
         use_caps = np.array([31, 15, 31, 7, 31, 15, 15, 7, 15, 15,
                              15, 31, 15, 15, 15, 15, 15, 15, 31, 15],
                             dtype=np.uint32)
+        #
+        # Attribute access doesn't work on unsigned columns.
+        #
         assert (poly['USE_CAPS'] == use_caps).all()
         cm0 = np.array([-1.0, -0.99369437, 1.0, -1.0, 0.00961538])
-        assert np.allclose(poly.CAPS.CM[0][0:poly.NCAPS[0]], cm0)
+        assert np.allclose(poly.cm[0][0:poly.ncaps[0]], cm0)
         assert poly[0]['NCAPS'] == 5
         poly = read_fits_polygons(self.poly_fits, convert=True)
-        assert poly[0].USE_CAPS == 31
-        assert np.allclose(poly[0].CAPS.CM, cm0)
-        assert poly[0].cmminf() == 4
+        assert poly[0].use_caps == 31
+        assert np.allclose(poly[0].cm, cm0)
+        assert poly[0].cmminf == 4
 
     def test_read_mangle_polygons(self):
         with raises(PydlutilsException):
@@ -66,19 +69,19 @@ class TestMangle(object):
         assert len(poly.header) == 3
         assert poly.header[0] == 'pixelization 6s'
         assert len(poly) == 4
-        assert np.allclose(poly[0].CAPS.X[0, :],
+        assert np.allclose(poly[0].x[0, :],
                            np.array([0.0436193873653360, 0.9990482215818578,
                                      0.0]))
-        assert poly[3].NCAPS == 3
+        assert poly[3].ncaps == 3
 
     def test_set_use_caps(self):
         poly = read_fits_polygons(self.poly_fits, convert=True)
-        old_use_caps = poly[0].USE_CAPS
-        index_list = list(range(poly[0].NCAPS))
+        old_use_caps = poly[0].use_caps
+        index_list = list(range(poly[0].ncaps))
         use_caps = set_use_caps(poly[0], index_list, allow_doubles=True)
-        assert use_caps == poly[0].USE_CAPS
+        assert use_caps == poly[0].use_caps
         use_caps = set_use_caps(poly[0], index_list)
-        assert use_caps == poly[0].USE_CAPS
+        assert use_caps == poly[0].use_caps
 
 
 def fits_polygon_file():
