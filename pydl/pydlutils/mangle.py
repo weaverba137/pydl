@@ -48,7 +48,7 @@ class PolygonList(list):
         A list of strings containing metadata.
     """
     def __init__(self, *args, **kwargs):
-        super(list, self).__init__(*args, **kwargs)
+        super(PolygonList, self).__init__(*args)
         if 'header' in kwargs:
             self.header = kwargs['header']
         else:
