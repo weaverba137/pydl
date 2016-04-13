@@ -1,6 +1,16 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 """This module corresponds to the rgbcolor directory in idlutils.
+
+This code reproduces the algorithms of Lupton *et al.* (2004) [2]_.
+The purpose is to produce nice color (RGB, JPEG, PNG, etc.) from FITS
+images in astronomical filter bands.
+
+References
+----------
+
+..  [2] `Lupton, Robert, et al., 2004 PASP 116, 113
+    <http://adsabs.harvard.edu/abs/2004PASP..116..133L>`_.
 """
 import numpy as np
 

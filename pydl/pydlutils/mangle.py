@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the mangle directory in idlutils.
 
-Mangle_ is a software suite that supports the concept of spherical polygons,
-and is used to, for example, describe the `window function`_ of the
+Mangle_ [1]_ is a software suite that supports the concept of spherical
+polygons, and is used to, for example, describe the `window function`_ of the
 Sloan Digital Sky Survey.
 
 This implementation is intended to support the portions of Mangle that
