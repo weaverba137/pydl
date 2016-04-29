@@ -124,10 +124,10 @@ def findspec(*args, **kwargs):
                        ('MJD', 'i4'), ('FIBERID', 'i4'),
                        ('RA', 'd'), ('DEC', 'd')])
     for i in range(iplate.size):
-        spplate = pydl.pydlspec2d.spec1d.readspec(plist[iplate[i]].field('PLATE'),
-                                                  mjd=plist[iplate[i]].field('MJD'),
-                                                  topdir=topdir,
-                                                  run2d=run2d, run1d=run1d)
+        spplate = readspec(plist[iplate[i]].field('PLATE'),
+                           mjd=plist[iplate[i]].field('MJD'),
+                           topdir=topdir,
+                           run2d=run2d, run1d=run1d)
         index_to = i0 + np.arange(n_total[iplate[i]], dtype='i4')
         plugmap['PLATE'][index_to] = plist[iplate[i]].field('PLATE')
         plugmap['MJD'][index_to] = plist[iplate[i]].field('MJD')
@@ -135,7 +135,8 @@ def findspec(*args, **kwargs):
         plugmap['RA'][index_to] = spplate['plugmap']['RA']
         plugmap['DEC'][index_to] = spplate['plugmap']['DEC']
         i0 += n_total[iplate[i]]
-    i1, i2, d12 = spherematch(ra, dec, plugmap['RA'], plugmap['DEC'], searchrad, maxmatch=0)
+    i1, i2, d12 = spherematch(ra, dec, plugmap['RA'], plugmap['DEC'],
+                              searchrad, maxmatch=0)
     if i1.size == 0:
         return None
     if 'best' in kwargs:
@@ -143,11 +144,11 @@ def findspec(*args, **kwargs):
         # Return only best match per object
         #
         slist = np.zeros(ra.size, dtype=slist_type)
-        spplate = pydl.pydlspec2d.spec1d.readspec(plugmap[i2]['PLATE'],
-                                                  plugmap[i2]['FIBERID'],
-                                                  mjd=plugmap[i2]['MJD'],
-                                                  topdir=topdir,
-                                                  run2d=run2d, run1d=run1d)
+        spplate = readspec(plugmap[i2]['PLATE'],
+                           plugmap[i2]['FIBERID'],
+                           mjd=plugmap[i2]['MJD'],
+                           topdir=topdir,
+                           run2d=run2d, run1d=run1d)
         sn = spplate['zans']['SN_MEDIAN']
         isort = (i1 + np.where(sn > 0, sn, 0)/(sn+1.0).max()).argsort()
         i1 = i1[isort]
@@ -543,10 +544,6 @@ def number_of_fibers(plate, **kwargs):
                                 (platerun2d == run2d) &
                                 (platerun1d == run1d)]
     return nfiber
-
-
-# Licensed under a 3-clause BSD style license - see LICENSE.rst
-# -*- coding: utf-8 -*-
 
 
 def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
@@ -1338,7 +1335,11 @@ def template_input(inputfile, dumpfile, flux, verbose):
         with open(dumpfile) as f:
             pcaflux = pickle.load(f)
     else:
-        spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid)
+        if matadata['object'].lower() == 'star':
+            spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid,
+                               align=True)
+        else:
+            spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid)
         #
         # Insist that all of the requested spectra exist.
         #
@@ -1370,6 +1371,10 @@ def template_input(inputfile, dumpfile, flux, verbose):
             objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
         newloglam = wavevector(np.log10(metadata['wavemin']),
                                np.log10(metadata['wavemax']), binsz=objdloglam)
+        try:
+            zfit = slist.zfit
+        except AttributeError:
+            zfit = slist.cz/cspeed.to('km / s')
         #
         # Do PCA solution.
         #
