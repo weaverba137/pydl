@@ -1114,16 +1114,21 @@ def spec_path(plate, path=None, topdir=None, run2d=None):
     else:
         platevec = plate
     if path is None:
-        if topdir is None:
-            topdir = environ['BOSS_SPECTRO_REDUX']
         if run2d is None:
             run2d = environ['RUN2D']
+        if topdir is None:
+            env = "SPECTRO_REDUX"
+            try:
+                ir = int(run2d)
+            except ValueError:
+                env = 'BOSS_SPECTRO_REDUX'
+            topdir = environ[env]
     paths = list()
     for p in platevec:
         if path is not None:
             paths.append(path)
         else:
-            paths.append(join(topdir, run2d, str(p)))
+            paths.append(join(topdir, run2d, '{0:04d}'.format(p)))
     return paths
 
 

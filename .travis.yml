@@ -6,7 +6,8 @@ python:
     - 2.7
     - 3.3
     - 3.4
-    - 3.5
+    # Still can't run tests on 3.5 because of SciPy issues in Anaconda.
+    # - 3.5
 
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
@@ -63,8 +64,8 @@ matrix:
           env: ASTROPY_VERSION=development SETUP_CMD='test'
         - python: 3.4
           env: ASTROPY_VERSION=development SETUP_CMD='test'
-        - python: 3.5
-          env: ASTROPY_VERSION=development SETUP_CMD='test'
+        # - python: 3.5
+        #   env: ASTROPY_VERSION=development SETUP_CMD='test'
 
         # Astropy LTS version
         - python: 2.7

@@ -72,6 +72,8 @@ class TestSpec1d(object):
                                [2, 2, 2, 2, 2]])).all()
 
     def test_spec_path(self):
+        p = spec_path(123)
+        assert p[0] == os.path.join(self.bsr, self.run2d, '0123')
         p = spec_path(1234)
         assert p[0] == os.path.join(self.bsr, self.run2d, '1234')
         p = spec_path(1234, topdir=self.bsr, run2d=self.run2d)
