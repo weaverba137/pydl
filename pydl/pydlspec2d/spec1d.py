@@ -1245,7 +1245,7 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
             return (fullflux, fullivar, fullloglam)
 
 
-def template_input(inputfile, dumpfile, flux, verbose):
+def template_input(inputfile, dumpfile, flux=False, verbose=False):
     """Collect spectra and pass them to PCA or HMF solvers to compute
     spectral templates.
 
@@ -1320,8 +1320,14 @@ def template_input(inputfile, dumpfile, flux, verbose):
     good_columns = False
     if metadata['method'].lower() == 'hmf':
         good_columns = True
-        nonnegative = bool(metadata['nonnegative'])
-        epsilon = float(metadata['epsilon'])
+        required_hmf_metadata = {'nonnegative': bool, 'epsilon': float}
+        for key in required_hmf_metadata:
+            try:
+                metadata['nonnegative'] = required_hmf_metadata[key](par[key])
+            except KeyError:
+                raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
+            except ValueError:
+                raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
     #
     # Name the output files.
     #
@@ -1376,77 +1382,37 @@ def template_input(inputfile, dumpfile, flux, verbose):
         except AttributeError:
             zfit = slist.cz/cspeed.to('km / s')
         #
-        # Do PCA solution.
+        # Shift to common wavelength grid.
         #
         newflux, newivar, newloglam = preprocess_spectra(spplate['flux'],
                                                          objinvvar,
                                                          loglam=spplate['loglam'],
-                                                         zfit=slist.zfit,
+                                                         zfit=zfit,
                                                          newloglam=newloglam,
                                                          aesthetics=metadata['aesthetics'],
                                                          good_columns=good_columns,
                                                          verbose=verbose)
-        if metadata['method'].lower() == 'pca':
-            if metadata['object'].lower() == 'qso':
-                #
-                # Solve for one component at a time, like the old pca_qso.pro
-                #
-                objflux = newflux.copy()
-                for ikeep in range(nkeep):
-                    log.info("Solving for eigencomponent #{0:d} of {1:d}".format(ikeep+1, nkeep))
-                    pcaflux1 = pca_solve(objflux, newivar,
-                                         niter=metadata['niter'], nkeep=1,
-                                         verbose=verbose)
-                    if ikeep == 0:
-                        #
-                        # Create new pcaflux dict
-                        #
-                        pcaflux = dict()
-                        for k in pcaflux1:
-                            pcaflux[k] = pcaflux1[k].copy()
-                    else:
-                        #
-                        # Add to existing dict
-                        #
-                        # for k in pcaflux1:
-                        #     pcaflux[k] = np.vstack((pcaflux[k],pcaflux1[k]))
-                        pcaflux['flux'] = np.vstack((pcaflux['flux'], pcaflux1['flux']))
-                        pcaflux['eigenval'] = np.concatenate((pcaflux['eigenval'], pcaflux1['eigenval']))
-                    #
-                    # Re-solve for the coefficients using all PCA components so far
-                    #
-                    acoeff = np.zeros((nobj, ikeep+1), dtype=pcaflux1['acoeff'].dtype)
-                    for iobj in range(nobj):
-                        out = computechi2(newflux[iobj, :],
-                                          np.sqrt(pcaflux1['newivar'][iobj, :]),
-                                          pcaflux['flux'].T)
-                        acoeff[iobj, :] = out['acoeff']
-                    #
-                    # Prevent re-binning of spectra on subsequent calls to pca_solve()
-                    #
-                    objloglam = None
-                    if ikeep == 0:
-                        objflux = newflux - np.outer(acoeff, pcaflux['flux'])
-                    else:
-                        objflux = newflux - np.dot(acoeff, pcaflux['flux'])
-                    # objflux = newflux - np.outer(acoeff,pcaflux['flux'])
-                    # objinvvar = pcaflux1['newivar']
-                    pcaflux['acoeff'] = acoeff
-            else:
-                #
-                # Do a normal simultaneous PCA solution
-                #
+        #
+        # Solve.
+        #
+        if metadata['object'].lower() == 'qso':
+            pcaflux = template_qso(metadata, newflux, newivar, verbose)
+        elif metadata['object'].lower == 'star':
+            pcaflux = template_star(metadata, newflux, newivar, slist, verbose)
+        else:
+            if metadata['method'].lower() == 'pca':
                 pcaflux = pca_solve(newflux, newivar,
                                     niter=metadata['niter'],
                                     nkeep=metadata['nkeep'],
                                     verbose=verbose)
-        elif metadata['method'].lower() == 'hmf':
-            pcaflux = hmf_solve(newflux, newivar,
-                                K=metadata['nkeep'],
-                                nonnegative=nonnegative, epsilon=epsilon,
-                                verbose=verbose)
-        else:
-            raise ValueError("Unknown method: {0}!".format(metadata['method']))
+            elif metadata['method'].lower() == 'hmf':
+                pcaflux = hmf_solve(newflux, newivar,
+                                    K=metadata['nkeep'],
+                                    nonnegative=metadata['nonnegative'],
+                                    epsilon=metadata['nonnegative'],
+                                    verbose=verbose)
+            else:
+                raise ValueError("Unknown method: {0}!".format(metadata['method']))
         #
         # Fill in bad data with a running median of the good data.
         # The presence of boundary='nearest' means that this code snippet
@@ -1576,7 +1542,7 @@ def template_input(inputfile, dumpfile, flux, verbose):
     hdu0.header['RUN1D'] = (os.getenv('RUN1D'), 'Version of 1d reduction')
     hdu0.header['FILENAME'] = (inputfile, 'Input file')
     hdu0.header['METHOD'] = (metadata['method'].upper(), 'Method used')
-    if metadata['method'] == 'hmf':
+    if metadata['method'].lower() == 'hmf':
         hdu0.header['NONNEG'] = (nonnegative, 'Was nonnegative HMF used?')
         hdu0.header['EPSILON'] = (epsilon, 'Regularization parameter used.')
     # for i in range(len(namearr)):
@@ -1587,6 +1553,8 @@ def template_input(inputfile, dumpfile, flux, verbose):
     if metadata['object'] == 'star':
         c.append(fits.Column(name='cz', format='D', unit='km/s',
                  array=slist.cz))
+        for i, name in enumerate(pcaflux['namearr']):
+            hdu0.header['NAME{0:d}'.format(i)] = (name, 'Name of class {0:d}.'.format(i))
     else:
         c.append(fits.Column(name='zfit', format='D', array=slist.zfit))
     hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c))
@@ -1602,6 +1570,215 @@ def template_input(inputfile, dumpfile, flux, verbose):
         else:
             os.environ[r.upper()] = metadata['orig_'+r]
     return
+
+
+def template_qso(metadata, newflux, newivar, verbose=False):
+    """Run PCA or HMF on QSO spectra.
+
+    Historically, QSO templates were comptuted one at a time instead of
+    all at once.
+
+    Parameters
+    ----------
+    metadata : :class:`dict`
+        Dictionary containing metadata about the spectra.
+    newflux : :class:`~numpy.ndarray`
+        Flux shifted onto common wavelength.
+    newivar : :class:`~numpy.ndarray`
+        Inverse variances of the fluxes.
+    verbose : :class:`bool`, optional
+        If ``True``, print lots of extra information.
+
+    Returns
+    -------
+    dict
+        A dictonary containing flux, eigenvalues, etc.
+    """
+    from . import Pydlspec2dException
+    from ..pydlutils.math import computechi2
+    from astropy import log
+    if metadata['object'].lower() != 'qso':
+        raise Pydlspec2dException("You appear to be passing the wrong kind of object to template_qso()!")
+    if len(newflux.shape) == 1:
+        nobj = 1
+        npix = newflux.shape[0]
+    else:
+        nobj, npix = newflux.shape
+    objflux = newflux.copy()
+    for ikeep in range(metadata['nkeep']):
+        log.info("Solving for eigencomponent #{0:d} of {1:d}".format(ikeep+1, nkeep))
+        if metadata['method'].lower() == 'pca':
+            pcaflux1 = pca_solve(objflux, newivar,
+                                 niter=metadata['niter'], nkeep=1,
+                                 verbose=verbose)
+        elif metadata['method'].lower() == 'hmf':
+            pcaflux1 = hmf_solve(objflux, newivar,
+                                 K=metadata['nkeep'],
+                                 nonnegative=metadata['nonnegative'],
+                                 epsilon=metadata['epsilon'],
+                                 verbose=verbose)
+        else:
+            raise ValueError("Unknown method: {0}!".format(metadata['method']))
+        if ikeep == 0:
+            #
+            # Create new pcaflux dict
+            #
+            pcaflux = dict()
+            for k in pcaflux1:
+                pcaflux[k] = pcaflux1[k].copy()
+        else:
+            #
+            # Add to existing dict
+            #
+            # for k in pcaflux1:
+            #     pcaflux[k] = np.vstack((pcaflux[k],pcaflux1[k]))
+            pcaflux['flux'] = np.vstack((pcaflux['flux'], pcaflux1['flux']))
+            pcaflux['eigenval'] = np.concatenate((pcaflux['eigenval'], pcaflux1['eigenval']))
+            #
+            # Re-solve for the coefficients using all PCA components so far
+            #
+            acoeff = np.zeros((nobj, ikeep+1), dtype=pcaflux1['acoeff'].dtype)
+            for iobj in range(nobj):
+                out = computechi2(newflux[iobj, :],
+                                  np.sqrt(pcaflux1['newivar'][iobj, :]),
+                                  pcaflux['flux'].T)
+                acoeff[iobj, :] = out['acoeff']
+            #
+            # Prevent re-binning of spectra on subsequent calls to pca_solve()
+            #
+            # objloglam = None
+            if ikeep == 0:
+                objflux = newflux - np.outer(acoeff, pcaflux['flux'])
+            else:
+                objflux = newflux - np.dot(acoeff, pcaflux['flux'])
+            # objflux = newflux - np.outer(acoeff,pcaflux['flux'])
+            # objinvvar = pcaflux1['newivar']
+            pcaflux['acoeff'] = acoeff
+    return pcaflux
+
+
+def template_star(metadata, newflux, newivar, slist, verbose=False):
+    """Run PCA or HMF on stellar spectra of various classes.
+
+    Parameters
+    ----------
+    metadata : :class:`dict`
+        Dictionary containing metadata about the spectra.
+    newflux : :class:`~numpy.ndarray`
+        Flux shifted onto common wavelength.
+    newivar : :class:`~numpy.ndarray`
+        Inverse variances of the fluxes.
+    slist : :class:`~numpy.recarray`
+        The list of objects, containing stellar class information.
+    verbose : :class:`bool`, optional
+        If ``True``, print lots of extra information.
+
+    Returns
+    -------
+    dict
+        A dictonary containing flux, eigenvalues, etc.
+    """
+    from . import Pydlspec2dException
+    from ..pydlutils.image import djs_maskinterp
+    from astropy import log
+    if metadata['object'].lower() != 'star':
+        raise Pydlspec2dException("You appear to be passing the wrong kind of object to template_star()!")
+    #
+    # Find the list of unique star types
+    #
+    isort = np.argsort(slist['class'])
+    classlist = slist['class'][isort[uniq(slist['class'][isort])]]
+    #
+    # Loop over each star type
+    #
+    pcaflux = dict()
+    pcaflux['namearr'] = list()
+    for c in classlist:
+        #
+        # Find the subclasses for this stellar type
+        #
+        log.info("Finding eigenspectra for Stellar class {0}.".format(c))
+        indx = (slist['class'] == c).nonzero()[0]
+        nindx = indx.size
+        thesesubclass = slist['subclass'][indx]
+        isort = np.argsort(thesesubclass)
+        subclasslist = thesesubclass[isort[uniq(thesesubclass[isort])]]
+        nsubclass = subclasslist.size
+        #
+        # Solve for 2 eigencomponents if we have specified subclasses for
+        # this stellar type
+        #
+        if nsubclass == 1:
+            nkeep = 1
+        else:
+            nkeep = 2
+        newloglam = spplate['loglam'][0, :]
+        if metadata['method'].lower() == 'pca':
+            pcaflux1 = pca_solve(newflux[indx, :], newivar[indx, :],
+                                niter=metadata['niter'], nkeep=nkeep,
+                                verbose=verbose)
+        elif metadata['method'].lower() == 'hmf':
+            pcaflux1 = hmf_solve(newflux[indx, :], newivar[indx, :],
+                                 K=metadata['nkeep'],
+                                 nonnegative=metadata['nonnegative'],
+                                 epsilon=metadata['epsilon'],
+                                 verbose=verbose)
+        else:
+            raise ValueError("Unknown method: {0}!".format(metadata['method']))
+        #
+        # Interpolate over bad flux values in the middle of a spectrum,
+        # and set fluxes to zero at the blue+red ends of the spectrum
+        #
+        # minuse = 1 # ?
+        minuse = np.floor((nindx+1) / 3.0)
+        qbad = pcaflux['usemask'] < minuse
+        #
+        # Interpolate over all bad pixels
+        #
+        for j in range(nkeep):
+            pcaflux1['flux'][j, :] = djs_maskinterp(pcaflux1['flux'][j, :],
+                                                    qbad, const=True)
+        #
+        # Set bad pixels at the very start or end of the spectrum to zero
+        # instead.
+        #
+        npix = qbad.size
+        igood = (~qbad).nonzero()[0]
+        if qbad[0]:
+            pcaflux1['flux'][:, 0:igood[0]-1] = 0
+        if qbad[npix-1]:
+            pcaflux1['flux'][:, igood[::-1][0]+1:npix] = 0
+        #
+        # Re-normalize the first eigenspectrum to a mean of 1
+        #
+        norm = pcaflux1['flux'][0, :].mean()
+        pcaflux1['flux'] /= norm
+        pcaflux1['acoeff'] *= norm
+        #
+        # Now loop through each stellar subclass and reconstruct
+        # an eigenspectrum for that subclass
+        #
+        thesesubclassnum = np.zeros(thesesubclass.size, dtype='i4')
+        for isub in range(nsubclass):
+            ii = (thesesubclass == subclasslist[isub]).nonzero()[0]
+            thesesubclassnum[ii] = isub
+            if nkeep == 1:
+                thisflux = pcaflux1['flux'].reshape(pcaflux1['newloglam'].shape)
+            else:
+                aratio = pcaflux1['acoeff'][ii, 1]/pcaflux1['acoeff'][ii, 0]
+                #
+                # np.median(foo) is equivalent to MEDIAN(foo,/EVEN)
+                #
+                thisratio = np.median(aratio)
+                thisflux = (pcaflux['flux'][0, :] +
+                            thisratio.astype('f') * pcaflux['flux'][1, :])
+                # print(thisflux.dtype)
+            if 'flux' in pcaflux:
+                pcaflux['flux'] = np.vstack((pcaflux['flux'], thisflux))
+            else:
+                pcaflux['flux'] = thisflux
+            pcaflux['namearr'].append(subclasslist[isub])
+    return pcaflux
 
 
 def template_input_main():  # pragma: no cover
