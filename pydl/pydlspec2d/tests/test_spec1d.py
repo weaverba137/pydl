@@ -11,27 +11,25 @@ class TestSpec1d(object):
     """
 
     def setup(self):
-        # self.data_dir = join(dirname(__file__), 't')
-        if 'BOSS_SPECTRO_REDUX' in os.environ:
-            self.bsr_orig = os.environ['BOSS_SPECTRO_REDUX']
-            self.bsr = bsr_orig
-        else:
-            self.bsr_orig = None
-            self.bsr = '/boss/spectro/redux'
-            os.environ['BOSS_SPECTRO_REDUX'] = self.bsr
-        if 'RUN2D' in os.environ:
-            self.run2d_orig = os.environ['RUN2D']
-            self.run2d = self.run2d_orig
-        else:
-            self.run2d_orig = None
-            self.run2d = 'v1_2_3'
-            os.environ['RUN2D'] = self.run2d
+        self.data_dir = os.path.join(os.path.dirname(__file__), 't')
+        self.env = {'BOSS_SPECTRO_REDUX': '/boss/spectro/redux',
+                    'SPECTRO_REDUX': '/sdss/spectro/redux',
+                    'RUN2D': 'v1_2_3',
+                    'RUN1D': 'v1_2_3'}
+        self.original_env = dict()
+        for key in self.env:
+            if key in os.environ:
+                self.original_env[key] = os.environ[key]
+            else:
+                self.original_env[key] = None
+            os.environ[key] = self.env[key]
 
     def teardown(self):
-        if self.bsr_orig is None:
-            del os.environ['BOSS_SPECTRO_REDUX']
-        if self.run2d_orig is None:
-            del os.environ['RUN2D']
+        for key in self.original_env:
+            if self.original_env[key] is None:
+                del os.environ[key]
+            else:
+                os.environ[key] = self.original_env[key]
 
     def test_findspec(self):
         """This is just a placeholder for now.
@@ -72,18 +70,19 @@ class TestSpec1d(object):
                                [2, 2, 2, 2, 2]])).all()
 
     def test_spec_path(self):
+        bsr = self.env['BOSS_SPECTRO_REDUX']
+        run2d = self.env['RUN2D']
         p = spec_path(123)
-        assert p[0] == os.path.join(self.bsr, self.run2d, '0123')
+        assert p[0] == os.path.join(bsr, run2d, '0123')
         p = spec_path(1234)
-        assert p[0] == os.path.join(self.bsr, self.run2d, '1234')
-        p = spec_path(1234, topdir=self.bsr, run2d=self.run2d)
-        assert p[0] == os.path.join(self.bsr, self.run2d, '1234')
-        p = spec_path(np.array([1234, 5678]), topdir=self.bsr,
-                      run2d=self.run2d)
-        assert p[0] == os.path.join(self.bsr, self.run2d, '1234')
-        assert p[1] == os.path.join(self.bsr, self.run2d, '5678')
-        p = spec_path(1234, path=self.bsr)
-        assert p[0] == self.bsr
+        assert p[0] == os.path.join(bsr, run2d, '1234')
+        p = spec_path(1234, topdir=bsr, run2d=run2d)
+        assert p[0] == os.path.join(bsr, run2d, '1234')
+        p = spec_path(np.array([1234, 5678]), topdir=bsr, run2d=run2d)
+        assert p[0] == os.path.join(bsr, run2d, '1234')
+        assert p[1] == os.path.join(bsr, run2d, '5678')
+        p = spec_path(1234, path=bsr)
+        assert p[0] == bsr
 
     def test_wavevector(self):
         l = wavevector(3, 4, binsz=0.1)
