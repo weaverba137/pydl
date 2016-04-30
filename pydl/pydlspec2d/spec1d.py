@@ -1388,7 +1388,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         try:
             zfit = slist.zfit
         except AttributeError:
-            zfit = slist.cz/cspeed.to('km / s')
+            zfit = slist.cz/cspeed.to('km / s').value
         #
         # Shift to common wavelength grid.
         #
