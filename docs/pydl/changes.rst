@@ -2,7 +2,7 @@
 PyDL Changelog
 ==============
 
-0.5.0 (unreleased)
+0.5.0 (2016-05-01)
 ------------------
 
 * Dropped support for Python 2.6.  Python 2.6 does not contain
@@ -11,7 +11,7 @@ PyDL Changelog
   worth going to the trouble to support this with an external package.
 * Ongoing review and upgrade of docstrings.
 * Yanny files can now be converted into *genuine* NumPy
-  :class:`record arrays <numpy.recarray>`, previously, the conversion was only
+  :class:`record arrays <numpy.recarray>`; previously, the conversion was only
   to :class:`numpy.ndarray` with named columns, which is a slightly different
   thing.
 * Added additional tests on :class:`~pydl.pydlutils.yanny.yanny` objects.
