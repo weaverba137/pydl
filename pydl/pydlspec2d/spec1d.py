@@ -1499,41 +1499,45 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         ax.grid(True)
         fig.savefig(outfile+'.usemask.png')
         plt.close(fig)
-    aratio10 = pcaflux['acoeff'][:, 1]/pcaflux['acoeff'][:, 0]
-    aratio20 = pcaflux['acoeff'][:, 2]/pcaflux['acoeff'][:, 0]
-    aratio30 = pcaflux['acoeff'][:, 3]/pcaflux['acoeff'][:, 0]
-    fig = plt.figure(dpi=100)
-    ax = fig.add_subplot(111)
-    p = ax.plot(aratio10, aratio20, marker='None', linestyle='None')
-    for k in range(len(aratio10)):
-        t = ax.text(aratio10[k], aratio20[k],
-                    '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
-                    horizontalalignment='center', verticalalignment='center',
-                    color=colorvec[k % len(colorvec)],
-                    fontproperties=smallfont)
-    # ax.set_xlim([aratio10.min(), aratio10.max])
-    # ax.set_xlim([aratio20.min(), aratio20.max])
-    ax.set_xlabel('Eigenvalue Ratio, $a_1/a_0$')
-    ax.set_ylabel('Eigenvalue Ratio, $a_2/a_0$')
-    ax.set_title('Eigenvalue Ratios')
-    fig.savefig(outfile+'.a2_v_a1.png')
-    plt.close(fig)
-    fig = plt.figure(dpi=100)
-    ax = fig.add_subplot(111)
-    p = ax.plot(aratio20, aratio30, marker='None', linestyle='None')
-    for k in range(len(aratio10)):
-        t = ax.text(aratio20[k], aratio30[k],
-                    '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
-                    horizontalalignment='center', verticalalignment='center',
-                    color=colorvec[k % len(colorvec)],
-                    fontproperties=smallfont)
-    # ax.set_xlim([aratio10.min(), aratio10.max])
-    # ax.set_xlim([aratio20.min(), aratio20.max])
-    ax.set_xlabel('Eigenvalue Ratio, $a_2/a_0$')
-    ax.set_ylabel('Eigenvalue Ratio, $a_3/a_0$')
-    ax.set_title('Eigenvalue Ratios')
-    fig.savefig(outfile+'.a3_v_a2.png')
-    plt.close(fig)
+    #
+    # This type of figure isn't really meaningful for stars.
+    #
+    if metadata['object'].lower() != 'star':
+        aratio10 = pcaflux['acoeff'][:, 1]/pcaflux['acoeff'][:, 0]
+        aratio20 = pcaflux['acoeff'][:, 2]/pcaflux['acoeff'][:, 0]
+        aratio30 = pcaflux['acoeff'][:, 3]/pcaflux['acoeff'][:, 0]
+        fig = plt.figure(dpi=100)
+        ax = fig.add_subplot(111)
+        p = ax.plot(aratio10, aratio20, marker='None', linestyle='None')
+        for k in range(len(aratio10)):
+            t = ax.text(aratio10[k], aratio20[k],
+                        '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
+                        horizontalalignment='center', verticalalignment='center',
+                        color=colorvec[k % len(colorvec)],
+                        fontproperties=smallfont)
+        # ax.set_xlim([aratio10.min(), aratio10.max])
+        # ax.set_xlim([aratio20.min(), aratio20.max])
+        ax.set_xlabel('Eigenvalue Ratio, $a_1/a_0$')
+        ax.set_ylabel('Eigenvalue Ratio, $a_2/a_0$')
+        ax.set_title('Eigenvalue Ratios')
+        fig.savefig(outfile+'.a2_v_a1.png')
+        plt.close(fig)
+        fig = plt.figure(dpi=100)
+        ax = fig.add_subplot(111)
+        p = ax.plot(aratio20, aratio30, marker='None', linestyle='None')
+        for k in range(len(aratio10)):
+            t = ax.text(aratio20[k], aratio30[k],
+                        '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
+                        horizontalalignment='center', verticalalignment='center',
+                        color=colorvec[k % len(colorvec)],
+                        fontproperties=smallfont)
+        # ax.set_xlim([aratio10.min(), aratio10.max])
+        # ax.set_xlim([aratio20.min(), aratio20.max])
+        ax.set_xlabel('Eigenvalue Ratio, $a_2/a_0$')
+        ax.set_ylabel('Eigenvalue Ratio, $a_3/a_0$')
+        ax.set_title('Eigenvalue Ratios')
+        fig.savefig(outfile+'.a3_v_a2.png')
+        plt.close(fig)
     #
     # Save output to FITS file.
     #
@@ -1739,7 +1743,7 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
         #
         # minuse = 1 # ?
         minuse = np.floor((nindx+1) / 3.0)
-        qbad = pcaflux['usemask'] < minuse
+        qbad = pcaflux1['usemask'] < minuse
         #
         # Interpolate over all bad pixels
         #
@@ -1783,8 +1787,12 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
                 # print(thisflux.dtype)
             if 'flux' in pcaflux:
                 pcaflux['flux'] = np.vstack((pcaflux['flux'], thisflux))
+                # pcaflux['acoeff'] = np.vstack((pcaflux['acoeff'], pcaflux1['acoeff']))
+                # pcaflux['usemask'] = np.vstack((pcaflux['usemask'], pcaflux1['usemask']))
             else:
                 pcaflux['flux'] = thisflux
+                # pcaflux['acoeff'] = pcaflux1['acoeff']
+                # pcaflux['usemask'] = pcaflux1['usemask']
             pcaflux['namearr'].append(subclasslist[isub])
     return pcaflux
 
