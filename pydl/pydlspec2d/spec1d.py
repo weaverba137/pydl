@@ -16,25 +16,57 @@ def findspec(*args, **kwargs):
 
     Parameters
     ----------
+    ra, dec : array-like, optional
+        If set, the first two positional arguments will be interpreted as
+        RA, Dec.
+    best : :class:`bool`, optional
+        If set, return only the best match for each input RA, Dec.
+    infile : :class:`str`, optional
+        If set, read RA, Dec data from this file.
+    outfile : :class:`str`, optional
+        If set, print match data to this file.
+    print : :class:`bool`, optional
+        If set, print the match data to the console.
+    run1d : :class:`str`, optional
+        Override the value of :envvar:`RUN1D`.
+    run2d : :class:`str`, optional
+        Override the value of :envvar:`RUN2D`.
+    sdss : :class:`bool`, optional
+        If set, search for SDSS-I/II spectra instead of BOSS spectra.
+    searchrad : :class:`float`, optional
+        Search for spectra in this radius around given RA, Dec.
+        Default is 3 arcsec.
+    topdir : :class:`str`, optional
+        If set, override the value of :envvar:`SPECTRO_REDUX`
+        or :envvar:`BOSS_SPECTRO_REDUX`.
 
     Returns
     -------
+    :class:`dict`
+        A dictionary containing plate, MJD, fiber, etc.
     """
     import os
     import os.path
     import glob
     from astropy.io import ascii, fits
+    from warnings import warn
     from .. import uniq
     from ..pydlutils.misc import struct_print
     from ..pydlutils.spheregroup import spherematch
-    from . import Pydlspec2dException
+    from . import Pydlspec2dException, Pydlspec2dUserWarning
     global findspec_cache
     #
     # Set up default values
     #
     if 'sdss' in kwargs:
-        topdir = os.getenv('SPECTRO_REDUX')
-        run2d = '26'
+        if 'topdir' in kwargs:
+            topdir = kwargs['topdir']
+        else:
+            topdir = os.getenv('SPECTRO_REDUX')
+        if 'run2d' in kwargs:
+            run2d = str(kwargs['run2d'])
+        else:
+            run2d = '26'
         run1d = ''
     else:
         if 'topdir' in kwargs:
@@ -52,7 +84,7 @@ def findspec(*args, **kwargs):
     if findspec_cache is None:
         findspec_cache = {'lasttopdir': topdir, 'plist': None}
     if (findspec_cache['plist'] is None or
-            topdir != findspec_cache['lasttopdir']):
+        topdir != findspec_cache['lasttopdir']):
         findspec_cache['lasttopdir'] = topdir
         platelist_file = os.path.join(topdir, "platelist.fits")
         plates_files = glob.glob(os.path.join(topdir, "plates-*.fits"))
@@ -77,7 +109,7 @@ def findspec(*args, **kwargs):
         qdone1d = plist.field('RUN1D').strip() == run1d
     qfinal = qdone & qdone2d & qdone1d
     if not qfinal.any():
-        print("No reduced plates!")
+        warn("No reduced plates!", Pydlspec2dUserWarning)
         return None
     idone = np.arange(plist.size)[qfinal]
     #
@@ -109,6 +141,7 @@ def findspec(*args, **kwargs):
                                         plist[qfinal].field('DECCEN'),
                                         searchrad+1.55, maxmatch=0)
     if imatch1.size == 0:
+        warn("No matching plates found.", Pydlspec2dUserWarning)
         return None
     imatch2 = idone[itmp]
     #
@@ -138,6 +171,7 @@ def findspec(*args, **kwargs):
     i1, i2, d12 = spherematch(ra, dec, plugmap['RA'], plugmap['DEC'],
                               searchrad, maxmatch=0)
     if i1.size == 0:
+        warn('No matching objects found.', Pydlspec2dUserWarning)
         return None
     if 'best' in kwargs:
         #
@@ -1691,6 +1725,7 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
         A dictonary containing flux, eigenvalues, etc.
     """
     from . import Pydlspec2dException
+    from .. import uniq
     from ..pydlutils.image import djs_maskinterp
     from astropy import log
     if metadata['object'].lower() != 'star':
@@ -1703,6 +1738,7 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
     #
     # Loop over each star type
     #
+    npix, nstars = newflux.shape
     pcaflux = dict()
     pcaflux['namearr'] = list()
     for c in classlist:
@@ -1724,7 +1760,6 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
             nkeep = 1
         else:
             nkeep = 2
-        newloglam = spplate['loglam'][0, :]
         if metadata['method'].lower() == 'pca':
             pcaflux1 = pca_solve(newflux[indx, :], newivar[indx, :],
                                 niter=metadata['niter'], nkeep=nkeep,
@@ -1737,6 +1772,12 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
                                  verbose=verbose)
         else:
             raise ValueError("Unknown method: {0}!".format(metadata['method']))
+        #
+        # Some star templates are generated from only one spectrum,
+        # and these will not have a usemask set.
+        #
+        if 'usemask' not in pcaflux1:
+            pcaflux1['usemask'] = np.zeros((npix,), dtype='i4') + nindx
         #
         # Interpolate over bad flux values in the middle of a spectrum,
         # and set fluxes to zero at the blue+red ends of the spectrum
@@ -1765,7 +1806,8 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
         #
         norm = pcaflux1['flux'][0, :].mean()
         pcaflux1['flux'] /= norm
-        pcaflux1['acoeff'] *= norm
+        if 'acoeff' in pcaflux1:
+            pcaflux1['acoeff'] *= norm
         #
         # Now loop through each stellar subclass and reconstruct
         # an eigenspectrum for that subclass
@@ -1775,16 +1817,15 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
             ii = (thesesubclass == subclasslist[isub]).nonzero()[0]
             thesesubclassnum[ii] = isub
             if nkeep == 1:
-                thisflux = pcaflux1['flux'].reshape(pcaflux1['newloglam'].shape)
+                thisflux = pcaflux1['flux'][0, :]
             else:
                 aratio = pcaflux1['acoeff'][ii, 1]/pcaflux1['acoeff'][ii, 0]
                 #
                 # np.median(foo) is equivalent to MEDIAN(foo,/EVEN)
                 #
                 thisratio = np.median(aratio)
-                thisflux = (pcaflux['flux'][0, :] +
-                            thisratio.astype('f') * pcaflux['flux'][1, :])
-                # print(thisflux.dtype)
+                thisflux = (pcaflux1['flux'][0, :] +
+                            thisratio.astype('f') * pcaflux1['flux'][1, :])
             if 'flux' in pcaflux:
                 pcaflux['flux'] = np.vstack((pcaflux['flux'], thisflux))
                 # pcaflux['acoeff'] = np.vstack((pcaflux['acoeff'], pcaflux1['acoeff']))
