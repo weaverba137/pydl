@@ -1440,7 +1440,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         if metadata['object'].lower() == 'qso':
             pcaflux = template_qso(metadata, newflux, newivar, verbose)
         elif metadata['object'].lower() == 'star':
-            pcaflux = template_star(metadata, newflux, newivar, slist, verbose)
+            pcaflux = template_star(metadata, newloglam newflux, newivar,
+                                    slist, outfile, verbose)
         else:
             if metadata['method'].lower() == 'pca':
                 pcaflux = pca_solve(newflux, newivar,
@@ -1487,6 +1488,9 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
     smallfont = FontProperties(size='xx-small')
     nspectra = pcaflux['newflux'].shape[0]
+    #
+    # Plot input spectra
+    #
     if flux:
         nfluxes = 30
         separation = 5.0
@@ -1509,6 +1513,9 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
             ax.set_ylim(pcaflux['newflux'][istart, :].min(), pcaflux['newflux'][iend-1, :].max()+separation*(nfluxes-1))
             fig.savefig('{0}.flux.{1:04d}-{2:04d}.png'.format(outfile, istart+1, iend+1))
             plt.close(fig)
+    #
+    # Missing data diagnostic.
+    #
     fig = plt.figure(dpi=100)
     ax = fig.add_subplot(111)
     p = ax.plot(10.0**pcaflux['newloglam'], (pcaflux['newivar'] == 0).sum(0)/float(nspectra), 'k-')
@@ -1518,6 +1525,9 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     ax.grid(True)
     fig.savefig(outfile+'.missing.png')
     plt.close(fig)
+    #
+    # usemask diagnostic
+    #
     if 'usemask' in pcaflux:
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
@@ -1598,7 +1608,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     c = [fits.Column(name='plate', format='J', array=slist.plate),
          fits.Column(name='mjd', format='J', array=slist.mjd),
          fits.Column(name='fiberid', format='J', array=slist.fiberid)]
-    if metadata['object'] == 'star':
+    if metadata['object'].lower() == 'star':
         c.append(fits.Column(name='cz', format='D', unit='km/s',
                  array=slist.cz))
         for i, name in enumerate(pcaflux['namearr']):
@@ -1608,7 +1618,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c))
     hdulist = fits.HDUList([hdu0, hdu1])
     hdulist.writeto(outfile+'.fits')
-    plot_eig(outfile+'.fits')
+    if metadata['object'].lower() != 'star':
+        plot_eig(outfile+'.fits')
     #
     # Clean up
     #
@@ -1705,19 +1716,24 @@ def template_qso(metadata, newflux, newivar, verbose=False):
     return pcaflux
 
 
-def template_star(metadata, newflux, newivar, slist, verbose=False):
+def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
+                  verbose=False):
     """Run PCA or HMF on stellar spectra of various classes.
 
     Parameters
     ----------
     metadata : :class:`dict`
         Dictionary containing metadata about the spectra.
+    newloglam : :class:`~numpy.ndarray`
+        The wavelength array, used only for plots.
     newflux : :class:`~numpy.ndarray`
         Flux shifted onto common wavelength.
     newivar : :class:`~numpy.ndarray`
         Inverse variances of the fluxes.
     slist : :class:`~numpy.recarray`
         The list of objects, containing stellar class information.
+    outfile : :class:`str`
+        The base name of output file, used for plots.
     verbose : :class:`bool`, optional
         If ``True``, print lots of extra information.
 
@@ -1730,6 +1746,11 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
     from .. import uniq
     from ..pydlutils.image import djs_maskinterp
     from astropy import log
+    import matplotlib
+    matplotlib.use('Agg')
+    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
+    import matplotlib.pyplot as plt
+    from matplotlib.font_manager import fontManager, FontProperties
     if metadata['object'].lower() != 'star':
         raise Pydlspec2dException("You appear to be passing the wrong kind of object to template_star()!")
     #
@@ -1815,6 +1836,10 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
         # an eigenspectrum for that subclass
         #
         thesesubclassnum = np.zeros(thesesubclass.size, dtype='i4')
+        colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
+        smallfont = FontProperties(size='xx-small')
+        fig = plt.figure(dpi=100)
+        ax = fig.add_subplot(111)
         for isub in range(nsubclass):
             ii = (thesesubclass == subclasslist[isub]).nonzero()[0]
             thesesubclassnum[ii] = isub
@@ -1828,6 +1853,25 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
                 thisratio = np.median(aratio)
                 thisflux = (pcaflux1['flux'][0, :] +
                             thisratio.astype('f') * pcaflux1['flux'][1, :])
+            #
+            # Plot spectra
+            #
+            plotflux = thisflux/thisflux.max()
+            # print(pcaflux['newloglam'].shape)
+            # print(plotflux.shape)
+            ax.plot(10.0**newloglam, plotflux,
+                    "{0}-".format(colorvec[isub % len(colorvec)]),
+                    linewidth=1)
+            if isub == 0:
+                ax.set_xlabel(r'Wavelength [$\AA$]')
+                ax.set_ylabel('Flux [arbitrary units]')
+                ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
+            t = ax.text(10.0**newloglam[-1], plotflux[-1],
+                        subclasslist[isub],
+                        horizontalalignment='right', verticalalignment='center',
+                        color=colorvec[isub % len(colorvec)], fontproperties=smallfont)
+            fig.savefig(outfile+'.{0}.png'.format(c))
+            plt.close(fig)
             if 'flux' in pcaflux:
                 pcaflux['flux'] = np.vstack((pcaflux['flux'], thisflux))
                 # pcaflux['acoeff'] = np.vstack((pcaflux['acoeff'], pcaflux1['acoeff']))
