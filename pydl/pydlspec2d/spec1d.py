@@ -1405,7 +1405,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         #
         if metadata['object'].lower() == 'qso':
             pcaflux = template_qso(metadata, newflux, newivar, verbose)
-        elif metadata['object'].lower == 'star':
+        elif metadata['object'].lower() == 'star':
             pcaflux = template_star(metadata, newflux, newivar, slist, verbose)
         else:
             if metadata['method'].lower() == 'pca':
