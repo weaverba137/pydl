@@ -1380,8 +1380,11 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
             objdloglam = float(par['binsz'])
         except:
             objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
-        newloglam = wavevector(np.log10(metadata['wavemin']),
-                               np.log10(metadata['wavemax']), binsz=objdloglam)
+        if metadata['object'].lower() == 'star':
+            newloglam = spplate['loglam']
+        else:
+            newloglam = wavevector(np.log10(metadata['wavemin']),
+                                   np.log10(metadata['wavemax']), binsz=objdloglam)
         try:
             zfit = slist.zfit
         except AttributeError:
