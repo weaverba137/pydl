@@ -1579,6 +1579,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         os.remove(outfile+'.fits')
     hdu0 = fits.PrimaryHDU(pcaflux['flux'])
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
+    if not pydl_version:
+        pydl_version = 'git'
     hdu0.header['OBJECT'] = (objtypes[metadata['object']], 'Type of template')
     hdu0.header['COEFF0'] = (pcaflux['newloglam'][0], 'Wavelength zeropoint')
     hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
