@@ -1381,7 +1381,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         except:
             objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
         if metadata['object'].lower() == 'star':
-            newloglam = spplate['loglam']
+            newloglam = spplate['loglam'][0, :]
         else:
             newloglam = wavevector(np.log10(metadata['wavemin']),
                                    np.log10(metadata['wavemax']), binsz=objdloglam)
