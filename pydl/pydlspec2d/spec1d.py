@@ -1346,7 +1346,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         with open(dumpfile) as f:
             pcaflux = pickle.load(f)
     else:
-        if matadata['object'].lower() == 'star':
+        if metadata['object'].lower() == 'star':
             spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid,
                                align=True)
         else:
@@ -1596,7 +1596,7 @@ def template_qso(metadata, newflux, newivar, verbose=False):
 
     Returns
     -------
-    dict
+    :class:`dict`
         A dictonary containing flux, eigenvalues, etc.
     """
     from . import Pydlspec2dException
@@ -1680,7 +1680,7 @@ def template_star(metadata, newflux, newivar, slist, verbose=False):
 
     Returns
     -------
-    dict
+    :class:`dict`
         A dictonary containing flux, eigenvalues, etc.
     """
     from . import Pydlspec2dException
