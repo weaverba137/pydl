@@ -19,7 +19,7 @@ There are four astronomical libraries targeted:
 
 * idlutils_ : a general suite of tools heavily used by SDSS_.
 * `Goddard utilities`_ : The `IDL®`_ Astronomy User's Libary, maintained by Wayne Landsman and distributed with idlutils_.
-* idlspec2d_ : tools for working with SDSS_ and BOSS_ spectroscopic data.
+* idlspec2d_ : tools for working with SDSS_, BOSS_ and eBOSS_ spectroscopic data.
 * photoop_ : tools for working with SDSS_ imaging data.
 
 This package affiliated with the astropy_ project and is registered with PyPI_.
@@ -87,9 +87,10 @@ Legal
 .. _idlutils: http://www.sdss.org/dr12/software/idlutils/
 .. _SDSS: http://www.sdss.org
 .. _`Goddard utilities`: http://idlastro.gsfc.nasa.gov/
-.. _idlspec2d: http://www.sdss3.org/svn/repo/idlspec2d/trunk/
-.. _BOSS: http://www.sdss3.org/surveys/boss.php
-.. _photoop: http://www.sdss3.org/svn/repo/photoop/trunk/
+.. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
+.. _BOSS: http://www.sdss.org/surveys/boss/
+.. _eBOSS: http://www.sdss.org/surveys/eboss/
+.. _photoop: https://svn.sdss.org/public/repo/sdss/photoop/trunk/
 .. _astropy: http://www.astropy.org
 .. _PyPI: https://pypi.python.org/pypi/pydl/
 .. _`PyDL on Read the Docs`: http://pydl.readthedocs.org/en/latest/

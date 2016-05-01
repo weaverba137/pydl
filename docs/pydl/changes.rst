@@ -8,6 +8,7 @@ PyDL Changelog
 * Removed unnecessary ``from __future__`` import in
   :mod:`pydl.pydlspec2d.spec1d`.
 * Ongoing documentation upgrades.
+* Update some links that needed to be transitioned from SDSS-III to SDSS-IV.
 
 0.5.0 (2016-05-01)
 ------------------

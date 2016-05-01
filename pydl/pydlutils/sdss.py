@@ -53,7 +53,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
         all must have the same length.
     photolog_version : :class:`str`, optional
         Use this version of photolog to obtain the obBadfields.par file,
-        if $PHOTOLOG_DIR is not set.
+        if :envvar:`PHOTOLOG_DIR` is not set.
 
     Returns
     -------
@@ -114,7 +114,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
                 iversion = photolog_version
             else:
                 iversion = 'tags/'+photolog_version
-            baseurl = ('http://www.sdss3.org/svn/repo/photolog/' +
+            baseurl = ('https://svn.sdss.org/public/data/sdss/photolog/' +
                         '{0}/opfiles/opBadfields.par').format(iversion)
             filename = download_file(baseurl, cache=True)
         else:
@@ -531,7 +531,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
         return None
 
 
-def set_maskbits(idlutils_version='v5_5_8', maskbits_file=None):
+def set_maskbits(idlutils_version='v5_5_24', maskbits_file=None):
     """Populate the maskbits cache.
 
     Parameters
@@ -560,8 +560,8 @@ def set_maskbits(idlutils_version='v5_5_8', maskbits_file=None):
             iversion = idlutils_version
         else:
             iversion = 'tags/'+idlutils_version
-        baseurl = ('http://www.sdss3.org/svn/repo/idlutils/' +
-                    '{0}/data/sdss/sdssMaskbits.par').format(iversion)
+        baseurl = ('https://svn.sdss.org/public/repo/sdss/idlutils/' +
+                   '{0}/data/sdss/sdssMaskbits.par').format(iversion)
         filename = download_file(baseurl, cache=True, show_progress=False)
     else:
         filename = maskbits_file
