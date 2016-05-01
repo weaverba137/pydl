@@ -26,8 +26,6 @@ env:
         # overridden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
         - NUMPY_VERSION=stable
-        # - SCIPY_VERSION=stable
-        # - MATPLOTLIB_VERSION=stable
         - ASTROPY_VERSION=stable
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
@@ -35,8 +33,7 @@ env:
         # For this package-template, we include examples of Cython modules,
         # so Cython is required for testing. If your package does not include
         # Cython code, you can set CONDA_DEPENDENCIES=''
-        # - CONDA_DEPENDENCIES='libgfortran=1.0 scipy matplotlib'
-        - CONDA_DEPENDENCIES='scipy matplotlib'
+        - CONDA_DEPENDENCIES='libgfortran=1.0 scipy matplotlib'
     matrix:
         # Make sure that egg_info works without dependencies
         - SETUP_CMD='egg_info'
