@@ -26,8 +26,8 @@ env:
         # overridden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
         - NUMPY_VERSION=stable
-        - SCIPY_VERSION=stable
-        - MATPLOTLIB_VERSION=stable
+        # - SCIPY_VERSION=stable
+        # - MATPLOTLIB_VERSION=stable
         - ASTROPY_VERSION=stable
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
@@ -90,7 +90,7 @@ matrix:
 
         # Try numpy pre-release
         - python: 3.5
-          env: NUMPY_VERSION=prerelease SCIPY_VERSION=prerelease
+          env: NUMPY_VERSION=prerelease
 
         # PEP 8 Compliance
         - python: 2.7
