@@ -1,5 +1,5 @@
 # Compiled files
-*.py[co]
+*.py[cod]
 *.a
 *.o
 *.so
@@ -15,6 +15,7 @@ __pycache__
 pydl/pydl.cfg
 htmlcov
 .coverage
+MANIFEST
 
 # Sphinx
 docs/api
@@ -24,6 +25,9 @@ docs/_build
 .project
 .pydevproject
 .settings
+
+# Pycharm editor project files
+.idea
 
 # Packages/installer info
 *.egg
@@ -38,10 +42,11 @@ sdist
 develop-eggs
 .installed.cfg
 distribute-*.tar.gz
-MANIFEST
 
 # Other
-.*.swp
+.cache
+.tox
+.*.sw[op]
 *~
 
 # Mac OSX

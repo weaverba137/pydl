@@ -1,13 +1,9 @@
 language: python
 
 python:
-    # 2.6 doesn't have OrderedDict, needed for yanny, so dropping tests.
-    # - 2.6
     - 2.7
-    - 3.3
     - 3.4
-    # Still can't run tests on 3.5 because of SciPy issues in Anaconda.
-    # - 3.5
+    - 3.5
 
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
@@ -29,8 +25,9 @@ env:
         # The following versions are the 'default' for tests, unless
         # overidden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
-        - NUMPY_VERSION=1.9
-        - SCIPY_VERSION=0.14
+        - NUMPY_VERSION=stable
+        - SCIPY_VERSION=stable
+        - MATPLOTLIB_VERSION=stable
         - ASTROPY_VERSION=stable
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
@@ -59,17 +56,13 @@ matrix:
 
         # Try Astropy development version
         - python: 2.7
-          env: ASTROPY_VERSION=development SETUP_CMD='test'
-        - python: 3.3
-          env: ASTROPY_VERSION=development SETUP_CMD='test'
-        - python: 3.4
-          env: ASTROPY_VERSION=development SETUP_CMD='test'
-        # - python: 3.5
-        #   env: ASTROPY_VERSION=development SETUP_CMD='test'
-
-        # Astropy LTS version
+          env: ASTROPY_VERSION=development
+        - python: 3.5
+          env: ASTROPY_VERSION=development
         - python: 2.7
-          env: ASTROPY_VERSION=lts SETUP_CMD='test'
+          env: ASTROPY_VERSION=lts
+        - python: 3.5
+          env: ASTROPY_VERSION=lts
 
         # Try older numpy versions
         - python: 2.7
