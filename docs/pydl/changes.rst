@@ -5,7 +5,9 @@ PyDL Changelog
 0.5.1 (unreleased)
 ------------------
 
-* No changes yet.
+* Removed unnecessary ``from __future__`` import in
+  :mod:`pydl.pydlspec2d.spec1d`.
+* Ongoing documentation upgrades.
 
 0.5.0 (2016-05-01)
 ------------------

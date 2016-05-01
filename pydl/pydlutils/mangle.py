@@ -559,7 +559,7 @@ def read_mangle_polygons(filename):
     -------
     :class:`~pydl.pydlutils.mangle.PolygonList`
         A list-like object containing
-        :class:`~pydl.pydlutils.mangle.ManglePolygon` objectss and
+        :class:`~pydl.pydlutils.mangle.ManglePolygon` objects and
         any metadata.
     """
     import re

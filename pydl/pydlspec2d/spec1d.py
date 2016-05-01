@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the spec1d directory in idlspec2d.
 """
-from __future__ import print_function
 import numpy as np
 
 #
@@ -1857,8 +1856,6 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
             # Plot spectra
             #
             plotflux = thisflux/thisflux.max()
-            # print(pcaflux['newloglam'].shape)
-            # print(plotflux.shape)
             ax.plot(10.0**newloglam, plotflux,
                     "{0}-".format(colorvec[isub % len(colorvec)]),
                     linewidth=1)
