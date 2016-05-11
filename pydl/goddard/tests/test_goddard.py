@@ -29,6 +29,14 @@ class TestGoddard(object):
                                      2100.6664, 2200.6868, 2300.7083]))
         vacuum = airtovac(6056.125)
         assert np.allclose(vacuum, 6057.8019)
+        #
+        # Regression test for #8.
+        #
+        wave = air.reshape(2, 3)
+        vacuum = airtovac(wave)
+        assert np.allclose(vacuum,
+                           np.array([[1800.0, 1900.0, 2000.6475],
+                                     [2100.6664, 2200.6868, 2300.7083]]))
 
     def test_cirrange(self):
         ra1 = np.linspace(-4.0*np.pi, 4.0*np.pi, 100)
@@ -135,3 +143,11 @@ class TestGoddard(object):
         air = vactoair(vacuum)
         assert np.allclose(air, np.array([1800.0, 1900.0, 1999.3526,
                                           2099.3337, 2199.3133, 2299.2918]))
+        #
+        # Regression test for #8.
+        #
+        wave = vacuum.reshape(2, 3)
+        air = vactoair(wave)
+        assert np.allclose(air,
+                           np.array([[1800.0, 1900.0, 1999.3526],
+                                     [2099.3337, 2199.3133, 2299.2918]]))

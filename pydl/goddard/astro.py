@@ -26,7 +26,7 @@ def airtovac(air):
     """
     from numpy import zeros
     try:
-        vacuum = zeros(air.size, dtype=air.dtype) + air
+        vacuum = zeros(air.shape, dtype=air.dtype) + air
         g = vacuum < 2000.0
     except AttributeError:
         # Most likely, vacuum is simply a float.
@@ -156,7 +156,7 @@ def vactoair(vacuum):
     """
     from numpy import zeros
     try:
-        air = zeros(vacuum.size, dtype=vacuum.dtype)
+        air = zeros(vacuum.shape, dtype=vacuum.dtype)
         g = vacuum < 2000.0
     except AttributeError:
         # Most likely, vacuum is simply a float.
