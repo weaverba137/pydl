@@ -12,3 +12,4 @@ If we have neglected to include you, please let us know right away!
 * `Thomas Robitaille <https://github.com/astrofrog>`_
 * `Erik Tollerud <https://github.com/eteq>`_
 * `Benjamin Alan Weaver <https://github.com/weaverba137>`_
+* `Kyle Westfall <https://github.com/kbwestfall>`_

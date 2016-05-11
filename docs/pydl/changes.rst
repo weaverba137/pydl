@@ -12,6 +12,9 @@ PyDL Changelog
 * Upgrade to `astropy_helpers`_/v1.1.2.
 * Update to latest version of package-template_.
 * Disabled tests on Python 3.3; enabled tests on Python 3.5
+* Fix `Issue #8`_.
+
+.. _`Issue #8`: https://github.com/weaverba137/pydl/issues/7
 
 0.5.0 (2016-05-01)
 ------------------
