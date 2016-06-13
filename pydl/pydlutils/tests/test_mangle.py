@@ -95,15 +95,15 @@ class TestMangle(object):
         x = np.array([0.0, 0.0, 1.0])
         cm = 1.0
         with raises(ValueError):
-            d = cap_distance(x, cm, np.array([[1.0, 2.0, 3.0, 4.0],]))
-        d = cap_distance(x, cm, np.array([[0.0, 45.0],]))
+            d = cap_distance(x, cm, np.array([[1.0, 2.0, 3.0, 4.0], ]))
+        d = cap_distance(x, cm, np.array([[0.0, 45.0], ]))
         assert np.allclose(d, np.array([45.0]))
-        y = angles_to_x(np.array([[0.0, 45.0],]), latitude=True)
+        y = angles_to_x(np.array([[0.0, 45.0], ]), latitude=True)
         d = cap_distance(x, cm, y)
         assert np.allclose(d, np.array([45.0]))
-        d = cap_distance(x, cm, np.array([[0.0, -45.0],]))
+        d = cap_distance(x, cm, np.array([[0.0, -45.0], ]))
         assert np.allclose(d, np.array([-45.0]))
-        d = cap_distance(x, -1.0, np.array([[0.0, -45.0],]))
+        d = cap_distance(x, -1.0, np.array([[0.0, -45.0], ]))
         assert np.allclose(d, np.array([45.0]))
 
     def test_is_in_cap(self):
