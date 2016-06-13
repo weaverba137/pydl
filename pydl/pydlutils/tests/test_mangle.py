@@ -5,7 +5,8 @@ import numpy as np
 from astropy.tests.helper import raises
 from .. import PydlutilsException
 from ..mangle import (ManglePolygon, is_cap_used, read_fits_polygons,
-                      read_mangle_polygons, set_use_caps)
+                      read_mangle_polygons, set_use_caps, cap_distance,
+                      is_in_cap, angles_to_x)
 
 
 class TestMangle(object):
@@ -89,6 +90,27 @@ class TestMangle(object):
         assert use_caps == poly[0].use_caps
         use_caps = set_use_caps(poly[0], index_list)
         assert use_caps == poly[0].use_caps
+
+    def test_cap_distance(self):
+        x = np.array([0.0, 0.0, 1.0])
+        cm = 1.0
+        with raises(ValueError):
+            d = cap_distance(x, cm, np.array([[1.0, 2.0, 3.0, 4.0],]))
+        d = cap_distance(x, cm, np.array([[0.0, 45.0],]))
+        assert np.allclose(d, np.array([45.0]))
+        y = angles_to_x(np.array([[0.0, 45.0],]), latitude=True)
+        d = cap_distance(x, cm, y)
+        assert np.allclose(d, np.array([45.0]))
+        d = cap_distance(x, cm, np.array([[0.0, -45.0],]))
+        assert np.allclose(d, np.array([-45.0]))
+        d = cap_distance(x, -1.0, np.array([[0.0, -45.0],]))
+        assert np.allclose(d, np.array([45.0]))
+
+    def test_is_in_cap(self):
+        x = np.array([0.0, 0.0, 1.0])
+        cm = 1.0
+        d = is_in_cap(x, cm, np.array([[0.0, 45.0], [0.0, -45.0]]))
+        assert (d == np.array([True, False])).all()
 
 
 def fits_polygon_file():

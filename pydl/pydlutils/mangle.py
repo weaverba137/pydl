@@ -398,10 +398,10 @@ def cap_distance(x, cm, points):
     if ncol == 2:
         xyz = angles_to_x(points, latitude=True)
     elif ncol == 3:
-        xyz = point
+        xyz = points
     else:
         raise ValueError("Inappropriate shape for point!")
-    dotprod = np.dot(points, x)
+    dotprod = np.dot(xyz, x)
     cdist = np.degrees(np.arccos(1.0 - np.abs(cm)) - np.arccos(dotprod))
     if cm < 0:
         cdist *= -1.0
