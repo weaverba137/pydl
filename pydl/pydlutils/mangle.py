@@ -30,7 +30,7 @@ import numpy as np
 from astropy.io import fits
 from astropy.extern import six
 # import astropy.utils as au
-from warnings import warn
+import warnings
 from . import PydlutilsException, PydlutilsUserWarning
 
 
@@ -227,8 +227,9 @@ class ManglePolygon(object):
         """
         if self.gzeroar():
             return 0.0
-        warn(("The ManglePolygon.garea() method is incomplete and is " +
-              "returning a dummy value."), PydlutilsUserWarning)
+        warnings.warn(("The ManglePolygon.garea() method is incomplete" +
+                       "and is returning a dummy value."),
+                      PydlutilsUserWarning)
         return 1.0
 
     def gzeroar(self):
@@ -369,7 +370,7 @@ def angles_to_x(points, latitude=False):
         theta = np.radians(90.0 - points[:, 1])
     else:
         theta = np.radians(points[:, 1])
-    st = np.sin(np.radians(theta))
+    st = np.sin(theta)
     x[:, 0] = np.cos(phi) * st
     x[:, 1] = np.sin(phi) * st
     x[:, 2] = np.cos(theta)
@@ -428,7 +429,7 @@ def circle_cap(radius, points):
     :func:`tuple`
         A tuple containing ``X`` and ``CM`` values for the cap.
     """
-    npoints, ncol == points.shape
+    npoints, ncol = points.shape
     if ncol == 2:
         x = angles_to_x(points, latitude=True)
     elif ncol == 3:
