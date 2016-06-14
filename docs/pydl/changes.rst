@@ -13,6 +13,7 @@ PyDL Changelog
 * Update to latest version of package-template_.
 * Disabled tests on Python 3.3; enabled tests on Python 3.5
 * Fix `Issue #8`_; `Issue #9`_.
+* Add warnings about incomplete Mangle functions.
 
 .. _`Issue #8`: https://github.com/weaverba137/pydl/issues/8
 .. _`Issue #9`: https://github.com/weaverba137/pydl/issues/9

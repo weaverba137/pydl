@@ -30,7 +30,8 @@ import numpy as np
 from astropy.io import fits
 from astropy.extern import six
 # import astropy.utils as au
-from . import PydlutilsException
+from warnings import warn
+from . import PydlutilsException, PydlutilsUserWarning
 
 
 class PolygonList(list):
@@ -226,6 +227,8 @@ class ManglePolygon(object):
         """
         if self.gzeroar():
             return 0.0
+        warn(("The ManglePolygon.garea() method is incomplete and is " +
+              "returning a dummy value."), PydlutilsUserWarning)
         return 1.0
 
     def gzeroar(self):

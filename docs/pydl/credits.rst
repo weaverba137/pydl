@@ -8,6 +8,7 @@ If we have neglected to include you, please let us know right away!
 * `Larry Bradley <https://github.com/larrybradley>`_
 * `Matt Craig <https://github.com/mwcraig>`_
 * `Christoph Deil <https://github.com/cdeil>`_
+* `Mike DiPompeo <https://github.com/mdipompe>`_
 * `Demitri Muna <https://github.com/demitri>`_
 * `Thomas Robitaille <https://github.com/astrofrog>`_
 * `Erik Tollerud <https://github.com/eteq>`_

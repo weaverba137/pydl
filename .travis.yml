@@ -34,6 +34,11 @@ env:
         # so Cython is required for testing. If your package does not include
         # Cython code, you can set CONDA_DEPENDENCIES=''
         - CONDA_DEPENDENCIES='libgfortran=1.0 scipy matplotlib'
+
+        # If there are matplotlib or other GUI tests, uncomment the following
+        # line to use the X virtual framebuffer.
+        # - SETUP_XVFB=True
+
     matrix:
         # Make sure that egg_info works without dependencies
         - SETUP_CMD='egg_info'
@@ -92,13 +97,6 @@ matrix:
         # PEP 8 Compliance
         - python: 2.7
           env: MAIN_CMD='pep8' SETUP_CMD='--count pydl'
-
-before_install:
-
-    # If there are matplotlib tests, comment these out to
-    # Make sure that interactive matplotlib backends work
-    # - export DISPLAY=:99.0
-    # - sh -e /etc/init.d/xvfb start
 
 install:
 
