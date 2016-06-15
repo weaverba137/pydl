@@ -24,10 +24,10 @@ class TestMangle(object):
         pass
 
     def test_ManglePolygon(self):
+        poly = ManglePolygon()
+        assert np.allclose(poly.str, 4.0*np.pi)
         with raises(ValueError):
             poly = ManglePolygon(weight=1.0)
-        with raises(ValueError):
-            poly = ManglePolygon()
         x = np.array([[0.0, 0.0, 1.0],
                       [1.0, 0.0, 0.0],
                       [0.0, 1.0, 0.0]])
@@ -147,7 +147,7 @@ class TestMangle(object):
         poly = read_fits_polygons(self.poly_fits, convert=True)
         assert poly[0].use_caps == 31
         assert np.allclose(poly[0].cm, cm0)
-        assert poly[0].cmminf == 4
+        assert poly[0].cmminf() == 4
 
     def test_read_mangle_polygons(self):
         with raises(PydlutilsException):

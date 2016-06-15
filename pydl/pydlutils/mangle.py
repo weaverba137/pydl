@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the mangle directory in idlutils.
 
-Mangle_ [1]_ is a software suite that supports the concept of spherical
-polygons, and is used to, for example, describe the `window function`_ of the
+Mangle_ [1]_ is a software suite that supports the concept of polygons on
+a sphere, and is used to, for example, describe the `window function`_ of the
 Sloan Digital Sky Survey.
 
 This implementation is intended to support the portions of Mangle that
 are included in idlutils.  To simplify the coding somewhat, unlike
-idlutils:
+idlutils, the caps information is accessed through ``polygon.x`` and
+``polygon.cm``, not ``polygon.caps.x`` or ``polygon.caps.cm``.
 
-* The caps information is accessed through ``polygon.x`` and
-  ``polygon.cm``, not ``polygon.caps.x`` or ``polygon.caps.cm``.
-* The caps information is immutable, however, other attributes, such
-  as ``polygon.set_use_caps`` may be modified.  As a result of this,
-  it is not possible to define an "empty" polygon.
+Note that in traditional geometry "spherical polygon" means a figure
+bounded by *great circles*.  Mangle allows polygons to be bounded by
+*any* circle, great or not.  Use care when comparing formulas in this
+module to formulas in the mathematical literature.
 
 .. _Mangle: http://space.mit.edu/~molly/mangle/
 .. _`window function`: http://www.sdss.org/dr12/algorithms/resolve/
@@ -60,13 +60,16 @@ class PolygonList(list):
 class ManglePolygon(object):
     """Simple object to represent a polygon.
 
-    Parameters
-    ----------
-    row : :class:`~astropy.io.fits.fitsrec.FITS_record`
-        A row from a :class:`FITS_polygon` object.
+    A polygon may be instantiated with a row
+    (:class:`~astropy.io.fits.fitsrec.FITS_record`) from a
+    :class:`FITS_polygon` object, another :class:`ManglePolygon` object
+    (copy constructor), keyword arguments, or with no arguments at all,
+    in which case it represents the whole sky.
 
     Attributes
     ----------
+    cm : :class:`~numpy.ndarray`
+        The size of each cap in the polygon.
     id : :class:`int`
         An arbitrary ID number.
     pixel : :class:`int`
@@ -91,9 +94,8 @@ class ManglePolygon(object):
             self.use_caps = int(args[0]['USE_CAPS'])
             self._x = args[0]['XCAPS'][0:self.ncaps, :].copy()
             # assert x.shape == (self.ncaps, 3)
-            self._cm = args[0]['CMCAPS'][0:self.ncaps].copy()
+            self.cm = args[0]['CMCAPS'][0:self.ncaps].copy()
             # assert cm.shape == (self.ncaps,)
-            self._cmminf = None
         elif isinstance(a0, ManglePolygon):
             self._ncaps = a0._ncaps
             self.weight = a0.weight
@@ -102,8 +104,7 @@ class ManglePolygon(object):
             self._str = a0._str
             self.use_caps = a0.use_caps
             self._x = a0._x.copy()
-            self._cm = a0._cm.copy()
-            self._cmminf = None
+            self.cm = a0.cm.copy()
         elif kwargs:
             if 'x' in kwargs and 'cm' in kwargs:
                 xs = kwargs['x'].shape
@@ -130,14 +131,23 @@ class ManglePolygon(object):
                 # Use all caps by default
                 self.use_caps = (1 << self.ncaps) - 1
             self._x = kwargs['x'].copy()
-            self._cm = kwargs['cm'].copy()
+            self.cm = kwargs['cm'].copy()
             if 'str' in kwargs:
                 self._str = float(kwargs['str'])
             else:
                 self._str = None
-            self._cmminf = None
         else:
-            raise ValueError("Insufficient data to initialize object!")
+            #
+            # An "empty" polygon represents the whole sky.
+            #
+            self._ncaps = 0
+            self.weight = 1.0
+            self.pixel = -1
+            self.id = -1
+            self.use_caps = 0
+            self._x = None
+            self.cm = None
+            self._str = 4.0*np.pi
         return
 
     @property
@@ -145,12 +155,6 @@ class ManglePolygon(object):
         """Number of caps in the polygon.
         """
         return self._ncaps
-
-    @property
-    def cm(self):
-        """The size of each cap in the polygon.
-        """
-        return self._cm
 
     @property
     def x(self):
@@ -167,48 +171,76 @@ class ManglePolygon(object):
             self._str = self.garea()
         return self._str
 
-    @property
     def cmminf(self):
         """The index of the smallest cap in the polygon, accounting for
         negative caps.
+
+        Returns
+        -------
+        :class:`int`
+            Integer index of the smallest cap.
         """
-        if self._cmminf is None:
-            cmmin = 2.0
-            kmin = -1
-            for k in range(self.ncaps):
-                if self.cm[k] >= 0:
-                    cmk = self.cm[k]
-                else:
-                    cmk = 2.0 + self.cm[k]
-                if cmk < cmmin:
-                    cmmin = cmk
-                    kmin = k
-            self._cmminf = kmin
-        return self._cmminf
+        if self.ncaps == 0:
+            return None
+        cmmin = 2.0
+        kmin = -1
+        for k in range(self.ncaps):
+            if self.cm[k] >= 0:
+                cmk = self.cm[k]
+            else:
+                cmk = 2.0 + self.cm[k]
+            if cmk < cmmin:
+                cmmin = cmk
+                kmin = k
+        return kmin
 
     def garea(self):
         """Compute the area of a polygon.
+
+        See [1]_ for the detailed area formula, which is summarized here:
+
+        * An empty polygon with no caps is defined to be the whole sky.
+        * A polygon with one cap has area ``2*pi*self.cm``.
+        * A polygon with at least one cap with an area less than :math:`2\pi`
+          has an area less than :math:`2\pi`.
+        * If every cap has an area greater than :math:`2\pi`, split the polygon
+          into two smaller polygons and sum the two areas.
 
         Returns
         -------
         :class:`float`
             The area of the polygon.
+
+        References
+        ----------
+
+        ..  [1] `Hamilton, A. J. S.; Tegmark, Max, 2004 MNRAS 349, 115
+            <http://adsabs.harvard.edu/abs/2004MNRAS.349..115H>`_.
         """
-        cmmin = self.cm[self.cmminf]
+        smallest_cap = self.cmminf()
+        if smallest_cap is None:
+            return 4.0 * np.pi
+        cmmin = self.cm[smallest_cap]
         if self.ncaps >= 2 and cmmin > 1.0:
             np = self.ncaps + 1
         else:
             np = self.ncaps
         if np == self.ncaps:
-            #
-            # One or fewer? caps, or all caps have area < pi.
-            #
-            return self._garea_helper()
+            if self.ncaps == 1:
+                #
+                # Short-circuit this case.
+                #
+                return 2.0*np.pi*cmmin
+            else:
+                #
+                # Two or more caps, at least one has area < 2.0*pi.
+                #
+                return self._garea_helper()
         else:
             #
-            # More than one cap, and at least one has area > pi.
+            # More than two caps, and all have area > 2.0*pi.
             #
-            dpoly = self.polyn(self, self.cmminf)
+            dpoly = self.polyn(self, smallest_cap)
             dpoly.cm[self.ncaps] = cmmin / 2.0
             area1 = dpoly._garea_helper()
             dpoly.cm[self.ncaps] = -1.0 * dpoly.cm[self.ncaps]
@@ -241,6 +273,11 @@ class ManglePolygon(object):
         :class:`bool`
             ``True`` if the area is zero.
         """
+        if self.ncaps == 0:
+            #
+            # Catch the case of an "allsky" polygon.
+            #
+            return False
         return (self.cm == 0.0).any() or (self.cm <= -2.0).any()
 
     def copy(self):
