@@ -9,7 +9,7 @@ PyDL Changelog
   :mod:`pydl.pydlspec2d.spec1d`.
 * Ongoing documentation upgrades.
 * Update some links that needed to be transitioned from SDSS-III to SDSS-IV.
-* Upgrade to `astropy_helpers`_/v1.1.2.
+* Upgrade to `astropy_helpers`_/v1.2.
 * Update to latest version of package-template_.
 * Disabled tests on Python 3.3; enabled tests on Python 3.5
 * Fix `Issue #8`_; `Issue #9`_.
