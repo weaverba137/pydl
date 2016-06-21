@@ -24,13 +24,29 @@ class TestMangle(object):
         pass
 
     def test_ManglePolygon(self):
+        #
+        # Zero caps
+        #
         poly = ManglePolygon()
         assert np.allclose(poly.str, 4.0*np.pi)
         assert poly.cmminf() is None
         assert not poly.gzeroar()
-        # assert np.allclose(poly.garea(), 4.0*np.pi)
+        assert np.allclose(poly.garea(), 4.0*np.pi)
+        #
+        # One cap.
+        #
+        x = np.array([[0.0, 0.0, 1.0]])
+        cm = np.array([0.5])
+        poly = ManglePolygon(x=x, cm=cm)
+        assert np.allclose(poly.garea(), np.pi)
+        #
+        # Bad inputs
+        #
         with raises(ValueError):
             poly = ManglePolygon(weight=1.0)
+        #
+        # Multiple caps
+        #
         x = np.array([[0.0, 0.0, 1.0],
                       [1.0, 0.0, 0.0],
                       [0.0, 1.0, 0.0]])

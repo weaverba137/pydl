@@ -226,10 +226,10 @@ class ManglePolygon(object):
             return 4.0 * np.pi
         cmmin = self.cm[smallest_cap]
         if self.ncaps >= 2 and cmmin > 1.0:
-            np = self.ncaps + 1
+            npl = self.ncaps + 1
         else:
-            np = self.ncaps
-        if np == self.ncaps:
+            npl = self.ncaps
+        if npl == self.ncaps:
             if self.ncaps == 1:
                 #
                 # Short-circuit this case.
