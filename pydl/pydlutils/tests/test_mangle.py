@@ -26,6 +26,9 @@ class TestMangle(object):
     def test_ManglePolygon(self):
         poly = ManglePolygon()
         assert np.allclose(poly.str, 4.0*np.pi)
+        assert poly.cmminf() is None
+        assert not poly.gzeroar()
+        # assert np.allclose(poly.garea(), 4.0*np.pi)
         with raises(ValueError):
             poly = ManglePolygon(weight=1.0)
         x = np.array([[0.0, 0.0, 1.0],

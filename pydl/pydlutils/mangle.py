@@ -11,6 +11,10 @@ are included in idlutils.  To simplify the coding somewhat, unlike
 idlutils, the caps information is accessed through ``polygon.x`` and
 ``polygon.cm``, not ``polygon.caps.x`` or ``polygon.caps.cm``.
 
+Window function operations are already supported by :func:`~is_in_cap` and
+:func:`~is_in_polygon`.  However, calculation of polygon area (solid angle)
+from first principles is not yet implemented.
+
 Note that in traditional geometry "spherical polygon" means a figure
 bounded by *great circles*.  Mangle allows polygons to be bounded by
 *any* circle, great or not.  Use care when comparing formulas in this
