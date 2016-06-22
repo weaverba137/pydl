@@ -33,7 +33,8 @@ env:
         # For this package-template, we include examples of Cython modules,
         # so Cython is required for testing. If your package does not include
         # Cython code, you can set CONDA_DEPENDENCIES=''
-        - CONDA_DEPENDENCIES='libgfortran=1.0 scipy matplotlib'
+        # - CONDA_DEPENDENCIES='libgfortran=1.0 scipy matplotlib'
+        - CONDA_DEPENDENCIES='scipy matplotlib'
 
         # If there are matplotlib or other GUI tests, uncomment the following
         # line to use the X virtual framebuffer.
@@ -82,9 +83,9 @@ matrix:
 
         # Try older numpy versions
         - python: 2.7
-          env: NUMPY_VERSION=1.9 SCIPY_VERSION=0.14
+          env: NUMPY_VERSION=1.10 SCIPY_VERSION=0.16
         - python: 2.7
-          env: NUMPY_VERSION=1.7 SCIPY_VERSION=0.12
+          env: NUMPY_VERSION=1.9 SCIPY_VERSION=0.14
         - python: 2.7
           env: NUMPY_VERSION=1.8 SCIPY_VERSION=0.13
         - python: 2.7
