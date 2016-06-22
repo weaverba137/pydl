@@ -2,7 +2,7 @@
 PyDL Changelog
 ==============
 
-0.5.1 (unreleased)
+0.5.1 (2016-06-22)
 ------------------
 
 * Removed unnecessary ``from __future__`` import in
