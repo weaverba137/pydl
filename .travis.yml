@@ -85,7 +85,7 @@ matrix:
         - python: 2.7
           env: NUMPY_VERSION=1.10 SCIPY_VERSION=0.16
         - python: 2.7
-          env: NUMPY_VERSION=1.9 SCIPY_VERSION=0.14
+          env: NUMPY_VERSION=1.9 SCIPY_VERSION=0.14 CONDA_DEPENDENCIES='libgfortran=1.0 scipy matplotlib'
         - python: 2.7
           env: NUMPY_VERSION=1.8 SCIPY_VERSION=0.13
         - python: 2.7
