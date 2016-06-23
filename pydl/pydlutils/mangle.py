@@ -729,3 +729,37 @@ def x_to_angles(points, latitude=False):
     x[:, 0] = phi
     x[:, 1] = theta
     return x
+
+
+def _single_polygon(poly):
+    """Given certain classes of `poly`, return a
+    :class:`ManglePolygon` object.
+
+    This function is used to allow various types of input in functions that
+    take a *single* polygon as an argument.
+
+    Parameters
+    ----------
+    poly : object
+        An object containing data that could potentially be converted
+        into a :class:`ManglePolygon`.
+
+    Returns
+    -------
+    ManglePolygon
+        The resulting *single* polygon object.
+
+    Raises
+    ------
+    ValueError
+        If the conversion is not possible.
+    """
+    if isinstance(poly, ManglePolygon):
+        return poly
+    if isinstance(poly, PolygonList) and len(poly) == 1:
+        return poly[0]
+    if isinstance(poly, FITS_polygon) and len(poly) == 1:
+        return ManglePolygon(poly[0])
+    if isinstance(poly, fits.fitsrec.FITS_record):
+        return ManglePolygon(poly)
+    raise ValueError("Can't convert input into a single polygon!")
