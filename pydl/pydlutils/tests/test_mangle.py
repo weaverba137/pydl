@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import numpy as np
+from pkg_resources import resource_filename
 from astropy.tests.helper import raises
 from .. import PydlutilsException
 from ..mangle import (ManglePolygon, is_cap_used, read_fits_polygons,
@@ -15,10 +16,14 @@ class TestMangle(object):
     """
 
     def setup(self):
-        self.data_dir = os.path.join(os.path.dirname(__file__), 't')
-        self.poly_fits = os.path.join(self.data_dir, 'polygon.fits')
-        self.poly_ply = os.path.join(self.data_dir, 'polygon.ply')
-        self.bad_ply = os.path.join(self.data_dir, 'median_data.txt')
+        self.poly_fits = resource_filename('pydl.pydlutils.tests',
+                                           't/polygon.fits')
+        self.no_id_fits = resource_filename('pydl.pydlutils.tests',
+                                            't/polygon_no_id.fits')
+        self.poly_ply = resource_filename('pydl.pydlutils.tests',
+                                          't/polygon.ply')
+        self.bad_ply = resource_filename('pydl.pydlutils.tests',
+                                          't/median_data.txt')
 
     def teardown(self):
         pass
@@ -167,6 +172,11 @@ class TestMangle(object):
         assert poly[0].use_caps == 31
         assert np.allclose(poly[0].cm, cm0)
         assert poly[0].cmminf() == 4
+        #
+        # A FITS file might not contain IFIELD.
+        #
+        poly = read_fits_polygons(self.no_id_fits)
+        assert len(poly) == 1
 
     def test_read_mangle_polygons(self):
         with raises(PydlutilsException):

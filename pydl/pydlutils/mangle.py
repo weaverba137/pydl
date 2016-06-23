@@ -93,7 +93,10 @@ class ManglePolygon(object):
             self._ncaps = int(args[0]['NCAPS'])
             self.weight = float(args[0]['WEIGHT'])
             self.pixel = int(args[0]['PIXEL'])
-            self.id = int(args[0]['IFIELD'])
+            try:
+                self.id = int(args[0]['IFIELD'])
+            except KeyError:
+                self.id = -1
             self._str = float(args[0]['STR'])
             self.use_caps = int(args[0]['USE_CAPS'])
             self._x = args[0]['XCAPS'][0:self.ncaps, :].copy()
