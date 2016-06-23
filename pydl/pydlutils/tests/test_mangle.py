@@ -255,6 +255,7 @@ class TestMangle(object):
         p2 = mng._single_polygon(p[0])
         assert p2.use_caps == 15
 
+
 def fits_polygon_file():
     """Create a small test version of a FITS polygon file.
     """
