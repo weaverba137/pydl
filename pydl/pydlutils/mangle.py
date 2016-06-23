@@ -90,19 +90,27 @@ class ManglePolygon(object):
         except IndexError:
             a0 = None
         if isinstance(a0, fits.fitsrec.FITS_record):
-            self._ncaps = int(args[0]['NCAPS'])
-            self.weight = float(args[0]['WEIGHT'])
-            self.pixel = int(args[0]['PIXEL'])
+            self._ncaps = int(a0['NCAPS'])
+            self.weight = float(a0['WEIGHT'])
+            self.pixel = int(a0['PIXEL'])
             try:
-                self.id = int(args[0]['IFIELD'])
+                self.id = int(a0['IFIELD'])
             except KeyError:
                 self.id = -1
-            self._str = float(args[0]['STR'])
-            self.use_caps = int(args[0]['USE_CAPS'])
-            self._x = args[0]['XCAPS'][0:self.ncaps, :].copy()
-            # assert x.shape == (self.ncaps, 3)
-            self.cm = args[0]['CMCAPS'][0:self.ncaps].copy()
-            # assert cm.shape == (self.ncaps,)
+            self._str = float(a0['STR'])
+            self.use_caps = int(a0['USE_CAPS'])
+            xcaps = a0['XCAPS']
+            if xcaps.shape == (3, ):
+                self._x = np.zeros((1, 3), dtype=xcaps.dtype) + xcaps
+            else:
+                self._x = xcaps[0:self._ncaps, :].copy()
+            # assert self._x.shape == (self._ncaps, 3)
+            cmcaps = a0['CMCAPS']
+            if cmcaps.shape == ():
+                self.cm = np.zeros((1,), dtype=cmcaps.dtype) + cmcaps
+            else:
+                self.cm = cmcaps[0:self._ncaps].copy()
+            # assert self.cm.shape == (self._ncaps, )
         elif isinstance(a0, ManglePolygon):
             self._ncaps = a0._ncaps
             self.weight = a0.weight

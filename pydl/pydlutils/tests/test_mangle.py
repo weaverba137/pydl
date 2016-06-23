@@ -17,6 +17,8 @@ class TestMangle(object):
                                            't/polygon.fits')
         self.no_id_fits = resource_filename('pydl.pydlutils.tests',
                                             't/polygon_no_id.fits')
+        self.one_cap_fits = resource_filename('pydl.pydlutils.tests',
+                                             't/polygon_one_cap.fits')
         self.poly_ply = resource_filename('pydl.pydlutils.tests',
                                           't/polygon.ply')
         self.bad_ply = resource_filename('pydl.pydlutils.tests',
@@ -176,8 +178,10 @@ class TestMangle(object):
         poly = mng.read_fits_polygons(self.no_id_fits)
         assert len(poly) == 1
         #
-        # Make sure that FITS polygons work the same as PLY polygons.
+        # A FITS file might contain exactly one polygon with exactly one cap.
         #
+        poly = mng.read_fits_polygons(self.one_cap_fits, convert=True)
+        assert poly[0].ncaps == 1
 
     def test_read_mangle_polygons(self):
         with raises(PydlutilsException):
