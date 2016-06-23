@@ -560,15 +560,60 @@ def is_in_polygon(polygon, points, ncaps=0):
         A boolean vector giving the result for each point.
     """
     npoints, ncol = points.shape
-    usencaps = polygon.ncaps
+    p = dict()
+    pmap = {'ncaps': 'NCAPS', 'use_caps': 'USE_CAPS',
+            'x': 'XCAPS', 'cm': 'CMCAPS'}
+    for key in pmap:
+        try:
+            p[key] = getattr(polygon, key)
+        except AttributeError:
+            p[key] = polygon[pmap[key]]
+    usencaps = p['ncaps']
     if ncaps > 0:
-        usencaps = min(ncaps, polygon.ncaps)
+        usencaps = min(ncaps, p['ncaps'])
     in_polygon = np.ones((npoints,), dtype=np.bool)
     for icap in range(usencaps):
-        if is_cap_used(polygon.use_caps, icap):
-            in_polygon &= is_in_cap(polygon.x[icap, :],
-                                    polygon.cm[icap], points)
+        if is_cap_used(p['use_caps'], icap):
+            in_polygon &= is_in_cap(p['x'][icap, :], p['cm'][icap], points)
     return in_polygon
+
+
+def is_in_window(polygons, points, ncaps=0):
+    """Check to see if `points` lie within a set of `polygons`.
+
+    Parameters
+    ----------
+    polygons : :class:`PolygonList` or :class:`FITS_polygon`
+        A set of polygons.
+    points : :class:`~numpy.ndarray` or :class:`~numpy.recarray`
+        If `points` is a 3-vector, or set of 3-vectors, then assume the point
+        is a Cartesian unit vector.  If `point` is a 2-vector or set
+        of 2-vectors, assume the point is RA, Dec.
+    ncaps : :class:`int`, optional
+        If set, use only the first `ncaps` caps in `polygon`.  This only
+        exists to be passed to :func:`is_in_polygon`.
+
+    Returns
+    -------
+    :func:`tuple`
+        A tuple containing two :class:`~numpy.ndarray`.  First, a boolean
+        vector giving the result for each point.  Second, an integer vector
+        giving the index of the polygon that contains the point.
+    """
+    npoints, ncol = points.shape
+    npoly = len(polygons)
+    in_polygon = np.zeros((npoints, ), dtype=np.int32) - 1
+    curr_polygon = 0
+    while curr_polygon < npoly:
+        indx_not_in = (in_polygon == -1).nonzero()[0]
+        if len(indx_not_in) > 0:
+            indx_in_curr_polygon = is_in_polygon(polygons[curr_polygon],
+                                                 points[indx_not_in],
+                                                 ncaps=ncaps)
+            if indx_in_curr_polygon.any():
+                in_polygon[indx_not_in[indx_in_curr_polygon]] = curr_polygon
+        curr_polygon += 1
+    return (in_polygon >= 0, in_polygon)
 
 
 def read_fits_polygons(filename, convert=False):

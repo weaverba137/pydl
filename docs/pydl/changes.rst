@@ -5,7 +5,11 @@ PyDL Changelog
 0.5.2 (unreleased)
 ------------------
 
-* No changes yet.
+* Changes in how Mangle-polygon containing FITS files are handled, related to
+  `Issue #11`_.
+* Added :func:`~pydl.pydlutils.mangle.is_in_window`.
+
+.. _`Issue #8`: https://github.com/weaverba137/pydl/issues/11
 
 0.5.1 (2016-06-22)
 ------------------

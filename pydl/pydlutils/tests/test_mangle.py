@@ -153,6 +153,10 @@ class TestMangle(object):
                               ncaps=2)
         assert (d == np.array([True, False])).all()
 
+    def test_is_in_window(self):
+        # poly = mng.read_fits_polygons(self.poly_fits)
+        pass
+
     def test_read_fits_polygons(self):
         poly = mng.read_fits_polygons(self.poly_fits)
         use_caps = np.array([31, 15, 31, 7, 31, 15, 15, 7, 15, 15,
