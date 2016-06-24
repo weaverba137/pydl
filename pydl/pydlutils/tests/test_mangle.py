@@ -152,10 +152,24 @@ class TestMangle(object):
         d = mng.is_in_polygon(p, np.array([[45.0, 45.0], [-45.0, 45.0]]),
                               ncaps=2)
         assert (d == np.array([True, False])).all()
+        poly = mng.read_fits_polygons(self.no_id_fits)
+        d = mng.is_in_polygon(poly[0],
+                              np.array([[0.0, 10.0],
+                                        [4.0, 4.5],
+                                        [90, 4.0],
+                                        [135, 3.0],
+                                        [180, 0.5],
+                                        [270, 0.25]]))
+        assert (d == np.array([False, True, False, False, False, False])).all()
 
     def test_is_in_window(self):
-        # poly = mng.read_fits_polygons(self.poly_fits)
-        pass
+        np.random.seed(271828)
+        RA = 7.0*np.random.random(1000) + 268.0
+        Dec = 90.0 - np.degrees(np.arccos(0.08*np.random.random(1000)))
+        points = np.vstack((RA, Dec)).T
+        poly = mng.read_fits_polygons(self.poly_fits)
+        i = mng.is_in_window(poly, points)
+        assert i[0].sum() == 3
 
     def test_read_fits_polygons(self):
         poly = mng.read_fits_polygons(self.poly_fits)

@@ -11,8 +11,8 @@ are included in idlutils.  To simplify the coding somewhat, unlike
 idlutils, the caps information is accessed through ``polygon.x`` and
 ``polygon.cm``, not ``polygon.caps.x`` or ``polygon.caps.cm``.
 
-Window function operations are already supported by :func:`~is_in_cap` and
-:func:`~is_in_polygon`.  However, calculation of polygon area (solid angle)
+Window function operations are already supported by :func:`~is_in_polygon` and
+:func:`~is_in_window`.  However, calculation of polygon area (solid angle)
 from first principles is not yet implemented.
 
 Note that in traditional geometry "spherical polygon" means a figure
@@ -188,7 +188,7 @@ class ManglePolygon(object):
 
     def cmminf(self):
         """The index of the smallest cap in the polygon, accounting for
-        negative caps.
+        negative caps and ``use_caps``.
 
         Returns
         -------
@@ -200,13 +200,14 @@ class ManglePolygon(object):
         cmmin = 2.0
         kmin = -1
         for k in range(self.ncaps):
-            if self.cm[k] >= 0:
-                cmk = self.cm[k]
-            else:
-                cmk = 2.0 + self.cm[k]
-            if cmk < cmmin:
-                cmmin = cmk
-                kmin = k
+            if is_cap_used(self.use_caps, k):
+                if self.cm[k] >= 0:
+                    cmk = self.cm[k]
+                else:
+                    cmk = 2.0 + self.cm[k]
+                if cmk < cmmin:
+                    cmmin = cmk
+                    kmin = k
         return kmin
 
     def garea(self):
@@ -236,16 +237,26 @@ class ManglePolygon(object):
         if smallest_cap is None:
             return 4.0 * np.pi
         cmmin = self.cm[smallest_cap]
-        if self.ncaps >= 2 and cmmin > 1.0:
-            npl = self.ncaps + 1
+        used_caps = list()
+        for k in range(self.ncaps):
+            if is_cap_used(self.use_caps, k):
+                used_caps.append(k)
+        nused_caps = len(used_caps)
+        if nused_caps == 0:
+            return 0.0
+        if nused_caps >= 2 and cmmin > 1.0:
+            npl = nused_caps + 1
         else:
-            npl = self.ncaps
-        if npl == self.ncaps:
-            if self.ncaps == 1:
+            npl = nused_caps
+        if npl == nused_caps:
+            if nused_caps == 1:
                 #
                 # Short-circuit this case.
                 #
-                return 2.0*np.pi*cmmin
+                if cmmin < 0:
+                    return 2.0*np.pi*(2.0+cmmin)
+                else:
+                    return 2.0*np.pi*cmmin
             else:
                 #
                 # Two or more caps, at least one has area < 2.0*pi.
@@ -254,11 +265,12 @@ class ManglePolygon(object):
         else:
             #
             # More than two caps, and all have area > 2.0*pi.
+            # This section still needs to account for use_caps.
             #
             dpoly = self.polyn(self, smallest_cap)
-            dpoly.cm[self.ncaps] = cmmin / 2.0
+            dpoly.cm[nused_caps] = cmmin / 2.0
             area1 = dpoly._garea_helper()
-            dpoly.cm[self.ncaps] = -1.0 * dpoly.cm[self.ncaps]
+            dpoly.cm[nused_caps] = -1.0 * dpoly.cm[nused_caps]
             area2 = dpoly._garea_helper()
             return area1 + area2
 

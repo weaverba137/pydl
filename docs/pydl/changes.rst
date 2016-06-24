@@ -8,8 +8,9 @@ PyDL Changelog
 * Changes in how Mangle-polygon containing FITS files are handled, related to
   `Issue #11`_.
 * Added :func:`~pydl.pydlutils.mangle.is_in_window`.
+* Allow polygon area functions to deal with negative caps and ``use_caps``.
 
-.. _`Issue #8`: https://github.com/weaverba137/pydl/issues/11
+.. _`Issue #11`: https://github.com/weaverba137/pydl/issues/11
 
 0.5.1 (2016-06-22)
 ------------------
