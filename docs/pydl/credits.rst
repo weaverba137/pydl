@@ -11,6 +11,7 @@ If we have neglected to include you, please let us know right away!
 * `Mike DiPompeo <https://github.com/mdipompe>`_
 * `Demitri Muna <https://github.com/demitri>`_
 * `Thomas Robitaille <https://github.com/astrofrog>`_
+* `Brigitta Sipocz <https://github.com/bsipocz>`_
 * `Erik Tollerud <https://github.com/eteq>`_
 * `Benjamin Alan Weaver <https://github.com/weaverba137>`_
 * `Kyle Westfall <https://github.com/kbwestfall>`_

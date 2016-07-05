@@ -9,7 +9,9 @@ PyDL Changelog
   `Issue #11`_.
 * Added :func:`~pydl.pydlutils.mangle.is_in_window`.
 * Allow polygon area functions to deal with negative caps and ``use_caps``.
+* Update ``docs/conf.py`` for Python 3.5 compatibility (`PR #13`_).
 
+.. _`PR #13`: https://github.com/weaverba137/pydl/pull/13
 .. _`Issue #11`: https://github.com/weaverba137/pydl/issues/11
 
 0.5.1 (2016-06-22)
