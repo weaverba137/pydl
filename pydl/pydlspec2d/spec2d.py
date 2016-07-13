@@ -91,6 +91,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
     from . import Pydlspec2dUserWarning
     from .. import smooth
     from ..pydlutils.bspline import iterfit
+    from ..pydlutils.math import djs_median
     from ..pydlutils.sdss import sdss_flagval
     #
     # Log
@@ -101,6 +102,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
     #
     # Check that dimensions of inputs are valid.
     #
+    npix = inloglam.size
     nfinalpix = len(newloglam)
     if objflux.shape != inloglam.shape:
         raise ValueError('Dimensions of inloglam and objflux do not agree.')
@@ -120,7 +122,10 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
     if 'binsz' in kwargs:
         binsz = kwargs['binsz']
     else:
-        binsz = inloglam[1] - inloglam[0]
+        if inloglam.ndim == 2:
+            binsz = inloglam[0, 1] - inloglam[0, 0]
+        else:
+            binsz = inloglam[1] - inloglam[0]
     if 'nord' in kwargs:
         nord = kwargs['nord']
     else:
@@ -137,12 +142,11 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
         #
         # Set specnum = 0 for all elements
         #
-        npix = inloglam.shape[0]
         nspec = 1
         specnum = np.zeros(inloglam.shape, dtype=inloglam.dtype)
     else:
-        nspec, npix = inloglam.shape
-        specnum = np.tile(np.arange(nspec), npix).reshape(npix, nspec).transpose()
+        nspec, ncol = inloglam.shape
+        specnum = np.tile(np.arange(nspec), ncol).reshape(ncol, nspec).transpose()
     #
     # Use fullcombmask for modifying the pixel masks in the original input files.
     #
@@ -157,8 +161,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
         nonzero = np.arange(npix, dtype='i4')
         ngood = npix
     else:
-        nonzero = (objivar > 0).nonzero()[0]
-        ngood = len(nonzero)
+        nonzero = (objivar.ravel() > 0).nonzero()[0]
+        ngood = nonzero.size
     #
     # ormask is needed to create andmask
     #
@@ -184,8 +188,9 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
         # Now let's break sorted wavelengths into groups where pixel
         # separations are larger than maxsep.
         #
-        isort = nonzero[inloglam[nonzero].argsort()]
-        wavesort = inloglam[isort]
+        inloglam_r = inloglam.ravel()
+        isort = nonzero[inloglam_r[nonzero].argsort()]
+        wavesort = inloglam_r[isort]
         padwave = np.insert(wavesort, 0, wavesort.min() - 2.0*maxsep)
         padwave = np.append(padwave, wavesort.max() + 2.0*maxsep)
         ig1 = ((padwave[1:ngood+1]-padwave[0:ngood]) > maxsep).nonzero()[0]
@@ -194,13 +199,16 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
             raise ValueError('Grouping tricks did not work!')
         #
         # Avoid flux-dependent bias when combining multiple spectra.
+        # This call to djs_median contains a width that is both floating-point
+        # and even, which is very strange.
         #
         if objivar is not None and objivar.ndim > 1:
             saved_objivar = objivar
             for spec in range(nspec):
                 igood = (objivar[spec, :] > 0).nonzero()[0]
                 if igood.size > 0:
-                    objivar[spec, igood] = djs_median(saved_objivar[spec, igood], width=100.)
+                    # objivar[spec, igood] = djs_median(saved_objivar[spec, igood], width=100.)
+                    objivar[spec, igood] = djs_median(saved_objivar[spec, igood], width=101)
         else:
             saved_objivar = None
         for igrp in range(ig1.size):
@@ -210,7 +218,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                     #
                     # Fit without variance
                     #
-                    sset, bmask = iterfit(inloglam[ss], objflux[ss],
+                    sset, bmask = iterfit(inloglam_r[ss],
+                                          objflux.ravel()[ss],
                                           nord=nord, groupbadpix=True,
                                           requiren=1, bkspace=bkptbin,
                                           silent=True)
@@ -218,8 +227,9 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                     #
                     # Fit with variance
                     #
-                    sset, bmask = iterfit(inloglam[ss], objflux[ss],
-                                          invvar=objivar[ss],
+                    sset, bmask = iterfit(inloglam_r[ss],
+                                          objflux.ravel()[ss],
+                                          invvar=objivar.ravel()[ss],
                                           nord=nord, groupbadpix=True,
                                           requiren=1, bkspace=bkptbin,
                                           silent=True)
@@ -232,8 +242,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                 bmask = np.zeros(len(ss))
                 sset = None
                 warn('Not enough data for B-spline fit!', Pydlspec2dUserWarning)
-            inside = ((newloglam >= inloglam[ss].min()-EPS) &
-                      (newloglam <= inloglam[ss].max()+EPS)).nonzero()[0]
+            inside = ((newloglam >= (inloglam_r[ss]).min()-EPS) &
+                      (newloglam <= (inloglam_r[ss]).max()+EPS)).nonzero()[0]
             #
             # It is possible for numinside to be zero, if the input data points
             # span an extremely small wavelength range, within which there are
@@ -259,7 +269,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                     # Set the inverse variance of these pixels to zero.
                     #
                     if objivar is not None:
-                        objivar[ss[ireplace]] = 0.0
+                        objivar.ravel()[ss[ireplace]] = 0.0
                         log.debug('Replaced {0:d} pixels in objivar.'.format(len(ss[ireplace])))
                     if 'finalmask' in kwargs:
                         finalmask[ss[ireplace]] = (finalmask[ss[ireplace]] |
@@ -278,27 +288,28 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
         #
         andmask[:] = -1
         for j in range(int(specnum.max())+1):
-            these = specnum == j
+            these = (specnum.ravel() == j).nonzero()[0]
             if these.any():
-                inbetween = ((newloglam >= inloglam[these].min()) &
-                             (newloglam <= inloglam[these].max()))
+                inbetween = ((newloglam >= inloglam_r[these].min()) &
+                             (newloglam <= inloglam_r[these].max()))
                 if inbetween.any():
                     jnbetween = inbetween.nonzero()[0]
                     #
                     # Conserve inverse variance by doing a linear interpolation
                     # on that quantity.
                     #
-                    result = np.interp(newloglam[jnbetween], inloglam[these],
-                                       objivar[these]*fullcombmask[these])
+                    result = np.interp(newloglam[jnbetween], inloglam_r[these],
+                                       (objivar.ravel()[these] *
+                                        fullcombmask[these]))
                     #
                     # Grow the fullcombmask below to reject any new sampling
                     # containing even a partial masked pixel.
                     #
-                    smask = np.interp(newloglam[jnbetween], inloglam[these],
+                    smask = np.interp(newloglam[jnbetween], inloglam_r[these],
                                       fullcombmask[these].astype(inloglam.dtype))
                     result *= smask >= (1.0 - EPS)
                     newivar[jnbetween] += result*newmask[jnbetween]
-                lowside = np.floor((inloglam[these]-newloglam[0])/binsz).astype('i4')
+                lowside = np.floor((inloglam_r[these]-newloglam[0])/binsz).astype('i4')
                 highside = lowside + 1
                 if 'finalmask' in kwargs:
                     andmask[lowside] &= finalmask[these]
@@ -313,12 +324,12 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                     newdispweight[jnbetween] += result
                     newdisp[jnbetween] += (result *
                                            np.interp(newloglam[jnbetween],
-                                                     inloglam[these],
-                                                     indisp[these]))
+                                                     inloglam_r[these],
+                                                     indisp.ravel()[these]))
                     newsky[jnbetween] += (result *
                                           np.interp(newloglam[jnbetween],
-                                                    inloglam[these],
-                                                    skyflux[these]))
+                                                    inloglam_r[these],
+                                                    skyflux.ravel()[these]))
         if 'indisp' in kwargs:
             newdisp /= newdispweight + (newdispweight == 0)
             newsky /= newdispweight + (newdispweight == 0)
@@ -341,7 +352,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
     #
     inff = ((~np.isfinite(newflux)) | (~np.isfinite(newivar)))
     if inff.any():
-        warn('{0:d} NaNs in combined spectra.'.format(inff.sum()), Pydlspec2dUserWarning)
+        warn('{0:d} NaNs in combined spectra.'.format(inff.sum()),
+             Pydlspec2dUserWarning)
         newflux[inff] = 0.0
         newivar[inff] = 0.0
     #
