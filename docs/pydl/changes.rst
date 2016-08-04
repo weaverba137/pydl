@@ -5,7 +5,7 @@ PyDL Changelog
 0.5.3 (unreleased)
 ------------------
 
-* No changes yet.
+* Fixed formatting of TODO document.
 
 0.5.2 (2016-08-04)
 ------------------
