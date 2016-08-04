@@ -2,7 +2,7 @@
 PyDL Changelog
 ==============
 
-0.5.2 (unreleased)
+0.5.2 (2016-08-04)
 ------------------
 
 * Changes in how Mangle-polygon containing FITS files are handled, related to
