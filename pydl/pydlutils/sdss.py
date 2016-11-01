@@ -327,7 +327,9 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
 
     Notes
     -----
-    firstField flag never set.
+    * ``firstField`` flag never set.
+    * On 32-bit systems, makes sure to explicitly declare all inputs as
+      64-bit integers.
 
     Examples
     --------
