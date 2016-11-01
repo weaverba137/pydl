@@ -129,7 +129,8 @@ class TestSDSS(object):
         camcol = np.array([3, 6])
         field = np.array([91, 77])
         obj = np.array([146, 123])
-        assert (np.array([1237661382772195474, 1237649770790322299]) ==
+        assert (np.array([1237661382772195474, 1237649770790322299],
+                         dtype=np.int64) ==
                 sdss_objid(run, camcol, field, obj)).all()
         #
         # Exceptions
