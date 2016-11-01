@@ -22,6 +22,7 @@ addons:
 
 env:
     global:
+
         # The following versions are the 'default' for tests, unless
         # overridden underneath. They are defined here in order to save having
         # to repeat them for all configurations.
@@ -30,11 +31,19 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - PIP_DEPENDENCIES=''
+
         # For this package-template, we include examples of Cython modules,
         # so Cython is required for testing. If your package does not include
         # Cython code, you can set CONDA_DEPENDENCIES=''
-        # - CONDA_DEPENDENCIES='libgfortran=1.0 scipy matplotlib'
+        # - CONDA_DEPENDENCIES='Cython'
         - CONDA_DEPENDENCIES='scipy matplotlib'
+
+        # Conda packages for affiliated packages are hosted in channel
+        # "astropy" while builds for astropy LTS with recent numpy versions
+        # are in astropy-ci-extras. If your package uses either of these,
+        # add the channels to CONDA_CHANNELS along with any other channels
+        # you want to use.
+        - CONDA_CHANNELS='astopy-ci-extras astropy'
 
         # If there are matplotlib or other GUI tests, uncomment the following
         # line to use the X virtual framebuffer.
@@ -68,14 +77,11 @@ matrix:
         - python: 3.5
           env: ASTROPY_VERSION=lts
 
-        # Python 2.6 and 3.3 doesn't have numpy 1.10 in conda, they can be put
+        # Python 3.3 doesn't have numpy 1.10 in conda, but can be put
         # back into the main matrix once the numpy build is available in the
         # astropy-ci-extras channel (or in the one provided in the
         # CONDA_CHANNELS environmental variable).
-        # - python: 2.6
-        #   env: SETUP_CMD='egg_info'
-        # - python: 2.6
-        #   env: SETUP_CMD='test' NUMPY_VERSION=1.9
+
         - python: 3.3
           env: SETUP_CMD='egg_info'
         - python: 3.3
@@ -104,7 +110,7 @@ install:
     # We now use the ci-helpers package to set up our testing environment.
     # This is done by using Miniconda and then using conda and pip to install
     # dependencies. Which dependencies are installed using conda and pip is
-    # determined by the CONDA_DEPDENDENCIES and PIP_DEPENDENCIES variables,
+    # determined by the CONDA_DEPENDENCIES and PIP_DEPENDENCIES variables,
     # which should be space-delimited lists of package names. See the README
     # in https://github.com/astropy/ci-helpers for information about the full
     # list of environment variables that can be used to customize your
