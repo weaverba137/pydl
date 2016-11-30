@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import numpy as np
+import tempfile
 from astropy.tests.helper import raises
 from .. import PydlutilsException
 from ..misc import djs_laxisgen, djs_laxisnum, hogg_iau_name, struct_print
@@ -12,17 +13,10 @@ class TestMisc(object):
     """
 
     def setup(self):
-        self.data_dir = os.path.join(os.path.dirname(__file__), 't')
-        self.struct_print_file = os.path.join(self.data_dir,
-                                              'struct_print.txt')
-        self.struct_print_file2 = os.path.join(self.data_dir,
-                                               'struct_print2.txt')
+        pass
 
     def teardown(self):
-        if os.path.exists(self.struct_print_file):
-            os.remove(self.struct_print_file)
-        if os.path.exists(self.struct_print_file2):
-            os.remove(self.struct_print_file2)
+        pass
 
     def test_djs_laxisgen(self):
         #
@@ -184,13 +178,16 @@ class TestMisc(object):
         assert lines[3] == '2       3.46 seven'
         assert lines[4] == '3      -4.57 nine '
         assert len(css) == 0
-        lines, css = struct_print(slist, silent=True,
-            filename=self.struct_print_file)
-        with open(self.struct_print_file) as f:
-            data = f.read()
+        with tempfile.NamedTemporaryFile(delete=False) as spf1:
+            spf1_name = spf1.name
+            lines, css = struct_print(slist, silent=True,
+                filename=spf1_name)
+        with open(spf1_name, 'rb') as f:
+            data = f.read().decode('utf-8')
         assert "\n".join(lines)+"\n" == data
-        with open(self.struct_print_file2, 'w') as f:
-            lines, css = struct_print(slist, silent=True, filename=f)
-        with open(self.struct_print_file2) as f:
-            data = f.read()
+        os.remove(spf1_name)
+        with tempfile.TemporaryFile() as spf2:
+            lines, css = struct_print(slist, silent=True, filename=spf2)
+            spf2.seek(0)
+            data = spf2.read().decode('utf-8')
         assert "\n".join(lines)+"\n" == data

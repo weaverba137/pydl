@@ -6,9 +6,12 @@ PyDL Changelog
 ------------------
 
 * Fixed formatting of TODO document.
-* Fixed tests that were failing on 32-bit platforms (`Issue #14`).
+* Fixed tests that were failing on 32-bit platforms (`Issue #14`_).
+* Use temporary files so that tests can run when astropy is installed
+  read-only (*e.g.*, with :command:`pip`; `Issue #16`_)
 
 .. _`Issue #14`: https://github.com/weaverba137/pydl/issues/14
+.. _`Issue #16`: https://github.com/weaverba137/pydl/issues/16
 
 0.5.2 (2016-08-04)
 ------------------
