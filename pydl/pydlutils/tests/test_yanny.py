@@ -122,7 +122,8 @@ class TestYanny(YannyTestCase):
         b = [2.0, 5.0, 8.2]
         c = [b'x', b'y', b'z']
         t = Table([a, b, c], names=('a', 'b', 'c'),
-                  meta={'name': 'first table'})
+                  meta={'name': 'first table'},
+                  dtype=('i8', 'f8', 'S1'))
         t.write(filename, tablename='test')
         par1 = yanny(filename)
         par2 = yanny(self.data('test_table.par'))

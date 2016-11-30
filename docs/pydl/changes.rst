@@ -6,6 +6,9 @@ PyDL Changelog
 ------------------
 
 * Fixed formatting of TODO document.
+* Fixed tests that were failing on 32-bit platforms (`Issue #14`).
+
+.. _`Issue #14`: https://github.com/weaverba137/pydl/issues/14
 
 0.5.2 (2016-08-04)
 ------------------

@@ -56,11 +56,11 @@ def djs_laxisgen(dims, iaxis=0):
     Examples
     --------
     >>> from pydl.pydlutils.misc import djs_laxisgen
-    >>> djs_laxisgen([4,4])
-    array([[0, 0, 0, 0],
-           [1, 1, 1, 1],
-           [2, 2, 2, 2],
-           [3, 3, 3, 3]], dtype=int32)
+    >>> print(djs_laxisgen([4,4]))
+    [[0 0 0 0]
+     [1 1 1 1]
+     [2 2 2 2]
+     [3 3 3 3]]
     """
     ndimen = len(dims)
     if ndimen == 1:
@@ -98,11 +98,11 @@ def djs_laxisnum(dims, iaxis=0):
     Examples
     --------
     >>> from pydl.pydlutils.misc import djs_laxisnum
-    >>> djs_laxisnum([4,4])
-    array([[0, 0, 0, 0],
-           [1, 1, 1, 1],
-           [2, 2, 2, 2],
-           [3, 3, 3, 3]], dtype=int32)
+    >>> print(djs_laxisnum([4,4]))
+    [[0 0 0 0]
+     [1 1 1 1]
+     [2 2 2 2]
+     [3 3 3 3]]
     """
     ndimen = len(dims)
     result = np.zeros(dims, dtype='i4')
