@@ -387,13 +387,13 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
         if hasattr(filename, 'write'):
             f = filename
         else:
-            f = open(filename, 'w')
+            f = open(filename, 'w+b')
             close_file = True
     if f is None:
         if not silent:  # pragma: no cover
             print("\n".join(lines)+"\n")
     else:
-        f.write("\n".join(lines)+"\n")
+        f.write(("\n".join(lines)+"\n").encode('utf-8'))
         if close_file:
             f.close()
     return (lines, css)
