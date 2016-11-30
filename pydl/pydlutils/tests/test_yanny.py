@@ -117,7 +117,7 @@ class TestYanny(YannyTestCase):
     def test_write_table_yanny(self):
         """Test writing an astropy Table to yanny.
         """
-        filename = self.data('table.par')
+        filename = self.temp('table.par')
         a = [1, 4, 5]
         b = [2.0, 5.0, 8.2]
         c = [b'x', b'y', b'z']
