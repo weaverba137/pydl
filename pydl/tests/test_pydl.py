@@ -7,6 +7,7 @@ try:
 except ImportError:
     from numpy.testing.utils import assert_allclose
 from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
 from os.path import basename, dirname, join
 from ..file_lines import file_lines
 from ..median import median
@@ -21,7 +22,7 @@ class TestPydl(object):
     """
 
     def setup(self):
-        self.data_dir = join(dirname(__file__), 't')
+        pass
 
     def teardown(self):
         pass
@@ -30,30 +31,26 @@ class TestPydl(object):
         #
         # Find the test files
         #
-        fileglob = join(self.data_dir, 'this-file-contains-*-lines.txt')
-        plainfiles = glob.glob(fileglob)
-        gzfiles = glob.glob(fileglob+'.gz')
-        for p in plainfiles:
+        line_numbers = (1, 42, 137)
+        plainfiles = [get_pkg_data_filename('t/this-file-contains-{0:d}-lines.txt'.format(l)) for l in line_numbers]
+        gzfiles = [get_pkg_data_filename('t/this-file-contains-{0:d}-lines.txt.gz'.format(l)) for l in line_numbers]
+        for i, p in enumerate(plainfiles):
             n = file_lines(p)
-            number_of_lines = int(basename(p).split('-')[3])
-            assert n == number_of_lines
-        for p in gzfiles:
+            assert n == line_numbers[i]
+        for i, p in enumerate(gzfiles):
             n = file_lines(p, compress=True)
-            number_of_lines = int(basename(p).split('-')[3])
-            assert n == number_of_lines
+            assert n == line_numbers[i]
         #
         # Test list passing
         #
         n = file_lines(plainfiles)
-        number_of_lines = [int(basename(p).split('-')[3]) for p in plainfiles]
-        assert n == number_of_lines
+        assert tuple(n) == line_numbers
         n = file_lines(gzfiles, compress=True)
-        number_of_lines = [int(basename(p).split('-')[3]) for p in gzfiles]
-        assert n == number_of_lines
+        assert tuple(n) == line_numbers
         #
         # Make sure empty files work
         #
-        n = file_lines(join(self.data_dir, 'this-file-is-empty.txt'))
+        n = file_lines(get_pkg_data_filename('t/this-file-is-empty.txt'))
         assert n == 0
 
     def test_median(self):
@@ -75,7 +72,7 @@ class TestPydl(object):
                 7*np.ones((odd_data2.shape[0],), dtype=odd_data2.dtype)).all()
 
     def test_pcomp(self):
-        test_data_file = join(self.data_dir, 'pcomp_data.txt')
+        test_data_file = get_pkg_data_filename('t/pcomp_data.txt')
         test_data = np.loadtxt(test_data_file, dtype='d', delimiter=',')
         with raises(ValueError):
             foo = pcomp(np.arange(10))
@@ -171,7 +168,7 @@ class TestPydl(object):
         assert np.allclose(r, rexpect)
 
     def test_smooth(self):
-        test_data_file = join(self.data_dir, 'smooth_data.txt')
+        test_data_file = get_pkg_data_filename('t/smooth_data.txt')
         noise = np.loadtxt(test_data_file, dtype='d')
         #
         # Test smooth function

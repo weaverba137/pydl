@@ -1,7 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from os.path import dirname, join
 from astropy.tests.helper import catch_warnings, raises
 from .. import PydlutilsUserWarning
 from ..rgbcolor import (nw_arcsinh, nw_cut_to_box, nw_float_to_byte,
@@ -13,7 +12,7 @@ class TestRGBColor(object):
     """
 
     def setup(self):
-        self.data_dir = join(dirname(__file__), 't')
+        pass
 
     def teardown(self):
         pass

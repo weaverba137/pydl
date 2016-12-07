@@ -5,12 +5,13 @@ import json
 import numpy as np
 from collections import OrderedDict
 from astropy.tests.helper import catch_warnings, raises
+from astropy.utils.data import get_pkg_data_filename
 from astropy.extern import six
 from astropy.table import Table
 from astropy.io.registry import (register_identifier, register_reader,
                                  register_writer)
 from os import chmod, remove
-from os.path import dirname, exists, join
+from os.path import exists, join
 from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
@@ -30,14 +31,13 @@ class YannyTestCase(object):
     save_temp = False
 
     def setup(self):
-        self.data_dir = join(dirname(__file__), 't')
         self.temp_dir = mkdtemp(prefix='yanny-test-')
         # Ignore deprecation warnings--this only affects Python 2.5 and 2.6,
         # since deprecation warnings are ignored by defualt on 2.7
         warnings.simplefilter('ignore')
         warnings.simplefilter('always', UserWarning)
         # raise ValueError("I am setting up a subclass of YannyTestCase!")
-        with open(join(self.data_dir, "yanny_data.json")) as js:
+        with open(get_pkg_data_filename("t/yanny_data.json")) as js:
             self.test_data = json.load(js)
 
     def teardown(self):
@@ -67,7 +67,7 @@ class YannyTestCase(object):
     def data(self, filename):
         """Returns the path to a test data file.
         """
-        return join(self.data_dir, filename)
+        return get_pkg_data_filename('t/'+filename)
 
     def temp(self, filename):
         """Returns the full path to a file in the test temp dir.
@@ -141,9 +141,9 @@ class TestYanny(YannyTestCase):
             mystruct[col[0]] = np.array(table['data'][col[0]], dtype=col[1])
         enums = {'new_flag': test_data['enums']['new_flag']}
         par = write_ndarray_to_yanny(self.temp('tempfile1.par'),
-                                    mystruct,
-                                    structnames='magnitudes',
-                                    enums=enums)
+                                     mystruct,
+                                     structnames='magnitudes',
+                                     enums=enums)
         assert (par._symbols['enum'][0] ==
                 'typedef enum {\n    FALSE,\n    TRUE\n} BOOLEAN;')
         assert par._symbols['struct'][0] == 'typedef struct {\n    double ra;\n    double dec;\n    float mag[5];\n    int flags;\n    BOOLEAN new_flag;\n} MAGNITUDES;'
@@ -332,7 +332,7 @@ class TestYanny(YannyTestCase):
         datatable = {'status_update': {'state': ['SUCCESS', 'SUCCESS'],
             'timestamp': ['2008-06-22 01:27:33', '2008-06-22 01:27:36']},
             'new_keyword': 'new_value'}
-        par.filename = self.data('test_append.par')
+        par.filename = self.temp('test_append.par')
         # This should also fail, because test_append.par does not exist.
         with raises(PydlutilsException):
             par.append(datatable)

@@ -1,9 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from os.path import dirname, join
 from astropy.io import fits
 from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
 from ..trace import (fchebyshev, fchebyshev_split, fpoly, func_fit,
                     TraceSet, traceset2xy, xy2traceset)
 from .. import PydlutilsException
@@ -15,11 +15,10 @@ class TestTrace(object):
 
     def setup(self):
         # extracted from spFrame-b1-00057618.fits
-        self.sdss = fits.open(join(dirname(__file__), 't',
-                              'sdss_traceset.fits'))
+
+        self.sdss = fits.open(get_pkg_data_filename('t/sdss_traceset.fits'))
         # extracted from spFrame-r1-00180406.fits
-        self.boss = fits.open(join(dirname(__file__), 't',
-                              'boss_traceset.fits'))
+        self.boss = fits.open(get_pkg_data_filename('t/boss_traceset.fits'))
         return
 
     def teardown(self):

@@ -1,9 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-import os
 import numpy as np
-from pkg_resources import resource_filename
 from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
 from .. import PydlutilsException
 from .. import mangle as mng
 
@@ -13,16 +12,11 @@ class TestMangle(object):
     """
 
     def setup(self):
-        self.poly_fits = resource_filename('pydl.pydlutils.tests',
-                                           't/polygon.fits')
-        self.no_id_fits = resource_filename('pydl.pydlutils.tests',
-                                            't/polygon_no_id.fits')
-        self.one_cap_fits = resource_filename('pydl.pydlutils.tests',
-                                             't/polygon_one_cap.fits')
-        self.poly_ply = resource_filename('pydl.pydlutils.tests',
-                                          't/polygon.ply')
-        self.bad_ply = resource_filename('pydl.pydlutils.tests',
-                                          't/median_data.txt')
+        self.poly_fits = get_pkg_data_filename('t/polygon.fits')
+        self.no_id_fits = get_pkg_data_filename('t/polygon_no_id.fits')
+        self.one_cap_fits = get_pkg_data_filename('t/polygon_one_cap.fits')
+        self.poly_ply = get_pkg_data_filename('t/polygon.ply')
+        self.bad_ply = get_pkg_data_filename('t/median_data.txt')
 
     def teardown(self):
         pass

@@ -1,6 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
-import os
+from os import remove
 import numpy as np
 import tempfile
 from astropy.tests.helper import raises
@@ -185,7 +185,7 @@ class TestMisc(object):
         with open(spf1_name, 'rb') as f:
             data = f.read().decode('utf-8')
         assert "\n".join(lines)+"\n" == data
-        os.remove(spf1_name)
+        remove(spf1_name)
         with tempfile.TemporaryFile() as spf2:
             lines, css = struct_print(slist, silent=True, filename=spf2)
             spf2.seek(0)

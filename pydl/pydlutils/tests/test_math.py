@@ -1,8 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from os.path import dirname, join
 from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
 from ..math import computechi2, djs_median, find_contiguous
 
 
@@ -11,7 +11,7 @@ class TestMath(object):
     """
 
     def setup(self):
-        self.data_dir = join(dirname(__file__), 't')
+        pass
 
     def teardown(self):
         pass
@@ -43,7 +43,7 @@ class TestMath(object):
         assert (chi2.var == np.diag(chi2.covar)).all()
 
     def test_djs_median(self):
-        test_data_file = join(self.data_dir, 'median_data.txt')
+        test_data_file = get_pkg_data_filename('t/median_data.txt')
         test_data = np.loadtxt(test_data_file, dtype='d', delimiter=',')
         np.random.seed(424242)
         data = 100.0*np.random.random(100)
