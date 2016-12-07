@@ -3,7 +3,7 @@
 import numpy as np
 import os
 # from astropy.tests.helper import raises
-from ..spec1d import findspec, spec_append, spec_path, wavevector
+from ..spec1d import HMF, findspec, spec_append, spec_path, wavevector
 
 
 class TestSpec1d(object):
@@ -35,6 +35,11 @@ class TestSpec1d(object):
         """This is just a placeholder for now.
         """
         # slist = findspec(infile='file.in', sdss=True)
+        assert True
+
+    def test_hmf(self):
+        """This is just a placeholder for now.
+        """
         assert True
 
     def test_spec_append(self):

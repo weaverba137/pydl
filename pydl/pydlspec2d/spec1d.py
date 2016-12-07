@@ -10,6 +10,259 @@ import numpy as np
 findspec_cache = None
 
 
+class HMF(object):
+    """Class used to manage data for Hierarchical Matrix Factorization (HMF).
+
+    Parameters
+    ----------
+    spectra : array-like
+        The input spectral flux, assumed to have a common wavelength and
+        redshift system.
+    invvar : array-like
+        The inverse variance of the spectral flux.
+    K : :class:`int`, optional
+        The number of dimensions of the factorization (default 4).
+    nonnegative : :class:`bool`, optional
+        Set this to ``True`` to perform nonnegative HMF.
+    epsilon : :class:`float`, optional
+        Regularization parameter.  Set to any non-zero float value to turn it on.
+    verbose : :class:`bool`, optional
+        If ``True``, print extra information.
+    """
+
+    def __init__(self, spectra, invvar,
+                  K=4, nonnegative=False, epsilon=None, verbose=False):
+        """Replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
+        """
+        from astropy import log
+        self.log = log
+        self.spectra = spectra
+        self.invvar = invvar
+        self.K = K
+        self.nonnegative = nonnegative
+        self.epsilon = epsilon
+        self.verbose = verbose
+        self.a = None
+        self.g = None
+        if self.verbose:
+            self.log.setLevel('DEBUG')
+        return
+
+    def solve(self):
+        """Process the inputs.
+
+        Returns
+        -------
+        :class:`dict`
+            The HMF solution.
+        """
+        if len(self.spectra.shape) == 1:
+            nobj = 1
+            npix = spectra.shape[0]
+        else:
+            nobj, npix = newflux.shape
+        self.log.info("Building HMF from {0:d} object spectra.".format(nobj))
+        fluxdict = dict()
+        #
+        # If there is only one object spectrum, then all we can do is return it.
+        #
+        if nobj == 1:
+            fluxdict['flux'] = self.spectra.astype('f')
+            return fluxdict
+        a, g = self.iterate()
+        fluxdict['acoeff'] = a
+        fluxdict['flux'] = g
+        return fluxdict
+
+    def model(self):
+        """Compute the model.
+        """
+        return np.dot(self.a, self.g)
+
+    def resid(self):
+        """Compute residuals.
+        """
+        return self.spectra - self.model()
+
+    def chi(self):
+        """Compute chi, the scaled residual.
+        """
+        return self.resid() * np.sqrt(self.invvar)
+
+    def penalty(self):
+        """Compute penalty for non-smoothness.
+        """
+        if self.epsilon is None:
+            return 0.0
+        return self.epsilon * np.sum(np.diff(self.g)**2)
+
+    def badness(self):
+        """Compute chi**2.
+        """
+        return np.sum(self.chi()**2) + self.penalty()
+
+    def normbase(self):
+        """Apply standard component normalization.
+        """
+        return np.sqrt((self.g**2).mean(1))
+
+    def astep(self):
+        """Update for coefficients at fixed component spectra.
+        """
+        from numpy.linalg import solve
+        N, M = self.spectra.shape
+        K, M = self.g.shape
+        a = np.zeros((N, K), dtype=self.g.dtype)
+        for i in range(N):
+            Gi = np.zeros((K, K), dtype=self.g.dtype)
+            for k in range(K):
+                for kp in range(k, K):
+                    Gi[k, kp] = np.sum(self.g[k, :] * self.g[kp, :] *
+                                       self.invvar[i, :])
+                    if kp > k:
+                        Gi[kp, k] = Gi[k, kp]
+            Fi = np.dot(self.g, self.spectra[i, :]*self.invvar[i, :])
+            a[i, :] = solve(Gi, Fi)
+        return a
+
+    def gstep(self):
+        """Update for component spectra at fixed coefficients.
+        """
+        from numpy.linalg import solve
+        N, M = self.spectra.shape
+        N, K = self.a.shape
+        g = np.zeros((K, M), dtype=self.a.dtype)
+        e = np.zeros(oldg.shape, dtype=self.g.dtype)
+        d = np.zeros((K, K, M), dtype=self.a.dtype)
+        if self.epsilon is not None and self.epsilon > 0:
+            foo = self.epsilon*np.eye(K, dtype=self.a.dtype)
+            for l in range(M):
+                d[:, :, l] = foo
+                if l > 0 and l < M-1:
+                    d[:, :, l] *= 2
+            # d[:, :, 0] = foo
+            # d[:, :, 1:M-1] = 2*foo
+            # d[:, :, M-1] = foo
+            e[:, 0] = self.epsilon*self.g[:, 1]
+            e[:, 1:M-1] = self.epsilon*(self.g[:, 0:M-2] + self.g[:, 2:M])
+            e[:, M-1] = self.epsilon*self.g[:, M-2]
+        for j in range(M):
+            Aj = np.zeros((K, K), dtype=self.a.dtype)
+            for k in range(K):
+                for kp in range(k, K):
+                    Aj[k, kp] = np.sum(self.a[:, k] * self.a[:, kp] *
+                                       self.invvar[:, j])
+                    if kp > k:
+                        Aj[kp, k] = Aj[k, kp]
+            Aj += d[:, :, j]
+            Fj = (np.dot(self.a.T, self.spectra[:, j]*self.invvar[:, j]) +
+                  e[:, j])
+            g[:, j] = solve(Aj, Fj)
+        return g
+
+    def astepnn(self):
+        """Non-negative update for coefficients at fixed component spectra.
+        """
+        numerator = np.dot(self.spectra*self.invvar, self.g.T)
+        denominator = np.dot(np.dot(self.a, self.g)*self.invvar, self.g.T)
+        return self.a*(numerator/denominator)
+
+    def gstepnn(self):
+        """Non-negative update for component spectra at fixed coefficients.
+        """
+        K, M = self.g.shape
+        numerator = np.dot(self.a.T, (self.spectra*self.invvar))
+        if self.epsilon is not None and self.epsilon > 0:
+            e = np.zeros(self.g.shape, dtype=self.g.dtype)
+            e[:, 0] = self.epsilon*self.g[:, 1]
+            e[:, 1:M-1] = self.epsilon*(self.g[:, 0:M-2] + self.g[:, 2:M])
+            e[:, M-1] = self.epsilon*self.g[:, M-2]
+            numerator += e
+        denominator = np.dot(self.a.T, np.dot(self.a, self.g)*self.invvar)
+        if self.epsilon is not None and self.epsilon > 0:
+            d = self.epsilon*self.g.copy()
+            d[:, 1:M-1] *= 2
+            denominator += d
+        return self.g*(numerator/denominator)
+
+    def reorder(self):
+        """Reorder and rotate basis analogous to PCA.
+        """
+        from numpy.linalg import eigh
+        l, U = eigh(np.dot(self.a.T, self.a))
+        return (np.dot(self.a, U), np.dot(U.T, self.g))
+
+    def iterate(self):
+        """Handle the HMF iteration, assuming spectra have been pre-processed
+        through :func:`pydl.pydlspec2d.spec2d.combine1fiber`.
+
+
+        Returns
+        -------
+        :func:`tuple` of :class:`numpy.ndarray`
+            The fitting coefficients and fitted functions, respectively.
+        """
+        import time
+        from scipy.cluster.vq import kmeans, whiten
+        N, M = self.spectra.shape
+        #
+        # Make spectra non-negative
+        #
+        if self.nonnegative:
+            self.spectra[self.spectra < 0] = 0
+            self.invvar[self.spectra < 0] = 0
+        #
+        # Detect very bad columns
+        #
+        si = self.spectra * self.invvar
+        if (self.spectra.sum(0) == 0).any():
+            raise ValueError("Columns of zeros detected in spectra!")
+        if (self.invvar.sum(0) == 0).any():
+            raise ValueError("Columns of zeros detected in invvar!")
+        if (self.si.sum(0) == 0).any():
+            raise ValueError("Columns of zeros detected in spectra*invvar!")
+        #
+        # Initialize g matrix with kmeans
+        #
+        whitespectra = whiten(self.spectra)
+        self.g, foo = kmeans(whitespectra, self.K)
+        self.g /= np.repeat(self.normbase(), M).reshape(self.g.shape)
+        #
+        # Initialize a matrix
+        #
+        self.a = np.outer(np.sqrt((self.spectra**2).mean(1)),
+                          np.repeat(1.0/self.K, self.K))
+        if self.nonnegative:
+            for k in range(128):
+                self.a = self.astepnn()
+        #
+        # Number of iterations.
+        #
+        if self.nonnegative:
+            n_iter = 2048
+        else:
+            n_iter = 16
+        #
+        # Iterate!
+        #
+        t0 = time.time()
+        for m in range(n_iter):
+            self.log.info(m)
+            if self.nonnegative:
+                self.a = self.astepnn()
+                self.g = self.gstepnn()
+            else:
+                self.a = self.astep()
+                self.g = self.gstep()
+                self.a, self.g = self.reorder()
+            norm = self.normbase()
+            self.g /= np.repeat(norm, M).reshape(self.g.shape)
+            self.a = (self.a.T*np.repeat(norm, N).reshape(self.K, N)).T
+            self.log.debug(self.badness())
+            self.log.info("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(m+1, time.time()-t0))
+        return (self.a, self.g)
+
+
 def findspec(*args, **kwargs):
     """Find SDSS/BOSS spectra that match a given RA, Dec.
 
@@ -213,270 +466,6 @@ def findspec(*args, **kwargs):
     if 'outfile' in kwargs:
         foo = struct_print(slist, filename=outfile)
     return slist
-
-
-def hmf_model(a, g):
-    """Compute the model.
-    """
-    return np.dot(a, g)
-
-
-def hmf_resid(a, g, spectra):
-    """Compute residuals.
-    """
-    return spectra - hmf_model(a, g)
-
-
-def hmf_chi(a, g, spectra, invvar):
-    """Compute chi, the scaled residual.
-    """
-    return hmf_resid(a, g, spectra) * np.sqrt(invvar)
-
-
-def hmf_penalty(g, epsilon=None):
-    """Compute penalty for non-smoothness.
-    """
-    if epsilon is None:
-        return 0.0
-    return epsilon*np.sum(np.diff(g)**2)
-
-
-def hmf_badness(a, g, spectra, invvar, epsilon=None):
-    """Compute chi**2.
-    """
-    return np.sum(hmf_chi(a, g, spectra, invvar)**2) + hmf_penalty(g, epsilon)
-
-
-def hmf_normbase(g):
-    """Apply standard component normalization.
-    """
-    return np.sqrt((g**2).mean(1))
-
-
-def hmf_astep(spectra, invvar, g):
-    """Update for coefficients at fixed component spectra.
-    """
-    from numpy.linalg import solve
-    N, M = spectra.shape
-    K, M = g.shape
-    a = np.zeros((N, K), dtype=g.dtype)
-    for i in range(N):
-        Gi = np.zeros((K, K), dtype=g.dtype)
-        for k in range(K):
-            for kp in range(k, K):
-                Gi[k, kp] = np.sum(g[k, :]*g[kp, :]*invvar[i, :])
-                if kp > k:
-                    Gi[kp, k] = Gi[k, kp]
-        Fi = np.dot(g, spectra[i, :]*invvar[i, :])
-        a[i, :] = solve(Gi, Fi)
-    return a
-
-
-def hmf_gstep(oldg, spectra, invvar, a, epsilon=None):
-    """Update for component spectra at fixed coefficients.
-    """
-    from numpy.linalg import solve
-    N, M = spectra.shape
-    N, K = a.shape
-    g = np.zeros((K, M), dtype=a.dtype)
-    e = np.zeros(oldg.shape, dtype=oldg.dtype)
-    d = np.zeros((K, K, M), dtype=a.dtype)
-    if epsilon is not None and epsilon > 0:
-        foo = epsilon*np.eye(K, dtype=a.dtype)
-        for l in range(M):
-            d[:, :, l] = foo
-            if l > 0 and l < M-1:
-                d[:, :, l] *= 2
-        # d[:, :, 0] = foo
-        # d[:, :, 1:M-1] = 2*foo
-        # d[:, :, M-1] = foo
-        e[:, 0] = epsilon*oldg[:, 1]
-        e[:, 1:M-1] = epsilon*(oldg[:, 0:M-2] + oldg[:, 2:M])
-        e[:, M-1] = epsilon*oldg[:, M-2]
-    for j in range(M):
-        Aj = np.zeros((K, K), dtype=a.dtype)
-        for k in range(K):
-            for kp in range(k, K):
-                Aj[k, kp] = np.sum(a[:, k]*a[:, kp]*invvar[:, j])
-                if kp > k:
-                    Aj[kp, k] = Aj[k, kp]
-        Aj += d[:, :, j]
-        Fj = np.dot(a.T, spectra[:, j]*invvar[:, j]) + e[:, j]
-        g[:, j] = solve(Aj, Fj)
-    return g
-
-
-def hmf_astepnn(a, spectra, invvar, g):
-    """Non-negative update for coefficients at fixed component spectra.
-    """
-    numerator = np.dot(spectra*invvar, g.T)
-    denominator = np.dot(np.dot(a, g)*invvar, g.T)
-    return a*(numerator/denominator)
-
-
-def hmf_gstepnn(g, spectra, invvar, a, epsilon=None):
-    """Non-negative update for component spectra at fixed coefficients.
-    """
-    K, M = g.shape
-    numerator = np.dot(a.T, (spectra*invvar))
-    if epsilon is not None and epsilon > 0:
-        e = np.zeros(g.shape, dtype=g.dtype)
-        e[:, 0] = epsilon*g[:, 1]
-        e[:, 1:M-1] = epsilon*(g[:, 0:M-2] + g[:, 2:M])
-        e[:, M-1] = epsilon*g[:, M-2]
-        numerator += e
-    denominator = np.dot(a.T, np.dot(a, g)*invvar)
-    if epsilon is not None and epsilon > 0:
-        d = epsilon*g.copy()
-        d[:, 1:M-1] *= 2
-        denominator += d
-    return g*(numerator/denominator)
-
-
-def hmf_reorder(a, g):
-    """Reorder and rotate basis analogous to PCA.
-    """
-    from numpy.linalg import eigh
-    l, U = eigh(np.dot(a.T, a))
-    return (np.dot(a, U), np.dot(U.T, g))
-
-
-def hmf_iterate(spectra, invvar, K=4, nonnegative=False, epsilon=None,
-                verbose=False):
-    """Handle the HMF iteration, assuming spectra have been pre-processed
-    through :func:`pydl.pydlspec2d.spec2d.combine1fiber`.
-
-    Parameters
-    ----------
-    spectra : :class:`numpy.ndarray`
-        The training spectra.
-    invvar : :class:`numpy.ndarray`
-        The inverse variance for each pixel in the spectra.
-    K : :class:`int`, optional
-        The number of dimensions of the factorization (default 4).
-    nonnegative : :class:`bool`, optional
-        Set this to ``True`` to perform nonnegative HMF.
-    epsilon : :class:`float`, optional
-        Regularization parameter.  Set to any non-zero float value to turn it on.
-    verbose : :class:`bool`, optional
-        If ``True``, print extra information.
-
-    Returns
-    -------
-    :func:`tuple` of :class:`numpy.ndarray`
-        The fitting coefficients and fitted functions, respectively.
-    """
-    import time
-    from astropy import log
-    from scipy.cluster.vq import kmeans, whiten
-    if verbose:
-        log.setLevel('DEBUG')
-    N, M = spectra.shape
-    #
-    # Make spectra non-negative
-    #
-    if nonnegative:
-        spectra[spectra < 0] = 0
-        invvar[spectra < 0] = 0
-    #
-    # Detect very bad columns
-    #
-    si = spectra*invvar
-    if (spectra.sum(0) == 0).any():
-        raise ValueError("Columns of zeros detected in spectra!")
-    if (invvar.sum(0) == 0).any():
-        raise ValueError("Columns of zeros detected in invvar!")
-    if (si.sum(0) == 0).any():
-        raise ValueError("Columns of zeros detected in spectra*invvar!")
-    #
-    # Initialize g matrix with kmeans
-    #
-    whitespectra = whiten(spectra)
-    g, foo = kmeans(whitespectra, K)
-    g /= np.repeat(hmf_normbase(g), M).reshape(g.shape)
-    #
-    # Initialize a matrix
-    #
-    a = np.outer(np.sqrt((spectra**2).mean(1)), np.repeat(1.0/K, K))
-    if nonnegative:
-        for k in range(128):
-            a = hmf_astepnn(a, spectra, invvar, g)
-    #
-    # Number of iterations.
-    #
-    if nonnegative:
-        n_iter = 2048
-    else:
-        n_iter = 16
-    #
-    # Iterate!
-    #
-    t0 = time.time()
-    for m in range(n_iter):
-        log.info(m)
-        if nonnegative:
-            a = hmf_astepnn(a, spectra, invvar, g)
-            g = hmf_gstepnn(g, spectra, invvar, a, epsilon)
-        else:
-            a = hmf_astep(spectra, invvar, g)
-            g = hmf_gstep(g, spectra, invvar, a, epsilon)
-            a, g = reorder(a, g)
-        norm = hmf_normbase(g)
-        g /= np.repeat(norm, M).reshape(g.shape)
-        a = (a.T*np.repeat(norm, N).reshape(K, N)).T
-        log.debug(hmf_badness(a, g, spectra, invvar, epsilon))
-        log.info("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(m+1, time.time()-t0))
-    return (a, g)
-
-
-def hmf_solve(newflux, newivar,
-              K=4, nonnegative=False, epsilon=None, verbose=False):
-    """Drop-in replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
-
-    Parameters
-    ----------
-    newflux : array-like
-        The input spectral flux, assumed to have a common wavelength and
-        redshift system.
-    newivar : array-like
-        The inverse variance of the spectral flux.
-    K : :class:`int`, optional
-        The number of dimensions of the factorization (default 4).
-    nonnegative : :class:`bool`, optional
-        Set this to ``True`` to perform nonnegative HMF.
-    epsilon : :class:`float`, optional
-        Regularization parameter.  Set to any non-zero float value to turn it on.
-    verbose : :class:`bool`, optional
-        If ``True``, print extra information.
-
-    Returns
-    -------
-    :class:`dict`
-        The HMF solution.
-    """
-    from astropy import log
-    if verbose:
-        log.setLevel('DEBUG')
-    if nreturn is None:
-        nreturn = nkeep
-    if len(newflux.shape) == 1:
-        nobj = 1
-        npix = newflux.shape[0]
-    else:
-        nobj, npix = newflux.shape
-    log.info("Building HMF from {0:d} object spectra.".format(nobj))
-    fluxdict = dict()
-    #
-    # If there is only one object spectrum, then all we can do is return it.
-    #
-    if nobj == 1:
-        fluxdict['flux'] = newflux.astype('f')
-        return fluxdict
-    a, g = hmf_iterate(newflux, newivar, K=K, nonnegative=nonnegative,
-                       epsilon=epsilon)
-    fluxdict['acoeff'] = a
-    fluxdict['flux'] = g
-    return fluxdict
 
 
 def latest_mjd(plate, **kwargs):
@@ -1448,11 +1437,12 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                                     nkeep=metadata['nkeep'],
                                     verbose=verbose)
             elif metadata['method'].lower() == 'hmf':
-                pcaflux = hmf_solve(newflux, newivar,
-                                    K=metadata['nkeep'],
-                                    nonnegative=metadata['nonnegative'],
-                                    epsilon=metadata['nonnegative'],
-                                    verbose=verbose)
+                pcaflux = HMF(newflux, newivar,
+                              K=metadata['nkeep'],
+                              nonnegative=metadata['nonnegative'],
+                              epsilon=metadata['nonnegative'],
+                              verbose=verbose)
+                pcaflux = hmf.solve()
             else:
                 raise ValueError("Unknown method: {0}!".format(metadata['method']))
         #
