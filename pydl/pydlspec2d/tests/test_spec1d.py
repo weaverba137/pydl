@@ -11,7 +11,6 @@ class TestSpec1d(object):
     """
 
     def setup(self):
-        self.data_dir = os.path.join(os.path.dirname(__file__), 't')
         self.env = {'BOSS_SPECTRO_REDUX': '/boss/spectro/redux',
                     'SPECTRO_REDUX': '/sdss/spectro/redux',
                     'RUN2D': 'v1_2_3',

@@ -13,6 +13,15 @@ findspec_cache = None
 class HMF(object):
     """Class used to manage data for Hierarchical Matrix Factorization (HMF).
 
+    This is a replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
+    It can be called with::
+
+        hmf = HMF(spectra, invvar)
+        output = hmf.solve()
+
+    The input spectra should be pre-processed through
+    :func:`pydl.pydlspec2d.spec2d.combine1fiber`.
+
     Parameters
     ----------
     spectra : array-like
@@ -25,15 +34,14 @@ class HMF(object):
     nonnegative : :class:`bool`, optional
         Set this to ``True`` to perform nonnegative HMF.
     epsilon : :class:`float`, optional
-        Regularization parameter.  Set to any non-zero float value to turn it on.
+        Regularization parameter.  Set to any non-negative float value to turn
+        it on.
     verbose : :class:`bool`, optional
         If ``True``, print extra information.
     """
 
-    def __init__(self, spectra, invvar,
-                  K=4, nonnegative=False, epsilon=None, verbose=False):
-        """Replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
-        """
+    def __init__(self, spectra, invvar, K=4, nonnegative=False, epsilon=None,
+                 verbose=False):
         from astropy import log
         self.log = log
         self.spectra = spectra
@@ -135,7 +143,7 @@ class HMF(object):
         e = np.zeros(oldg.shape, dtype=self.g.dtype)
         d = np.zeros((K, K, M), dtype=self.a.dtype)
         if self.epsilon is not None and self.epsilon > 0:
-            foo = self.epsilon*np.eye(K, dtype=self.a.dtype)
+            foo = self.epsilon * np.eye(K, dtype=self.a.dtype)
             for l in range(M):
                 d[:, :, l] = foo
                 if l > 0 and l < M-1:
@@ -193,9 +201,7 @@ class HMF(object):
         return (np.dot(self.a, U), np.dot(U.T, self.g))
 
     def iterate(self):
-        """Handle the HMF iteration, assuming spectra have been pre-processed
-        through :func:`pydl.pydlspec2d.spec2d.combine1fiber`.
-
+        """Handle the HMF iteration.
 
         Returns
         -------

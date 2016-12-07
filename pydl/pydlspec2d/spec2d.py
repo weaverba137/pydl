@@ -416,7 +416,6 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
     from os import getenv
     from os.path import dirname, join
     import numpy as np
-    from pkg_resources import resource_filename
     from astropy.io import ascii
     from astropy.utils.data import get_pkg_data_filename
     from ..goddard.astro import vactoair
@@ -425,8 +424,8 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
     nTrace, nx = flux.shape
     if filter_prefix != 'sdss_jun2001':
         raise ValueError("Filters other than {0} are not available!".format('sdss_jun2001'))
-    ffiles = [resource_filename('pydl.pydlutils',
-                                'data/filters/{0}_{1}_atm.dat'.format(filter_prefix, f)) for f in 'ugriz']
+    ffiles = [get_pkg_data_filename('data/filters/{0}_{1}_atm.dat'.format(filter_prefix, f),
+                                    package='pydl.pydlutils') for f in 'ugriz']
     if waveimg is None and wset is None:
         raise ValueError("Either waveimg or wset must be specified!")
     if waveimg is None:

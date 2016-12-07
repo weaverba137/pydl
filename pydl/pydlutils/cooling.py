@@ -40,15 +40,13 @@ def read_ds_cooling(fname, logT=None):
     >>> loglambda[0:5]
     array([-26.  , -24.66, -23.52, -22.62, -22.11])
     """
-    from pkg_resources import resource_filename
+    from astropy.utils.data import get_pkg_data_contents
     from numpy import interp
     from astropy.io import ascii
     if fname not in ('m-00.cie', 'm-05.cie', 'm+05.cie', 'm-10.cie',
                      'm-15.cie', 'm-20.cie', 'm-30.cie', 'mzero.cie'):
         raise ValueError('Invalid value for data file: {0}'.format(fname))
-    filename = resource_filename('pydl.pydlutils', 'data/cooling/' + fname)
-    with open(filename) as coolingfile:
-        coolingfile = coolingfile.read()
+    coolingfile = get_pkg_data_contents('data/cooling/' + fname)
     data = ascii.read(coolingfile.split('\n')[2:], delimiter='\t')
     if logT is None:
         return (data['log(T)'].data, data['log(lambda net)'].data)

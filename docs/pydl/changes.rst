@@ -5,7 +5,8 @@ PyDL Changelog
 0.5.4 (unreleased)
 ------------------
 
-* No changes yet.
+* Refactor HMF code into an object to contain the data and methods.
+* Use functions from :mod:`astropy.utils.data` where possible.
 
 0.5.3 (2016-12-03)
 ------------------
