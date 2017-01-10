@@ -100,7 +100,7 @@ matrix:
 
         # Try numpy pre-release
         - python: 3.5
-          env: NUMPY_VERSION=prerelease
+          env: NUMPY_VERSION=prerelease CONDA_DEPENDENCIES='nomkl scipy matplotlib'
 
         # PEP 8 Compliance
         - python: 2.7
