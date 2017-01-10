@@ -7,6 +7,10 @@ PyDL Changelog
 
 * Refactor HMF code into an object to contain the data and methods.
 * Use functions from :mod:`astropy.utils.data` where possible.
+* Fix an integer division error encountered when using Numpy 1.12
+  (`Issue #19`_).
+
+.. _`Issue #19`: https://github.com/weaverba137/pydl/issues/19
 
 0.5.3 (2016-12-03)
 ------------------

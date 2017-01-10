@@ -50,7 +50,7 @@ def median(array, width=None, axis=None, even=False):
                 return np.median(array)
             else:
                 i = f.argsort()
-                return f[i[f.size/2]]
+                return f[i[f.size//2]]
         else:
             return np.median(array, axis=axis)
     else:
