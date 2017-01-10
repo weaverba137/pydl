@@ -36,10 +36,17 @@ class TestSpec1d(object):
         # slist = findspec(infile='file.in', sdss=True)
         assert True
 
-    def test_hmf(self):
-        """This is just a placeholder for now.
+    def test_hmf_init(self):
+        """Test initialization of HMF object
         """
-        assert True
+        spec = np.random.random((20, 100))
+        invvar = np.random.random((20, 100))
+        hmf = HMF(spec, invvar)
+        assert hmf.K == 4
+        assert hmf.log.level == 20  # INFO
+        hmf = HMF(spec, invvar, K=6, verbose=True)
+        assert hmf.K == 6
+        assert hmf.log.level == 10  # DEBUG
 
     def test_spec_append(self):
         spec1 = np.array([[1, 1, 1, 1, 1],
