@@ -66,9 +66,9 @@ class HMF(object):
         """
         if len(self.spectra.shape) == 1:
             nobj = 1
-            npix = spectra.shape[0]
+            npix = self.spectra.shape[0]
         else:
-            nobj, npix = newflux.shape
+            nobj, npix = self.spectra.shape
         self.log.info("Building HMF from {0:d} object spectra.".format(nobj))
         fluxdict = dict()
         #
@@ -140,7 +140,7 @@ class HMF(object):
         N, M = self.spectra.shape
         N, K = self.a.shape
         g = np.zeros((K, M), dtype=self.a.dtype)
-        e = np.zeros(oldg.shape, dtype=self.g.dtype)
+        e = np.zeros(self.g.shape, dtype=self.g.dtype)
         d = np.zeros((K, K, M), dtype=self.a.dtype)
         if self.epsilon is not None and self.epsilon > 0:
             foo = self.epsilon * np.eye(K, dtype=self.a.dtype)
@@ -225,7 +225,7 @@ class HMF(object):
             raise ValueError("Columns of zeros detected in spectra!")
         if (self.invvar.sum(0) == 0).any():
             raise ValueError("Columns of zeros detected in invvar!")
-        if (self.si.sum(0) == 0).any():
+        if (si.sum(0) == 0).any():
             raise ValueError("Columns of zeros detected in spectra*invvar!")
         #
         # Initialize g matrix with kmeans
@@ -320,7 +320,7 @@ def findspec(*args, **kwargs):
         if 'topdir' in kwargs:
             topdir = kwargs['topdir']
         else:
-            topdir = os.getenv('SPECTRO_REDUX')
+            topdir = os.environ['SPECTRO_REDUX']
         if 'run2d' in kwargs:
             run2d = str(kwargs['run2d'])
         else:
@@ -330,15 +330,15 @@ def findspec(*args, **kwargs):
         if 'topdir' in kwargs:
             topdir = kwargs['topdir']
         else:
-            topdir = os.getenv('BOSS_SPECTRO_REDUX')
+            topdir = os.environ['BOSS_SPECTRO_REDUX']
         if 'run2d' in kwargs:
             run2d = str(kwargs['run2d'])
         else:
-            run2d = os.getenv('RUN2D')
+            run2d = os.environ['RUN2D']
         if 'run1d' in kwargs:
             run1d = str(kwargs['run1d'])
         else:
-            run1d = os.getenv('RUN1D')
+            run1d = os.environ['RUN1D']
     if findspec_cache is None:
         findspec_cache = {'lasttopdir': topdir, 'plist': None}
     if (findspec_cache['plist'] is None or
@@ -550,7 +550,7 @@ def number_of_fibers(plate, **kwargs):
     if 'path' in kwargs:
         platelistpath = os.path.join(kwargs['path'], 'platelist.fits')
     else:
-        platelistpath = os.path.join(os.getenv('BOSS_SPECTRO_REDUX'), 'platelist.fits')
+        platelistpath = os.path.join(os.environ['BOSS_SPECTRO_REDUX'], 'platelist.fits')
     platelist = pyfits.open(platelistpath)
     platentotal = platelist[1].data.field('N_TOTAL')
     plateplate = platelist[1].data.field('PLATE')
@@ -561,11 +561,11 @@ def number_of_fibers(plate, **kwargs):
     if 'run2d' in kwargs:
         run2d = kwargs['run2d']
     else:
-        run2d = os.getenv('RUN2D')
+        run2d = os.environ['RUN2D']
     if 'run1d' in kwargs:
         run1d = kwargs['run1d']
     else:
-        run1d = os.getenv('RUN1D')
+        run1d = os.environ['RUN1D']
     for k in range(mjd.size):
         nfiber[k] = platentotal[(plateplate == platevec[k]) &
                                 (platemjd == mjd[k]) &
@@ -771,7 +771,7 @@ def plot_eig(filename, title='Unknown'):
     return
 
 
-def readspec(platein, mjd=None, fiber='all', **kwargs):
+def readspec(platein, mjd=None, fiber=None, **kwargs):
     """Read SDSS/BOSS spec2d & spec1d files.
 
     Parameters
@@ -815,12 +815,12 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
     if 'run2d' in kwargs:
         run2d = kwargs['run2d']
     else:
-        run2d = os.getenv('RUN2D')
+        run2d = os.environ['RUN2D']
     if 'run1d' in kwargs:
         run1d = kwargs['run1d']
     else:
-        run1d = os.getenv('RUN1D')
-    if fiber == 'all':
+        run1d = os.environ['RUN1D']
+    if fiber is None:
         #
         # Read all fibers
         #
@@ -962,8 +962,8 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
             #
             # Hmm, maybe this is an SDSS-I,II plate
             #
-            photofile = os.path.join(os.getenv('SPECTRO_MATCH'), run2d,
-                                     os.path.basename(os.getenv('PHOTO_RESOLVE')),
+            photofile = os.path.join(os.environ['SPECTRO_MATCH'], run2d,
+                                     os.path.basename(os.environ['PHOTO_RESOLVE']),
                                      "{0:04d}".format(int(thisplate)),
                                      "photoPlate-{0}.fits".format(pmjdstr))
         if os.path.exists(photofile):
@@ -1263,7 +1263,7 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
         #
         if good_columns:
             si = fullflux*fullivar
-            zerocol = ((newflux.sum(0) == 0) | (newivar.sum(0) == 0) |
+            zerocol = ((fullflux.sum(0) == 0) | (fullivar.sum(0) == 0) |
                        (si.sum(0) == 0))
             #
             # Find the largest set of contiguous pixels
@@ -1353,10 +1353,10 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     good_columns = False
     if metadata['method'].lower() == 'hmf':
         good_columns = True
-        required_hmf_metadata = {'nonnegative': bool, 'epsilon': float}
+        required_hmf_metadata = {'nonnegative': int, 'epsilon': float}
         for key in required_hmf_metadata:
             try:
-                metadata['nonnegative'] = required_hmf_metadata[key](par[key])
+                metadata[key] = required_hmf_metadata[key](par[key])
             except KeyError:
                 raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
             except ValueError:
@@ -1372,7 +1372,10 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     if os.path.exists(dumpfile):
         log.info("Loading data from {0}.".format(dumpfile))
         with open(dumpfile) as f:
-            pcaflux = pickle.load(f)
+            inputflux = pickle.load(f)
+        newflux = inputflux['newflux']
+        newivar = inputflux['newivar']
+        newloglam = inputflux['newloglam']
     else:
         if metadata['object'].lower() == 'star':
             spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid,
@@ -1429,54 +1432,56 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                                                          good_columns=good_columns,
                                                          verbose=verbose)
         #
-        # Solve.
-        #
-        if metadata['object'].lower() == 'qso':
-            pcaflux = template_qso(metadata, newflux, newivar, verbose)
-        elif metadata['object'].lower() == 'star':
-            pcaflux = template_star(metadata, newloglam, newflux, newivar,
-                                    slist, outfile, verbose)
-        else:
-            if metadata['method'].lower() == 'pca':
-                pcaflux = pca_solve(newflux, newivar,
-                                    niter=metadata['niter'],
-                                    nkeep=metadata['nkeep'],
-                                    verbose=verbose)
-            elif metadata['method'].lower() == 'hmf':
-                pcaflux = HMF(newflux, newivar,
-                              K=metadata['nkeep'],
-                              nonnegative=metadata['nonnegative'],
-                              epsilon=metadata['nonnegative'],
-                              verbose=verbose)
-                pcaflux = hmf.solve()
-            else:
-                raise ValueError("Unknown method: {0}!".format(metadata['method']))
-        #
-        # Fill in bad data with a running median of the good data.
-        # The presence of boundary='nearest' means that this code snippet
-        # was never meant to be called!  In other words it should always
-        # be the case that qgood.all() is True.
-        #
-        if 'usemask' in pcaflux:
-            qgood = pcaflux['usemask'] >= metadata['minuse']
-            if not qgood.all():
-                warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
-            if False:
-                medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
-                for i in range(metadata['nkeep']):
-                    medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
-                                                   width=51, boundary='nearest')
-                    medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
-                pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
-        #
         # Dump input fluxes to a file for debugging purposes.
         #
-        pcaflux['newflux'] = newflux
-        pcaflux['newivar'] = newivar
-        pcaflux['newloglam'] = newloglam
         if not os.path.exists(dumpfile):
             with open(dumpfile, 'w') as f:
-                pickle.dump(pcaflux, f)
+                inputflux = {'newflux': newflux, 'newivar': newivar,
+                             'newloglam': newloglam}
+                pickle.dump(inputflux, f)
+    #
+    # Solve.
+    #
+    if metadata['object'].lower() == 'qso':
+        pcaflux = template_qso(metadata, newflux, newivar, verbose)
+    elif metadata['object'].lower() == 'star':
+        pcaflux = template_star(metadata, newloglam, newflux, newivar,
+                                slist, outfile, verbose)
+    else:
+        if metadata['method'].lower() == 'pca':
+            pcaflux = pca_solve(newflux, newivar,
+                                niter=metadata['niter'],
+                                nkeep=metadata['nkeep'],
+                                verbose=verbose)
+        elif metadata['method'].lower() == 'hmf':
+            hmf = HMF(newflux, newivar,
+                      K=metadata['nkeep'],
+                      nonnegative=metadata['nonnegative'],
+                      epsilon=metadata['epsilon'],
+                      verbose=verbose)
+            pcaflux = hmf.solve()
+        else:
+            raise ValueError("Unknown method: {0}!".format(metadata['method']))
+    pcaflux['newflux'] = newflux
+    pcaflux['newivar'] = newivar
+    pcaflux['newloglam'] = newloglam
+    #
+    # Fill in bad data with a running median of the good data.
+    # The presence of boundary='nearest' means that this code snippet
+    # was never meant to be called!  In other words it should always
+    # be the case that qgood.all() is True.
+    #
+    if 'usemask' in pcaflux:
+        qgood = pcaflux['usemask'] >= metadata['minuse']
+        if not qgood.all():
+            warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
+        if False:
+            medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
+            for i in range(metadata['nkeep']):
+                medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
+                                               width=51, boundary='nearest')
+                medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
+            pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
     #
     # Make plots
     #
@@ -1591,13 +1596,13 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
     hdu0.header['IDLUTILS'] = ('pydl-{0}'.format(pydl_version), 'Version of idlutils')
     hdu0.header['SPEC2D'] = ('pydl-{0}'.format(pydl_version), 'Version of idlspec2d')
-    hdu0.header['RUN2D'] = (os.getenv('RUN2D'), 'Version of 2d reduction')
-    hdu0.header['RUN1D'] = (os.getenv('RUN1D'), 'Version of 1d reduction')
+    hdu0.header['RUN2D'] = (os.environ['RUN2D'], 'Version of 2d reduction')
+    hdu0.header['RUN1D'] = (os.environ['RUN1D'], 'Version of 1d reduction')
     hdu0.header['FILENAME'] = (inputfile, 'Input file')
     hdu0.header['METHOD'] = (metadata['method'].upper(), 'Method used')
     if metadata['method'].lower() == 'hmf':
-        hdu0.header['NONNEG'] = (nonnegative, 'Was nonnegative HMF used?')
-        hdu0.header['EPSILON'] = (epsilon, 'Regularization parameter used.')
+        hdu0.header['NONNEG'] = (bool(metadata['nonnegative']), 'Was nonnegative HMF used?')
+        hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
     # for i in range(len(namearr)):
     #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
     c = [fits.Column(name='plate', format='J', array=slist.plate),
@@ -1890,25 +1895,25 @@ def template_input_main():  # pragma: no cover
     #
     import os
     import sys
-    from astropy.utils.compat import argparse
+    from argparse import ArgumentParser
 
     # Get home directory in platform-independent way
     home_dir = os.path.expanduser('~')
     #
     # Get Options
     #
-    parser = argparse.ArgumentParser(description="Compute spectral templates.",
-                                     prog=os.path.basename(sys.argv[0]))
+    parser = ArgumentParser(description="Compute spectral templates.",
+                            prog=os.path.basename(sys.argv[0]))
     parser.add_argument('-d', '--dump', action='store', dest='dump',
                         metavar='FILE',
                         default=os.path.join(home_dir, 'scratch', 'templates', 'compute_templates.dump'),
-                        help='Dump data to a pickle file.')
+                        help='Dump data to a pickle file (default: %(default)s).')
     parser.add_argument('-F', '--flux', action='store_true', dest='flux',
                         help='Plot input spectra.')
     parser.add_argument('-f', '--file', action='store', dest='inputfile',
                         metavar='FILE',
                         default=os.path.join(home_dir, 'scratch', 'templates', 'compute_templates.par'),
-                        help='Read input spectra and redshifts from FILE.')
+                        help='Read input spectra and redshifts from FILE (default: %(default)s).')
     parser.add_argument('-v', '--verbose', action='store_true', dest='verbose',
                         help='Print lots of extra information.')
     options = parser.parse_args()
