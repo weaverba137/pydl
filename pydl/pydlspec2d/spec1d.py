@@ -20,7 +20,7 @@ class HMF(object):
         output = hmf.solve()
 
     The input spectra should be pre-processed through
-    :func:`pydl.pydlspec2d.spec2d.combine1fiber`.
+    :func:`~pydl.pydlspec2d.spec2d.combine1fiber`.
 
     Parameters
     ----------
@@ -34,7 +34,7 @@ class HMF(object):
     n_iter : :class:`int`, optional
         Number of iterations.
     seed : :class:`int`, optional.
-        If set, pass this value to :func:`np.random.seed`.
+        If set, pass this value to :func:`numpy.random.seed`.
     nonnegative : :class:`bool`, optional
         Set this to ``True`` to perform nonnegative HMF.
     epsilon : :class:`float`, optional
@@ -121,7 +121,7 @@ class HMF(object):
         return self.spectra - self.model()
 
     def chi(self):
-        """Compute chi, the scaled residual.
+        """Compute :math:`\chi`, the scaled residual.
         """
         return self.resid() * np.sqrt(self.invvar)
 
@@ -133,7 +133,7 @@ class HMF(object):
         return self.epsilon * np.sum(np.diff(self.g)**2)
 
     def badness(self):
-        """Compute chi**2.
+        """Compute :math:`\chi^2`, including possible non-smoothness penalty.
         """
         return np.sum(self.chi()**2) + self.penalty()
 
