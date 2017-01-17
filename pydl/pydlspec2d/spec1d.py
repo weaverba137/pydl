@@ -52,6 +52,11 @@ class HMF(object):
     to ensure reproducibility, call :func:`numpy.random.seed` before
     initializing HMF.
 
+    The current algorithm cannot handle input data that contain *columns*
+    of zeros.  Columns of this type need to be *carefully* removed from the
+    input data.  This could also result in the output data having a different
+    size compared to the input data.
+
     References
     ----------
     .. [1] `Tsalmantza, P., Decarli, R., Dotti, M., Hogg, D. W., 2011 ApJ 738, 20
@@ -238,6 +243,7 @@ class HMF(object):
         """
         import time
         from scipy.cluster.vq import kmeans, whiten
+        from ..pydlutils.math import find_contiguous
         N, M = self.spectra.shape
         #
         # Make spectra non-negative
@@ -246,15 +252,28 @@ class HMF(object):
             self.spectra[self.spectra < 0] = 0
             self.invvar[self.spectra < 0] = 0
         #
-        # Detect very bad columns
+        # Detect and fix very bad columns.
         #
         si = self.spectra * self.invvar
         if (self.spectra.sum(0) == 0).any():
-            raise ValueError("Columns of zeros detected in spectra!")
+            self.log.warn("Columns of zeros detected in spectra!")
         if (self.invvar.sum(0) == 0).any():
-            raise ValueError("Columns of zeros detected in invvar!")
+            self.log.warn("Columns of zeros detected in invvar!")
         if (si.sum(0) == 0).any():
-            raise ValueError("Columns of zeros detected in spectra*invvar!")
+            self.log.warn("Columns of zeros detected in spectra*invvar!")
+        zerocol = ((self.spectra.sum(0) == 0) | (self.invvar.sum(0) == 0) |
+                   (si.sum(0) == 0))
+        n_zero = zerocol.sum()
+        if n_zero > 0:
+            self.log.warn("Found {0:d} bad columns in input data!".format(n_zero))
+        #
+        # Find the largest set of contiguous pixels
+        #
+        goodcol = find_contiguous(~zerocol)
+        self.spectra = self.spectra[:, goodcol]
+        self.invvar = self.invvar[:, goodcol]
+        # si = si[:, goodcol]
+        # newloglam = fullloglam[goodcol]
         #
         # Initialize g matrix with kmeans
         #
@@ -1226,7 +1245,6 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
     """
     from astropy import log
     from .spec2d import combine1fiber
-    from ..pydlutils.math import find_contiguous
     if verbose:
         log.setLevel('DEBUG')
     if len(flux.shape) == 1:
@@ -1285,24 +1303,7 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
                                          verbose=verbose)
             fullflux[iobj, :] = flux1
             fullivar[iobj, :] = ivar1
-        #
-        # Find the columns out side of which there is no data at all.
-        #
-        if good_columns:
-            si = fullflux*fullivar
-            zerocol = ((fullflux.sum(0) == 0) | (fullivar.sum(0) == 0) |
-                       (si.sum(0) == 0))
-            #
-            # Find the largest set of contiguous pixels
-            #
-            goodcol = find_contiguous(~zerocol)
-            newflux = fullflux[:, goodcol]
-            newivar = fullivar[:, goodcol]
-            # si = si[:, goodcol]
-            newloglam = fullloglam[goodcol]
-            return (newflux, newivar, newloglam)
-        else:
-            return (fullflux, fullivar, fullloglam)
+        return (fullflux, fullivar, fullloglam)
 
 
 def template_metadata(inputfile, verbose=False):
