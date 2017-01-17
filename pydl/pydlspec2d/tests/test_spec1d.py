@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import os
-# from astropy.tests.helper import raises
-from ..spec1d import HMF, findspec, spec_append, spec_path, wavevector
+from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
+from .. import Pydlspec2dException
+from ..spec1d import (HMF, findspec, spec_append, spec_path, template_metadata,
+                      wavevector)
 
 
 class TestSpec1d(object):
@@ -96,7 +99,12 @@ class TestSpec1d(object):
         assert p[0] == bsr
 
     def test_template_metadata(self):
-        pass
+        with raises(Pydlspec2dException):
+            slist, metadata = template_metadata('/no/such/file.par')
+        inputfile = get_pkg_data_filename('t/test_template_metadata.par')
+        slist, metadata = template_metadata(inputfile)
+        assert metadata['object'] == 'gal'
+        assert not metadata['nonnegative']
 
     def test_wavevector(self):
         l = wavevector(3, 4, binsz=0.1)
