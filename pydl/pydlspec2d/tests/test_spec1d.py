@@ -95,6 +95,9 @@ class TestSpec1d(object):
         p = spec_path(1234, path=bsr)
         assert p[0] == bsr
 
+    def test_template_metadata(self):
+        pass
+
     def test_wavevector(self):
         l = wavevector(3, 4, binsz=0.1)
         ll = np.array([3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0])

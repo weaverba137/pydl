@@ -11,7 +11,7 @@ findspec_cache = None
 
 
 class HMF(object):
-    """Class used to manage data for Hierarchical Matrix Factorization (HMF).
+    """Class used to manage data for Heteroscedastic Matrix Factorization (HMF).
 
     This is a replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
     It can be called with::
@@ -31,6 +31,10 @@ class HMF(object):
         The inverse variance of the spectral flux.
     K : :class:`int`, optional
         The number of dimensions of the factorization (default 4).
+    n_iter : :class:`int`, optional
+        Number of iterations.
+    seed : :class:`int`, optional.
+        If set, pass this value to :func:`np.random.seed`.
     nonnegative : :class:`bool`, optional
         Set this to ``True`` to perform nonnegative HMF.
     epsilon : :class:`float`, optional
@@ -38,15 +42,39 @@ class HMF(object):
         it on.
     verbose : :class:`bool`, optional
         If ``True``, print extra information.
+
+    Notes
+    -----
+    See [1]_ and [2]_ for the original derivation of this method.
+
+    The HMF iteration is initialized using :func:`~scipy.cluster.vq.kmeans`,
+    which itself uses random numbers to initialize its state.  If you need
+    to ensure reproducibility, call :func:`numpy.random.seed` before
+    initializing HMF.
+
+    References
+    ----------
+    .. [1] `Tsalmantza, P., Decarli, R., Dotti, M., Hogg, D. W., 2011 ApJ 738, 20
+        <http://adsabs.harvard.edu/abs/2011ApJ...738...20T>`_
+    .. [2] `Tsalmantza, P., Hogg, D. W., 2012 ApJ 753, 122
+        <http://adsabs.harvard.edu/abs/2012ApJ...753..122T>`_
     """
 
-    def __init__(self, spectra, invvar, K=4, nonnegative=False, epsilon=None,
-                 verbose=False):
+    def __init__(self, spectra, invvar, K=4, n_iter=None, seed=None,
+                 nonnegative=False, epsilon=None, verbose=False):
         from astropy import log
         self.log = log
         self.spectra = spectra
         self.invvar = invvar
         self.K = K
+        if n_iter is None:
+            if nonnegative:
+                self.n_iter = 2048
+            else:
+                self.n_iter = 20
+        else:
+            self.n_iter = int(n_iter)
+        self.seed = seed
         self.nonnegative = nonnegative
         self.epsilon = epsilon
         self.verbose = verbose
@@ -230,9 +258,13 @@ class HMF(object):
         #
         # Initialize g matrix with kmeans
         #
+        if self.seed is not None:
+            np.random.seed(self.seed)
         whitespectra = whiten(self.spectra)
+        self.log.debug(whitespectra[0:3, 0:3])
         self.g, foo = kmeans(whitespectra, self.K)
         self.g /= np.repeat(self.normbase(), M).reshape(self.g.shape)
+        self.log.debug(self.g[0:3, 0:3])
         #
         # Initialize a matrix
         #
@@ -242,18 +274,11 @@ class HMF(object):
             for k in range(128):
                 self.a = self.astepnn()
         #
-        # Number of iterations.
-        #
-        if self.nonnegative:
-            n_iter = 2048
-        else:
-            n_iter = 16
-        #
         # Iterate!
         #
         t0 = time.time()
-        for m in range(n_iter):
-            self.log.info(m)
+        for m in range(self.n_iter):
+            self.log.info("Starting iteration #{0:4d}.".format(m+1))
             if self.nonnegative:
                 self.a = self.astepnn()
                 self.g = self.gstepnn()
@@ -264,8 +289,10 @@ class HMF(object):
             norm = self.normbase()
             self.g /= np.repeat(norm, M).reshape(self.g.shape)
             self.a = (self.a.T*np.repeat(norm, N).reshape(self.K, N)).T
-            self.log.debug(self.badness())
-            self.log.info("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(m+1, time.time()-t0))
+            self.log.debug(self.a[0:3, 0:3])
+            self.log.debug(self.g[0:3, 0:3])
+            self.log.debug("Chi**2 after iteration #{0:4d} = {1:f}.".format(m+1, self.badness()))
+            self.log.info("The elapsed time for iteration #{0:4d} is {1:6.2f} s.".format(m+1, time.time()-t0))
         return (self.a, self.g)
 
 
@@ -1278,6 +1305,67 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
             return (fullflux, fullivar, fullloglam)
 
 
+def template_metadata(inputfile, verbose=False):
+    """Read template metadata from file.
+
+    Parameters
+    ----------
+    inputfile : :class:`str`
+        Name of a Parameter file containing the input data and metadata.
+    verbose : :class:`bool`, optional
+        If ``True``, print lots of extra information.
+
+    Returns
+    -------
+    :func:`tuple`
+        A tuple containing the list of input spectra and a dictionary
+        containing other metadata.
+    """
+    import os
+    from astropy import log
+    from . import Pydlspec2dException
+    from ..pydlutils.yanny import yanny
+    if verbose:
+        log.setLevel('DEBUG')
+    if not os.path.exists(inputfile):
+        raise Pydlspec2dException("Could not find {0}!".format(inputfile))
+    log.debug("Reading input data from {0}.".format(inputfile))
+    par = yanny(inputfile)
+    required_metadata = {'object': str, 'method': str, 'aesthetics': str,
+                         'run2d': str, 'run1d': str,
+                         'wavemin': float, 'wavemax': float, 'snmax': float,
+                         'niter': int, 'nkeep': int, 'minuse': int}
+    metadata = dict()
+    for key in required_metadata:
+        try:
+            metadata[key] = required_metadata[key](par[key])
+            log.debug('{0} = {1}'.format(key, par[key]))
+        except KeyError:
+            raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
+        except ValueError:
+            raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+    slist = par['EIGENOBJ']
+    for r in ('run2d', 'run1d'):
+        try:
+            metadata['orig_'+r] = os.environ[r.upper()]
+        except KeyError:
+            metadata['orig_'+r] = None
+        os.environ[r.upper()] = metadata[r]
+    good_columns = False
+    if metadata['method'].lower() == 'hmf':
+        good_columns = True
+        required_hmf_metadata = {'nonnegative': lambda x: bool(int(x)),
+                                 'epsilon': float}
+        for key in required_hmf_metadata:
+            try:
+                metadata[key] = required_hmf_metadata[key](par[key])
+            except KeyError:
+                raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
+            except ValueError:
+                raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+    return (slist, metadata)
+
+
 def template_input(inputfile, dumpfile, flux=False, verbose=False):
     """Collect spectra and pass them to PCA or HMF solvers to compute
     spectral templates.
@@ -1317,50 +1405,15 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     from ..goddard.astro import get_juldate
     from ..pydlutils.image import djs_maskinterp
     from ..pydlutils.math import djs_median
-    from ..pydlutils.yanny import yanny
     #
     # Logging
     #
     if verbose:
         log.setLevel('DEBUG')
     #
-    # Read input data
+    # Read metadata.
     #
-    if not os.path.exists(inputfile):
-        raise Pydlspec2dException("Could not find {0}!".format(inputfile))
-    log.debug("Reading input data from {0}.".format(inputfile))
-    par = yanny(inputfile)
-    required_metadata = {'object': str, 'method': str, 'aesthetics': str,
-                         'run2d': str, 'run1d': str,
-                         'wavemin': float, 'wavemax': float, 'snmax': float,
-                         'niter': int, 'nkeep': int, 'minuse': int}
-    metadata = dict()
-    for key in required_metadata:
-        try:
-            metadata[key] = required_metadata[key](par[key])
-            log.debug('{0} = {1}'.format(key, par[key]))
-        except KeyError:
-            raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
-        except ValueError:
-            raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
-    slist = par['EIGENOBJ']
-    for r in ('run2d', 'run1d'):
-        try:
-            metadata['orig_'+r] = os.environ[r.upper()]
-        except KeyError:
-            metadata['orig_'+r] = None
-        os.environ[r.upper()] = metadata[r]
-    good_columns = False
-    if metadata['method'].lower() == 'hmf':
-        good_columns = True
-        required_hmf_metadata = {'nonnegative': int, 'epsilon': float}
-        for key in required_hmf_metadata:
-            try:
-                metadata[key] = required_hmf_metadata[key](par[key])
-            except KeyError:
-                raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
-            except ValueError:
-                raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+    slist, metadata = template_metadata(inputfile)
     #
     # Name the output files.
     #
@@ -1456,6 +1509,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         elif metadata['method'].lower() == 'hmf':
             hmf = HMF(newflux, newivar,
                       K=metadata['nkeep'],
+                      n_iter=metadata['niter'],
                       nonnegative=metadata['nonnegative'],
                       epsilon=metadata['epsilon'],
                       verbose=verbose)
@@ -1601,7 +1655,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     hdu0.header['FILENAME'] = (inputfile, 'Input file')
     hdu0.header['METHOD'] = (metadata['method'].upper(), 'Method used')
     if metadata['method'].lower() == 'hmf':
-        hdu0.header['NONNEG'] = (bool(metadata['nonnegative']), 'Was nonnegative HMF used?')
+        hdu0.header['NONNEG'] = (metadata['nonnegative'], 'Was nonnegative HMF used?')
         hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
     # for i in range(len(namearr)):
     #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
@@ -1671,11 +1725,13 @@ def template_qso(metadata, newflux, newivar, verbose=False):
                                  niter=metadata['niter'], nkeep=1,
                                  verbose=verbose)
         elif metadata['method'].lower() == 'hmf':
-            pcaflux1 = hmf_solve(objflux, newivar,
-                                 K=metadata['nkeep'],
-                                 nonnegative=metadata['nonnegative'],
-                                 epsilon=metadata['epsilon'],
-                                 verbose=verbose)
+            hmf = HMF(objflux, newivar,
+                      K=metadata['nkeep'],
+                      n_iter=metadata['niter'],
+                      nonnegative=metadata['nonnegative'],
+                      epsilon=metadata['epsilon'],
+                      verbose=verbose)
+            pcaflux1 = hmf.solve()
         else:
             raise ValueError("Unknown method: {0}!".format(metadata['method']))
         if ikeep == 0:
@@ -1788,11 +1844,13 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
                                 niter=metadata['niter'], nkeep=nkeep,
                                 verbose=verbose)
         elif metadata['method'].lower() == 'hmf':
-            pcaflux1 = hmf_solve(newflux[indx, :], newivar[indx, :],
-                                 K=metadata['nkeep'],
-                                 nonnegative=metadata['nonnegative'],
-                                 epsilon=metadata['epsilon'],
-                                 verbose=verbose)
+            hmf = HMF(newflux[indx, :], newivar[indx, :],
+                      K=metadata['nkeep'],
+                      n_iter=metadata['niter'],
+                      nonnegative=metadata['nonnegative'],
+                      epsilon=metadata['epsilon'],
+                      verbose=verbose)
+            pcaflux1 = hmf.solve()
         else:
             raise ValueError("Unknown method: {0}!".format(metadata['method']))
         #
