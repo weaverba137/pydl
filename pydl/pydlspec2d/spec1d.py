@@ -1208,7 +1208,7 @@ def spec_path(plate, path=None, topdir=None, run2d=None):
 
 def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
                        newloglam=None, wavemin=None, wavemax=None,
-                       good_columns=False, verbose=False):
+                       verbose=False):
     """Handle the processing of input spectra through the
     :func:`~pydl.pydlspec2d.spec2d.combine1fiber` stage.
 
@@ -1231,9 +1231,6 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
         Minimum wavelength if `newloglam` is not specified.
     wavemax : :class:`float`, optional
         Maximum wavelength if `newloglam` is not specified.
-    good_columns : :class:`bool`, optional
-        If ``True``, ensure that the data contain no columns that are
-        all zero.
     verbose : :class:`bool`, optional
         If ``True``, print extra information.
 
@@ -1352,9 +1349,7 @@ def template_metadata(inputfile, verbose=False):
         except KeyError:
             metadata['orig_'+r] = None
         os.environ[r.upper()] = metadata[r]
-    good_columns = False
     if metadata['method'].lower() == 'hmf':
-        good_columns = True
         required_hmf_metadata = {'nonnegative': lambda x: bool(int(x)),
                                  'epsilon': float}
         for key in required_hmf_metadata:
@@ -1483,7 +1478,6 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                                                          zfit=zfit,
                                                          newloglam=newloglam,
                                                          aesthetics=metadata['aesthetics'],
-                                                         good_columns=good_columns,
                                                          verbose=verbose)
         #
         # Dump input fluxes to a file for debugging purposes.
