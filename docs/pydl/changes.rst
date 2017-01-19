@@ -5,7 +5,15 @@ PyDL Changelog
 0.5.4 (unreleased)
 ------------------
 
-* No changes yet.
+* Refactor HMF code into an object to contain the data and methods.
+* Use functions from :mod:`astropy.utils.data` where possible.
+* Fix an integer division error encountered when using Numpy 1.12
+  (`Issue #19`_).
+* Fixed tests that were failing on 32-bit platforms *and* Python 3.5
+  (`Issue #20`_).
+
+.. _`Issue #19`: https://github.com/weaverba137/pydl/issues/19
+.. _`Issue #20`: https://github.com/weaverba137/pydl/issues/20
 
 0.5.3 (2016-12-03)
 ------------------

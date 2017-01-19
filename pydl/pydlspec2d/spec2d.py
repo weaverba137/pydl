@@ -413,20 +413,16 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
     ValueError
         If neither `waveimg` nor `wset` are set.
     """
-    from os import getenv
-    from os.path import dirname, join
     import numpy as np
-    from pkg_resources import resource_filename
     from astropy.io import ascii
-    from astropy.utils.data import get_pkg_data_filename
     from ..goddard.astro import vactoair
     from ..pydlutils.image import djs_maskinterp
     from ..pydlutils.trace import traceset2xy, xy2traceset
     nTrace, nx = flux.shape
     if filter_prefix != 'sdss_jun2001':
         raise ValueError("Filters other than {0} are not available!".format('sdss_jun2001'))
-    ffiles = [resource_filename('pydl.pydlutils',
-                                'data/filters/{0}_{1}_atm.dat'.format(filter_prefix, f)) for f in 'ugriz']
+    ffiles = [_get_pkg_filename_compat('data/filters/{0}_{1}_atm.dat'.format(filter_prefix, f),
+                                    package='pydl.pydlutils') for f in 'ugriz']
     if waveimg is None and wset is None:
         raise ValueError("Either waveimg or wset must be specified!")
     if waveimg is None:
@@ -458,3 +454,15 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
         sumfilt = filtimg.sum(1)
         res[:, i] = res[:, i] / (sumfilt + (sumfilt <= 0).astype(sumfilt.dtype))
     return res
+
+
+def _get_pkg_filename_compat(filename, package):
+    """Astropy 1.0.x/LTS does not accept the 'package' argument.
+    """
+    from astropy.utils.data import get_pkg_data_filename
+    try:
+        f = get_pkg_data_filename(filename, package=package)
+    except TypeError:
+        from pkg_resources import resource_filename
+        f = resource_filename(package, filename)
+    return f

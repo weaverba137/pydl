@@ -10,6 +10,311 @@ import numpy as np
 findspec_cache = None
 
 
+class HMF(object):
+    """Class used to manage data for Heteroscedastic Matrix Factorization (HMF).
+
+    This is a replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
+    It can be called with::
+
+        hmf = HMF(spectra, invvar)
+        output = hmf.solve()
+
+    The input spectra should be pre-processed through
+    :func:`~pydl.pydlspec2d.spec2d.combine1fiber`.
+
+    Parameters
+    ----------
+    spectra : array-like
+        The input spectral flux, assumed to have a common wavelength and
+        redshift system.
+    invvar : array-like
+        The inverse variance of the spectral flux.
+    K : :class:`int`, optional
+        The number of dimensions of the factorization (default 4).
+    n_iter : :class:`int`, optional
+        Number of iterations.
+    seed : :class:`int`, optional.
+        If set, pass this value to :func:`numpy.random.seed`.
+    nonnegative : :class:`bool`, optional
+        Set this to ``True`` to perform nonnegative HMF.
+    epsilon : :class:`float`, optional
+        Regularization parameter.  Set to any non-negative float value to turn
+        it on.
+    verbose : :class:`bool`, optional
+        If ``True``, print extra information.
+
+    Notes
+    -----
+    See [1]_ and [2]_ for the original derivation of this method.
+
+    The HMF iteration is initialized using :func:`~scipy.cluster.vq.kmeans`,
+    which itself uses random numbers to initialize its state.  If you need
+    to ensure reproducibility, call :func:`numpy.random.seed` before
+    initializing HMF.
+
+    The current algorithm cannot handle input data that contain *columns*
+    of zeros.  Columns of this type need to be *carefully* removed from the
+    input data.  This could also result in the output data having a different
+    size compared to the input data.
+
+    References
+    ----------
+    .. [1] `Tsalmantza, P., Decarli, R., Dotti, M., Hogg, D. W., 2011 ApJ 738, 20
+        <http://adsabs.harvard.edu/abs/2011ApJ...738...20T>`_
+    .. [2] `Tsalmantza, P., Hogg, D. W., 2012 ApJ 753, 122
+        <http://adsabs.harvard.edu/abs/2012ApJ...753..122T>`_
+    """
+
+    def __init__(self, spectra, invvar, K=4, n_iter=None, seed=None,
+                 nonnegative=False, epsilon=None, verbose=False):
+        from astropy import log
+        self.log = log
+        self.spectra = spectra
+        self.invvar = invvar
+        self.K = K
+        if n_iter is None:
+            if nonnegative:
+                self.n_iter = 2048
+            else:
+                self.n_iter = 20
+        else:
+            self.n_iter = int(n_iter)
+        self.seed = seed
+        self.nonnegative = nonnegative
+        self.epsilon = epsilon
+        self.verbose = verbose
+        self.a = None
+        self.g = None
+        if self.verbose:
+            self.log.setLevel('DEBUG')
+        return
+
+    def solve(self):
+        """Process the inputs.
+
+        Returns
+        -------
+        :class:`dict`
+            The HMF solution.
+        """
+        if len(self.spectra.shape) == 1:
+            nobj = 1
+            npix = self.spectra.shape[0]
+        else:
+            nobj, npix = self.spectra.shape
+        self.log.info("Building HMF from {0:d} object spectra.".format(nobj))
+        fluxdict = dict()
+        #
+        # If there is only one object spectrum, then all we can do is return it.
+        #
+        if nobj == 1:
+            fluxdict['flux'] = self.spectra.astype('f')
+            return fluxdict
+        a, g = self.iterate()
+        fluxdict['acoeff'] = a
+        fluxdict['flux'] = g
+        return fluxdict
+
+    def model(self):
+        """Compute the model.
+        """
+        return np.dot(self.a, self.g)
+
+    def resid(self):
+        """Compute residuals.
+        """
+        return self.spectra - self.model()
+
+    def chi(self):
+        """Compute :math:`\chi`, the scaled residual.
+        """
+        return self.resid() * np.sqrt(self.invvar)
+
+    def penalty(self):
+        """Compute penalty for non-smoothness.
+        """
+        if self.epsilon is None:
+            return 0.0
+        return self.epsilon * np.sum(np.diff(self.g)**2)
+
+    def badness(self):
+        """Compute :math:`\chi^2`, including possible non-smoothness penalty.
+        """
+        return np.sum(self.chi()**2) + self.penalty()
+
+    def normbase(self):
+        """Apply standard component normalization.
+        """
+        return np.sqrt((self.g**2).mean(1))
+
+    def astep(self):
+        """Update for coefficients at fixed component spectra.
+        """
+        from numpy.linalg import solve
+        N, M = self.spectra.shape
+        K, M = self.g.shape
+        a = np.zeros((N, K), dtype=self.g.dtype)
+        for i in range(N):
+            Gi = np.zeros((K, K), dtype=self.g.dtype)
+            for k in range(K):
+                for kp in range(k, K):
+                    Gi[k, kp] = np.sum(self.g[k, :] * self.g[kp, :] *
+                                       self.invvar[i, :])
+                    if kp > k:
+                        Gi[kp, k] = Gi[k, kp]
+            Fi = np.dot(self.g, self.spectra[i, :]*self.invvar[i, :])
+            a[i, :] = solve(Gi, Fi)
+        return a
+
+    def gstep(self):
+        """Update for component spectra at fixed coefficients.
+        """
+        from numpy.linalg import solve
+        N, M = self.spectra.shape
+        N, K = self.a.shape
+        g = np.zeros((K, M), dtype=self.a.dtype)
+        e = np.zeros(self.g.shape, dtype=self.g.dtype)
+        d = np.zeros((K, K, M), dtype=self.a.dtype)
+        if self.epsilon is not None and self.epsilon > 0:
+            foo = self.epsilon * np.eye(K, dtype=self.a.dtype)
+            for l in range(M):
+                d[:, :, l] = foo
+                if l > 0 and l < M-1:
+                    d[:, :, l] *= 2
+            # d[:, :, 0] = foo
+            # d[:, :, 1:M-1] = 2*foo
+            # d[:, :, M-1] = foo
+            e[:, 0] = self.epsilon*self.g[:, 1]
+            e[:, 1:M-1] = self.epsilon*(self.g[:, 0:M-2] + self.g[:, 2:M])
+            e[:, M-1] = self.epsilon*self.g[:, M-2]
+        for j in range(M):
+            Aj = np.zeros((K, K), dtype=self.a.dtype)
+            for k in range(K):
+                for kp in range(k, K):
+                    Aj[k, kp] = np.sum(self.a[:, k] * self.a[:, kp] *
+                                       self.invvar[:, j])
+                    if kp > k:
+                        Aj[kp, k] = Aj[k, kp]
+            Aj += d[:, :, j]
+            Fj = (np.dot(self.a.T, self.spectra[:, j]*self.invvar[:, j]) +
+                  e[:, j])
+            g[:, j] = solve(Aj, Fj)
+        return g
+
+    def astepnn(self):
+        """Non-negative update for coefficients at fixed component spectra.
+        """
+        numerator = np.dot(self.spectra*self.invvar, self.g.T)
+        denominator = np.dot(np.dot(self.a, self.g)*self.invvar, self.g.T)
+        return self.a*(numerator/denominator)
+
+    def gstepnn(self):
+        """Non-negative update for component spectra at fixed coefficients.
+        """
+        K, M = self.g.shape
+        numerator = np.dot(self.a.T, (self.spectra*self.invvar))
+        if self.epsilon is not None and self.epsilon > 0:
+            e = np.zeros(self.g.shape, dtype=self.g.dtype)
+            e[:, 0] = self.epsilon*self.g[:, 1]
+            e[:, 1:M-1] = self.epsilon*(self.g[:, 0:M-2] + self.g[:, 2:M])
+            e[:, M-1] = self.epsilon*self.g[:, M-2]
+            numerator += e
+        denominator = np.dot(self.a.T, np.dot(self.a, self.g)*self.invvar)
+        if self.epsilon is not None and self.epsilon > 0:
+            d = self.epsilon*self.g.copy()
+            d[:, 1:M-1] *= 2
+            denominator += d
+        return self.g*(numerator/denominator)
+
+    def reorder(self):
+        """Reorder and rotate basis analogous to PCA.
+        """
+        from numpy.linalg import eigh
+        l, U = eigh(np.dot(self.a.T, self.a))
+        return (np.dot(self.a, U), np.dot(U.T, self.g))
+
+    def iterate(self):
+        """Handle the HMF iteration.
+
+        Returns
+        -------
+        :func:`tuple` of :class:`numpy.ndarray`
+            The fitting coefficients and fitted functions, respectively.
+        """
+        import time
+        from scipy.cluster.vq import kmeans, whiten
+        from ..pydlutils.math import find_contiguous
+        N, M = self.spectra.shape
+        #
+        # Make spectra non-negative
+        #
+        if self.nonnegative:
+            self.spectra[self.spectra < 0] = 0
+            self.invvar[self.spectra < 0] = 0
+        #
+        # Detect and fix very bad columns.
+        #
+        si = self.spectra * self.invvar
+        if (self.spectra.sum(0) == 0).any():
+            self.log.warn("Columns of zeros detected in spectra!")
+        if (self.invvar.sum(0) == 0).any():
+            self.log.warn("Columns of zeros detected in invvar!")
+        if (si.sum(0) == 0).any():
+            self.log.warn("Columns of zeros detected in spectra*invvar!")
+        zerocol = ((self.spectra.sum(0) == 0) | (self.invvar.sum(0) == 0) |
+                   (si.sum(0) == 0))
+        n_zero = zerocol.sum()
+        if n_zero > 0:
+            self.log.warn("Found {0:d} bad columns in input data!".format(n_zero))
+        #
+        # Find the largest set of contiguous pixels
+        #
+        goodcol = find_contiguous(~zerocol)
+        self.spectra = self.spectra[:, goodcol]
+        self.invvar = self.invvar[:, goodcol]
+        # si = si[:, goodcol]
+        # newloglam = fullloglam[goodcol]
+        #
+        # Initialize g matrix with kmeans
+        #
+        if self.seed is not None:
+            np.random.seed(self.seed)
+        whitespectra = whiten(self.spectra)
+        self.log.debug(whitespectra[0:3, 0:3])
+        self.g, foo = kmeans(whitespectra, self.K)
+        self.g /= np.repeat(self.normbase(), M).reshape(self.g.shape)
+        self.log.debug(self.g[0:3, 0:3])
+        #
+        # Initialize a matrix
+        #
+        self.a = np.outer(np.sqrt((self.spectra**2).mean(1)),
+                          np.repeat(1.0/self.K, self.K))
+        if self.nonnegative:
+            for k in range(128):
+                self.a = self.astepnn()
+        #
+        # Iterate!
+        #
+        t0 = time.time()
+        for m in range(self.n_iter):
+            self.log.info("Starting iteration #{0:4d}.".format(m+1))
+            if self.nonnegative:
+                self.a = self.astepnn()
+                self.g = self.gstepnn()
+            else:
+                self.a = self.astep()
+                self.g = self.gstep()
+                self.a, self.g = self.reorder()
+            norm = self.normbase()
+            self.g /= np.repeat(norm, M).reshape(self.g.shape)
+            self.a = (self.a.T*np.repeat(norm, N).reshape(self.K, N)).T
+            self.log.debug(self.a[0:3, 0:3])
+            self.log.debug(self.g[0:3, 0:3])
+            self.log.debug("Chi**2 after iteration #{0:4d} = {1:f}.".format(m+1, self.badness()))
+            self.log.info("The elapsed time for iteration #{0:4d} is {1:6.2f} s.".format(m+1, time.time()-t0))
+        return (self.a, self.g)
+
+
 def findspec(*args, **kwargs):
     """Find SDSS/BOSS spectra that match a given RA, Dec.
 
@@ -61,7 +366,7 @@ def findspec(*args, **kwargs):
         if 'topdir' in kwargs:
             topdir = kwargs['topdir']
         else:
-            topdir = os.getenv('SPECTRO_REDUX')
+            topdir = os.environ['SPECTRO_REDUX']
         if 'run2d' in kwargs:
             run2d = str(kwargs['run2d'])
         else:
@@ -71,15 +376,15 @@ def findspec(*args, **kwargs):
         if 'topdir' in kwargs:
             topdir = kwargs['topdir']
         else:
-            topdir = os.getenv('BOSS_SPECTRO_REDUX')
+            topdir = os.environ['BOSS_SPECTRO_REDUX']
         if 'run2d' in kwargs:
             run2d = str(kwargs['run2d'])
         else:
-            run2d = os.getenv('RUN2D')
+            run2d = os.environ['RUN2D']
         if 'run1d' in kwargs:
             run1d = str(kwargs['run1d'])
         else:
-            run1d = os.getenv('RUN1D')
+            run1d = os.environ['RUN1D']
     if findspec_cache is None:
         findspec_cache = {'lasttopdir': topdir, 'plist': None}
     if (findspec_cache['plist'] is None or
@@ -215,270 +520,6 @@ def findspec(*args, **kwargs):
     return slist
 
 
-def hmf_model(a, g):
-    """Compute the model.
-    """
-    return np.dot(a, g)
-
-
-def hmf_resid(a, g, spectra):
-    """Compute residuals.
-    """
-    return spectra - hmf_model(a, g)
-
-
-def hmf_chi(a, g, spectra, invvar):
-    """Compute chi, the scaled residual.
-    """
-    return hmf_resid(a, g, spectra) * np.sqrt(invvar)
-
-
-def hmf_penalty(g, epsilon=None):
-    """Compute penalty for non-smoothness.
-    """
-    if epsilon is None:
-        return 0.0
-    return epsilon*np.sum(np.diff(g)**2)
-
-
-def hmf_badness(a, g, spectra, invvar, epsilon=None):
-    """Compute chi**2.
-    """
-    return np.sum(hmf_chi(a, g, spectra, invvar)**2) + hmf_penalty(g, epsilon)
-
-
-def hmf_normbase(g):
-    """Apply standard component normalization.
-    """
-    return np.sqrt((g**2).mean(1))
-
-
-def hmf_astep(spectra, invvar, g):
-    """Update for coefficients at fixed component spectra.
-    """
-    from numpy.linalg import solve
-    N, M = spectra.shape
-    K, M = g.shape
-    a = np.zeros((N, K), dtype=g.dtype)
-    for i in range(N):
-        Gi = np.zeros((K, K), dtype=g.dtype)
-        for k in range(K):
-            for kp in range(k, K):
-                Gi[k, kp] = np.sum(g[k, :]*g[kp, :]*invvar[i, :])
-                if kp > k:
-                    Gi[kp, k] = Gi[k, kp]
-        Fi = np.dot(g, spectra[i, :]*invvar[i, :])
-        a[i, :] = solve(Gi, Fi)
-    return a
-
-
-def hmf_gstep(oldg, spectra, invvar, a, epsilon=None):
-    """Update for component spectra at fixed coefficients.
-    """
-    from numpy.linalg import solve
-    N, M = spectra.shape
-    N, K = a.shape
-    g = np.zeros((K, M), dtype=a.dtype)
-    e = np.zeros(oldg.shape, dtype=oldg.dtype)
-    d = np.zeros((K, K, M), dtype=a.dtype)
-    if epsilon is not None and epsilon > 0:
-        foo = epsilon*np.eye(K, dtype=a.dtype)
-        for l in range(M):
-            d[:, :, l] = foo
-            if l > 0 and l < M-1:
-                d[:, :, l] *= 2
-        # d[:, :, 0] = foo
-        # d[:, :, 1:M-1] = 2*foo
-        # d[:, :, M-1] = foo
-        e[:, 0] = epsilon*oldg[:, 1]
-        e[:, 1:M-1] = epsilon*(oldg[:, 0:M-2] + oldg[:, 2:M])
-        e[:, M-1] = epsilon*oldg[:, M-2]
-    for j in range(M):
-        Aj = np.zeros((K, K), dtype=a.dtype)
-        for k in range(K):
-            for kp in range(k, K):
-                Aj[k, kp] = np.sum(a[:, k]*a[:, kp]*invvar[:, j])
-                if kp > k:
-                    Aj[kp, k] = Aj[k, kp]
-        Aj += d[:, :, j]
-        Fj = np.dot(a.T, spectra[:, j]*invvar[:, j]) + e[:, j]
-        g[:, j] = solve(Aj, Fj)
-    return g
-
-
-def hmf_astepnn(a, spectra, invvar, g):
-    """Non-negative update for coefficients at fixed component spectra.
-    """
-    numerator = np.dot(spectra*invvar, g.T)
-    denominator = np.dot(np.dot(a, g)*invvar, g.T)
-    return a*(numerator/denominator)
-
-
-def hmf_gstepnn(g, spectra, invvar, a, epsilon=None):
-    """Non-negative update for component spectra at fixed coefficients.
-    """
-    K, M = g.shape
-    numerator = np.dot(a.T, (spectra*invvar))
-    if epsilon is not None and epsilon > 0:
-        e = np.zeros(g.shape, dtype=g.dtype)
-        e[:, 0] = epsilon*g[:, 1]
-        e[:, 1:M-1] = epsilon*(g[:, 0:M-2] + g[:, 2:M])
-        e[:, M-1] = epsilon*g[:, M-2]
-        numerator += e
-    denominator = np.dot(a.T, np.dot(a, g)*invvar)
-    if epsilon is not None and epsilon > 0:
-        d = epsilon*g.copy()
-        d[:, 1:M-1] *= 2
-        denominator += d
-    return g*(numerator/denominator)
-
-
-def hmf_reorder(a, g):
-    """Reorder and rotate basis analogous to PCA.
-    """
-    from numpy.linalg import eigh
-    l, U = eigh(np.dot(a.T, a))
-    return (np.dot(a, U), np.dot(U.T, g))
-
-
-def hmf_iterate(spectra, invvar, K=4, nonnegative=False, epsilon=None,
-                verbose=False):
-    """Handle the HMF iteration, assuming spectra have been pre-processed
-    through :func:`pydl.pydlspec2d.spec2d.combine1fiber`.
-
-    Parameters
-    ----------
-    spectra : :class:`numpy.ndarray`
-        The training spectra.
-    invvar : :class:`numpy.ndarray`
-        The inverse variance for each pixel in the spectra.
-    K : :class:`int`, optional
-        The number of dimensions of the factorization (default 4).
-    nonnegative : :class:`bool`, optional
-        Set this to ``True`` to perform nonnegative HMF.
-    epsilon : :class:`float`, optional
-        Regularization parameter.  Set to any non-zero float value to turn it on.
-    verbose : :class:`bool`, optional
-        If ``True``, print extra information.
-
-    Returns
-    -------
-    :func:`tuple` of :class:`numpy.ndarray`
-        The fitting coefficients and fitted functions, respectively.
-    """
-    import time
-    from astropy import log
-    from scipy.cluster.vq import kmeans, whiten
-    if verbose:
-        log.setLevel('DEBUG')
-    N, M = spectra.shape
-    #
-    # Make spectra non-negative
-    #
-    if nonnegative:
-        spectra[spectra < 0] = 0
-        invvar[spectra < 0] = 0
-    #
-    # Detect very bad columns
-    #
-    si = spectra*invvar
-    if (spectra.sum(0) == 0).any():
-        raise ValueError("Columns of zeros detected in spectra!")
-    if (invvar.sum(0) == 0).any():
-        raise ValueError("Columns of zeros detected in invvar!")
-    if (si.sum(0) == 0).any():
-        raise ValueError("Columns of zeros detected in spectra*invvar!")
-    #
-    # Initialize g matrix with kmeans
-    #
-    whitespectra = whiten(spectra)
-    g, foo = kmeans(whitespectra, K)
-    g /= np.repeat(hmf_normbase(g), M).reshape(g.shape)
-    #
-    # Initialize a matrix
-    #
-    a = np.outer(np.sqrt((spectra**2).mean(1)), np.repeat(1.0/K, K))
-    if nonnegative:
-        for k in range(128):
-            a = hmf_astepnn(a, spectra, invvar, g)
-    #
-    # Number of iterations.
-    #
-    if nonnegative:
-        n_iter = 2048
-    else:
-        n_iter = 16
-    #
-    # Iterate!
-    #
-    t0 = time.time()
-    for m in range(n_iter):
-        log.info(m)
-        if nonnegative:
-            a = hmf_astepnn(a, spectra, invvar, g)
-            g = hmf_gstepnn(g, spectra, invvar, a, epsilon)
-        else:
-            a = hmf_astep(spectra, invvar, g)
-            g = hmf_gstep(g, spectra, invvar, a, epsilon)
-            a, g = reorder(a, g)
-        norm = hmf_normbase(g)
-        g /= np.repeat(norm, M).reshape(g.shape)
-        a = (a.T*np.repeat(norm, N).reshape(K, N)).T
-        log.debug(hmf_badness(a, g, spectra, invvar, epsilon))
-        log.info("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(m+1, time.time()-t0))
-    return (a, g)
-
-
-def hmf_solve(newflux, newivar,
-              K=4, nonnegative=False, epsilon=None, verbose=False):
-    """Drop-in replacement for :func:`~pydl.pydlspec2d.spec1d.pca_solve`.
-
-    Parameters
-    ----------
-    newflux : array-like
-        The input spectral flux, assumed to have a common wavelength and
-        redshift system.
-    newivar : array-like
-        The inverse variance of the spectral flux.
-    K : :class:`int`, optional
-        The number of dimensions of the factorization (default 4).
-    nonnegative : :class:`bool`, optional
-        Set this to ``True`` to perform nonnegative HMF.
-    epsilon : :class:`float`, optional
-        Regularization parameter.  Set to any non-zero float value to turn it on.
-    verbose : :class:`bool`, optional
-        If ``True``, print extra information.
-
-    Returns
-    -------
-    :class:`dict`
-        The HMF solution.
-    """
-    from astropy import log
-    if verbose:
-        log.setLevel('DEBUG')
-    if nreturn is None:
-        nreturn = nkeep
-    if len(newflux.shape) == 1:
-        nobj = 1
-        npix = newflux.shape[0]
-    else:
-        nobj, npix = newflux.shape
-    log.info("Building HMF from {0:d} object spectra.".format(nobj))
-    fluxdict = dict()
-    #
-    # If there is only one object spectrum, then all we can do is return it.
-    #
-    if nobj == 1:
-        fluxdict['flux'] = newflux.astype('f')
-        return fluxdict
-    a, g = hmf_iterate(newflux, newivar, K=K, nonnegative=nonnegative,
-                       epsilon=epsilon)
-    fluxdict['acoeff'] = a
-    fluxdict['flux'] = g
-    return fluxdict
-
-
 def latest_mjd(plate, **kwargs):
     """Find the most recent MJD associated with a plate.
 
@@ -555,7 +596,7 @@ def number_of_fibers(plate, **kwargs):
     if 'path' in kwargs:
         platelistpath = os.path.join(kwargs['path'], 'platelist.fits')
     else:
-        platelistpath = os.path.join(os.getenv('BOSS_SPECTRO_REDUX'), 'platelist.fits')
+        platelistpath = os.path.join(os.environ['BOSS_SPECTRO_REDUX'], 'platelist.fits')
     platelist = pyfits.open(platelistpath)
     platentotal = platelist[1].data.field('N_TOTAL')
     plateplate = platelist[1].data.field('PLATE')
@@ -566,11 +607,11 @@ def number_of_fibers(plate, **kwargs):
     if 'run2d' in kwargs:
         run2d = kwargs['run2d']
     else:
-        run2d = os.getenv('RUN2D')
+        run2d = os.environ['RUN2D']
     if 'run1d' in kwargs:
         run1d = kwargs['run1d']
     else:
-        run1d = os.getenv('RUN1D')
+        run1d = os.environ['RUN1D']
     for k in range(mjd.size):
         nfiber[k] = platentotal[(plateplate == platevec[k]) &
                                 (platemjd == mjd[k]) &
@@ -776,7 +817,7 @@ def plot_eig(filename, title='Unknown'):
     return
 
 
-def readspec(platein, mjd=None, fiber='all', **kwargs):
+def readspec(platein, mjd=None, fiber=None, **kwargs):
     """Read SDSS/BOSS spec2d & spec1d files.
 
     Parameters
@@ -820,12 +861,12 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
     if 'run2d' in kwargs:
         run2d = kwargs['run2d']
     else:
-        run2d = os.getenv('RUN2D')
+        run2d = os.environ['RUN2D']
     if 'run1d' in kwargs:
         run1d = kwargs['run1d']
     else:
-        run1d = os.getenv('RUN1D')
-    if fiber == 'all':
+        run1d = os.environ['RUN1D']
+    if fiber is None:
         #
         # Read all fibers
         #
@@ -967,8 +1008,8 @@ def readspec(platein, mjd=None, fiber='all', **kwargs):
             #
             # Hmm, maybe this is an SDSS-I,II plate
             #
-            photofile = os.path.join(os.getenv('SPECTRO_MATCH'), run2d,
-                                     os.path.basename(os.getenv('PHOTO_RESOLVE')),
+            photofile = os.path.join(os.environ['SPECTRO_MATCH'], run2d,
+                                     os.path.basename(os.environ['PHOTO_RESOLVE']),
                                      "{0:04d}".format(int(thisplate)),
                                      "photoPlate-{0}.fits".format(pmjdstr))
         if os.path.exists(photofile):
@@ -1167,7 +1208,7 @@ def spec_path(plate, path=None, topdir=None, run2d=None):
 
 def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
                        newloglam=None, wavemin=None, wavemax=None,
-                       good_columns=False, verbose=False):
+                       verbose=False):
     """Handle the processing of input spectra through the
     :func:`~pydl.pydlspec2d.spec2d.combine1fiber` stage.
 
@@ -1190,9 +1231,6 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
         Minimum wavelength if `newloglam` is not specified.
     wavemax : :class:`float`, optional
         Maximum wavelength if `newloglam` is not specified.
-    good_columns : :class:`bool`, optional
-        If ``True``, ensure that the data contain no columns that are
-        all zero.
     verbose : :class:`bool`, optional
         If ``True``, print extra information.
 
@@ -1204,7 +1242,6 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
     """
     from astropy import log
     from .spec2d import combine1fiber
-    from ..pydlutils.math import find_contiguous
     if verbose:
         log.setLevel('DEBUG')
     if len(flux.shape) == 1:
@@ -1263,24 +1300,66 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
                                          verbose=verbose)
             fullflux[iobj, :] = flux1
             fullivar[iobj, :] = ivar1
-        #
-        # Find the columns out side of which there is no data at all.
-        #
-        if good_columns:
-            si = fullflux*fullivar
-            zerocol = ((newflux.sum(0) == 0) | (newivar.sum(0) == 0) |
-                       (si.sum(0) == 0))
-            #
-            # Find the largest set of contiguous pixels
-            #
-            goodcol = find_contiguous(~zerocol)
-            newflux = fullflux[:, goodcol]
-            newivar = fullivar[:, goodcol]
-            # si = si[:, goodcol]
-            newloglam = fullloglam[goodcol]
-            return (newflux, newivar, newloglam)
-        else:
-            return (fullflux, fullivar, fullloglam)
+        return (fullflux, fullivar, fullloglam)
+
+
+def template_metadata(inputfile, verbose=False):
+    """Read template metadata from file.
+
+    Parameters
+    ----------
+    inputfile : :class:`str`
+        Name of a Parameter file containing the input data and metadata.
+    verbose : :class:`bool`, optional
+        If ``True``, print lots of extra information.
+
+    Returns
+    -------
+    :func:`tuple`
+        A tuple containing the list of input spectra and a dictionary
+        containing other metadata.
+    """
+    import os
+    from astropy import log
+    from . import Pydlspec2dException
+    from ..pydlutils.yanny import yanny
+    if verbose:
+        log.setLevel('DEBUG')
+    if not os.path.exists(inputfile):
+        raise Pydlspec2dException("Could not find {0}!".format(inputfile))
+    log.debug("Reading input data from {0}.".format(inputfile))
+    par = yanny(inputfile)
+    required_metadata = {'object': str, 'method': str, 'aesthetics': str,
+                         'run2d': str, 'run1d': str,
+                         'wavemin': float, 'wavemax': float, 'snmax': float,
+                         'niter': int, 'nkeep': int, 'minuse': int}
+    metadata = dict()
+    for key in required_metadata:
+        try:
+            metadata[key] = required_metadata[key](par[key])
+            log.debug('{0} = {1}'.format(key, par[key]))
+        except KeyError:
+            raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
+        except ValueError:
+            raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+    slist = par['EIGENOBJ']
+    for r in ('run2d', 'run1d'):
+        try:
+            metadata['orig_'+r] = os.environ[r.upper()]
+        except KeyError:
+            metadata['orig_'+r] = None
+        os.environ[r.upper()] = metadata[r]
+    if metadata['method'].lower() == 'hmf':
+        required_hmf_metadata = {'nonnegative': lambda x: bool(int(x)),
+                                 'epsilon': float}
+        for key in required_hmf_metadata:
+            try:
+                metadata[key] = required_hmf_metadata[key](par[key])
+            except KeyError:
+                raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
+            except ValueError:
+                raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+    return (slist, metadata)
 
 
 def template_input(inputfile, dumpfile, flux=False, verbose=False):
@@ -1322,50 +1401,15 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     from ..goddard.astro import get_juldate
     from ..pydlutils.image import djs_maskinterp
     from ..pydlutils.math import djs_median
-    from ..pydlutils.yanny import yanny
     #
     # Logging
     #
     if verbose:
         log.setLevel('DEBUG')
     #
-    # Read input data
+    # Read metadata.
     #
-    if not os.path.exists(inputfile):
-        raise Pydlspec2dException("Could not find {0}!".format(inputfile))
-    log.debug("Reading input data from {0}.".format(inputfile))
-    par = yanny(inputfile)
-    required_metadata = {'object': str, 'method': str, 'aesthetics': str,
-                         'run2d': str, 'run1d': str,
-                         'wavemin': float, 'wavemax': float, 'snmax': float,
-                         'niter': int, 'nkeep': int, 'minuse': int}
-    metadata = dict()
-    for key in required_metadata:
-        try:
-            metadata[key] = required_metadata[key](par[key])
-            log.debug('{0} = {1}'.format(key, par[key]))
-        except KeyError:
-            raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
-        except ValueError:
-            raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
-    slist = par['EIGENOBJ']
-    for r in ('run2d', 'run1d'):
-        try:
-            metadata['orig_'+r] = os.environ[r.upper()]
-        except KeyError:
-            metadata['orig_'+r] = None
-        os.environ[r.upper()] = metadata[r]
-    good_columns = False
-    if metadata['method'].lower() == 'hmf':
-        good_columns = True
-        required_hmf_metadata = {'nonnegative': bool, 'epsilon': float}
-        for key in required_hmf_metadata:
-            try:
-                metadata['nonnegative'] = required_hmf_metadata[key](par[key])
-            except KeyError:
-                raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
-            except ValueError:
-                raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+    slist, metadata = template_metadata(inputfile)
     #
     # Name the output files.
     #
@@ -1377,7 +1421,10 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     if os.path.exists(dumpfile):
         log.info("Loading data from {0}.".format(dumpfile))
         with open(dumpfile) as f:
-            pcaflux = pickle.load(f)
+            inputflux = pickle.load(f)
+        newflux = inputflux['newflux']
+        newivar = inputflux['newivar']
+        newloglam = inputflux['newloglam']
     else:
         if metadata['object'].lower() == 'star':
             spplate = readspec(slist.plate, mjd=slist.mjd, fiber=slist.fiberid,
@@ -1431,56 +1478,59 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                                                          zfit=zfit,
                                                          newloglam=newloglam,
                                                          aesthetics=metadata['aesthetics'],
-                                                         good_columns=good_columns,
                                                          verbose=verbose)
-        #
-        # Solve.
-        #
-        if metadata['object'].lower() == 'qso':
-            pcaflux = template_qso(metadata, newflux, newivar, verbose)
-        elif metadata['object'].lower() == 'star':
-            pcaflux = template_star(metadata, newloglam, newflux, newivar,
-                                    slist, outfile, verbose)
-        else:
-            if metadata['method'].lower() == 'pca':
-                pcaflux = pca_solve(newflux, newivar,
-                                    niter=metadata['niter'],
-                                    nkeep=metadata['nkeep'],
-                                    verbose=verbose)
-            elif metadata['method'].lower() == 'hmf':
-                pcaflux = hmf_solve(newflux, newivar,
-                                    K=metadata['nkeep'],
-                                    nonnegative=metadata['nonnegative'],
-                                    epsilon=metadata['nonnegative'],
-                                    verbose=verbose)
-            else:
-                raise ValueError("Unknown method: {0}!".format(metadata['method']))
-        #
-        # Fill in bad data with a running median of the good data.
-        # The presence of boundary='nearest' means that this code snippet
-        # was never meant to be called!  In other words it should always
-        # be the case that qgood.all() is True.
-        #
-        if 'usemask' in pcaflux:
-            qgood = pcaflux['usemask'] >= metadata['minuse']
-            if not qgood.all():
-                warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
-            if False:
-                medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
-                for i in range(metadata['nkeep']):
-                    medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
-                                                   width=51, boundary='nearest')
-                    medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
-                pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
         #
         # Dump input fluxes to a file for debugging purposes.
         #
-        pcaflux['newflux'] = newflux
-        pcaflux['newivar'] = newivar
-        pcaflux['newloglam'] = newloglam
         if not os.path.exists(dumpfile):
             with open(dumpfile, 'w') as f:
-                pickle.dump(pcaflux, f)
+                inputflux = {'newflux': newflux, 'newivar': newivar,
+                             'newloglam': newloglam}
+                pickle.dump(inputflux, f)
+    #
+    # Solve.
+    #
+    if metadata['object'].lower() == 'qso':
+        pcaflux = template_qso(metadata, newflux, newivar, verbose)
+    elif metadata['object'].lower() == 'star':
+        pcaflux = template_star(metadata, newloglam, newflux, newivar,
+                                slist, outfile, verbose)
+    else:
+        if metadata['method'].lower() == 'pca':
+            pcaflux = pca_solve(newflux, newivar,
+                                niter=metadata['niter'],
+                                nkeep=metadata['nkeep'],
+                                verbose=verbose)
+        elif metadata['method'].lower() == 'hmf':
+            hmf = HMF(newflux, newivar,
+                      K=metadata['nkeep'],
+                      n_iter=metadata['niter'],
+                      nonnegative=metadata['nonnegative'],
+                      epsilon=metadata['epsilon'],
+                      verbose=verbose)
+            pcaflux = hmf.solve()
+        else:
+            raise ValueError("Unknown method: {0}!".format(metadata['method']))
+    pcaflux['newflux'] = newflux
+    pcaflux['newivar'] = newivar
+    pcaflux['newloglam'] = newloglam
+    #
+    # Fill in bad data with a running median of the good data.
+    # The presence of boundary='nearest' means that this code snippet
+    # was never meant to be called!  In other words it should always
+    # be the case that qgood.all() is True.
+    #
+    if 'usemask' in pcaflux:
+        qgood = pcaflux['usemask'] >= metadata['minuse']
+        if not qgood.all():
+            warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
+        if False:
+            medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
+            for i in range(metadata['nkeep']):
+                medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
+                                               width=51, boundary='nearest')
+                medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
+            pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
     #
     # Make plots
     #
@@ -1595,13 +1645,13 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
     hdu0.header['IDLUTILS'] = ('pydl-{0}'.format(pydl_version), 'Version of idlutils')
     hdu0.header['SPEC2D'] = ('pydl-{0}'.format(pydl_version), 'Version of idlspec2d')
-    hdu0.header['RUN2D'] = (os.getenv('RUN2D'), 'Version of 2d reduction')
-    hdu0.header['RUN1D'] = (os.getenv('RUN1D'), 'Version of 1d reduction')
+    hdu0.header['RUN2D'] = (os.environ['RUN2D'], 'Version of 2d reduction')
+    hdu0.header['RUN1D'] = (os.environ['RUN1D'], 'Version of 1d reduction')
     hdu0.header['FILENAME'] = (inputfile, 'Input file')
     hdu0.header['METHOD'] = (metadata['method'].upper(), 'Method used')
     if metadata['method'].lower() == 'hmf':
-        hdu0.header['NONNEG'] = (nonnegative, 'Was nonnegative HMF used?')
-        hdu0.header['EPSILON'] = (epsilon, 'Regularization parameter used.')
+        hdu0.header['NONNEG'] = (metadata['nonnegative'], 'Was nonnegative HMF used?')
+        hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
     # for i in range(len(namearr)):
     #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
     c = [fits.Column(name='plate', format='J', array=slist.plate),
@@ -1670,11 +1720,13 @@ def template_qso(metadata, newflux, newivar, verbose=False):
                                  niter=metadata['niter'], nkeep=1,
                                  verbose=verbose)
         elif metadata['method'].lower() == 'hmf':
-            pcaflux1 = hmf_solve(objflux, newivar,
-                                 K=metadata['nkeep'],
-                                 nonnegative=metadata['nonnegative'],
-                                 epsilon=metadata['epsilon'],
-                                 verbose=verbose)
+            hmf = HMF(objflux, newivar,
+                      K=metadata['nkeep'],
+                      n_iter=metadata['niter'],
+                      nonnegative=metadata['nonnegative'],
+                      epsilon=metadata['epsilon'],
+                      verbose=verbose)
+            pcaflux1 = hmf.solve()
         else:
             raise ValueError("Unknown method: {0}!".format(metadata['method']))
         if ikeep == 0:
@@ -1787,11 +1839,13 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
                                 niter=metadata['niter'], nkeep=nkeep,
                                 verbose=verbose)
         elif metadata['method'].lower() == 'hmf':
-            pcaflux1 = hmf_solve(newflux[indx, :], newivar[indx, :],
-                                 K=metadata['nkeep'],
-                                 nonnegative=metadata['nonnegative'],
-                                 epsilon=metadata['epsilon'],
-                                 verbose=verbose)
+            hmf = HMF(newflux[indx, :], newivar[indx, :],
+                      K=metadata['nkeep'],
+                      n_iter=metadata['niter'],
+                      nonnegative=metadata['nonnegative'],
+                      epsilon=metadata['epsilon'],
+                      verbose=verbose)
+            pcaflux1 = hmf.solve()
         else:
             raise ValueError("Unknown method: {0}!".format(metadata['method']))
         #
@@ -1894,25 +1948,25 @@ def template_input_main():  # pragma: no cover
     #
     import os
     import sys
-    from astropy.utils.compat import argparse
+    from argparse import ArgumentParser
 
     # Get home directory in platform-independent way
     home_dir = os.path.expanduser('~')
     #
     # Get Options
     #
-    parser = argparse.ArgumentParser(description="Compute spectral templates.",
-                                     prog=os.path.basename(sys.argv[0]))
+    parser = ArgumentParser(description="Compute spectral templates.",
+                            prog=os.path.basename(sys.argv[0]))
     parser.add_argument('-d', '--dump', action='store', dest='dump',
                         metavar='FILE',
                         default=os.path.join(home_dir, 'scratch', 'templates', 'compute_templates.dump'),
-                        help='Dump data to a pickle file.')
+                        help='Dump data to a pickle file (default: %(default)s).')
     parser.add_argument('-F', '--flux', action='store_true', dest='flux',
                         help='Plot input spectra.')
     parser.add_argument('-f', '--file', action='store', dest='inputfile',
                         metavar='FILE',
                         default=os.path.join(home_dir, 'scratch', 'templates', 'compute_templates.par'),
-                        help='Read input spectra and redshifts from FILE.')
+                        help='Read input spectra and redshifts from FILE (default: %(default)s).')
     parser.add_argument('-v', '--verbose', action='store_true', dest='verbose',
                         help='Print lots of extra information.')
     options = parser.parse_args()

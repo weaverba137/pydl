@@ -1,8 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from os.path import dirname, join
 from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
 from ..spheregroup import spheregroup, spherematch
 from .. import PydlutilsException, PydlutilsUserWarning
 
@@ -12,13 +12,13 @@ class TestSpheregroup(object):
     """
 
     def setup(self):
-        self.data_dir = join(dirname(__file__), 't')
+        pass
 
     def teardown(self):
         pass
 
     def test_spheregroup(self, recwarn):
-        test_data_file = join(self.data_dir, 'spheregroup_data.txt')
+        test_data_file = get_pkg_data_filename('t/spheregroup_data.txt')
         test_data = np.loadtxt(test_data_file, dtype='d', delimiter=',')
         # np.random.seed(137)
         # Ngroup = 3

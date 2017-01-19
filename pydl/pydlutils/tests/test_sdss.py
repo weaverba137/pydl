@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pydl.pydlutils.sdss
-from os.path import dirname, join
 from astropy.tests.helper import remote_data, raises
+from astropy.utils.data import get_pkg_data_filename
 from ..sdss import (default_skyversion, sdss_flagexist, sdss_flagname,
                     sdss_flagval, set_maskbits, sdss_astrombad,
                     sdss_objid)
@@ -14,9 +14,8 @@ class TestSDSS(object):
     """
 
     def setup(self):
-        self.data_dir = join(dirname(__file__), 't')
         pydl.pydlutils.sdss.maskbits = set_maskbits(
-            maskbits_file=join(self.data_dir, 'testMaskbits.par'))
+            maskbits_file=get_pkg_data_filename('t/testMaskbits.par'))
         self.opbadfields = np.array([
             (77, 'astrom', 30, 73, 'Large astrometric offset at field 39... 72'),
             (85, 'astrom', 8, 28, 'Large astrometric offset at field 11... 27'),

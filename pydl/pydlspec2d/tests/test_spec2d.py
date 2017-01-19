@@ -4,6 +4,7 @@ import numpy as np
 import os
 from astropy.io import fits
 from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
 from ..spec2d import aesthetics, combine1fiber, filter_thru
 from .. import Pydlspec2dException
 
@@ -13,27 +14,24 @@ class TestSpec2d(object):
     """
 
     def setup(self):
-        self.data_dir = os.path.join(os.path.dirname(__file__), 't')
-        if 'BOSS_SPECTRO_REDUX' in os.environ:
-            self.bsr_orig = os.environ['BOSS_SPECTRO_REDUX']
-            self.bsr = bsr_orig
-        else:
-            self.bsr_orig = None
-            self.bsr = '/boss/spectro/redux'
-            os.environ['BOSS_SPECTRO_REDUX'] = self.bsr
-        if 'RUN2D' in os.environ:
-            self.run2d_orig = os.environ['RUN2D']
-            self.run2d = self.run2d_orig
-        else:
-            self.run2d_orig = None
-            self.run2d = 'v1_2_3'
-            os.environ['RUN2D'] = self.run2d
+        self.env = {'BOSS_SPECTRO_REDUX': '/boss/spectro/redux',
+                    'SPECTRO_REDUX': '/sdss/spectro/redux',
+                    'RUN2D': 'v1_2_3',
+                    'RUN1D': 'v1_2_3'}
+        self.original_env = dict()
+        for key in self.env:
+            if key in os.environ:
+                self.original_env[key] = os.environ[key]
+            else:
+                self.original_env[key] = None
+            os.environ[key] = self.env[key]
 
     def teardown(self):
-        if self.bsr_orig is None:
-            del os.environ['BOSS_SPECTRO_REDUX']
-        if self.run2d_orig is None:
-            del os.environ['RUN2D']
+        for key in self.original_env:
+            if self.original_env[key] is None:
+                del os.environ[key]
+            else:
+                os.environ[key] = self.original_env[key]
 
     def test_aesthetics(self):
         np.random.seed(137)
@@ -63,8 +61,8 @@ class TestSpec2d(object):
         pass
 
     def test_filter_thru(self):
-        with fits.open(os.path.join(self.data_dir,
-                                    'spPlate-4055-55359-0020.fits')) as hdulist:
+        fname = get_pkg_data_filename('t/spPlate-4055-55359-0020.fits')
+        with fits.open(fname) as hdulist:
             flux = hdulist[0].data
             npix = hdulist[0].header['NAXIS1']
             ntrace = hdulist[0].header['NAXIS2']
@@ -75,8 +73,7 @@ class TestSpec2d(object):
         waveimg = 10**(np.tile(loglam0, 20).reshape(flux.shape))
         assert waveimg.shape == flux.shape
         f = filter_thru(flux, waveimg=waveimg)
-        idl_data_file = os.path.join(self.data_dir,
-                                     'filter_thru_idl_data.txt')
+        idl_data_file = get_pkg_data_filename('t/filter_thru_idl_data.txt')
         idl_data = np.loadtxt(idl_data_file, dtype='f', delimiter=',').T
         assert f.shape == (20, 5)
         assert np.allclose(f, idl_data, atol=1.0e-6)

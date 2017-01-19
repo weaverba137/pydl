@@ -1,7 +1,6 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from os.path import dirname, join
 from astropy.tests.helper import raises
 from ..bspline import iterfit
 from ... import smooth
@@ -12,7 +11,7 @@ class TestBspline(object):
     """
 
     def setup(self):
-        self.data_dir = join(dirname(__file__), 't')
+        pass
 
     def teardown(self):
         pass

@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import os
-# from astropy.tests.helper import raises
-from ..spec1d import findspec, spec_append, spec_path, wavevector
+from astropy.tests.helper import raises
+from astropy.utils.data import get_pkg_data_filename
+from .. import Pydlspec2dException
+from ..spec1d import (HMF, findspec, spec_append, spec_path, template_metadata,
+                      wavevector)
 
 
 class TestSpec1d(object):
@@ -11,7 +14,6 @@ class TestSpec1d(object):
     """
 
     def setup(self):
-        self.data_dir = os.path.join(os.path.dirname(__file__), 't')
         self.env = {'BOSS_SPECTRO_REDUX': '/boss/spectro/redux',
                     'SPECTRO_REDUX': '/sdss/spectro/redux',
                     'RUN2D': 'v1_2_3',
@@ -36,6 +38,18 @@ class TestSpec1d(object):
         """
         # slist = findspec(infile='file.in', sdss=True)
         assert True
+
+    def test_hmf_init(self):
+        """Test initialization of HMF object
+        """
+        spec = np.random.random((20, 100))
+        invvar = np.random.random((20, 100))
+        hmf = HMF(spec, invvar)
+        assert hmf.K == 4
+        assert hmf.log.level == 20  # INFO
+        hmf = HMF(spec, invvar, K=6, verbose=True)
+        assert hmf.K == 6
+        assert hmf.log.level == 10  # DEBUG
 
     def test_spec_append(self):
         spec1 = np.array([[1, 1, 1, 1, 1],
@@ -83,6 +97,14 @@ class TestSpec1d(object):
         assert p[1] == os.path.join(bsr, run2d, '5678')
         p = spec_path(1234, path=bsr)
         assert p[0] == bsr
+
+    def test_template_metadata(self):
+        with raises(Pydlspec2dException):
+            slist, metadata = template_metadata('/no/such/file.par')
+        inputfile = get_pkg_data_filename('t/test_template_metadata.par')
+        slist, metadata = template_metadata(inputfile)
+        assert metadata['object'] == 'gal'
+        assert not metadata['nonnegative']
 
     def test_wavevector(self):
         l = wavevector(3, 4, binsz=0.1)
