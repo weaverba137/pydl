@@ -27,10 +27,6 @@ if not _ASTROPY_SETUP_:
     from .rebin import rebin
     from .smooth import smooth
     from .uniq import uniq
-    # from . import goddard
-    # from . import photoop
-    # from . import pydlutils
-    # from . import pydlspec2d
 
 
 class PydlException(Exception):
