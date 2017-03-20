@@ -5,6 +5,7 @@ PyDL Changelog
 0.5.4 (unreleased)
 ------------------
 
+* Update to `astropy_helpers`_/v1.3.1.
 * Refactor HMF code into an object to contain the data and methods.
 * Use functions from :mod:`astropy.utils.data` where possible.
 * Fix an integer division error encountered when using Numpy 1.12

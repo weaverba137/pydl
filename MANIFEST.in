@@ -1,11 +1,11 @@
 include README.rst
+# include CHANGES.rst
 
 include ez_setup.py
 include ah_bootstrap.py
 include setup.cfg
-include pytest.ini
 
-recursive-include *.pyx *.c *.pxd
+recursive-include pydl *.pyx *.c *.pxd
 recursive-include docs *
 recursive-include licenses *
 recursive-include cextern *

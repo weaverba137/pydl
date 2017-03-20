@@ -16,6 +16,7 @@ pydl/pydl.cfg
 htmlcov
 .coverage
 MANIFEST
+.ipynb_checkpoints
 
 # Sphinx
 docs/api
