@@ -17,7 +17,7 @@ idlutils_ is itself divided into a number of subpackages.  Below we list
 the subpackages and the usability of the PyDL equivalent.
 The readiness levels are defined as:
 
-Not Applicable
+Not Applicable (NA)
     Another built-in or numpy/scipy/astropy package completely replaces this.  No point in implementing.
 None
     Not (yet) implemented at all.
@@ -41,10 +41,10 @@ dimage      None
 djsphot     None
 dust        None            For use with the SFD galactic dust map.
 first       None            For use with matching FIRST catalogs to SDSS data.
-fits        Not Applicable  Use :mod:`astropy.io.fits`.
+fits        NA              Use :mod:`astropy.io.fits`.
 healpix     None
 image       Rudimentary     Only a few functions implemented.
-json        Not Applicable  Use :mod:`json` or other packages.
+json        NA              Use :mod:`json` or other packages.
 mangle      Fair            Some work still required on polygon area calculations.
 math        Fair
 mcmc        None            But there are plenty of good Python MCMC packages out there.
@@ -60,7 +60,7 @@ rosat       None            For use with matching ROSAT catalogs to SDSS data.
 sdss        Good            Most important functionalities are bitmasks and reading sweep files.
 slatec      None
 spheregroup Good            Used for matching arbitrary RA, Dec coordinates to other arbitrary RA, Dec coordinates.
-TeXtoIDL    Not Applicable  This package is for including TeX in IDL plots.  Since matplotlib understands TeX natively, this is not needed.
+TeXtoIDL    NA              This package is for including TeX in IDL plots.  Since matplotlib understands TeX natively, this is not needed.
 trace       Fair
 ukidss      None            Used for matching UKIDSS catalogs to SDSS data.
 wise        None            Used for matching WISE catalogs to SDSS data.

@@ -105,8 +105,8 @@ release = package.__version__
 
 # Please update these texts to match the name of your package.
 html_theme_options = {
-    'logotext1': 'PyDL',  # white,  semi-bold
-    'logotext2': '',  # orange, light
+    'logotext1': '',  # white,  semi-bold
+    'logotext2': 'PyDL',  # orange, light
     'logotext3': ':docs'   # white,  light
     }
 
