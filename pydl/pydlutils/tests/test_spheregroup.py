@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from astropy.tests.helper import raises
+from astropy.tests.helper import raises, catch_warnings
 from astropy.utils.data import get_pkg_data_filename
 from ..spheregroup import spheregroup, spherematch
 from .. import PydlutilsException, PydlutilsUserWarning
@@ -17,7 +17,7 @@ class TestSpheregroup(object):
     def teardown(self):
         pass
 
-    def test_spheregroup(self, recwarn):
+    def test_spheregroup(self):
         test_data_file = get_pkg_data_filename('t/spheregroup_data.txt')
         test_data = np.loadtxt(test_data_file, dtype='d', delimiter=',')
         # np.random.seed(137)
@@ -70,9 +70,10 @@ class TestSpheregroup(object):
         #
         # warnings
         #
-        group = spheregroup(ra, dec, linklength, chunksize=linklength)
-        w = recwarn.pop(PydlutilsUserWarning)
-        assert "chunksize changed to" in str(w.message)
+        with catch_warnings(PydlutilsUserWarning) as w:
+            group = spheregroup(ra, dec, linklength, chunksize=linklength)
+        # w = recwarn.pop(PydlutilsUserWarning)
+        assert "chunksize changed to" in str(w[0].message)
 
     def test_spherematch(self):
         i1_should_be = np.array([17, 0, 2, 16, 12, 13, 1, 5, 15, 7,
