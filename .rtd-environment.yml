@@ -1,4 +1,4 @@
-name: package-template
+name: pydl
 
 channels:
     - astropy
@@ -8,5 +8,6 @@ dependencies:
     - Cython
     - matplotlib
     - numpy
+    - scipy
 #   - pip:
 #       - dependency_from_pip
