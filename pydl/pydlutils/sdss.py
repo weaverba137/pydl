@@ -400,6 +400,139 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
     return objid
 
 
+def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
+    """Convert SDSS spectrum identifiers into CAS-style specObjID.
+
+    Bits are assigned in specObjID thus:
+
+    ===== ========== =============================================================
+    Bits  Name       Comment
+    ===== ========== =============================================================
+    50-63 Plate ID   14 bits
+    38-49 Fiber ID   12 bits
+    24-37 MJD        Date plate was observed minus 50000 (14 bits)
+    10-23 run2d      Spectroscopic reduction version
+    0-9   line/index 0 for use in SpecObj files see below for other uses (10 bits)
+    ===== ========== =============================================================
+
+    Parameters
+    ----------
+    plate, fiber, mjd : :class:`int` or array of int
+        Plate, fiber ID, and MJD for a spectrum.  If arrays are
+        passed, all must have the same length.  The MJD value must be
+        greater than 50000.
+    run2d : :class:`int`, :class:`str` or array of int or str
+        The run2d value must be an integer or a string of the form 'vN_M_P'.
+        If an array is passed, it must have the same length as the other
+        inputs listed above.  If the string form is used, the values are
+        restricted to :math:`5 \le N \le 6`, :math:`0 \le M \le 99`,
+        :math:`0 \le P \le 99`.
+    line : :class:`int`, optional
+        A line index, only used for defining specObjID for SpecLine files.
+        `line` and `index` cannot both be non-zero.
+    index : :class:`int`, optional
+        An index measure, only used for defining specObjID for SpecLineIndex
+        files. `line` and `index` cannot both be non-zero.
+
+    Returns
+    -------
+    :class:`numpy.ndarray` of :class:`numpy.uint64`
+        The specObjIDs of the objects.
+
+    Raises
+    ------
+    ValueError
+        If the sizes of the arrays don't match or if the array values are
+        out of bounds.
+
+    Notes
+    -----
+    * On 32-bit systems, makes sure to explicitly declare all inputs as
+      64-bit integers.
+    * This function defines the SDSS-III/IV version of specObjID, used for
+      SDSS DR8 and subsequent data releases.  It is not compatible with
+      SDSS DR7 or earlier.
+    * If the string form of `run2d` is used, the bits are assigned by
+      the formula :math:`(N - 5) \\times 10000 + M \\times 100 + P`.
+
+    Examples
+    --------
+    >>> from pydl.pydlutils.sdss import sdss_specobjid
+    >>> print(sdss_specobjid(4055,408,55359,'v5_7_0'))
+    [4565636362342690816]
+    """
+    import re
+    if line is not None and index is not None:
+        raise ValueError("line and index inputs cannot both be non-zero!")
+    if isinstance(plate, int):
+        plate = np.array([plate], dtype=np.uint64)
+    if isinstance(fiber, int):
+        fiber = np.array([fiber], dtype=np.uint64)
+    if isinstance(mjd, int):
+        mjd = np.array([mjd], dtype=np.uint64) - 50000
+    if isinstance(run2d, str):
+        try:
+            run2d = np.array([int(run2d)], dtype=np.uint64)
+        except ValueError:
+            # Try a "vN_M_P" string.
+            m = re.match(r'v(\d+)_(\d+)_(\d+)', run2d)
+            if m is None:
+                raise ValueError("Could not extract integer run2d value!")
+            else:
+                N, M, P = m.groups()
+            run2d = np.array([(int(N) - 5)*10000 + int(M) * 100 + int(P)],
+                             dtype=np.uint64)
+    elif isinstance(run2d, int):
+        run2d = np.array([run2d], dtype=np.uint64)
+    if line is None:
+        line = np.zeros(plate.shape, dtype=plate.dtype)
+    else:
+        if isinstance(line, int):
+            line = np.array([line], dtype=np.uint64)
+    if index is None:
+        index = np.zeros(plate.shape, dtype=plate.dtype)
+    else:
+        if isinstance(index, int):
+            index = np.array([index], dtype=np.uint64)
+    #
+    # Check that all inputs have the same shape.
+    #
+    if plate.shape != fiber.shape:
+        raise ValueError("fiber.shape does not match plate.shape!")
+    if plate.shape != mjd.shape:
+        raise ValueError("mjd.shape does not match plate.shape!")
+    if plate.shape != run2d.shape:
+        raise ValueError("run2d.shape does not match plate.shape!")
+    if plate.shape != line.shape:
+        raise ValueError("line.shape does not match plate.shape!")
+    if plate.shape != index.shape:
+        raise ValueError("index.shape does not match plate.shape!")
+    #
+    # Check ranges of parameters
+    #
+    if ((plate < 0) | (plate >= 2**14)).any():
+        raise ValueError("plate values are out-of-bounds!")
+    if ((fiber < 0) | (fiber >= 2**12)).any():
+        raise ValueError("fiber values are out-of-bounds!")
+    if ((mjd < 0) | (mjd >= 2**14)).any():
+        raise ValueError("MJD values are out-of-bounds!")
+    if ((run2d < 0) | (run2d >= 2**14)).any():
+        raise ValueError("MJD values are out-of-bounds!")
+    if ((line < 0) | (line >= 2**10)).any():
+        raise ValueError("line values are out-of-bounds!")
+    if ((index < 0) | (index >= 2**10)).any():
+        raise ValueError("index values are out-of-bounds!")
+    #
+    # Compute the specObjID
+    #
+    specObjID = ((plate << 50) |
+                 (fiber << 38) |
+                 (mjd << 24) |
+                 (run2d << 10) |
+                 (line | index))
+    return specObjID
+
+
 def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     """Read the SDSS datasweep files and return objects around a location.
 
@@ -581,3 +714,69 @@ def set_maskbits(idlutils_version='v5_5_24', maskbits_file=None):
         for k in range(maskfile.size('MASKALIAS')):
             maskbits[maskfile['MASKALIAS']['alias'][k]] = maskbits[maskfile['MASKALIAS']['flag'][k]].copy()
     return maskbits
+
+
+def unwrap_specobjid(specObjID, run2d_integer=False, specLineIndex=False):
+    """Unwrap CAS-style specObjID into plate, fiber, mjd, run2d.
+
+    See :func:`~pydl.pydlutils.sdss.sdss_specobjid` for details on how the
+    bits within a specObjID are assigned.
+
+    Parameters
+    ----------
+    specObjID : :class:`numpy.ndarray`
+        An array containing 64-bit integers or strings.  If strings are passed,
+        they will be converted to integers internally.
+    run2d_integer : :class:`bool`, optional
+        If ``True``, do *not* attempt to convert the encoded run2d values
+        to a string of the form 'vN_M_P'.
+    specLineIndex : :class:`bool`, optional
+        If ``True`` interpret any low-order bits as being an 'index'
+        rather than a 'line'.
+
+    Returns
+    -------
+    :class:`numpy.recarray`
+        A record array with the same length as `specObjID`, with the columns
+        'plate', 'fiber', 'mjd', 'run2d', 'line'.
+
+    Examples
+    --------
+    >>> from numpy import array, uint64
+    >>> from pydl.pydlutils.sdss import unwrap_specobjid
+    >>> unwrap_specobjid(array([4565636362342690816], dtype=uint64))
+    rec.array([(4055, 408, 55359, 'v5_7_0', 0)],
+              dtype=[('plate', '<i4'), ('fiber', '<i4'), ('mjd', '<i4'), ('run2d', '<U8'), ('line', '<i4')])
+
+    """
+    if (specObjID.dtype.type is np.string_ or
+        specObjID.dtype.type is np.unicode_):
+        tempobjid = specObjID.astype(np.uint64)
+    elif specObjID.dtype.type is np.uint64:
+        tempobjid = specObjID.copy()
+    else:
+        raise ValueError('Unrecognized type for specObjID!')
+    run2d_dtype = 'U8'
+    if run2d_integer:
+        run2d_dtype = 'i4'
+    line = 'line'
+    if specLineIndex:
+        line = 'index'
+    unwrap = np.recarray(specObjID.shape,
+                         dtype=[('plate', 'i4'), ('fiber', 'i4'),
+                                ('mjd', 'i4'), ('run2d', run2d_dtype),
+                                (line, 'i4')])
+    unwrap.plate = np.bitwise_and(tempobjid >> 50, 2**14 - 1)
+    unwrap.fiber = np.bitwise_and(tempobjid >> 38, 2**12 - 1)
+    unwrap.mjd = np.bitwise_and(tempobjid >> 24, 2**14 - 1) + 50000
+    run2d = np.bitwise_and(tempobjid >> 10, 2**14 - 1)
+    if run2d_integer:
+        unwrap.run2d = run2d
+    else:
+        N = ((run2d // 10000) + 5).tolist()
+        M = ((run2d % 10000) // 100).tolist()
+        P = (run2d % 100).tolist()
+        unwrap.run2d = ['v{0:d}_{1:d}_{2:d}'.format(n, m, p)
+                        for n, m, p in zip(N, M, P)]
+    unwrap[line] = np.bitwise_and(tempobjid, 2**10 - 1)
+    return unwrap
