@@ -183,6 +183,11 @@ class TestSDSS(object):
         s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', index=137)
         assert s == 4565636362342690816 + 137
         #
+        # Because 5-digit plate IDs...
+        #
+        s = sdss_specobjid(10000, 1, 57346, 'v5_10_0')
+        assert s == 11258999466550599680
+        #
         # Exceptions
         #
         with raises(ValueError):
@@ -226,6 +231,16 @@ class TestSDSS(object):
         assert d.fiber == 408
         assert d.run2d == 700
         assert d.line == 137
+        #
+        # Because 5-digit plate IDs...
+        #
+        s5 = 11258999466550599680
+        d = unwrap_specobjid(np.array([s5], dtype=np.uint64))
+        assert d.plate == 10000
+        assert d.mjd == 57346
+        assert d.fiber == 1
+        assert d.run2d == 'v5_10_0'
+        assert d.line == 0
         #
         # Exceptions
         #
