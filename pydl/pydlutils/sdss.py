@@ -483,7 +483,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
             run2d = np.array([(int(N) - 5)*10000 + int(M) * 100 + int(P)],
                              dtype=np.uint64)
     elif isinstance(run2d, int):
-        run2d = np.array([run2d], dtype=uint64)
+        run2d = np.array([run2d], dtype=np.uint64)
     if line is None:
         line = np.zeros(plate.shape, dtype=plate.dtype)
     else:

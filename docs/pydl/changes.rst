@@ -5,6 +5,9 @@ PyDL Changelog
 0.5.4 (unreleased)
 ------------------
 
+* Added :func:`~pydl.pydlutils.sdss.sdss_specobjid` to compute SDSS
+  specObjIDs, and its inverse function
+  :func:`~pydl.pydlutils.sdss.unwrap_specobjid`.
 * Update to `astropy_helpers`_/v1.3.1.
 * Refactor HMF code into an object to contain the data and methods.
 * Use functions from :mod:`astropy.utils.data` where possible.

@@ -6,7 +6,7 @@ from astropy.tests.helper import remote_data, raises
 from astropy.utils.data import get_pkg_data_filename
 from ..sdss import (default_skyversion, sdss_flagexist, sdss_flagname,
                     sdss_flagval, set_maskbits, sdss_astrombad,
-                    sdss_objid)
+                    sdss_objid, sdss_specobjid, unwrap_specobjid)
 
 
 class TestSDSS(object):
@@ -172,7 +172,63 @@ class TestSDSS(object):
             objid = sdss_objid(3704, 3, 91, 2**16)
 
     def test_sdss_specobjid(self):
-        pass
+        s = sdss_specobjid(4055, 408, 55359, 'v5_7_0')
+        assert s == 4565636362342690816
+        s = sdss_specobjid(4055, 408, 55359, '700')
+        assert s == 4565636362342690816
+        s = sdss_specobjid(4055, 408, 55359, 700)
+        assert s == 4565636362342690816
+        s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=137)
+        assert s == 4565636362342690816 + 137
+        s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', index=137)
+        assert s == 4565636362342690816 + 137
+        #
+        # Exceptions
+        #
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=137,
+                               index=137)
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'V5.7.0')
 
     def test_unwrap_specobjid(self):
-        pass
+        s = 4565636362342690816
+        d = unwrap_specobjid(np.array([s], dtype=np.uint64))
+        assert d.plate == 4055
+        assert d.mjd == 55359
+        assert d.fiber == 408
+        assert d.run2d == 'v5_7_0'
+        assert d.line == 0
+        d = unwrap_specobjid(np.array(['4565636362342690816']))
+        assert d.plate == 4055
+        assert d.mjd == 55359
+        assert d.fiber == 408
+        assert d.run2d == 'v5_7_0'
+        assert d.line == 0
+        si = 4565636362342690816 + 137
+        d = unwrap_specobjid(np.array([si], dtype=np.uint64))
+        assert d.plate == 4055
+        assert d.mjd == 55359
+        assert d.fiber == 408
+        assert d.run2d == 'v5_7_0'
+        assert d.line == 137
+        d = unwrap_specobjid(np.array([si], dtype=np.uint64),
+                             specLineIndex=True)
+        assert d.plate == 4055
+        assert d.mjd == 55359
+        assert d.fiber == 408
+        assert d.run2d == 'v5_7_0'
+        assert d.index == 137
+        d = unwrap_specobjid(np.array([si], dtype=np.uint64),
+                             run2d_integer=True)
+        assert d.plate == 4055
+        assert d.mjd == 55359
+        assert d.fiber == 408
+        assert d.run2d == 700
+        assert d.line == 137
+        #
+        # Exceptions
+        #
+        with raises(ValueError):
+            d = unwrap_specobjid(np.array([4565636362342690816],
+                                 dtype=np.int64))
