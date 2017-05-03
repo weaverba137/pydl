@@ -436,7 +436,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
 
     Returns
     -------
-    :class:`numpy.ndarray` of :class:`numpy.int64`
+    :class:`numpy.ndarray` of :class:`numpy.uint64`
         The specObjIDs of the objects.
 
     Raises
@@ -453,7 +453,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
       SDSS DR8 and subsequent data releases.  It is not compatible with
       SDSS DR7 or earlier.
     * If the string form of `run2d` is used, the bits are assigned by
-      the formula :math:`(N - 5) \times 10000 + M \times 100 + P`.
+      the formula :math:`(N - 5) \\times 10000 + M \\times 100 + P`.
 
     Examples
     --------

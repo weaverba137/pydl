@@ -195,6 +195,30 @@ class TestSDSS(object):
                                index=137)
         with raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'V5.7.0')
+        with raises(ValueError):
+            s = sdss_specobjid(-1, 408, 55359, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(2**15, 408, 55359, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, -1, 55359, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 2**12, 55359, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 49999, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 2**15, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, -1)
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 2**15)
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=-1)
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=2**10)
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', index=-1)
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', index=2**10)
 
     def test_unwrap_specobjid(self):
         s = 4565636362342690816
