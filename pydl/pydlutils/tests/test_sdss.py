@@ -173,3 +173,6 @@ class TestSDSS(object):
 
     def test_sdss_specobjid(self):
         pass
+
+    def test_unwrap_specobjid(self):
+        pass

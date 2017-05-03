@@ -454,6 +454,12 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
       SDSS DR7 or earlier.
     * If the string form of `run2d` is used, the bits are assigned by
       the formula :math:`(N - 5) \times 10000 + M \times 100 + P`.
+
+    Examples
+    --------
+    >>> from pydl.pydlutils.sdss import sdss_specobjid
+    >>> print(sdss_specobjid(4055,408,55359,'v5_7_0'))
+    [4565636362342690816]
     """
     import re
     if line is not None and index is not None:
@@ -469,7 +475,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
             run2d = np.array([int(run2d)], dtype=np.uint64)
         except ValueError:
             # Try a "vN_M_P" string.
-            m = re.match(r'v(\d+)_(\d+)_(\d+)')
+            m = re.match(r'v(\d+)_(\d+)_(\d+)', run2d)
             if m is None:
                 raise ValueError("Could not extract integer run2d value!")
             else:
@@ -708,3 +714,69 @@ def set_maskbits(idlutils_version='v5_5_24', maskbits_file=None):
         for k in range(maskfile.size('MASKALIAS')):
             maskbits[maskfile['MASKALIAS']['alias'][k]] = maskbits[maskfile['MASKALIAS']['flag'][k]].copy()
     return maskbits
+
+
+def unwrap_specobjid(specObjID, run2d_integer=False, specLineIndex=False):
+    """Unwrap CAS-style specObjID into plate, fiber, mjd, run2d.
+
+    See :func:`~pydl.pydlutils.sdss.sdss_specobjid` for details on how the
+    bits within a specObjID are assigned.
+
+    Parameters
+    ----------
+    specObjID : :class:`numpy.ndarray`
+        An array containing 64-bit integers or strings.  If strings are passed,
+        they will be converted to integers internally.
+    run2d_integer : :class:`bool`, optional
+        If ``True``, do *not* attempt to convert the encoded run2d values
+        to a string of the form 'vN_M_P'.
+    specLineIndex : :class:`bool`, optional
+        If ``True`` interpret any low-order bits as being an 'index'
+        rather than a 'line'.
+
+    Returns
+    -------
+    :class:`numpy.recarray`
+        A record array with the same length as `specObjID`, with the columns
+        'plate', 'fiber', 'mjd', 'run2d', 'line'.
+
+    Examples
+    --------
+    >>> from numpy import array, uint64
+    >>> from pydl.pydlutils.sdss import unwrap_specobjid
+    >>> unwrap_specobjid(array([4565636362342690816], dtype=uint64))
+    rec.array([(4055, 408, 55359, 'v5_7_0', 0)],
+              dtype=[('plate', '<i4'), ('fiber', '<i4'), ('mjd', '<i4'), ('run2d', '<U8'), ('line', '<i4')])
+
+    """
+    if (specObjID.dtype.type is np.string_ or
+        specObjID.dtype.type is np.unicode_):
+        tempobjid = specObjID.astype(np.uint64)
+    elif specObjID.dtype.type is np.uint64:
+        tempobjid = specObjID.copy()
+    else:
+        raise ValueError('Unrecognized type for specObjID!')
+    run2d_dtype = 'U8'
+    if run2d_integer:
+        run2d_dtype = 'i4'
+    line = 'line'
+    if specLineIndex:
+        line = 'index'
+    unwrap = np.recarray(specObjID.shape,
+                         dtype=[('plate', 'i4'), ('fiber', 'i4'),
+                                ('mjd', 'i4'), ('run2d', run2d_dtype),
+                                (line, 'i4')])
+    unwrap.plate = np.bitwise_and(tempobjid >> 50, 2**14 - 1)
+    unwrap.fiber = np.bitwise_and(tempobjid >> 38, 2**12 - 1)
+    unwrap.mjd = np.bitwise_and(tempobjid >> 24, 2**14 - 1) + 50000
+    run2d = np.bitwise_and(tempobjid >> 10, 2**14 - 1)
+    if run2d_integer:
+        unwrap.run2d = run2d
+    else:
+        N = ((run2d // 10000) + 5).tolist()
+        M = ((run2d % 10000) // 100).tolist()
+        P = (run2d % 100).tolist()
+        unwrap.run2d = ['v{0:d}_{1:d}_{2:d}'.format(n, m, p)
+                        for n, m, p in zip(N, M, P)]
+    unwrap[line] = np.bitwise_and(tempobjid, 2**10 - 1)
+    return unwrap
