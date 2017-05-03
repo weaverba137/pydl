@@ -170,3 +170,6 @@ class TestSDSS(object):
             objid = sdss_objid(3704, 3, 91, -2)
         with raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 2**16)
+
+    def test_sdss_specobjid(self):
+        pass
