@@ -2,7 +2,7 @@
 PyDL Changelog
 ==============
 
-0.5.4 (unreleased)
+0.5.4 (2016-05-04)
 ------------------
 
 * Added :func:`~pydl.pydlutils.sdss.sdss_specobjid` to compute SDSS
