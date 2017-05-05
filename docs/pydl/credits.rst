@@ -11,6 +11,7 @@ If we have neglected to include you, please let us know right away!
 * `Christoph Deil <https://github.com/cdeil>`_
 * `Mike DiPompeo <https://github.com/mdipompe>`_
 * `igoldste <https://github.com/igoldste>`_
+* `Duncan Macleod <https://github.com/duncanmmacleod>`_
 * `Demitri Muna <https://github.com/demitri>`_
 * `Thomas Robitaille <https://github.com/astrofrog>`_
 * `Brigitta Sipocz <https://github.com/bsipocz>`_

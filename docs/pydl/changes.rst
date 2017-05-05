@@ -5,7 +5,9 @@ PyDL Changelog
 0.5.5 (unreleased)
 ------------------
 
-* No changes yet.
+* Fix typo (`PR #26`_).
+
+.. _`PR #26`: https://github.com/weaverba137/pydl/pull/26
 
 0.5.4 (2017-05-04)
 ------------------
