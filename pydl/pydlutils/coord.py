@@ -46,7 +46,7 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
         }
     frame_specific_representation_info['unitspherical'] = (
             frame_specific_representation_info['spherical'])
-    stripe = ac.FrameAttribute(default=0)
+    stripe = ac.Attribute(default=0)
     node = ac.QuantityFrameAttribute(default=ac.Angle(95.0, unit=u.deg),
                                      unit=u.deg)
     # phi = ac.QuantityFrameAttribute(default=None, unit=u.deg)
