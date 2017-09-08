@@ -206,7 +206,7 @@ def hogg_iau_name(ra, dec, prefix='SDSS', precision=1):
 def hogg_iau_name_main():  # pragma: no cover
     from argparse import ArgumentParser
     parser = ArgumentParser(description='Properly format astronomical ' +
-                                        'source names to the IAU convention.'))
+                                        'source names to the IAU convention.')
     parser.add_argument('-P', '--precision', dest='precision', action='store',
                         metavar='N', default=1, type=int,
                         help='Digits of precision to add to the declination.')
