@@ -13,7 +13,7 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
     Attributes
     ----------
     stripe
-        SDSS Stripe Number
+        SDSS `Stripe Number`_ .
     node
         Node of the great circle with respect to the celestial equator.
         In SDSS, this is almost always RA = 95.0 degrees.
@@ -23,6 +23,8 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
     phi
         Counter-clockwise position angle w.r.t. north for an arc
         in the +nu direction.
+
+    .. _`Stripe Number`: http://www.sdss.org/dr14/help/glossary/#stripe
 
     Parameters
     ----------
@@ -46,9 +48,9 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
         }
     frame_specific_representation_info['unitspherical'] = (
             frame_specific_representation_info['spherical'])
-    stripe = ac.FrameAttribute(default=0)
-    node = ac.QuantityFrameAttribute(default=ac.Angle(95.0, unit=u.deg),
-                                     unit=u.deg)
+    stripe = ac.Attribute(default=0)
+    node = ac.QuantityAttribute(default=ac.Angle(95.0, unit=u.deg),
+                                unit=u.deg)
     # phi = ac.QuantityFrameAttribute(default=None, unit=u.deg)
 
     @property

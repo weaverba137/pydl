@@ -204,22 +204,22 @@ def hogg_iau_name(ra, dec, prefix='SDSS', precision=1):
 
 
 def hogg_iau_name_main():  # pragma: no cover
-    from astropy.utils.compat import argparse
-    parser = argparse.ArgumentParser(
-                description=('Properly format astronomical source names ' +
-                            'to the IAU convention.'))
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description='Properly format astronomical ' +
+                                        'source names to the IAU convention.')
     parser.add_argument('-P', '--precision', dest='precision', action='store',
-        metavar='N', default=1, type=int,
-        help='Digits of precision to add to the declination.')
+                        metavar='N', default=1, type=int,
+                        help='Digits of precision to add to the declination.')
     parser.add_argument('-p', '--prefix', dest='prefix', action='store',
-        metavar='STR', default='SDSS', help='Add this prefix to the name.')
+                        metavar='STR', default='SDSS',
+                        help='Add this prefix to the name.')
     parser.add_argument('ra', metavar='RA', type=float,
-        help='Right Ascension.')
+                            help='Right Ascension.')
     parser.add_argument('dec', metavar='Dec', type=float,
-        help='Declination.')
+                        help='Declination.')
     options = parser.parse_args()
     print(hogg_iau_name(options.ra, options.dec,
-        prefix=options.prefix, precision=options.precision))
+                        prefix=options.prefix, precision=options.precision))
     return 0
 
 

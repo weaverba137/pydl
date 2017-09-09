@@ -2,12 +2,18 @@
 PyDL Changelog
 ==============
 
-0.5.5 (unreleased)
+0.6.0 (unreleased)
 ------------------
 
-* Fix typo (`PR #26`_).
+* This release is compatible with Astropy 2.0, and may be backwards
+  incompatible with astropy v1.x.
+* Update to `astropy_helpers`_/v2.0.1.
+* Use standard library :mod:`argparse` (Issue `#31`_).
+* Use the new :class:`astropy.coordinates.Attribute` class.
+* Fix typo (PR `#26`_).
 
-.. _`PR #26`: https://github.com/weaverba137/pydl/pull/26
+.. _`#31`: https://github.com/weaverba137/pydl/issues/31.
+.. _`#26`: https://github.com/weaverba137/pydl/pull/26
 
 0.5.4 (2017-05-04)
 ------------------
@@ -19,38 +25,38 @@ PyDL Changelog
 * Refactor HMF code into an object to contain the data and methods.
 * Use functions from :mod:`astropy.utils.data` where possible.
 * Fix an integer division error encountered when using Numpy 1.12
-  (`Issue #19`_).
+  (Issue `#19`_).
 * Fixed tests that were failing on 32-bit platforms *and* Python 3.5
-  (`Issue #20`_).
+  (Issue `#20`_).
 
-.. _`Issue #19`: https://github.com/weaverba137/pydl/issues/19
-.. _`Issue #20`: https://github.com/weaverba137/pydl/issues/20
+.. _`#19`: https://github.com/weaverba137/pydl/issues/19
+.. _`#20`: https://github.com/weaverba137/pydl/issues/20
 
 0.5.3 (2016-12-03)
 ------------------
 
 * Fixed formatting of TODO document.
-* Fixed tests that were failing on 32-bit platforms (`Issue #14`_).
+* Fixed tests that were failing on 32-bit platforms (Issue `#14`_).
 * Use temporary files so that tests can run when astropy is installed
-  read-only (*e.g.*, with :command:`pip`; `Issue #16`_)
+  read-only (*e.g.*, with :command:`pip`; Issue `#16`_)
 
-.. _`Issue #14`: https://github.com/weaverba137/pydl/issues/14
-.. _`Issue #16`: https://github.com/weaverba137/pydl/issues/16
+.. _`#14`: https://github.com/weaverba137/pydl/issues/14
+.. _`#16`: https://github.com/weaverba137/pydl/issues/16
 
 0.5.2 (2016-08-04)
 ------------------
 
 * Changes in how Mangle-polygon containing FITS files are handled, related to
-  `Issue #11`_.
+  Issue `#11`_.
 * Fixed memory leak in :func:`~pydl.pydlspec2d.spec2d.combine1fiber`,
-  see `Issue #12`_.
+  see Issue `#12`_.
 * Added :func:`~pydl.pydlutils.mangle.is_in_window`.
 * Allow polygon area functions to deal with negative caps and ``use_caps``.
-* Update ``docs/conf.py`` for Python 3.5 compatibility (`PR #13`_).
+* Update ``docs/conf.py`` for Python 3.5 compatibility (PR `#13`_).
 
-.. _`PR #13`: https://github.com/weaverba137/pydl/pull/13
-.. _`Issue #11`: https://github.com/weaverba137/pydl/issues/11
-.. _`Issue #12`: https://github.com/weaverba137/pydl/issues/12
+.. _`#13`: https://github.com/weaverba137/pydl/pull/13
+.. _`#11`: https://github.com/weaverba137/pydl/issues/11
+.. _`#12`: https://github.com/weaverba137/pydl/issues/12
 
 
 0.5.1 (2016-06-22)
@@ -63,11 +69,11 @@ PyDL Changelog
 * Upgrade to `astropy_helpers`_/v1.2.
 * Update to latest version of package-template_.
 * Disabled tests on Python 3.3; enabled tests on Python 3.5
-* Fix `Issue #8`_; `Issue #9`_.
+* Fix Issue `#8`_; Issue `#9`_.
 * Add warnings about incomplete Mangle functions.
 
-.. _`Issue #8`: https://github.com/weaverba137/pydl/issues/8
-.. _`Issue #9`: https://github.com/weaverba137/pydl/issues/9
+.. _`#8`: https://github.com/weaverba137/pydl/issues/8
+.. _`#9`: https://github.com/weaverba137/pydl/issues/9
 
 0.5.0 (2016-05-01)
 ------------------
@@ -88,7 +94,7 @@ PyDL Changelog
 * Improving `PEP 8`_ compliance
 * Restructuing sub-packages to reduce the number of files.
 * Improvements to spectral template processing code, deduplicated some code.
-* Support platform-independent home directory (`PR #7`_).
+* Support platform-independent home directory (PR `#7`_).
 * Uppercase the package name (in documentation only).
 * Upgrade to `astropy_helpers`_/v1.1.1.
 * Add functions from the idlutils rgbcolor directory.
@@ -96,7 +102,7 @@ PyDL Changelog
   BOSS.
 
 .. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
-.. _`PR #7`: https://github.com/weaverba137/pydl/pull/7
+.. _`#7`: https://github.com/weaverba137/pydl/pull/7
 
 0.4.1 (2015-09-22)
 ------------------
