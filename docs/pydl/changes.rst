@@ -2,7 +2,7 @@
 PyDL Changelog
 ==============
 
-0.6.0 (unreleased)
+0.6.0 (2017-09-19)
 ------------------
 
 * This release is compatible with Astropy 2.0, and may be backwards
