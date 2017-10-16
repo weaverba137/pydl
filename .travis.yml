@@ -35,10 +35,15 @@ env:
         - PIP_DEPENDENCIES=''
         - EVENT_TYPE='pull_request push'
 
+
         # For this package-template, we include examples of Cython modules,
         # so Cython is required for testing. If your package does not include
         # Cython code, you can set CONDA_DEPENDENCIES=''
         - CONDA_DEPENDENCIES='scipy matplotlib'
+
+        # List other runtime dependencies for the package that are available as
+        # pip packages here.
+        # - PIP_DEPENDENCIES=''
 
         # Conda packages for affiliated packages are hosted in channel
         # "astropy" while builds for astropy LTS with recent numpy versions
@@ -77,10 +82,7 @@ matrix:
         - os: linux
           env: SETUP_CMD='build_docs -w'
 
-        # Now try Astropy dev and LTS vesions with the latest 3.x and 2.7.
-        - os: linux
-          env: PYTHON_VERSION=2.7 ASTROPY_VERSION=development
-               EVENT_TYPE='pull_request push cron'
+        # Now try Astropy dev with the latest Python and LTS with Python 2.7 and 3.x.
         - os: linux
           env: ASTROPY_VERSION=development
                EVENT_TYPE='pull_request push cron'
@@ -100,6 +102,8 @@ matrix:
           env: PYTHON_VERSION=3.4 NUMPY_VERSION=1.10
         - os: linux
           env: PYTHON_VERSION=3.5 NUMPY_VERSION=1.11
+        - os: linux
+          env: NUMPY_VERSION=1.12
 
         # Try numpy pre-release
         - os: linux
@@ -129,7 +133,7 @@ install:
     # in how to install a package, in which case you can have additional
     # commands in the install: section below.
 
-    - git clone git://github.com/astropy/ci-helpers.git
+    - git clone --depth 1 git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda.sh
 
     # As described above, using ci-helpers, you should be able to set up an
@@ -145,7 +149,6 @@ script:
    - $MAIN_CMD $SETUP_CMD
 
 after_success:
-    # If coveralls.io is set up for this package, uncomment the line
-    # below and replace "packagename" with the name of your package.
+    # If coveralls.io is set up for this package, uncomment the line below.
     # The coveragerc file may be customized as needed for your package.
     - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='pydl/tests/coveragerc'; fi

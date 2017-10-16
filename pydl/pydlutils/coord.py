@@ -24,8 +24,6 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
         Counter-clockwise position angle w.r.t. north for an arc
         in the +nu direction.
 
-    .. _`Stripe Number`: http://www.sdss.org/dr14/help/glossary/#stripe
-
     Parameters
     ----------
     mu : :class:`~astropy.coordinates.Angle`
@@ -36,6 +34,8 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
     Notes
     -----
     http://www.sdss.org/dr12/algorithms/surveycoords/
+
+    .. _`Stripe Number`: http://www.sdss.org/dr14/help/glossary/#stripe
     """
     default_representation = ac.SphericalRepresentation
     frame_specific_representation_info = {
