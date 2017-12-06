@@ -7,7 +7,12 @@ PyDL
     :alt: Powered by Astropy Badge
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1095151.svg
-   :target: https://doi.org/10.5281/zenodo.1095151
+    :target: https://doi.org/10.5281/zenodo.1095151
+    :alt: DOI: 10.5281/zenodo.1095151
+
+.. image:: https://img.shields.io/pypi/v/pydl.svg
+    :target: https://pypi.python.org/pypi/pydl
+    :alt: PyPI Badge
 
 Description
 -----------
@@ -25,15 +30,6 @@ There are four astronomical libraries targeted:
 * photoop_ : tools for working with SDSS_ imaging data.
 
 This package affiliated with the astropy_ project and is registered with PyPI_.
-
-.. image:: https://img.shields.io/pypi/v/pydl.svg
-    :target: https://pypi.python.org/pypi/pydl
-    :alt: PyPI Badge
-
-.. image:: https://img.shields.io/pypi/dm/pydl.svg
-    :target: https://pypi.python.org/pypi/pydl
-    :alt: PyPI Downloads
-
 
 Full Documentation
 ------------------
