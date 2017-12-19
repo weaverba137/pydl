@@ -29,6 +29,14 @@ if not _ASTROPY_SETUP_:
     from .uniq import uniq
 
 
+# Workaround: Numpy 1.14.x changes the way arrays are printed.
+import numpy as np
+try:
+    np.set_printoptions(legacy='1.13')
+except Exception:
+    pass
+
+
 class PydlException(Exception):
     """Base class for exceptions raised in PyDL functions.
     """

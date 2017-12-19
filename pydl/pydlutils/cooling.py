@@ -4,14 +4,6 @@
 """
 
 
-# Workaround: Numpy 1.14.x changes the way arrays are printed.
-import numpy as np
-try:
-    np.set_printoptions(legacy='1.13')
-except Exception:
-    pass
-
-
 def read_ds_cooling(fname, logT=None):
     """Read in the `Sutherland & Dopita (1993)
     <http://adsabs.harvard.edu/abs/1993ApJS...88..253S>`_ cooling function.
