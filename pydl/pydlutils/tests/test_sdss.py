@@ -199,6 +199,21 @@ class TestSDSS(object):
         # Exceptions
         #
         with raises(ValueError):
+            s = sdss_specobjid(np.array([4055, 4056]), 408, 55359, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, np.array([408, 409]), 55359, 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, np.array([55359, 55360]), 'v5_7_0')
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359,
+                               np.array(['v5_7_0', 'v5_7_2']))
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'v5_7_0',
+                               line=np.array([137, 138]))
+        with raises(ValueError):
+            s = sdss_specobjid(4055, 408, 55359, 'v5_7_0',
+                               index=np.array([137, 138]))
+        with raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=137,
                                index=137)
         with raises(ValueError):
