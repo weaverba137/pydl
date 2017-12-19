@@ -77,9 +77,9 @@ matrix:
         - os: linux
           env: SETUP_CMD='build_docs -w'
 
-        # Now try Astropy dev and LTS vesions with the latest 3.x and 2.7.
+        # Now try Astropy dev with the latest Python and LTS with Python 2.7 and 3.x.
         - os: linux
-          env: PYTHON_VERSION=2.7 ASTROPY_VERSION=development
+          env: ASTROPY_VERSION=development
                EVENT_TYPE='pull_request push cron'
         - os: linux
           env: ASTROPY_VERSION=development
@@ -100,6 +100,8 @@ matrix:
           env: PYTHON_VERSION=3.4 NUMPY_VERSION=1.10
         - os: linux
           env: PYTHON_VERSION=3.5 NUMPY_VERSION=1.11
+        - os: linux
+          env: NUMPY_VERSION=1.12
 
         # Try numpy pre-release
         - os: linux
@@ -129,7 +131,7 @@ install:
     # in how to install a package, in which case you can have additional
     # commands in the install: section below.
 
-    - git clone git://github.com/astropy/ci-helpers.git
+    - git clone --depth 1 git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda.sh
 
     # As described above, using ci-helpers, you should be able to set up an
