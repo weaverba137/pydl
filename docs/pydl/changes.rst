@@ -5,7 +5,9 @@ PyDL Changelog
 0.6.1 (unreleased)
 ------------------
 
-* No changes yet.
+* Support the ``firstField`` bit in ObjIDs from DR7 and earlier (Issue `#37`_).
+
+.. _`#37`: https://github.com/weaverba137/pydl/issues/37.
 
 0.6.0 (2017-09-19)
 ------------------

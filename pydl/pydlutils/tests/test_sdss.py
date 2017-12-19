@@ -131,6 +131,8 @@ class TestSDSS(object):
         assert (np.array([1237661382772195474, 1237649770790322299],
                          dtype=np.int64) ==
                 sdss_objid(run, camcol, field, obj)).all()
+        assert (sdss_objid(752, 5, 618, 459, rerun=40,
+                           skyversion=1, firstfield=1) == 587722984180548043)
         #
         # Exceptions
         #
@@ -147,9 +149,15 @@ class TestSDSS(object):
         with raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, skyversion=np.array([2, 3]))
         with raises(ValueError):
+            objid = sdss_objid(3704, 3, 91, 146, firstfield=np.array([0, 1]))
+        with raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, skyversion=-2)
         with raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, skyversion=16)
+        with raises(ValueError):
+            objid = sdss_objid(3704, 3, 91, 146, firstfield=-2)
+        with raises(ValueError):
+            objid = sdss_objid(3704, 3, 91, 146, firstfield=2)
         with raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, rerun=-2)
         with raises(ValueError):

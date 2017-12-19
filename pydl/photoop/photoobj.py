@@ -40,8 +40,8 @@ def unwrap_objid(objid):
     Returns
     -------
     :class:`numpy.recarray`
-        A record array with the same length as objid, with the columns
-        'run', 'camcol', 'frame', 'id', 'rerun', 'skyversion'.
+        A record array with the same length as `objid`, with the columns
+        'skyversion', 'rerun', 'run', 'camcol', 'firstfield', 'frame', 'id'.
 
     Notes
     -----
@@ -57,8 +57,8 @@ def unwrap_objid(objid):
     >>> from numpy import array
     >>> from pydl.photoop.photoobj import unwrap_objid
     >>> unwrap_objid(array([1237661382772195474]))
-    rec.array([(2, 301, 3704, 3, 91, 146)],
-          dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('frame', '<i4'), ('id', '<i4')])
+    rec.array([(2, 301, 3704, 3, 0, 91, 146)],
+          dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('firstfield', '<i4'), ('frame', '<i4'), ('id', '<i4')])
     """
     import numpy as np
     if objid.dtype.type is np.string_ or objid.dtype.type is np.unicode_:
@@ -70,12 +70,13 @@ def unwrap_objid(objid):
     unwrap = np.recarray(objid.shape,
                          dtype=[('skyversion', 'i4'), ('rerun', 'i4'),
                                 ('run', 'i4'), ('camcol', 'i4'),
+                                ('firstfield', 'i4'),
                                 ('frame', 'i4'), ('id', 'i4')])
     unwrap.skyversion = np.bitwise_and(tempobjid >> 59, 2**4 - 1)
     unwrap.rerun = np.bitwise_and(tempobjid >> 48, 2**11 - 1)
     unwrap.run = np.bitwise_and(tempobjid >> 32, 2**16 - 1)
     unwrap.camcol = np.bitwise_and(tempobjid >> 29, 2**3 - 1)
-    # unwrap.firstfield = np.bitwise_and(tempobjid >> 28, 2**1 - 1)
+    unwrap.firstfield = np.bitwise_and(tempobjid >> 28, 2**1 - 1)
     unwrap.frame = np.bitwise_and(tempobjid >> 16, 2**12 - 1)
     unwrap.id = np.bitwise_and(tempobjid, 2**16 - 1)
     return unwrap
