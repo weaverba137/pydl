@@ -24,6 +24,7 @@ class TestPhotoobj(object):
         assert objid.rerun == 301
         assert objid.run == 3704
         assert objid.camcol == 3
+        assert objid.firstfield == 0
         assert objid.frame == 91
         assert objid.id == 146
         objid = unwrap_objid(np.array(['1237661382772195474']))
@@ -31,7 +32,16 @@ class TestPhotoobj(object):
         assert objid.rerun == 301
         assert objid.run == 3704
         assert objid.camcol == 3
+        assert objid.firstfield == 0
         assert objid.frame == 91
         assert objid.id == 146
+        objid = unwrap_objid(np.array([587722984180548043]))
+        assert objid.skyversion == 1
+        assert objid.rerun == 40
+        assert objid.run == 752
+        assert objid.camcol == 5
+        assert objid.firstfield == 1
+        assert objid.frame == 618
+        assert objid.id == 459
         with raises(ValueError):
             objid = unwrap_objid(np.array([3.14159]))

@@ -5,8 +5,11 @@ PyDL Changelog
 0.6.1 (unreleased)
 ------------------
 
+* Support the ``firstField`` bit in ObjIDs from DR7 and earlier (Issue `#37`_).
 * Change tests of Astropy development version from Python 2 to Python 3.
 * Update to `astropy_helpers`_/v2.0.2.
+
+.. _`#37`: https://github.com/weaverba137/pydl/issues/37.
 
 0.6.0 (2017-09-19)
 ------------------

@@ -44,9 +44,9 @@ def rebin(x, d, sample=False):
     --------
     >>> from numpy import arange, float
     >>> from pydl import rebin
-    >>> rebin(arange(10, dtype=float), (5,))
+    >>> rebin(arange(10, dtype=float), (5,)) # doctest: +NORMALIZE_WHITESPACE
     array([ 0.5,  2.5,  4.5,  6.5,  8.5])
-    >>> rebin(arange(5, dtype=float), (10,))
+    >>> rebin(arange(5, dtype=float), (10,)) # doctest: +NORMALIZE_WHITESPACE
     array([ 0. ,  0.5,  1. ,  1.5,  2. ,  2.5,  3. ,  3.5,  4. ,  4. ])
     """
     from numpy import floor, zeros

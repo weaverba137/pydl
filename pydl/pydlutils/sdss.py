@@ -287,10 +287,11 @@ def sdss_flagval(flagname, bitname):
     return flagvalue
 
 
-def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
+def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None,
+               firstfield=None):
     """Convert SDSS photometric identifiers into CAS-style ObjID.
 
-    Bits are assigned in objid thus:
+    Bits are assigned in ObjID thus:
 
     ===== ========== ===============================================
     Bits  Name       Comment
@@ -300,7 +301,7 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
     48-58 rerun      number of pipeline rerun
     32-47 run        run number
     29-31 camcol     camera column (1-6)
-    28    firstField [is this the first field in segment?] 0 for now
+    28    firstField is this the first field in segment? Usually 0.
     16-27 field      field number within run
     0-15  object     object number within field
     ===== ========== ===============================================
@@ -310,8 +311,9 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
     run, camcol, field, objnum : :class:`int` or array of int
         Run, camcol, field and object number within field.  If arrays are
         passed, all must have the same length.
-    rerun, skyversion : :class:`int` or array of int, optional
-        Rerun and skyversion usually don't change very much.  If supplied,
+    rerun, skyversion, firstfield : :class:`int` or array of int, optional
+        `rerun`, `skyversion` and `firstfield` usually don't change at all,
+        especially for ObjIDs in DR8 and later.  If supplied,
         make sure the size matches all the other values.
 
     Returns
@@ -327,7 +329,7 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
 
     Notes
     -----
-    * ``firstField`` flag never set.
+    * The ``firstField`` flag is never set in ObjIDs from DR8 and later.
     * On 32-bit systems, makes sure to explicitly declare all inputs as
       64-bit integers.
 
@@ -339,6 +341,8 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
     """
     if skyversion is None:
         skyversion = default_skyversion()
+    if firstfield is None:
+        firstfield = 0
     if isinstance(run, int):
         run = np.array([run], dtype=np.int64)
     if isinstance(camcol, int):
@@ -357,11 +361,15 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
             skyversion = np.zeros(run.shape, dtype=np.int64) + default_skyversion()
         else:
             skyversion = np.array([skyversion], dtype=np.int64)
+    if isinstance(firstfield, int):
+        if firstfield == 0:
+            firstfield = np.zeros(run.shape, dtype=np.int64)
+        else:
+            firstfield = np.array([firstfield], dtype=np.int64)
 
     #
     # Check that all inputs have the same shape.
     #
-    firstfield = np.zeros(run.shape, dtype=np.int64)
     if run.shape != camcol.shape:
         raise ValueError("camcol.shape does not match run.shape!")
     if run.shape != field.shape:
@@ -372,9 +380,13 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None):
         raise ValueError("rerun.shape does not match run.shape!")
     if run.shape != skyversion.shape:
         raise ValueError("skyversion.shape does not match run.shape!")
+    if run.shape != firstfield.shape:
+        raise ValueError("firstfield.shape does not match run.shape!")
     #
     # Check ranges of parameters
     #
+    if ((firstfield < 0) | (firstfield > 1)).any():
+        raise ValueError("firstfield values are out-of-bounds!")
     if ((skyversion < 0) | (skyversion >= 16)).any():
         raise ValueError("skyversion values are out-of-bounds!")
     if ((rerun < 0) | (rerun >= 2**11)).any():

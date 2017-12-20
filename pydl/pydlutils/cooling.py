@@ -35,9 +35,9 @@ def read_ds_cooling(fname, logT=None):
     --------
     >>> from pydl.pydlutils.cooling import read_ds_cooling
     >>> logT, loglambda = read_ds_cooling('m-15.cie')
-    >>> logT[0:5]
+    >>> logT[0:5] # doctest: +NORMALIZE_WHITESPACE
     array([ 4.  ,  4.05,  4.1 ,  4.15,  4.2 ])
-    >>> loglambda[0:5]
+    >>> loglambda[0:5] # doctest: +NORMALIZE_WHITESPACE
     array([-26.  , -24.66, -23.52, -22.62, -22.11])
     """
     from astropy.utils.data import get_pkg_data_contents
