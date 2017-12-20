@@ -30,9 +30,9 @@ if not _ASTROPY_SETUP_:
 
 
 # Workaround: Numpy 1.14.x changes the way arrays are printed.
-import numpy as np
 try:
-    np.set_printoptions(legacy='1.13')
+    from numpy import set_printoptions
+    set_printoptions(legacy='1.13')
 except Exception:
     pass
 
