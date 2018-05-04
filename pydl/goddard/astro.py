@@ -12,11 +12,15 @@ def airtovac(air):
     ----------
     air : array-like
         Values of wavelength in air in Angstroms.
+        :class:`~astropy.units.Quantity` objects with valid length
+        dimensions will be internally converted to Angstrom.
 
     Returns
     -------
     array-like
-        Values of wavelength in vacuum in Angstroms.
+        Values of wavelength in vacuum in Angstroms.  If a
+        :class:`~astropy.units.Quantity` object was passed in, the output
+        will be converted to the same units as the input.
 
     Notes
     -----
@@ -25,22 +29,40 @@ def airtovac(air):
     * Values of wavelength below 2000 Å are not converted.
     """
     from numpy import zeros
+    from astropy.units import Angstrom
     try:
-        vacuum = zeros(air.shape, dtype=air.dtype) + air
-        g = vacuum < 2000.0
+        u = air.unit
     except AttributeError:
-        # Most likely, vacuum is simply a float.
-        vacuum = air
-        g = None
+        u = None
+    try:
+        t = air.dtype
+    except AttributeError:
+        # Most likely, air is simply a float.
+        t = None
+    if t is None:
         if air < 2000.0:
             return air
+        vacuum = air
+        a = air
+        g = None
+    else:
+        try:
+            a = air.to(Angstrom).value
+        except AttributeError:
+            a = air
+        g = a < 2000.0
+        if g.all():
+            return air
+        vacuum = zeros(air.shape, dtype=t) + a
     for k in range(2):
         sigma2 = (1.0e4/vacuum)**2
         fact = (1.0 + 5.792105e-2/(238.0185 - sigma2) +
                 1.67917e-3/(57.362 - sigma2))
-        vacuum = air * fact
+        vacuum = a * fact
     if g is not None:
-        vacuum[g] = air[g]
+        vacuum[g] = a[g]
+    if u is not None:
+        vacuum = (vacuum * Angstrom).to(u)
     return vacuum
 
 
@@ -142,11 +164,15 @@ def vactoair(vacuum):
     ----------
     vacuum : array-like
         Values of wavelength in vacuum in Angstroms.
+        :class:`~astropy.units.Quantity` objects with valid length
+        dimensions will be internally converted to Angstrom.
 
     Returns
     -------
     array-like
         Values of wavelength in air in Angstroms.
+        :class:`~astropy.units.Quantity` object was passed in, the output
+        will be converted to the same units as the input.
 
     Notes
     -----
@@ -155,19 +181,37 @@ def vactoair(vacuum):
     * Values of wavelength below 2000 Å are not converted.
     """
     from numpy import zeros
+    from astropy.units import Angstrom
     try:
-        air = zeros(vacuum.shape, dtype=vacuum.dtype)
-        g = vacuum < 2000.0
+        u = vacuum.unit
+    except AttributeError:
+        u = None
+    try:
+        t = vacuum.dtype
     except AttributeError:
         # Most likely, vacuum is simply a float.
-        air = vacuum
-        g = None
+        t = None
+    if t is None:
         if vacuum < 2000.0:
-            return air
-    sigma2 = (1.0e4/vacuum)**2
+            return vacuum
+        air = vacuum
+        v = vacuum
+        g = None
+    else:
+        try:
+            v = vacuum.to(Angstrom).value
+        except AttributeError:
+            v = vacuum
+        g = v < 2000.0
+        if g.all():
+            return vacuum
+        air = zeros(vacuum.shape, dtype=t) + v
+    sigma2 = (1.0e4/v)**2
     fact = (1.0 + 5.792105e-2/(238.0185 - sigma2) +
             1.67917e-3/(57.362 - sigma2))
-    air = vacuum/fact
+    air = v / fact
     if g is not None:
-        air[g] = vacuum[g]
+        air[g] = v[g]
+    if u is not None:
+        air = (air * Angstrom).to(u)
     return air

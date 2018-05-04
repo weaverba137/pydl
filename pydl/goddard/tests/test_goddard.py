@@ -1,6 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
+import astropy.units as u
 from astropy.tests.helper import raises
 from ..astro import airtovac, gcirc, get_juldate, vactoair
 from ..math import flegendre
@@ -29,6 +30,8 @@ class TestGoddard(object):
                                      2100.6664, 2200.6868, 2300.7083]))
         vacuum = airtovac(6056.125)
         assert np.allclose(vacuum, 6057.8019)
+        vacuum = airtovac(np.array([1800.0, 1850.0, 1900.0]))
+        assert np.allclose(vacuum, np.array([1800.0, 1850.0, 1900.0]))
         #
         # Regression test for #8.
         #
@@ -37,6 +40,23 @@ class TestGoddard(object):
         assert np.allclose(vacuum,
                            np.array([[1800.0, 1900.0, 2000.6475],
                                      [2100.6664, 2200.6868, 2300.7083]]))
+        #
+        # Test with units.
+        #
+        air = air * u.Angstrom
+        vacuum = airtovac(air)
+        assert np.allclose(vacuum.value,
+                           np.array([1800.0, 1900.0, 2000.6475,
+                                     2100.6664, 2200.6868, 2300.7083]))
+        assert vacuum.unit is u.Angstrom
+        vacuum = airtovac(air.to(u.nm))
+        #
+        # Due to numeric funkiness, 2000 -> 1999.999999999 < 2000.
+        #
+        assert np.allclose(vacuum.value,
+                           np.array([180.0, 190.0, 200.0,
+                                     210.06664, 220.06868, 230.07083]))
+        assert vacuum.unit is u.nm
 
     def test_cirrange(self):
         ra1 = np.linspace(-4.0*np.pi, 4.0*np.pi, 100)
@@ -143,6 +163,8 @@ class TestGoddard(object):
         air = vactoair(vacuum)
         assert np.allclose(air, np.array([1800.0, 1900.0, 1999.3526,
                                           2099.3337, 2199.3133, 2299.2918]))
+        air = vactoair(np.array([1800.0, 1850.0, 1900.0]))
+        assert np.allclose(air, np.array([1800.0, 1850.0, 1900.0]))
         #
         # Regression test for #8.
         #
@@ -151,3 +173,20 @@ class TestGoddard(object):
         assert np.allclose(air,
                            np.array([[1800.0, 1900.0, 1999.3526],
                                      [2099.3337, 2199.3133, 2299.2918]]))
+        #
+        # Test with units.
+        #
+        vacuum = vacuum * u.Angstrom
+        air = vactoair(vacuum)
+        assert np.allclose(air.value,
+                           np.array([1800.0, 1900.0, 1999.3526,
+                                     2099.3337, 2199.3133, 2299.2918]))
+        assert air.unit is u.Angstrom
+        air = vactoair(vacuum.to(u.nm))
+        #
+        # Due to numeric funkiness, 2000 -> 1999.999999999 < 2000.
+        #
+        assert np.allclose(air.value,
+                           np.array([180.0, 190.0, 200.0,
+                                     209.93337, 219.93133, 229.92918]))
+        assert air.unit is u.nm

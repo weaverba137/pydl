@@ -2,13 +2,19 @@
 PyDL Changelog
 ==============
 
-0.6.1 (unreleased)
+0.7.0 (unreleased)
 ------------------
+
+*This version is planned to be the last version with Python 2 support.*
 
 * Support the ``firstField`` bit in ObjIDs from DR7 and earlier (Issue `#37`_).
 * Change tests of Astropy development version from Python 2 to Python 3.
-* Update to `astropy_helpers`_/v2.0.6.
+* Update to `astropy_helpers`_/v2.0.6 (PR `#40`_).
+* Add :mod:`astropy.units` support to :func:`~pydl.goddard.astro.airtovac`
+  and :func:`~pydl.goddard.astro.vactoair` (PR `#41`_).
 
+.. _`#41`: https://github.com/weaverba137/pydl/pull/41
+.. _`#40`: https://github.com/weaverba137/pydl/pull/40
 .. _`#37`: https://github.com/weaverba137/pydl/issues/37.
 
 0.6.0 (2017-09-19)
