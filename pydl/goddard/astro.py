@@ -12,11 +12,15 @@ def airtovac(air):
     ----------
     air : array-like
         Values of wavelength in air in Angstroms.
+        :class:`~astropy.units.Quantity` objects with valid length
+        dimensions will be internally converted to Angstrom.
 
     Returns
     -------
     array-like
-        Values of wavelength in vacuum in Angstroms.
+        Values of wavelength in vacuum in Angstroms.  If a
+        :class:`~astropy.units.Quantity` object was passed in, the output
+        will be converted to the same units as the input.
 
     Notes
     -----
@@ -160,11 +164,15 @@ def vactoair(vacuum):
     ----------
     vacuum : array-like
         Values of wavelength in vacuum in Angstroms.
+        :class:`~astropy.units.Quantity` objects with valid length
+        dimensions will be internally converted to Angstrom.
 
     Returns
     -------
     array-like
         Values of wavelength in air in Angstroms.
+        :class:`~astropy.units.Quantity` object was passed in, the output
+        will be converted to the same units as the input.
 
     Notes
     -----
