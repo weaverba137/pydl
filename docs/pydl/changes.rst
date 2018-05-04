@@ -2,8 +2,10 @@
 PyDL Changelog
 ==============
 
-0.6.1 (unreleased)
+0.7.0 (unreleased)
 ------------------
+
+*This version is planned to be the last version with Python 2 support.*
 
 * Support the ``firstField`` bit in ObjIDs from DR7 and earlier (Issue `#37`_).
 * Change tests of Astropy development version from Python 2 to Python 3.
