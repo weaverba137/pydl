@@ -38,7 +38,7 @@ def rebin(x, d, sample=False):
 
     References
     ----------
-    http://www.exelisvis.com/docs/REBIN.html
+    http://www.harrisgeospatial.com/docs/rebin.html
 
     Examples
     --------

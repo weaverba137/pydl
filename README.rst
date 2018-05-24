@@ -78,10 +78,10 @@ the ``licenses/LICENSE.rst`` file.
 Legal
 -----
 
-* IDL is a registered trademark of `Exelis Visual Information Solutions`_.
+* IDL is a registered trademark of `Harris Geospatial Solutions`_.
 
 .. _Python: http://python.org
-.. _`IDL®`: http://www.exelisvis.com/language/en-us/productsservices/idl.aspx
+.. _`IDL®`: http://www.harrisgeospatial.com/SoftwareTechnology/IDL.aspx
 .. _idlutils: http://www.sdss.org/dr12/software/idlutils/
 .. _SDSS: http://www.sdss.org
 .. _`Goddard utilities`: http://idlastro.gsfc.nasa.gov/
@@ -95,4 +95,4 @@ Legal
 .. _SDSS-III: http://www.sdss3.org
 .. _`svn repository`: http://www.sdss.org/dr12/software/products/
 .. _GitHub: http://github.com
-.. _`Exelis Visual Information Solutions`: http://www.exelisvis.com
+.. _`Harris Geospatial Solutions`: http://www.harrisgeospatial.com/
