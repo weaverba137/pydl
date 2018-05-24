@@ -26,7 +26,7 @@ class pcomp(object):
 
     References
     ----------
-    http://www.exelisvis.com/docs/PCOMP.html
+    http://www.harrisgeospatial.com/docs/pcomp.html
 
     Examples
     --------

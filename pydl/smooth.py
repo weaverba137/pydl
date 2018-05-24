@@ -26,7 +26,7 @@ def smooth(signal, owidth, edge_truncate=False):
 
     References
     ----------
-    http://www.exelisvis.com/docs/SMOOTH.html
+    http://www.harrisgeospatial.com/docs/smooth.html
 
     Examples
     --------

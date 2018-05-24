@@ -2,6 +2,12 @@
 PyDL Changelog
 ==============
 
+1.0.0 (unreleased)
+------------------
+
+*This version will only support Python 3 and Astropy 3.*  This release is
+planned for the Summer or Fall of 2018.
+
 0.7.0 (unreleased)
 ------------------
 
@@ -12,7 +18,9 @@ PyDL Changelog
 * Update to `astropy_helpers`_/v2.0.6 (PR `#40`_).
 * Add :mod:`astropy.units` support to :func:`~pydl.goddard.astro.airtovac`
   and :func:`~pydl.goddard.astro.vactoair` (PR `#41`_).
+* Change Exelis to Harris Geospatial (PR `#42`_).
 
+.. _`#42`: https://github.com/weaverba137/pydl/pull/42
 .. _`#41`: https://github.com/weaverba137/pydl/pull/41
 .. _`#40`: https://github.com/weaverba137/pydl/pull/40
 .. _`#37`: https://github.com/weaverba137/pydl/issues/37.
