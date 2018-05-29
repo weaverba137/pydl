@@ -79,12 +79,16 @@ class bspline(object):
                 tempbkspace = rangex/float(nbkpts-1)
                 bkpt = np.arange(nbkpts, dtype='f') * tempbkspace + startx
             elif 'everyn' in kwargs:
-                npkpts = max(nx/kwargs['everyn'], 1)
+                nx = x.size
+                nbkpts = max(nx/kwargs['everyn'], 1)
                 if nbkpts == 1:
                     xspot = [0]
                 else:
-                    xspot = int(nx/(nbkpts-1)) * np.arange(nbkpts, dtype='i4')
-                bkpt = x[xspot].astype('f')
+                    xspot = (nx/nbkpts)*np.arange(nbkpts)
+                    # JFH This was a bug. Made fixes
+                    #xspot = int(nx/(nbkpts-1)) * np.arange(nbkpts, dtype='i4')
+                #bkpt = x[xspot].astype('f')
+                bkpt = np.interp(xspot,np.arange(nx),x)
             else:
                 raise ValueError('No information for bkpts.')
         imin = bkpt.argmin()
@@ -124,6 +128,7 @@ class bspline(object):
         self.xmin = 0.0
         self.xmax = 1.0
         self.funcname = 'legendre'
+
         return
 
     def fit(self, xdata, ydata, invvar, x2=None):
