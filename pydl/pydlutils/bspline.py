@@ -48,69 +48,72 @@ class bspline(object):
         To be documented.
     """
 
-    def __init__(self, x, nord=4, npoly=1, bkpt=None, bkspread=1.0,
+    def __init__(self, x, nord=4, npoly=1, bkpt=None, fullbkpt = None, bkspread=1.0,
                  verbose=False, **kwargs):
         """Init creates an object whose attributes are similar to the
         structure returned by the create_bspline function.
         """
+
+
         #
         # Set the breakpoints.
         #
-        if bkpt is None:
-            startx = x.min()
-            rangex = x.max() - startx
-            if 'placed' in kwargs:
-                w = ((kwargs['placed'] >= startx) &
-                     (kwargs['placed'] <= startx+rangex))
-                if w.sum() < 2:
-                    bkpt = np.arange(2, dtype='f') * rangex + startx
+        if fullbkpt is None:
+            if bkpt is None:
+                startx = x.min()
+                rangex = x.max() - startx
+                if 'placed' in kwargs:
+                    w = ((kwargs['placed'] >= startx) &
+                         (kwargs['placed'] <= startx+rangex))
+                    if w.sum() < 2:
+                        bkpt = np.arange(2, dtype='f') * rangex + startx
+                    else:
+                        bkpt = kwargs['placed'][w]
+                elif 'bkspace' in kwargs:
+                    nbkpts = int(rangex/kwargs['bkspace']) + 1
+                    if nbkpts < 2:
+                        nbkpts = 2
+                    tempbkspace = rangex/float(nbkpts-1)
+                    bkpt = np.arange(nbkpts, dtype='f')*tempbkspace + startx
+                elif 'nbkpts' in kwargs:
+                    nbkpts = kwargs['nbkpts']
+                    if nbkpts < 2:
+                        nbkpts = 2
+                    tempbkspace = rangex/float(nbkpts-1)
+                    bkpt = np.arange(nbkpts, dtype='f') * tempbkspace + startx
+                elif 'everyn' in kwargs:
+                    nx = x.size
+                    nbkpts = max(nx/kwargs['everyn'], 1)
+                    if nbkpts == 1:
+                        xspot = [0]
+                    else:
+                        xspot = (nx/nbkpts)*np.arange(nbkpts)
+                        # JFH This was a bug. Made fixes
+                        #xspot = int(nx/(nbkpts-1)) * np.arange(nbkpts, dtype='i4')
+                    #bkpt = x[xspot].astype('f')
+                    bkpt = np.interp(xspot,np.arange(nx),x)
                 else:
-                    bkpt = kwargs['placed'][w]
-            elif 'bkspace' in kwargs:
-                nbkpts = int(rangex/kwargs['bkspace']) + 1
-                if nbkpts < 2:
-                    nbkpts = 2
-                tempbkspace = rangex/float(nbkpts-1)
-                bkpt = np.arange(nbkpts, dtype='f')*tempbkspace + startx
-            elif 'nbkpts' in kwargs:
-                nbkpts = kwargs['nbkpts']
-                if nbkpts < 2:
-                    nbkpts = 2
-                tempbkspace = rangex/float(nbkpts-1)
-                bkpt = np.arange(nbkpts, dtype='f') * tempbkspace + startx
-            elif 'everyn' in kwargs:
-                nx = x.size
-                nbkpts = max(nx/kwargs['everyn'], 1)
-                if nbkpts == 1:
-                    xspot = [0]
-                else:
-                    xspot = (nx/nbkpts)*np.arange(nbkpts)
-                    # JFH This was a bug. Made fixes
-                    #xspot = int(nx/(nbkpts-1)) * np.arange(nbkpts, dtype='i4')
-                #bkpt = x[xspot].astype('f')
-                bkpt = np.interp(xspot,np.arange(nx),x)
+                    raise ValueError('No information for bkpts.')
+            imin = bkpt.argmin()
+            imax = bkpt.argmax()
+            if x.min() < bkpt[imin]:
+                if verbose:
+                    print('Lowest breakpoint does not cover lowest x value: changing.')
+                bkpt[imin] = x.min()
+            if x.max() > bkpt[imax]:
+                if verbose:
+                    print('Highest breakpoint does not cover highest x value: changing.')
+                bkpt[imax] = x.max()
+            nshortbkpt = bkpt.size
+            fullbkpt = bkpt.copy()
+            if nshortbkpt == 1:
+                bkspace = np.float32(bkspread)
             else:
-                raise ValueError('No information for bkpts.')
-        imin = bkpt.argmin()
-        imax = bkpt.argmax()
-        if x.min() < bkpt[imin]:
-            if verbose:
-                print('Lowest breakpoint does not cover lowest x value: changing.')
-            bkpt[imin] = x.min()
-        if x.max() > bkpt[imax]:
-            if verbose:
-                print('Highest breakpoint does not cover highest x value: changing.')
-            bkpt[imax] = x.max()
-        nshortbkpt = bkpt.size
-        fullbkpt = bkpt.copy()
-        if nshortbkpt == 1:
-            bkspace = np.float32(bkspread)
-        else:
-            bkspace = (bkpt[1] - bkpt[0]) * np.float32(bkspread)
-        for i in np.arange(1, nord, dtype=np.float32):
-            fullbkpt = np.insert(fullbkpt, 0, bkpt[0]-bkspace*i)
-            fullbkpt = np.insert(fullbkpt, fullbkpt.shape[0],
-                                 bkpt[nshortbkpt-1] + bkspace*i)
+                bkspace = (bkpt[1] - bkpt[0]) * np.float32(bkspread)
+            for i in np.arange(1, nord, dtype=np.float32):
+                fullbkpt = np.insert(fullbkpt, 0, bkpt[0]-bkspace*i)
+                fullbkpt = np.insert(fullbkpt, fullbkpt.shape[0],
+                                     bkpt[nshortbkpt-1] + bkspace*i)
         #
         # Set the attributes
         #
@@ -127,7 +130,10 @@ class bspline(object):
             self.icoeff = np.zeros((nc,), dtype='d')
         self.xmin = 0.0
         self.xmax = 1.0
-        self.funcname = 'legendre'
+        if 'funcname' in kwargs:
+            self.funcname = kwargs['funcname']
+        else:
+            self.funcname = 'legendre'
 
         return
 
@@ -443,6 +449,91 @@ class bspline(object):
         else:
             return -2
 
+    def workit(self, xdata, ydata, invvar, action,lower,upper):
+        """An internal routine for bspline_extract and bspline_radial which solve a general
+        banded correlation matrix which is represented by the variable "action".  This routine
+        only solves the linear system once, and stores the coefficients in sset. A non-zero return value
+        signifies a failed inversion
+
+
+        Parameters
+        ----------
+        xdata : :class:`numpy.ndarray`
+            Independent variable.
+        ydata : :class:`numpy.ndarray`
+            Dependent variable.
+        invvar : :class:`numpy.ndarray`
+            Inverse variance of `ydata`.
+        action : :class:`numpy.ndarray`
+            Banded correlation matrix
+        lower  : :class:`numpy.ndarray`
+            A list of pixel positions, each corresponding to the first occurence of position greater than breakpoint indx
+        upper  : :class:`numpy.ndarray`
+            Same as lower, but denotes the upper pixel positions
+
+        Returns
+        -------
+        :func:`tuple`
+            A tuple containing an integer error code, and the evaluation of the
+            b-spline at the input values.  An error code of -2 is a failure,
+            -1 indicates dropped breakpoints, 0 is success, and positive
+            integers indicate ill-conditioned breakpoints.
+        """
+        goodbk = self.mask[self.nord:]
+        nn = goodbk.sum()
+        if nn < self.nord:
+            yfit = np.zeros(ydata.shape, dtype='f')
+            return (-2, yfit)
+        nfull = nn * self.npoly
+        bw = self.npoly * self.nord
+        a2 = action*np.sqrt(np.outer(invvar,np.ones(bw)))
+
+        alpha = np.zeros((bw, nfull+bw), dtype='d')
+        beta = np.zeros((nfull+bw,), dtype='d')
+        bi = np.arange(bw, dtype='i4')
+        bo = np.arange(bw, dtype='i4')
+        for k in range(1, bw):
+            bi = np.append(bi, np.arange(bw-k, dtype='i4')+(bw+1)*k)
+            bo = np.append(bo, np.arange(bw-k, dtype='i4')+bw*k)
+        for k in range(nn-self.nord+1):
+            itop = k*self.npoly
+            ibottom = min(itop, nfull) + bw - 1
+            ict = upper[k] - lower[k] + 1
+            if ict > 0:
+                work = np.dot(a2[lower[k]:upper[k]+1, :].T, a2[lower[k]:upper[k]+1, :])
+                wb = np.dot(ydata[lower[k]:upper[k]+1]*np.sqrt(invvar[lower[k]:upper[k]+1]), a2[lower[k]:upper[k]+1, :])
+                alpha.T.flat[bo+itop*bw] += work.flat[bi]
+                beta[itop:ibottom+1] += wb
+        min_influence = 1.0e-10 * invvar.sum() / nfull
+        # Right now we are not returning the covariance, although it may arise that we should
+        covariance = alpha
+        errb = cholesky_band(alpha, mininf=min_influence)  # ,verbose=True)
+        if isinstance(errb[0], int) and errb[0] == -1:
+            a = errb[1]
+        else:
+            yfit, foo = self.value(xdata, x2=xdata, action=action, upper=upper, lower=lower)
+            return (self.maskpoints(errb[0]), yfit)
+        errs = cholesky_solve(a, beta)
+        if isinstance(errs[0], int) and errs[0] == -1:
+            sol = errs[1]
+        else:
+            #
+            # It is not possible for this to get called, because cholesky_solve
+            # has only one return statement, & that statement guarantees that
+            # errs[0] == -1
+            #
+            yfit, foo = self.value(xdata, x2=xdata, action=action, upper=upper, lower=lower)
+            return (self.maskpoints(errs[0]), yfit)
+        if self.npoly > 1:
+            self.icoeff[:, goodbk] = np.array(a[0, 0:nfull].reshape(self.npoly, nn), dtype=a.dtype)
+            self.coeff[:, goodbk] = np.array(sol[0:nfull].reshape(self.npoly, nn), dtype=sol.dtype)
+        else:
+            self.icoeff[goodbk] = np.array(a[0, 0:nfull], dtype=a.dtype)
+            self.coeff[goodbk] = np.array(sol[0:nfull], dtype=sol.dtype)
+        yfit, foo = self.value(xdata, x2=xdata, action=action, upper=upper, lower=lower)
+        return (0, yfit)
+
+
 
 def cholesky_band(l, mininf=0.0, verbose=False):
     """Compute Cholesky decomposition of banded matrix.
@@ -523,7 +614,7 @@ def cholesky_solve(a, bb):
 
 
 def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
-            maxiter=10, **kwargs):
+            maxiter=10, nord = 4, bkpt = None, fullbkpt = None, **kwargs):
     """Iteratively fit a b-spline set to data, with rejection.
 
     Parameters
@@ -584,10 +675,11 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         if not maskwork.any():
             raise ValueError('No valid data points.')
             # return (None,None)
-        if 'fullbkpt' in kwargs:
-            fullbkpt = kwargs['fullbkpt']
+# JFH comment this out for now
+#        if 'fullbkpt' in kwargs:
+#            fullbkpt = kwargs['fullbkpt']
         else:
-            sset = bspline(xdata[xsort[maskwork]], **kwargs)
+            sset = bspline(xdata[xsort[maskwork]], nord = nord, bkpt = bkpt, fullbkpt = fullbkpt, **kwargs)
             if maskwork.sum() < sset.nord:
                 print('Number of good data points fewer than nord.')
                 return (sset, outmask)
@@ -620,7 +712,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         goodbk = sset.mask.nonzero()[0]
         if maskwork.sum() <= 1 or not sset.mask.any():
             sset.coeff = 0
-            iiter = maxiter + 1
+            iiter = maxiter + 1 # End iterations
         else:
             if 'requiren' in kwargs:
                 i = 0
@@ -642,6 +734,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         iiter += 1
         inmask = maskwork
         if error == -2:
+
             return (sset, outmask)
         elif error == 0:
             maskwork, qdone = djs_reject(ywork, yfit, invvar=invwork,
