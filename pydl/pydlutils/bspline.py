@@ -3,6 +3,8 @@
 """This module corresponds to the bspline directory in idlutils.
 """
 import numpy as np
+# Used for debugging. Eventually remove
+from IPython import embed
 
 
 class bspline(object):
@@ -365,6 +367,7 @@ class bspline(object):
             A tuple containing the results of the bspline evaluation and a
             mask indicating where the evaluation was good.
         """
+
         xsort = x.argsort()
         xwork = x[xsort]
         if x2 is not None:
@@ -390,8 +393,7 @@ class bspline(object):
         for i in range(n-self.nord+1):
             ict = upper[i] - lower[i] + 1
             if ict > 0:
-                yfit[lower[i]:upper[i]+1] = np.dot(
-                    action[lower[i]:upper[i]+1, :], goodcoeff[i*self.npoly+spot])
+                yfit[lower[i]:upper[i]+1] = np.dot(action[lower[i]:upper[i]+1, :], (goodcoeff.flatten('F'))[i*self.npoly+spot])
         yy = yfit.copy()
         yy[xsort] = yfit
         mask = np.ones(x.shape, dtype='bool')
@@ -475,9 +477,11 @@ class bspline(object):
         -------
         :func:`tuple`
             A tuple containing an integer error code, and the evaluation of the
-            b-spline at the input values.  An error code of -2 is a failure,
-            -1 indicates dropped breakpoints, 0 is success, and positive
-            integers indicate ill-conditioned breakpoints.
+            b-spline at the input values.  The error codes are as follows:
+             -2:  is a failure,
+             -1:  indicates dropped breakpoints
+              0:  is success
+              positive integers:  indicate ill-conditioned breakpoints.
         """
         goodbk = self.mask[self.nord:]
         nn = goodbk.sum()
@@ -486,7 +490,9 @@ class bspline(object):
             return (-2, yfit)
         nfull = nn * self.npoly
         bw = self.npoly * self.nord
-        a2 = action*np.sqrt(np.outer(invvar,np.ones(bw)))
+        foo = np.sqrt(np.tile(invvar, bw).reshape(bw, invvar.size).transpose())
+        a2 = action * foo
+        #a2 = action*np.sqrt(np.outer(invvar,np.ones(bw)))
 
         alpha = np.zeros((bw, nfull+bw), dtype='d')
         beta = np.zeros((nfull+bw,), dtype='d')
@@ -535,7 +541,7 @@ class bspline(object):
 
 
 
-def cholesky_band(l, mininf=0.0, verbose=False):
+def cholesky_band(l, mininf=0.0):
     """Compute Cholesky decomposition of banded matrix.
 
     Parameters
@@ -545,8 +551,6 @@ def cholesky_band(l, mininf=0.0, verbose=False):
     mininf : :class:`float`, optional
         Entries in the `l` matrix are considered negative if they are less
         than this value (default 0.0).
-    verbose : :class:`bool`, optional
-        If set to ``True``, print some debugging information.
 
     Returns
     -------
@@ -614,7 +618,7 @@ def cholesky_solve(a, bb):
 
 
 def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
-            maxiter=10, nord = 4, bkpt = None, fullbkpt = None, **kwargs):
+            maxiter=10, nord = 4, bkpt = None, fullbkpt = None, kwargs_bspline={}, kwargs_reject={}):
     """Iteratively fit a b-spline set to data, with rejection.
 
     Parameters
@@ -667,8 +671,8 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         outmask = np.ones(invvar.shape, dtype='bool')
     xsort = xdata.argsort()
     maskwork = (outmask & (invvar > 0))[xsort]
-    if 'oldset' in kwargs:
-        sset = kwargs['oldset']
+    if 'oldset' in kwargs_bspline:
+        sset = kwargs_bspline['oldset']
         sset.mask = True
         sset.coeff = 0
     else:
@@ -679,25 +683,25 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
 #        if 'fullbkpt' in kwargs:
 #            fullbkpt = kwargs['fullbkpt']
         else:
-            sset = bspline(xdata[xsort[maskwork]], nord = nord, bkpt = bkpt, fullbkpt = fullbkpt, **kwargs)
+            sset = bspline(xdata[xsort[maskwork]], nord = nord, bkpt = bkpt, fullbkpt = fullbkpt, **kwargs_bspline)
             if maskwork.sum() < sset.nord:
                 print('Number of good data points fewer than nord.')
                 return (sset, outmask)
             if x2 is not None:
-                if 'xmin' in kwargs:
-                    xmin = kwargs['xmin']
+                if 'xmin' in kwargs_bspline:
+                    xmin = kwargs_bspline['xmin']
                 else:
                     xmin = x2.min()
-                if 'xmax' in kwargs:
-                    xmax = kwargs['xmax']
+                if 'xmax' in kwargs_bspline:
+                    xmax = kwargs_bspline['xmax']
                 else:
                     xmax = x2.max()
                 if xmin == xmax:
                     xmax = xmin + 1
                 sset.xmin = xmin
                 sset.xmax = xmax
-                if 'funcname' in kwargs:
-                    sset.funcname = kwargs['funcname']
+                if 'funcname' in kwargs_bspline:
+                    sset.funcname = kwargs_bspline['funcname']
     xwork = xdata[xsort]
     ywork = ydata[xsort]
     invwork = invvar[xsort]
@@ -714,7 +718,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
             sset.coeff = 0
             iiter = maxiter + 1 # End iterations
         else:
-            if 'requiren' in kwargs:
+            if 'requiren' in kwargs_bspline:
                 i = 0
                 while xwork[i] < sset.breakpoints[goodbk[sset.nord]] and i < nx-1:
                     i += 1
@@ -725,7 +729,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
                            i < nx-1):
                         ct += invwork[i]*maskwork[i] > 0
                         i += 1
-                    if ct >= kwargs['requiren']:
+                    if ct >= kwargs_bspline['requiren']:
                         ct = 0
                     else:
                         sset.mask[goodbk[ileft]] = False
@@ -739,7 +743,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         elif error == 0:
             maskwork, qdone = djs_reject(ywork, yfit, invvar=invwork,
                                          inmask=inmask, outmask=maskwork,
-                                         upper=upper, lower=lower)
+                                         upper=upper, lower=lower,**kwargs_reject)
         else:
             pass
     outmask[xsort] = maskwork
