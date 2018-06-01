@@ -5,7 +5,6 @@
 import numpy as np
 import astropy.utils as au
 
-
 class computechi2(object):
     """Solve the linear set of equations :math:`A x = b` using SVD.
 
