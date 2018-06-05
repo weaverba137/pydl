@@ -3,9 +3,6 @@
 """This module corresponds to the bspline directory in idlutils.
 """
 import numpy as np
-# Used for debugging. Eventually remove
-from IPython import embed
-
 
 class bspline(object):
     """Bspline class.
