@@ -52,7 +52,7 @@ class bspline(object):
         """Init creates an object whose attributes are similar to the
         structure returned by the create_bspline function.
         """
-
+        #ToDO Consider refactoring the argument list so that there are no kwargs
 
         #
         # Set the breakpoints.
