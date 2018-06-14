@@ -712,8 +712,9 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         x2work = None
     iiter = 0
     error = 0
-    qdone = -1
-    while (error != 0 or qdone == -1) and iiter <= maxiter:
+    # JFH fixed major bug here. Codes were not iterating
+    qdone = False
+    while (error != 0 or qdone == False) and iiter <= maxiter:
         goodbk = sset.mask.nonzero()[0]
         if maskwork.sum() <= 1 or not sset.mask.any():
             sset.coeff = 0
