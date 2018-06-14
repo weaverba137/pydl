@@ -206,9 +206,10 @@ class bspline(object):
             #
             yfit, foo = self.value(xdata, x2=x2, action=a1, upper=upper, lower=lower)
             return (self.maskpoints(errs[0]), yfit)
-        if self.npoly > 1:
-            self.icoeff[:, goodbk] = np.array(a[0, 0:nfull].reshape(self.npoly, nn), dtype=a.dtype)
-            self.coeff[:, goodbk] = np.array(sol[0:nfull].reshape(self.npoly, nn), dtype=sol.dtype)
+        if self.coeff.ndim == 2:
+            # JFH made major bug fix here.
+            self.icoeff[:, goodbk] = np.array(a[0, 0:nfull].T.reshape(self.npoly, nn,order='F'), dtype=a.dtype)
+            self.coeff[:, goodbk] = np.array(sol[0:nfull].T.reshape(self.npoly, nn, order='F'), dtype=sol.dtype)
         else:
             self.icoeff[goodbk] = np.array(a[0, 0:nfull], dtype=a.dtype)
             self.coeff[goodbk] = np.array(sol[0:nfull], dtype=sol.dtype)
@@ -266,9 +267,10 @@ class bspline(object):
                 for i in range(1, self.npoly):
                     temppoly[:, i] = temppoly[:, i-1] * x2norm
             elif self.funcname == 'chebyshev':
-                temppoly = fchebyshev(x2norm, self.npoly)
+                # JFH fixed bug here where temppoly needed to be transposed because of different IDL and python array conventions
+                temppoly = fchebyshev(x2norm, self.npoly).T
             elif self.funcname == 'legendre':
-                temppoly = flegendre(x2norm, self.npoly)
+                temppoly = flegendre(x2norm, self.npoly).T
             else:
                 raise ValueError('Unknown value of funcname.')
             action = np.zeros((nx, bw), dtype='d')
@@ -527,12 +529,14 @@ class bspline(object):
             #
             yfit, foo = self.value(xdata, x2=xdata, action=action, upper=upper, lower=lower)
             return (self.maskpoints(errs[0]), yfit)
-        if self.npoly > 1:
-            self.icoeff[:, goodbk] = np.array(a[0, 0:nfull].reshape(self.npoly, nn), dtype=a.dtype)
-            self.coeff[:, goodbk] = np.array(sol[0:nfull].reshape(self.npoly, nn), dtype=sol.dtype)
+
+        if self.coeff.ndim == 2:
+            self.icoeff[:, goodbk] = np.array(a[0, 0:nfull].T.reshape(self.npoly, nn,order='F'), dtype=a.dtype)
+            self.coeff[:, goodbk] = np.array(sol[0:nfull].T.reshape(self.npoly, nn, order='F'), dtype=sol.dtype)
         else:
             self.icoeff[goodbk] = np.array(a[0, 0:nfull], dtype=a.dtype)
             self.coeff[goodbk] = np.array(sol[0:nfull], dtype=sol.dtype)
+
         yfit, foo = self.value(xdata, x2=xdata, action=action, upper=upper, lower=lower)
         return (0, yfit)
 
