@@ -14,6 +14,7 @@ If we have neglected to include you, please let us know right away!
 * `Duncan Macleod <https://github.com/duncanmmacleod>`_
 * `Demitri Muna <https://github.com/demitri>`_
 * `Thomas Robitaille <https://github.com/astrofrog>`_
+* `José Sánchez-Gallego <https://github.com/albireox>`_
 * `Brigitta Sipocz <https://github.com/bsipocz>`_
 * `Erik Tollerud <https://github.com/eteq>`_
 * `ViviCoder <https://github.com/ViviCoder>`_
