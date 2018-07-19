@@ -444,7 +444,8 @@ class yanny(OrderedDict):
                 definition = defl
             else:
                 definition = defu
-            typere = re.compile(r'(\S+)\s+{0}([[<].*[]>]|);'.format(variable))
+            typere = re.compile(
+                r'(\S+)\s+{0}([\[<].*[\]>]|);'.format(variable))
             (typ, array) = typere.search(definition[0]).groups()
             var_type = typ + array.replace('<', '[').replace('>', ']')
             cache[variable] = var_type
@@ -499,7 +500,7 @@ class yanny(OrderedDict):
             result = cache[variable]
         except KeyError:
             typ = self.type(structure, variable)
-            character_array = re.compile(r'char[[<]\d*[]>][[<]\d*[]>]')
+            character_array = re.compile(r'char[\[<]\d*[\]>][\[<]\d*[\]>]')
             if ((character_array.search(typ) is not None) or
                     (typ.find('char') < 0 and (typ.find('[') >= 0 or
                                                typ.find('<') >= 0))):
@@ -1075,7 +1076,7 @@ class yanny(OrderedDict):
             for d in definitions:
                 d = d.replace(';', '')
                 (datatype, column) = re.split(r'\s+', d)
-                column = re.sub(r'[[<].*[]>]$', '', column)
+                column = re.sub(r'[\[<].*[\]>]$', '', column)
                 self._symbols[name.upper()].append(column)
                 self[name.upper()][column] = list()
         # Remove lines containing only comments

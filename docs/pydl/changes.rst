@@ -19,11 +19,13 @@ planned for the Summer or Fall of 2018.
 * Add :mod:`astropy.units` support to :func:`~pydl.goddard.astro.airtovac`
   and :func:`~pydl.goddard.astro.vactoair` (PR `#41`_).
 * Change Exelis to Harris Geospatial (PR `#42`_).
+* Fix ``FutureWarning`` in ``re`` in Python 3.7 due to nested sets (PR `#44`_).
 
 .. _`#42`: https://github.com/weaverba137/pydl/pull/42
 .. _`#41`: https://github.com/weaverba137/pydl/pull/41
 .. _`#40`: https://github.com/weaverba137/pydl/pull/40
 .. _`#37`: https://github.com/weaverba137/pydl/issues/37.
+.. _`#44`: https://github.com/weaverba137/pydl/pull/44
 
 0.6.0 (2017-09-19)
 ------------------
