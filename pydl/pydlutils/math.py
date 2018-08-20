@@ -436,7 +436,8 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     #
     # Set qdone if the input outmask is identical to the output outmask.
     #
-    qdone = np.all(newmask == outmask)
+    qdone = bool(np.all(newmask == outmask)) # This needs to be a python (rather than a numpy) boolean to avoid painful problems with comparing
+                                             # to python True and False cause problems
     outmask = newmask
     return (outmask, qdone)
 
