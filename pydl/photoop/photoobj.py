@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the photoobj directory in photoop.
 """
+import numpy as np
+import astropy.units as u
 
 
 def sdss_calibv():
@@ -9,7 +11,7 @@ def sdss_calibv():
 
     Returns
     -------
-    :class:`float`
+    :class:`~astropy.units.quanity.Quantity`
         The conversion from pixels per frame to degrees per day
 
     Notes
@@ -19,10 +21,9 @@ def sdss_calibv():
     sky from adjacent bands are separated by *two* frame numbers,
     so we multiply by a factor two.
     """
-    pixscale = 0.396   # arcsec
-    ftime = 71.72    # seconds
-    pixframe2degday = 2.0*pixscale/(3600.0) * (3600.0)*24.0/ftime
-    return pixframe2degday
+    pixscale = 0.396 * u.arcsec
+    ftime = 71.72 * u.s
+    return (2.0*pixscale/ftime).to('deg / d')
 
 
 def unwrap_objid(objid):
@@ -60,7 +61,6 @@ def unwrap_objid(objid):
     rec.array([(2, 301, 3704, 3, 0, 91, 146)],
           dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('firstfield', '<i4'), ('frame', '<i4'), ('id', '<i4')])
     """
-    import numpy as np
     if objid.dtype.type is np.string_ or objid.dtype.type is np.unicode_:
         tempobjid = objid.astype(np.int64)
     elif objid.dtype.type is np.int64:
