@@ -1,13 +1,37 @@
-Documentation
-=============
+====
+PyDL
+====
 
-This is an affiliated package for the AstroPy package. The documentation for
-this package is here:
+Introduction
+++++++++++++
+
+This is the documentation for PyDL.
+
+Components
+++++++++++
+
+Most of the functionality of PyDL is in sub-packages.
 
 .. toctree::
-  :maxdepth: 1
+   :maxdepth: 1
 
-  pydl/index.rst
+   goddard.rst
+   photoop.rst
+   pydlspec2d.rst
+   pydlutils.rst
 
-.. note:: Do not edit this page - instead, place all documentation for the
-          affiliated package inside ``packagename/``
+Other Notes
++++++++++++
+
+.. toctree::
+   :maxdepth: 1
+
+   changes.rst
+   todo.rst
+   credits.rst
+
+Base API
+++++++++
+
+.. automodapi:: pydl
+   :no-inheritance-diagram:
