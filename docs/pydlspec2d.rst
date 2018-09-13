@@ -32,8 +32,10 @@ The idlspec2d package is itself divided into a number of subpackages.  Below we 
 the subpackages and the usability of the PyDL equivalent.
 The readiness levels are defined as:
 
+Obsolete
+    No point in implementing because the purpose of the code lapsed many years ago.
 Not Applicable (NA)
-    Another built-in or numpy/scipy/astropy package completely replaces this.  No point in implementing.
+    No point in implementing because another built-in or numpy/scipy/astropy package completely replaces this.
 None
     Not (yet) implemented at all.
 Rudimentary
@@ -46,21 +48,21 @@ Good
 ========== =============== ===================================================
 Subpackage Readiness Level Comments
 ========== =============== ===================================================
-apo2d      None
-config     None
-fluxfix    None
-guider     None
-inspect    None
-photoz     None
-plan       None
-plate      None
-science    None
-spec1d     Fair
-spec2d     Fair
-specdb     None
-specflat   None
-templates  None
-testsuite  None
+apo2d      None            Quick extraction code for quality assurance at observation time.
+config     None            Extraction pipeline configuration parameters in object-oriented IDL.
+fluxfix    None            Flux calibration
+guider     None            Interface to guider camera.
+inspect    None            Tools for manual inspection of spectra.
+photoz     Obsolete        Photometric redshifts for SDSS objects using spectral templates.
+plan       None            Tools for planning exposures and recordings summaries of exposures.
+plate      Obsolete        Tools for designing SDSS spectroscopic plates, especially for star clusters.
+science    None            Code for science analysis of sets of 1D spectra.
+spec1d     Fair            Tools for processing 1D spectra, including redshift fitting.
+spec2d     Fair            Tools for extracting spectra from 2D images.
+specdb     Obsolete        Tests on storing spectroscopic results in SQL databases.
+specflat   None            Flat-fielding of spectroscopic 2D images.
+templates  None            Tools for constructing spectroscopic templates.
+testsuite  None            Tools for high-level quality assurance, *e.g.* comparing two reductions of the same data.
 ========== =============== ===================================================
 
 .. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
