@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the cooling directory in idlutils.
 """
+from numpy import interp
+from astropy.io import ascii
+from astropy.utils.data import get_pkg_data_contents
 
 
 def read_ds_cooling(fname, logT=None):
@@ -40,9 +43,6 @@ def read_ds_cooling(fname, logT=None):
     >>> loglambda[0:5] # doctest: +NORMALIZE_WHITESPACE
     array([-26.  , -24.66, -23.52, -22.62, -22.11])
     """
-    from astropy.utils.data import get_pkg_data_contents
-    from numpy import interp
-    from astropy.io import ascii
     if fname not in ('m-00.cie', 'm-05.cie', 'm+05.cie', 'm-10.cie',
                      'm-15.cie', 'm-20.cie', 'm-30.cie', 'mzero.cie'):
         raise ValueError('Invalid value for data file: {0}'.format(fname))

@@ -3,10 +3,15 @@
 """This module corresponds to the sdss directory in idlutils.
 """
 import os
+import re
 import numpy as np
 from astropy.extern.six import string_types
 from astropy.io import fits
+from astropy.utils.data import download_file
 from . import PydlutilsException
+from .spheregroup import spherematch
+from .yanny import yanny
+from .. import uniq
 #
 # Cache for the maskbits file.
 #
@@ -74,8 +79,6 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
     problem with all camcols.
 
     """
-    from astropy.utils.data import download_file
-    from .yanny import yanny
     global opbadfields
     #
     # Check inputs
@@ -473,7 +476,6 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
     >>> print(sdss_specobjid(4055,408,55359,'v5_7_0'))
     [4565636362342690816]
     """
-    import re
     if line is not None and index is not None:
         raise ValueError("line and index inputs cannot both be non-zero!")
     if isinstance(plate, int):
@@ -575,8 +577,6 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     Assumes that the sweep files exist in :envvar:`PHOTO_SWEEP` and
     that index files have been created.
     """
-    from .. import uniq
-    from .spheregroup import spherematch
     global sweep_cache
     #
     # Check values

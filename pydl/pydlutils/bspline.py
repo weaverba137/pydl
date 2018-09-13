@@ -2,7 +2,13 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the bspline directory in idlutils.
 """
+from warnings import warn
 import numpy as np
+from . import PydlutilsUserWarning
+from .math import djs_reject
+from .trace import fchebyshev
+from .. import uniq
+from ..goddard.math import flegendre
 
 
 class bspline(object):
@@ -223,9 +229,6 @@ class bspline(object):
             occurence of position greater than breakpoint indx; and 'upper',
             Same as lower, but denotes the upper pixel positions.
         """
-        from .. import uniq
-        from ..goddard.math import flegendre
-        from .trace import fchebyshev
         nx = x.size
         nbkpt = self.mask.sum()
         if nbkpt < 2*self.nord:
@@ -460,8 +463,6 @@ def cholesky_band(l, mininf=0.0, verbose=False):
         be the input matrix.  If no problems were detected, the first item
         will be -1, and the second item will be the Cholesky decomposition.
     """
-    from warnings import warn
-    from . import PydlutilsUserWarning
     lower = l.copy()
     bw, nn = lower.shape
     n = nn - bw
@@ -545,7 +546,6 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     :func:`tuple`
         A tuple containing the fitted bspline object and an output mask.
     """
-    from .math import djs_reject
     nx = xdata.size
     if ydata.size != nx:
         raise ValueError('Dimensions of xdata and ydata do not agree.')

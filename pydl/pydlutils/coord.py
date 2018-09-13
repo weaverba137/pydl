@@ -5,6 +5,7 @@
 import numpy as np
 import astropy.units as u
 import astropy.coordinates as ac
+from ..goddard.astro import get_juldate
 
 
 class SDSSMuNu(ac.BaseCoordinateFrame):
@@ -61,7 +62,6 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
 def current_mjd():
     """Return the current MJD.
     """
-    from ..goddard.astro import get_juldate
     return get_juldate() - 2400000.5
 
 

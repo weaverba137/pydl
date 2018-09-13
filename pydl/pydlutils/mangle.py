@@ -30,6 +30,7 @@ References
     Hill, J. Colin, 2008 MNRAS 387, 1391
     <http://adsabs.harvard.edu/abs/2008MNRAS.387.1391S>`_.
 """
+import re
 import numpy as np
 from astropy.io import fits
 from astropy.extern import six
@@ -675,7 +676,6 @@ def read_mangle_polygons(filename):
         :class:`~pydl.pydlutils.mangle.ManglePolygon` objects and
         any metadata.
     """
-    import re
     with open(filename, 'rU') as ply:
         lines = ply.read().split(ply.newlines)
     try:

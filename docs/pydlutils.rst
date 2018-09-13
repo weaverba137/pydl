@@ -80,10 +80,13 @@ API
 .. automodapi:: pydl.pydlutils
 
 .. automodapi:: pydl.pydlutils.bspline
+    :skip: warn, PydlutilsUserWarning, djs_reject, fchebyshev, uniq, flegendre
 
 .. automodapi:: pydl.pydlutils.cooling
+    :skip: interp, get_pkg_data_contents
 
 .. automodapi:: pydl.pydlutils.coord
+    :skip: get_juldate
 
 .. automodapi:: pydl.pydlutils.image
 
@@ -91,18 +94,21 @@ API
     :skip: PydlutilsException, PydlutilsUserWarning
 
 .. automodapi:: pydl.pydlutils.math
+    :skip: svd, djs_laxisnum, median
 
 .. automodapi:: pydl.pydlutils.misc
 
 .. automodapi:: pydl.pydlutils.rgbcolor
+    :skip: warn
 
 .. automodapi:: pydl.pydlutils.sdss
+    :skip: download_file, spherematch, uniq
 
 .. automodapi:: pydl.pydlutils.spheregroup
-    :skip: PydlutilsException, PydlutilsUserWarning
+    :skip: warn, PydlutilsException, PydlutilsUserWarning, gcirc
 
 .. automodapi:: pydl.pydlutils.trace
-    :skip: PydlutilsException, flegendre
+    :skip: chebyt, FITS_rec, PydlutilsException, djs_reject, djs_laxisgen, flegendre
 
 .. automodapi:: pydl.pydlutils.yanny
     :skip: OrderedDict, PydlutilsException, PydlutilsUserWarning, Table

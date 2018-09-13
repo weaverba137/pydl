@@ -159,7 +159,6 @@ def hogg_iau_name(ra, dec, prefix='SDSS', precision=1):
     >>> hogg_iau_name(354.120375,-0.544777778)
     'SDSS J233628.89-003241.2'
     """
-    import numpy as np
     #
     # Promote scalar values to arrays.
     #

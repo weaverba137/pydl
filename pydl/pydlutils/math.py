@@ -3,7 +3,10 @@
 """This module corresponds to the math directory in idlutils.
 """
 import numpy as np
+from numpy.linalg import svd
 import astropy.utils as au
+from .misc import djs_laxisnum
+from ..median import median
 
 
 class computechi2(object):
@@ -28,7 +31,6 @@ class computechi2(object):
     def __init__(self, bvec, sqivar, amatrix):
         """Initialize the object and perform initial computations.
         """
-        from numpy.linalg import svd
         #
         # Save the inputs
         #
@@ -129,7 +131,6 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
         then the result simply ``numpy.median(array,dimension)``.
         If `width` is set, the result has the same shape as the input array.
     """
-    from ..median import median
     if dimension is None and width is None:
         return np.median(array)
     elif width is None:
@@ -253,7 +254,6 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     :exc:`ValueError`
         If dimensions of various inputs do not match.
     """
-    from .misc import djs_laxisnum
     #
     # Create outmask setting = 1 for good data.
     #

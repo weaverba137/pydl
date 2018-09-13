@@ -13,6 +13,8 @@ References
     <http://adsabs.harvard.edu/abs/2004PASP..116..133L>`_.
 """
 import numpy as np
+from warnings import warn
+from . import PydlutilsUserWarning
 
 
 def nw_arcsinh(colors, nonlinearity=3.0):
@@ -112,8 +114,6 @@ def nw_float_to_byte(image, bits=8):
     :class:`~numpy.ndarray`
         Converted image.
     """
-    from warnings import warn
-    from . import PydlutilsUserWarning
     if bits > 8:
         warn("bits > 8 not supported; setting bits = 8.", PydlutilsUserWarning)
         bits = 8
