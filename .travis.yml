@@ -18,8 +18,8 @@ addons:
     apt:
         packages:
             - graphviz
-            - texlive-latex-extra
-            - dvipng
+            # - texlive-latex-extra
+            # - dvipng
 
 env:
     global:
