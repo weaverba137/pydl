@@ -69,7 +69,9 @@ API
 .. automodapi:: pydl.goddard
 
 .. automodapi:: pydl.goddard.astro
+    :skip: time
 
 .. automodapi:: pydl.goddard.math
+    :skip: legendre
 
 .. automodapi:: pydl.goddard.misc

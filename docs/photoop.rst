@@ -89,3 +89,4 @@ API
 .. automodapi:: pydl.photoop.sdssio
 
 .. automodapi:: pydl.photoop.window
+    :skip: warn, sdss_name, sdss_calib, sdss_flagval, set_use_caps
