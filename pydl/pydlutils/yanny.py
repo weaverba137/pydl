@@ -44,7 +44,7 @@ close reading of the specifications indicates that multidimensional arrays
 were only ever intended to be supported for type ``char``.  So no
 multidimensional arrays, sorry.
 
-.. _specifications: http://www.sdss.org/dr12/software/par/
+.. _specifications: https://www.sdss.org/dr14/software/par/
 """
 import re
 import os
@@ -1290,9 +1290,9 @@ def read_table_yanny(filename, tablename=None):
 
     Raises
     ------
-    PydlutilsException
+    :exc:`PydlutilsException`
         If `tablename` is not set.
-    KeyError
+    :exc:`KeyError`
         If `tablename` does not exist in the file.
     """
     if tablename is None:

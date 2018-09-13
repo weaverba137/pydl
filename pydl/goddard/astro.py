@@ -3,6 +3,9 @@
 """This module corresponds to the goddard/astro directory in idlutils.
 """
 from __future__ import print_function
+from time import time
+import numpy as np
+from astropy.units import Angstrom
 
 
 def airtovac(air):
@@ -28,8 +31,6 @@ def airtovac(air):
       <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
     * Values of wavelength below 2000 Å are not converted.
     """
-    from numpy import zeros
-    from astropy.units import Angstrom
     try:
         u = air.unit
     except AttributeError:
@@ -53,7 +54,7 @@ def airtovac(air):
         g = a < 2000.0
         if g.all():
             return air
-        vacuum = zeros(air.shape, dtype=t) + a
+        vacuum = np.zeros(air.shape, dtype=t) + a
     for k in range(2):
         sigma2 = (1.0e4/vacuum)**2
         fact = (1.0 + 5.792105e-2/(238.0185 - sigma2) +
@@ -90,33 +91,32 @@ def gcirc(ra1, dec1, ra2, dec2, units=2):
     separations.  See:
     http://en.wikipedia.org/wiki/Great-circle_distance
     """
-    from numpy import arcsin, cos, deg2rad, rad2deg, sin, sqrt
     if units == 0:
         rarad1 = ra1
         dcrad1 = dec1
         rarad2 = ra2
         dcrad2 = dec2
     elif units == 1:
-        rarad1 = deg2rad(15.0*ra1)
-        dcrad1 = deg2rad(dec1)
-        rarad2 = deg2rad(15.0*ra2)
-        dcrad2 = deg2rad(dec2)
+        rarad1 = np.deg2rad(15.0*ra1)
+        dcrad1 = np.deg2rad(dec1)
+        rarad2 = np.deg2rad(15.0*ra2)
+        dcrad2 = np.deg2rad(dec2)
     elif units == 2:
-        rarad1 = deg2rad(ra1)
-        dcrad1 = deg2rad(dec1)
-        rarad2 = deg2rad(ra2)
-        dcrad2 = deg2rad(dec2)
+        rarad1 = np.deg2rad(ra1)
+        dcrad1 = np.deg2rad(dec1)
+        rarad2 = np.deg2rad(ra2)
+        dcrad2 = np.deg2rad(dec2)
     else:
         raise ValueError('units must be 0, 1 or 2!')
     deldec2 = (dcrad2-dcrad1)/2.0
     delra2 = (rarad2-rarad1)/2.0
-    sindis = sqrt(sin(deldec2)*sin(deldec2) +
-                  cos(dcrad1)*cos(dcrad2)*sin(delra2)*sin(delra2))
-    dis = 2.0*arcsin(sindis)
+    sindis = np.sqrt(np.sin(deldec2)*np.sin(deldec2) +
+                  np.cos(dcrad1)*np.cos(dcrad2)*np.sin(delra2)*np.sin(delra2))
+    dis = 2.0*np.arcsin(sindis)
     if units == 0:
         return dis
     else:
-        return rad2deg(dis)*3600.0
+        return np.rad2deg(dis)*3600.0
 
 
 def get_juldate(seconds=None):
@@ -140,7 +140,6 @@ def get_juldate(seconds=None):
     Do not use this function if high precision is required, or if you are
     concerned about the distinction between UTC & TAI.
     """
-    from time import time
     if seconds is None:
         t = time()
     else:
@@ -152,8 +151,7 @@ def get_juldate(seconds=None):
 def get_juldate_main():  # pragma: no cover
     """Entry point for the get_juldate command-line script.
     """
-    jd = get_juldate()
-    print(jd)
+    print(get_juldate())
     return 0
 
 
@@ -180,8 +178,6 @@ def vactoair(vacuum):
       <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
     * Values of wavelength below 2000 Å are not converted.
     """
-    from numpy import zeros
-    from astropy.units import Angstrom
     try:
         u = vacuum.unit
     except AttributeError:
@@ -205,7 +201,7 @@ def vactoair(vacuum):
         g = v < 2000.0
         if g.all():
             return vacuum
-        air = zeros(vacuum.shape, dtype=t) + v
+        air = np.zeros(vacuum.shape, dtype=t) + v
     sigma2 = (1.0e4/v)**2
     fact = (1.0 + 5.792105e-2/(238.0185 - sigma2) +
             1.67917e-3/(57.362 - sigma2))

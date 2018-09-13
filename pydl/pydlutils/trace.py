@@ -61,7 +61,6 @@ def fchebyshev_split(x, m):
     -------
     :class:`numpy.ndarray`
     """
-    import numpy as np
     if isinstance(x, np.ndarray):
         n = x.size
     else:
@@ -152,9 +151,9 @@ def func_fit(x, y, ncoeff, invvar=None, function_name='legendre', ia=None,
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If an invalid function type is selected.
-    ValueError
+    :exc:`ValueError`
         If input dimensions do not agree.
     """
     if x.shape != y.shape:

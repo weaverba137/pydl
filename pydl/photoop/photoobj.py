@@ -44,6 +44,11 @@ def unwrap_objid(objid):
         A record array with the same length as `objid`, with the columns
         'skyversion', 'rerun', 'run', 'camcol', 'firstfield', 'frame', 'id'.
 
+    Raises
+    ------
+    :exc:`ValueError`
+        If the input objID has a type that can't be converted into 64-bit integer.
+
     Notes
     -----
     For historical reasons, the inverse of this function,

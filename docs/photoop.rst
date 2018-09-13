@@ -56,7 +56,7 @@ compare     Obsolete        Compare the same images in two different data reduct
 database    Obsolete        Experimental database loading code.
 flats       None            Analysis of flat-field files.
 hoggpipe    Obsolete        Another version of "Apache Wheel" processing code.
-image       None            Tools for creating "corrected frame" images.  These are flux-calibrated and sky-subtracted images with physical flux units.
+image       None            Tools for creating "`corrected frame`_" images.  These are flux-calibrated and sky-subtracted images with physical flux units.
 ircam       Obsolete        Tools for processing all-sky "cloud camera" images, used to establish photometricity.
 match       None            Tools for matching SDSS spectra to corresponding photometric objects.
 misc        None            Code with no obvious home in any other category.
@@ -76,6 +76,7 @@ window      Rudimentary     Tools for determining the sky coverage of the survey
 .. _reduce: https://www.sdss.org/dr14/imaging/pipeline/
 .. _resolve: https://www.sdss.org/dr14/algorithms/resolve/
 .. _flux-calibrate: https://www.sdss.org/dr14/algorithms/fluxcal/
+.. _`corrected frame`: https://data.sdss.org/datamodel/files/BOSS_PHOTOOBJ/frames/RERUN/RUN/CAMCOL/frame.html
 .. _ubercalibration: https://www.sdss.org/dr14/algorithms/fluxcal/
 
 API

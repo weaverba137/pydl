@@ -45,7 +45,7 @@ def djs_laxisgen(dims, iaxis=0):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `iaxis` is greater than or equal to the number of dimensions.
 
     Notes
@@ -86,7 +86,7 @@ def djs_laxisnum(dims, iaxis=0):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `iaxis` is greater than or equal to the number of dimensions, or
         if number of dimensions is greater than three.
 

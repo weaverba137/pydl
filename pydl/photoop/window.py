@@ -2,6 +2,16 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the window directory in photoop.
 """
+import os
+import time
+from warnings import warn
+import numpy as np
+from astropy import log
+from astropy.io import fits
+from . import PhotoopException
+from .sdssio import sdss_name, sdss_calib
+from ..pydlutils.mangle import set_use_caps
+from ..pydlutils.sdss import sdss_flagval
 
 
 def sdss_score(flist, silent=True):
@@ -19,13 +29,6 @@ def sdss_score(flist, silent=True):
     :class:`numpy.ndarray`
         A vector of scores, one for each row of the FITS file.
     """
-    import time
-    import numpy as np
-    from astropy import log
-    from astropy.io import fits
-    from warnings import warn
-    from .sdssio import sdss_name, sdss_calib
-    from ..pydlutils.sdss import sdss_flagval
     lat = 32.780361
     lng = 360.0 - 105.820417
     tzone = 7
@@ -162,45 +165,40 @@ def sdss_score(flist, silent=True):
 def window_read(**kwargs):
     """Read window files in $PHOTO_RESOLVE.
     """
-    from os import getenv
-    from os.path import exists, join
-    from . import PhotoopException
-    from ..pydlutils.mangle import set_use_caps
-    from astropy.io import fits
-    import numpy as np
-    resolve_dir = getenv('PHOTO_RESOLVE')
-    if resolve_dir is None:
+    try:
+        resolve_dir = os.environ['PHOTO_RESOLVE']
+    except KeyError:
         raise PhotoopException(('You have not set the environment variable ' +
-                               'PHOTO_RESOLVE!'))
+                                'PHOTO_RESOLVE!'))
     if 'silent' not in kwargs:
         kwargs['silent'] = True
     r = dict()
     if 'flist' in kwargs:
         if 'rescore' in kwargs:
-            flist_file = join(resolve_dir, 'window_flist_rescore.fits')
-            if not exists(rescore_file):
+            flist_file = os.path.join(resolve_dir, 'window_flist_rescore.fits')
+            if not os.path.exists(rescore_file):
                 #
                 # This will be called if window_flist_rescore.fits doesn't exist.
                 #
                 window_score()
         else:
-            flist_file = join(resolve_dir, 'window_flist.fits')
+            flist_file = os.path.join(resolve_dir, 'window_flist.fits')
         with fits.open(rescore_file) as fit:
             r['flist'] = fit[1].data
     if 'blist' in kwargs or 'balkans' in kwargs:
-        blist_file = join(resolve_dir, 'window_blist.fits')
+        blist_file = os.path.join(resolve_dir, 'window_blist.fits')
         with fits.open(balkan_file) as fit:
             r['blist'] = fit[1].data
     if 'bcaps' in kwargs or 'balkans' in kwargs:
-        bcaps_file = join(resolve_dir, 'window_bcaps.fits')
+        bcaps_file = os.path.join(resolve_dir, 'window_bcaps.fits')
         with fits.open(bcaps_file) as fit:
             r['bcaps'] = fit[1].data
     if 'findx' in kwargs:
-        findx_file = join(resolve_dir, 'window_findx.fits')
+        findx_file = os.path.join(resolve_dir, 'window_findx.fits')
         with fits.open(findx_file) as fit:
             r['findx'] = fit[1].data
     if 'bindx' in kwargs:
-        bindx_file = join(resolve_dir, 'window_bindx.fits')
+        bindx_file = os.path.join(resolve_dir, 'window_bindx.fits')
         with fits.open(bindx_file) as fit:
             r['bindx'] = fit[1].data
     if 'balkans' in kwargs:
@@ -235,47 +233,41 @@ def window_score(**kwargs):
     If 'rescore' is set, then write a new file 'window_flist_rescore.fits'
     rather than over-writing the file 'window_flist.fits'
     """
-    # import time
-    from os import environ
-    from astropy.io import fits as pyfits
-    from . import PhotoopException
-    # t0 = time.time()
     #
     # Be certain not to use global calibrations
     #
     try:
-        calib_dir_save = environ['PHOTO_CALIB']
+        calib_dir_save = os.environ['PHOTO_CALIB']
     except KeyError:
         raise PhotoopException(('You have not set the environment variable ' +
-                               'PHOTO_CALIB!'))
-    del environ['PHOTO_CALIB']
+                                'PHOTO_CALIB!'))
+    del os.environ['PHOTO_CALIB']
     #
     # Read the file
     #
     try:
-        resolve_dir = environ['PHOTO_RESOLVE']
+        resolve_dir = os.environ['PHOTO_RESOLVE']
     except KeyError:
         raise PhotoopException(('You have not set the environment variable ' +
-                               'PHOTO_RESOLVE!'))
-    filename = join(resolve_dir, 'window_flist.fits')
+                                'PHOTO_RESOLVE!'))
+    filename = os.path.join(resolve_dir, 'window_flist.fits')
     if 'rescore' in kwargs:
         fitsmode = 'readonly'
     else:
         fitsmode = 'update'
     try:
-        flist = pyfits.open(filename, mode=fitsmode)
-    except IOError:
+        flist = fits.open(filename, mode=fitsmode)
+    except OSError:
         raise PhotoopException('Unable to read FLIST file.')
     #
     # Construct the scores filling in the values to FLIST.SCORE
     #
     flist.field('SCORE')[:] = sdss_score(flist)
     if 'rescore' in kwargs:
-        flist.writeto(join(resolve_dir, 'window_flist_rescore.fits'))
+        flist.writeto(os.path.join(resolve_dir, 'window_flist_rescore.fits'))
     flist.close()
     #
     # Restore the PHOTO_CALIB variable
     #
-    environ['PHOTO_CALIB'] = calib_dir_save
-    # print "Elapsed time = %f sec" % (time.time()-t0,)
+    os.environ['PHOTO_CALIB'] = calib_dir_save
     return

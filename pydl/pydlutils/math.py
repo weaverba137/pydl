@@ -250,7 +250,7 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If dimensions of various inputs do not match.
     """
     from .misc import djs_laxisnum

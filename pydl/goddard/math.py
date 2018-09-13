@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the goddard/math directory in idlutils.
 """
-from __future__ import absolute_import
+import numpy as np
+from scipy.special import legendre
 
 
 def flegendre(x, m):
@@ -20,9 +21,8 @@ def flegendre(x, m):
     Returns
     -------
     :class:`numpy.ndarray`
+        The values of the Legendre functions.
     """
-    import numpy as np
-    from scipy.special import legendre
     if isinstance(x, np.ndarray):
         n = x.size
     else:

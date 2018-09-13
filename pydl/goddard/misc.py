@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the goddard/misc directory in idlutils.
 """
-from __future__ import absolute_import
+from math import pi
 
 
 def cirrange(ang, radians=False):
@@ -28,7 +28,6 @@ def cirrange(ang, radians=False):
     >>> cirrange(-270.0)
     90.0
     """
-    from math import pi
     if radians:
         cnst = pi * 2.0
     else:

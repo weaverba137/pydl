@@ -2,6 +2,20 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the spec2d directory in idlspec2d.
 """
+from warnings import warn
+import numpy as np
+from scipy.special import erf
+from astropy import log
+from astropy.io import ascii
+from astropy.utils.data import get_pkg_data_filename
+from . import Pydlspec2dException, Pydlspec2dUserWarning
+from .. import smooth
+from ..pydlutils.bspline import iterfit
+from ..pydlutils.image import djs_maskinterp
+from ..pydlutils.math import djs_median
+from ..pydlutils.sdss import sdss_flagval
+from ..pydlutils.trace import traceset2xy, xy2traceset
+from ..goddard.astro import vactoair
 
 
 def aesthetics(flux, invvar, method='traditional'):
@@ -21,10 +35,6 @@ def aesthetics(flux, invvar, method='traditional'):
     :class:`numpy.ndarray`
         A cleaned-up spectrum.
     """
-    import numpy as np
-    from scipy.special import erf
-    from ..pydlutils.image import djs_maskinterp
-    from . import Pydlspec2dException
     badpts = invvar == 0
     if badpts.any():
         if method == 'traditional':
@@ -82,17 +92,9 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If input dimensions don't match.
     """
-    import numpy as np
-    from astropy import log
-    from warnings import warn
-    from . import Pydlspec2dUserWarning
-    from .. import smooth
-    from ..pydlutils.bspline import iterfit
-    from ..pydlutils.math import djs_median
-    from ..pydlutils.sdss import sdss_flagval
     #
     # Log
     #
@@ -410,14 +412,9 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If neither `waveimg` nor `wset` are set.
     """
-    import numpy as np
-    from astropy.io import ascii
-    from ..goddard.astro import vactoair
-    from ..pydlutils.image import djs_maskinterp
-    from ..pydlutils.trace import traceset2xy, xy2traceset
     nTrace, nx = flux.shape
     if filter_prefix != 'sdss_jun2001':
         raise ValueError("Filters other than {0} are not available!".format('sdss_jun2001'))
@@ -459,7 +456,6 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
 def _get_pkg_filename_compat(filename, package):
     """Astropy 1.0.x/LTS does not accept the 'package' argument.
     """
-    from astropy.utils.data import get_pkg_data_filename
     try:
         f = get_pkg_data_filename(filename, package=package)
     except TypeError:

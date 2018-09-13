@@ -82,17 +82,17 @@ Legal
 
 .. _Python: http://python.org
 .. _`IDL®`: http://www.harrisgeospatial.com/SoftwareTechnology/IDL.aspx
-.. _idlutils: http://www.sdss.org/dr12/software/idlutils/
-.. _SDSS: http://www.sdss.org
+.. _idlutils: https://www.sdss.org/dr14/software/idlutils/
+.. _SDSS: https://www.sdss.org
 .. _`Goddard utilities`: http://idlastro.gsfc.nasa.gov/
 .. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
-.. _BOSS: http://www.sdss.org/surveys/boss/
-.. _eBOSS: http://www.sdss.org/surveys/eboss/
+.. _BOSS: https://www.sdss.org/surveys/boss/
+.. _eBOSS: https://www.sdss.org/surveys/eboss/
 .. _photoop: https://svn.sdss.org/public/repo/sdss/photoop/trunk/
 .. _astropy: http://www.astropy.org
 .. _PyPI: https://pypi.python.org/pypi/pydl/
-.. _`PyDL on Read the Docs`: http://pydl.readthedocs.org/en/latest/
+.. _`PyDL on Read the Docs`: https://pydl.readthedocs.io/en/latest/
 .. _SDSS-III: http://www.sdss3.org
-.. _`svn repository`: http://www.sdss.org/dr12/software/products/
-.. _GitHub: http://github.com
+.. _`svn repository`: https://www.sdss.org/dr14/software/products/
+.. _GitHub: https://github.com
 .. _`Harris Geospatial Solutions`: http://www.harrisgeospatial.com/

@@ -33,9 +33,9 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
 
     Notes
     -----
-    http://www.sdss.org/dr12/algorithms/surveycoords/
+    https://www.sdss.org/dr14/algorithms/surveycoords/
 
-    .. _`Stripe Number`: http://www.sdss.org/dr14/help/glossary/#stripe
+    .. _`Stripe Number`: https://www.sdss.org/dr14/help/glossary/#stripe
     """
     default_representation = ac.SphericalRepresentation
     frame_specific_representation_info = {

@@ -33,7 +33,7 @@ def rebin(x, d, sample=False):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the new dimensions are incompatible with the algorithm.
 
     References

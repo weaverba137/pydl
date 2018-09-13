@@ -21,7 +21,7 @@ bounded by *great circles*.  Mangle allows polygons to be bounded by
 module to formulas in the mathematical literature.
 
 .. _Mangle: http://space.mit.edu/~molly/mangle/
-.. _`window function`: http://www.sdss.org/dr12/algorithms/resolve/
+.. _`window function`: https://www.sdss.org/dr14/algorithms/resolve/
 
 References
 ----------
@@ -816,7 +816,7 @@ def _single_polygon(poly):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the conversion is not possible.
     """
     if isinstance(poly, ManglePolygon):

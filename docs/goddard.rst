@@ -57,7 +57,7 @@ tv            NA              Functions for manipulating IDL image displays.
 ============= =============== ===================================================
 
 .. _`The IDL® Astronomy User's Libary`: http://idlastro.gsfc.nasa.gov/
-.. _idlutils: http://www.sdss.org/dr14/software/idlutils/
+.. _idlutils: https://www.sdss.org/dr14/software/idlutils/
 .. _`Coyote library`: http://www.idlcoyote.com/
 .. _`Functions from the JHU Applied Physics Lab`: http://fermi.jhuapl.edu/s1r/idl/idl.html
 .. _`STDAS/GEIS`: http://www.stsci.edu/instruments/wfpc2/Wfpc2_dhb/intro_ch24.html#1905747

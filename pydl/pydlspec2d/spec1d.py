@@ -569,8 +569,7 @@ def number_of_fibers(plate, **kwargs):
         The number of fibers on each plate.
     """
     import os
-    import os.path
-    from astropy.io import fits as pyfits
+    from astropy.io import fits
     from astropy.extern.six import integer_types
     #
     # Get mjd values
@@ -597,7 +596,7 @@ def number_of_fibers(plate, **kwargs):
         platelistpath = os.path.join(kwargs['path'], 'platelist.fits')
     else:
         platelistpath = os.path.join(os.environ['BOSS_SPECTRO_REDUX'], 'platelist.fits')
-    platelist = pyfits.open(platelistpath)
+    platelist = fits.open(platelistpath)
     platentotal = platelist[1].data.field('N_TOTAL')
     plateplate = platelist[1].data.field('PLATE')
     platemjd = platelist[1].data.field('MJD')
@@ -762,13 +761,9 @@ def plot_eig(filename, title='Unknown'):
     title : :class:`str`, optional
         Title to put on the plot.
 
-    Returns
-    -------
-    None
-
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If an unknown template type was input in `filename`.
     """
     from astropy.io import fits
@@ -849,9 +844,8 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
         A dictionary containing the data read.
     """
     import os
-    import os.path
     from astropy import log
-    from astropy.io import fits as pyfits
+    from astropy.io import fits
     try:
         nplate = len(platein)
         plate = platein
@@ -933,7 +927,7 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
             sppath = spec_path(thisplate, run2d=run2d)
         spfile = os.path.join(sppath[0], "spPlate-{0}.fits".format(pmjdstr))
         log.info(spfile)
-        spplate = pyfits.open(spfile)
+        spplate = fits.open(spfile)
         #
         # Get wavelength coefficients from primary header
         #
@@ -1013,7 +1007,7 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
                                      "{0:04d}".format(int(thisplate)),
                                      "photoPlate-{0}.fits".format(pmjdstr))
         if os.path.exists(photofile):
-            photop = pyfits.open(photofile)
+            photop = fits.open(photofile)
             tmp = photop[1].data[thisfiber-1]
             if 'tsobj' not in spplate_data:
                 spplate_data['tsobj'] = dict()
@@ -1035,7 +1029,7 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
             zfile = os.path.join(sppath[0], run1d,
                                  "spZbest-{0}.fits".format(pmjdstr))
         if os.path.exists(zfile):
-            spz = pyfits.open(zfile)
+            spz = fits.open(zfile)
             if 'znum' in kwargs:
                 nper = spz[0].header['DIMS0']
                 zfiber = (thisfiber-1)*nper + kwargs['znum'] - 1
@@ -1177,7 +1171,7 @@ def spec_path(plate, path=None, topdir=None, run2d=None):
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If environment variables are not supplied.
     """
     from os import environ
@@ -1379,10 +1373,6 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         If ``True``, plot the individual input spectra.
     verbose : :class:`bool`, optional
         If ``True``, print lots of extra information.
-
-    Returns
-    -------
-    None
     """
     import os
     import pickle

@@ -36,7 +36,7 @@ def nw_arcsinh(colors, nonlinearity=3.0):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `colors` has the wrong shape.
     """
     if nonlinearity == 0:
@@ -75,7 +75,7 @@ def nw_cut_to_box(colors, origin=(0.0, 0.0, 0.0)):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `colors` or `origin` has the wrong shape.
     """
     if len(origin) != 3:
@@ -142,7 +142,7 @@ def nw_scale_rgb(colors, scales=(1.0, 1.0, 1.0)):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `colors` or `scales` has the wrong shape.
     """
     if len(scales) != 3:

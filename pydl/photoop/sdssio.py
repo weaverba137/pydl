@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the sdssio directory of photoop.
 """
+import os
+import numpy as np
+from astropy.extern.six import string_types
 
 
 #
@@ -77,7 +80,6 @@ def filtername(f):
     >>> filtername(0)
     'u'
     """
-    from astropy.extern.six import string_types
     if isinstance(f, string_types):
         return f
     fname = ('u', 'g', 'r', 'i', 'z')
@@ -96,6 +98,11 @@ def filternum(filt='foo'):
     -------
     :class:`int`
         The corresponding filter number
+
+    Raises
+    ------
+    :exc:`KeyError`
+        If `filt` is not a valid filter name.
 
     Examples
     --------
@@ -165,16 +172,14 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If the file type is unknown.
     """
-    from os import getenv
-    from os.path import join
     if ftype == 'reObj':
-        if getenv('PHOTO_RESOLVE') is None:
-            myftype = 'reObjRun'
-        else:
+        if 'PHOTO_RESOLVE' in os.environ:
             myftype = 'reObjGlobal'
+        else:
+            myftype = 'reObjRun'
     else:
         myftype = ftype
     thisfilter = filtername(thisfilter)
@@ -186,7 +191,7 @@ def sdss_name(ftype, run, camcol, field, rerun='', thisfilter='r',
         raise KeyError("Unknown FTYPE = {0}".format(myftype))
     if not no_path:
         datadir = sdss_path(myftype, run, camcol, rerun)
-        fullname = join(datadir, fullname)
+        fullname = os.path.join(datadir, fullname)
     return fullname
 
 
@@ -211,22 +216,21 @@ def sdss_path(ftype, run, camcol=0, rerun=''):
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If the file type is unknown.
 
     """
-    from os import getenv
     indict = {
         'run': run,
         'camcol': camcol,
         'rerun': rerun,
-        'calib': getenv('PHOTO_CALIB'),
-        'data': getenv('PHOTO_DATA'),
-        'photoobj': getenv('BOSS_PHOTOOBJ'),
-        'redux': getenv('PHOTO_REDUX'),
-        'resolve': getenv('PHOTO_RESOLVE'),
-        'sky': getenv('PHOTO_SKY'),
-        'sweep': getenv('PHOTO_SWEEP'),
+        'calib': os.getenv('PHOTO_CALIB'),
+        'data': os.getenv('PHOTO_DATA'),
+        'photoobj': os.getenv('BOSS_PHOTOOBJ'),
+        'redux': os.getenv('PHOTO_REDUX'),
+        'resolve': os.getenv('PHOTO_RESOLVE'),
+        'sky': os.getenv('PHOTO_SKY'),
+        'sweep': os.getenv('PHOTO_SWEEP'),
         }
     try:
         datadir = _path_formats[ftype].format(**indict)
@@ -265,7 +269,6 @@ def sdssflux2ab(flux, magnitude=False, ivar=False):
         i(AB,2.5m) = i(2.5m) + 0.013
         z(AB,2.5m) = z(2.5m) - 0.002
     """
-    import numpy as np
     #
     # Correction vector, adjust this as necessary
     #

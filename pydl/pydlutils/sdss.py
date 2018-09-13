@@ -62,7 +62,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the sizes of the arrays don't match or if the array values are out
         of bounds.
 
@@ -205,7 +205,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If `flagname` is invalid
 
     Examples
@@ -255,7 +255,7 @@ def sdss_flagval(flagname, bitname):
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If `flagname` or `bitname` are invalid names.
 
     Examples
@@ -323,7 +323,7 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None,
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the sizes of the arrays don't match or if the array values are
         out of bounds.
 
@@ -453,7 +453,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the sizes of the arrays don't match or if the array values are
         out of bounds.
 
@@ -567,7 +567,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
 
     Raises
     ------
-    PydlutilsException
+    :exc:`PydlutilsException`
         If :envvar:`PHOTO_SWEEP` is not set.
 
     Notes
@@ -696,7 +696,7 @@ def set_maskbits(idlutils_version='v5_5_24', maskbits_file=None):
 
     Raises
     ------
-    URLError
+    :exc:`URLError`
         If the data file could not be retrieved.
     """
     from astropy.utils.data import download_file

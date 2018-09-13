@@ -23,7 +23,7 @@ def read_ds_cooling(fname, logT=None):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the input file name is invalid.
 
     Notes
