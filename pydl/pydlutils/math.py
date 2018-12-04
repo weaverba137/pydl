@@ -358,7 +358,7 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
                     raise ValueError('groupdim is larger than the number of dimensions for ydata.')
                 dimnum = djs_laxisnum(ydata.shape, iaxis=groupdim[iloop]-1)
             else:
-                dimnum = 0
+                dimnum = np.asarray([0])
             #
             # Loop over each vector specified by groupdim. For example, if
             # this is a 2-D array with groupdim=1, then loop over each
