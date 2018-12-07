@@ -80,7 +80,7 @@ API
 .. automodapi:: pydl.pydlutils
 
 .. automodapi:: pydl.pydlutils.bspline
-    :skip: warn, PydlutilsUserWarning, djs_reject, fchebyshev, uniq, flegendre
+    :skip: warn, PydlutilsUserWarning, djs_reject, fchebyshev, uniq, flegendre, cholesky_banded, LinAlgError, cho_solve_banded
 
 .. automodapi:: pydl.pydlutils.cooling
     :skip: interp, get_pkg_data_contents

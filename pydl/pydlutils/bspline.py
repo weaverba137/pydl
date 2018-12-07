@@ -4,6 +4,8 @@
 """
 from warnings import warn
 import numpy as np
+from numpy.linalg.linalg import LinAlgError
+from scipy.linalg import cholesky_banded, cho_solve_banded
 from . import PydlutilsUserWarning
 from .math import djs_reject
 from .trace import fchebyshev
@@ -185,23 +187,13 @@ class bspline(object):
                 alpha.T.flat[bo+itop*bw] += work.flat[bi]
                 beta[itop:ibottom+1] += wb
         min_influence = 1.0e-10 * invvar.sum() / nfull
-        errb = cholesky_band(alpha, mininf=min_influence)  # ,verbose=True)
+        errb = cholesky_band(alpha, mininf=min_influence)
         if isinstance(errb[0], int) and errb[0] == -1:
             a = errb[1]
         else:
             yfit, foo = self.value(xdata, x2=x2, action=a1, upper=upper, lower=lower)
             return (self.maskpoints(errb[0]), yfit)
-        errs = cholesky_solve(a, beta)
-        if isinstance(errs[0], int) and errs[0] == -1:
-            sol = errs[1]
-        else:
-            #
-            # It is not possible for this to get called, because cholesky_solve
-            # has only one return statement, & that statement guarantees that
-            # errs[0] == -1
-            #
-            yfit, foo = self.value(xdata, x2=x2, action=a1, upper=upper, lower=lower)
-            return (self.maskpoints(errs[0]), yfit)
+        sol = cholesky_solve(a, beta)
         if self.npoly > 1:
             self.icoeff[:, goodbk] = np.array(a[0, 0:nfull].reshape(self.npoly, nn), dtype=a.dtype)
             self.coeff[:, goodbk] = np.array(sol[0:nfull].reshape(self.npoly, nn), dtype=sol.dtype)
@@ -442,18 +434,25 @@ class bspline(object):
             return -2
 
 
-def cholesky_band(l, mininf=0.0, verbose=False):
-    """Compute Cholesky decomposition of banded matrix.
+def cholesky_band(l, mininf=0.0):
+    """Compute *lower* Cholesky decomposition of a banded matrix.
+
+    This function provides informative error messages to pass back to the
+    :class:`~pydl.pydlutils.bspline.bspline` machinery; the actual
+    computation is delegated to :func:`scipy.linalg.cholesky_banded`.
 
     Parameters
     ----------
     l : :class:`numpy.ndarray`
-        A matrix on which to perform the Cholesky decomposition.
+        A matrix on which to perform the Cholesky decomposition.  The
+        matrix must be in a special, *lower* form described in
+        :func:`scipy.linalg.cholesky_banded`.  In addition, the input
+        must be padded.  If the original, square matrix has size
+        :math:`N \\times N`, and the width of the band is :math:`b`,
+        `l` must be :math:`b \\times (N + b)`.
     mininf : :class:`float`, optional
         Entries in the `l` matrix are considered negative if they are less
         than this value (default 0.0).
-    verbose : :class:`bool`, optional
-        If set to ``True``, print some debugging information.
 
     Returns
     -------
@@ -463,59 +462,63 @@ def cholesky_band(l, mininf=0.0, verbose=False):
         be the input matrix.  If no problems were detected, the first item
         will be -1, and the second item will be the Cholesky decomposition.
     """
-    lower = l.copy()
-    bw, nn = lower.shape
+    bw, nn = l.shape
     n = nn - bw
-    negative = lower[0, 0:n] <= mininf
-    if negative.any() or not np.all(np.isfinite(lower)):
+    negative = l[0, 0:n] <= mininf
+    if negative.any() or not np.all(np.isfinite(l)):
         warn('Bad entries: ' + str(negative.nonzero()[0]), PydlutilsUserWarning)
         return (negative.nonzero()[0], l)
-    kn = bw - 1
-    spot = np.arange(kn, dtype='i4') + 1
-    bi = np.arange(kn, dtype='i4')
-    for i in range(1, kn):
-        bi = np.append(bi, np.arange(kn-i, dtype='i4') + (kn+1)*i)
-    for j in range(n):
-        lower[0, j] = np.sqrt(lower[0, j])
-        lower[spot, j] /= lower[0, j]
-        x = lower[spot, j]
-        if not np.all(np.isfinite(x)):
-            warn('NaN found in cholesky_band.', PydlutilsUserWarning)
-            return (j, l)
-        hmm = np.outer(x, x)
-        here = bi+(j+1)*bw
-        lower.T.flat[here] -= hmm.flat[bi]
-    return (-1, lower)
+    try:
+        lower = cholesky_banded(l[:, 0:n], lower=True)
+    except LinAlgError:
+        #
+        # Figure out where the error is.
+        #
+        lower = l.copy()
+        kn = bw - 1
+        spot = np.arange(kn, dtype='i4') + 1
+        for j in range(n):
+            lower[0, j] = np.sqrt(lower[0, j])
+            lower[spot, j] /= lower[0, j]
+            x = lower[spot, j]
+            if not np.all(np.isfinite(x)):
+                warn('NaN found in cholesky_band.', PydlutilsUserWarning)
+                return (j, l)
+    #
+    # Restore padding.
+    #
+    L = np.zeros(l.shape, dtype=l.dtype)
+    L[:, 0:n] = lower
+    return (-1, L)
 
 
 def cholesky_solve(a, bb):
-    """Solve the equation Ax=b where A is a Cholesky-banded matrix.
+    """Solve the equation :math:`A x = b` where `a` is a *lower*
+    Cholesky-banded matrix.
+
+    In the :class:`~pydl.pydlutils.bspline.bspline` machinery, `a` needs to
+    be padded.  This function should only used with the output of
+    :func:`~pydl.pydlutils.bspline.cholesky_band`, to ensure the proper
+    padding on `a`.  Otherwise the computation is delegated to
+    :func:`scipy.linalg.cho_solve_banded`.
 
     Parameters
     ----------
     a : :class:`numpy.ndarray`
-        :math:`A` in :math:`A x = b`.
+        *Lower* Cholesky decomposition of :math:`A` in :math:`A x = b`.
     bb : :class:`numpy.ndarray`
         :math:`b` in :math:`A x = b`.
 
     Returns
     -------
-    :func:`tuple`
-        A tuple containing the status and the result of the solution.  The
-        status is always -1.
+    :class:`numpy.ndarray`
+        The solution, padded to be the same shape as `bb`.
     """
-    b = bb.copy()
     bw = a.shape[0]
-    n = b.shape[0] - bw
-    kn = bw - 1
-    spot = np.arange(kn, dtype='i4') + 1
-    for j in range(n):
-        b[j] /= a[0, j]
-        b[j+spot] -= b[j]*a[spot, j]
-    spot = kn - np.arange(kn, dtype='i4')
-    for j in range(n-1, -1, -1):
-        b[j] = (b[j] - np.sum(a[spot, j] * b[j+spot]))/a[0, j]
-    return (-1, b)
+    n = bb.shape[0] - bw
+    x = np.zeros(bb.shape, dtype=bb.dtype)
+    x[0:n] = cho_solve_banded((a[:, 0:n], True), bb[0:n])
+    return x
 
 
 def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,

@@ -1,8 +1,9 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 import numpy as np
-from astropy.tests.helper import raises
-from ..bspline import iterfit
+from astropy.tests.helper import catch_warnings, raises
+from .. import PydlutilsUserWarning
+from ..bspline import cholesky_band, cholesky_solve, iterfit
 from ... import smooth
 
 
@@ -48,3 +49,32 @@ class TestBspline(object):
         # yfit,mask = sset.value(x)
         # print(yfit)
         # pylab.plot(x, y, 'k-', x, yfit, 'r-')
+
+    def test_cholesky_band(self):
+        ab = np.array([[ 8.,  9., 10., 11., 12., 13., 14., 0., 0., 0.],
+                       [ 1.,  2.,  3.,  4.,  5.,  6.,  0., 0., 0., 0.],
+                       [ 1.,  2.,  3.,  4.,  5.,  0.,  0., 0., 0., 0.]])
+        l = np.array([[2.82842712, 2.97909382, 3.07877788, 3.1382224,  3.16559183, 3.16295604, 3.12782377, 0., 0., 0.],
+                      [0.35355339, 0.62938602, 0.8371714,  1.01466666, 1.17093392, 1.31223108, 0., 0., 0., 0.],
+                      [0.35355339, 0.67134509, 0.97441261, 1.27460692, 1.57948348, 0., 0., 0., 0., 0.]])
+        i, ll = cholesky_band(ab)
+        assert np.allclose(l, ll)
+        ab[0, 0] = 1.0e-6
+        with catch_warnings(PydlutilsUserWarning) as w:
+            i, ll = cholesky_band(ab, mininf=1.0e-5)
+        assert len(w) > 0
+        assert str(w[0].message) == "Bad entries: [0]"
+        assert i == 0
+        # ab[0, :] = np.array([ 1., 2., 3., 4., 5., 6., 7., 0., 0., 0.])
+        # with catch_warnings(PydlutilsUserWarning) as w:
+        #     i, ll = cholesky_band(ab)
+        # assert len(w) > 0
+
+    def test_cholesky_solve(self):
+        l = np.array([[2.82842712, 2.97909382, 3.07877788, 3.1382224,  3.16559183, 3.16295604, 3.12782377, 0., 0., 0.],
+                      [0.35355339, 0.62938602, 0.8371714,  1.01466666, 1.17093392, 1.31223108, 0., 0., 0., 0.],
+                      [0.35355339, 0.67134509, 0.97441261, 1.27460692, 1.57948348, 0., 0., 0., 0., 0.]])
+        b = np.ones((10,), dtype=l.dtype)
+        xx = np.array([0.10848432, 0.07752049, 0.05460496, 0.04231068, 0.02116434, 0.03276732, 0.04982674, 0., 0., 0.])
+        x = cholesky_solve(l, b)
+        assert np.allclose(x, xx)
