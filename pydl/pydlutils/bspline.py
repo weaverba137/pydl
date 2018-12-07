@@ -16,7 +16,7 @@ from ..goddard.math import flegendre
 class bspline(object):
     """B-spline class.
 
-    Functions in the bspline library are implemented as methods on this
+    Functions in the idlutils bspline library are implemented as methods on this
     class.
 
     Parameters
@@ -24,15 +24,14 @@ class bspline(object):
     x : :class:`numpy.ndarray`
         The data.
     nord : :class:`int`, optional
-        To be documented.
+        The order of the B-spline.  Default is 4, which is cubic.
     npoly : :class:`int`, optional
-        To be documented.
+        Polynomial order to fit over 2nd variable, if supplied.  If not
+        supplied the order is 1.
     bkpt : :class:`numpy.ndarray`, optional
         To be documented.
     bkspread : :class:`float`, optional
         To be documented.
-    verbose : :class:`bool`, optional.
-        If ``True`` print extra information.
 
     Attributes
     ----------
@@ -57,7 +56,7 @@ class bspline(object):
     """
 
     def __init__(self, x, nord=4, npoly=1, bkpt=None, bkspread=1.0,
-                 verbose=False, **kwargs):
+                 **kwargs):
         """Init creates an object whose attributes are similar to the
         structure returned by the ``create_bsplineset()`` function.
         """
@@ -98,12 +97,12 @@ class bspline(object):
         imin = bkpt.argmin()
         imax = bkpt.argmax()
         if x.min() < bkpt[imin]:
-            if verbose:
-                print('Lowest breakpoint does not cover lowest x value: changing.')
+            warn('Lowest breakpoint does not cover lowest x value: changing.',
+                 PydlutilsUserWarning)
             bkpt[imin] = x.min()
         if x.max() > bkpt[imax]:
-            if verbose:
-                print('Highest breakpoint does not cover highest x value: changing.')
+            warn('Highest breakpoint does not cover highest x value: changing.',
+                 PydlutilsUserWarning)
             bkpt[imax] = x.max()
         nshortbkpt = bkpt.size
         fullbkpt = bkpt.copy()
@@ -524,7 +523,7 @@ def cholesky_solve(a, bb):
 
 def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
             maxiter=10, **kwargs):
-    """Iteratively fit a b-spline set to data, with rejection.
+    """Iteratively fit a B-spline set to data, with rejection.
 
     Parameters
     ----------
@@ -532,12 +531,12 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         Independent variable.
     ydata : :class:`numpy.ndarray`
         Dependent variable.
-    invvar : :class:`numpy.ndarray`
+    invvar : :class:`numpy.ndarray`, optional
         Inverse variance of `ydata`.  If not set, it will be calculated based
         on the standard deviation.
-    upper : :class:`int` or :class:`float`
+    upper : :class:`int` or :class:`float`, optional
         Upper rejection threshold in units of sigma, defaults to 5 sigma.
-    lower : :class:`int` or :class:`float`
+    lower : :class:`int` or :class:`float`, optional
         Lower rejection threshold in units of sigma, defaults to 5 sigma.
     x2 : :class:`numpy.ndarray`, optional
         Orthogonal dependent variable for 2d fits.
@@ -568,7 +567,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     if x2 is not None:
         if x2.size != nx:
             raise ValueError('Dimensions of xdata and x2 do not agree.')
-    yfit = np.zeros(ydata.shape)
+    yfit = np.zeros(ydata.shape, dtype=ydata.dtype)
     if invvar.size == 1:
         outmask = True
     else:
@@ -582,13 +581,13 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     else:
         if not maskwork.any():
             raise ValueError('No valid data points.')
-            # return (None,None)
         if 'fullbkpt' in kwargs:
             fullbkpt = kwargs['fullbkpt']
         else:
             sset = bspline(xdata[xsort[maskwork]], **kwargs)
             if maskwork.sum() < sset.nord:
-                print('Number of good data points fewer than nord.')
+                warn('Number of good data points fewer than nord.',
+                     PydlutilsUserWarning)
                 return (sset, outmask)
             if x2 is not None:
                 if 'xmin' in kwargs:
