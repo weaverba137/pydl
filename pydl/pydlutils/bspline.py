@@ -14,7 +14,7 @@ from ..goddard.math import flegendre
 
 
 class bspline(object):
-    """Bspline class.
+    """B-spline class.
 
     Functions in the bspline library are implemented as methods on this
     class.
@@ -137,8 +137,8 @@ class bspline(object):
     def fit(self, xdata, ydata, invvar, x2=None):
         """Calculate a B-spline in the least-squares sense.
 
-        Fit is based on two variables: x which is sorted and spans a large range
-        where bkpts are required y which can be described with a low order
+        Fit is based on two variables: `xdata` which is sorted and spans a large range
+        where breakpoints are required `ydata` which can be described with a low order
         polynomial.
 
         Parameters
@@ -204,7 +204,7 @@ class bspline(object):
         return (0, yfit)
 
     def action(self, x, x2=None):
-        """Construct banded bspline matrix, with dimensions [ndata, bandwidth].
+        """Construct banded B-spline matrix, with dimensions [ndata, bandwidth].
 
         Parameters
         ----------
@@ -216,7 +216,7 @@ class bspline(object):
         Returns
         -------
         :func:`tuple`
-            A tuple containing the b-spline action matrix; the 'lower' parameter,
+            A tuple containing the B-spline action matrix; the 'lower' parameter,
             a list of pixel positions, each corresponding to the first
             occurence of position greater than breakpoint indx; and 'upper',
             Same as lower, but denotes the upper pixel positions.
@@ -265,10 +265,10 @@ class bspline(object):
         return (action, lower, upper)
 
     def intrv(self, x):
-        """Find the segment between breakpoints which contain each value in the array x.
+        """Find the segment between breakpoints which contain each value in the array `x`.
 
-        The minimum breakpoint is nbkptord -1, and the maximum
-        is nbkpt - nbkptord - 1.
+        The minimum breakpoint is ``nbkptord - 1``, and the maximum
+        is ``nbkpt - nbkptord - 1``.
 
         Parameters
         ----------
@@ -291,19 +291,20 @@ class bspline(object):
         return indx
 
     def bsplvn(self, x, ileft):
-        """To be documented.
+        """Calculates the value of all possibly nonzero B-splines at `x`
+        of a certain order.
 
         Parameters
         ----------
         x : :class:`numpy.ndarray`
-            To be documented.
+            Independent variable.
         ileft : :class:`int`
-            To be documented
+            Breakpoint segements that contain `x`.
 
         Returns
         -------
         :class:`numpy.ndarray`
-            To be documented.
+            B-spline values.
         """
         bkpt = self.breakpoints[self.mask]
         vnikx = np.zeros((x.size, self.nord), dtype=x.dtype)
@@ -326,7 +327,7 @@ class bspline(object):
         return vnikx
 
     def value(self, x, x2=None, action=None, lower=None, upper=None):
-        """Evaluate a bspline at specified values.
+        """Evaluate a B-spline at specified values.
 
         Parameters
         ----------
