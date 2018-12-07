@@ -59,7 +59,7 @@ class bspline(object):
     def __init__(self, x, nord=4, npoly=1, bkpt=None, bkspread=1.0,
                  verbose=False, **kwargs):
         """Init creates an object whose attributes are similar to the
-        structure returned by the create_bspline function.
+        structure returned by the ``create_bsplineset()`` function.
         """
         #
         # Set the breakpoints.
