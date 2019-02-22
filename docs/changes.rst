@@ -8,7 +8,7 @@ PyDL Changelog
 *This version will only support Python 3 and Astropy 3.*  This release is
 planned for early 2019.
 
-0.7.0 (unreleased)
+0.7.0 (2019-02-22)
 ------------------
 
 *This version is planned to be the last version with Python 2 support.*
