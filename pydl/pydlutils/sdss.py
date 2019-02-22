@@ -3,10 +3,15 @@
 """This module corresponds to the sdss directory in idlutils.
 """
 import os
+import re
 import numpy as np
-from astropy.extern.six import string_types
+from six import string_types
 from astropy.io import fits
+from astropy.utils.data import download_file
 from . import PydlutilsException
+from .spheregroup import spherematch
+from .yanny import yanny
+from .. import uniq
 #
 # Cache for the maskbits file.
 #
@@ -62,7 +67,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the sizes of the arrays don't match or if the array values are out
         of bounds.
 
@@ -74,8 +79,6 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
     problem with all camcols.
 
     """
-    from astropy.utils.data import download_file
-    from .yanny import yanny
     global opbadfields
     #
     # Check inputs
@@ -205,7 +208,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If `flagname` is invalid
 
     Examples
@@ -255,7 +258,7 @@ def sdss_flagval(flagname, bitname):
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If `flagname` or `bitname` are invalid names.
 
     Examples
@@ -323,7 +326,7 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None,
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the sizes of the arrays don't match or if the array values are
         out of bounds.
 
@@ -453,7 +456,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the sizes of the arrays don't match or if the array values are
         out of bounds.
 
@@ -473,7 +476,6 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
     >>> print(sdss_specobjid(4055,408,55359,'v5_7_0'))
     [4565636362342690816]
     """
-    import re
     if line is not None and index is not None:
         raise ValueError("line and index inputs cannot both be non-zero!")
     if isinstance(plate, int):
@@ -567,7 +569,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
 
     Raises
     ------
-    PydlutilsException
+    :exc:`PydlutilsException`
         If :envvar:`PHOTO_SWEEP` is not set.
 
     Notes
@@ -575,8 +577,6 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     Assumes that the sweep files exist in :envvar:`PHOTO_SWEEP` and
     that index files have been created.
     """
-    from .. import uniq
-    from .spheregroup import spherematch
     global sweep_cache
     #
     # Check values
@@ -696,7 +696,7 @@ def set_maskbits(idlutils_version='v5_5_24', maskbits_file=None):
 
     Raises
     ------
-    URLError
+    :exc:`URLError`
         If the data file could not be retrieved.
     """
     from astropy.utils.data import download_file

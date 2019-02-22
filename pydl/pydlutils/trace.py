@@ -3,7 +3,11 @@
 """This module corresponds to the trace directory in idlutils.
 """
 import numpy as np
+from scipy.special import chebyt
+from astropy.io.fits.fitsrec import FITS_rec
 from . import PydlutilsException
+from .math import djs_reject
+from .misc import djs_laxisgen
 from ..goddard.math import flegendre
 
 
@@ -23,7 +27,6 @@ def fchebyshev(x, m):
     -------
     :class:`numpy.ndarray`
     """
-    from scipy.special import chebyt
     if isinstance(x, np.ndarray):
         n = x.size
     else:
@@ -61,7 +64,6 @@ def fchebyshev_split(x, m):
     -------
     :class:`numpy.ndarray`
     """
-    import numpy as np
     if isinstance(x, np.ndarray):
         n = x.size
     else:
@@ -152,9 +154,9 @@ def func_fit(x, y, ncoeff, invvar=None, function_name='legendre', ia=None,
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If an invalid function type is selected.
-    ValueError
+    :exc:`ValueError`
         If input dimensions do not agree.
     """
     if x.shape != y.shape:
@@ -270,8 +272,6 @@ class TraceSet(object):
         """This class can be initialized either with a set of xy positions,
         or with a trace set HDU from a FITS file.
         """
-        from astropy.io.fits.fitsrec import FITS_rec
-        from .math import djs_reject
         if len(args) == 1 and isinstance(args[0], FITS_rec):
             #
             # Initialize with FITS data
@@ -379,7 +379,6 @@ class TraceSet(object):
         :func:`tuple` of array-like
             The x, y positions.
         """
-        from .misc import djs_laxisgen
         do_jump = self.has_jump and (not ignore_jump)
         if xpos is None:
             xpos = djs_laxisgen([self.nTrace, self.nx], iaxis=1) + self.xmin

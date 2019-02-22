@@ -28,7 +28,7 @@ def median(array, width=None, axis=None, even=False):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `width` is set, and the input `array` is not 1 or 2 dimensional.
 
     Notes

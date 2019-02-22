@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the spheregroup directory in idlutils.
 """
+from warnings import warn
 import numpy as np
-from astropy.extern.six import string_types
+from six import string_types
 from . import PydlutilsException, PydlutilsUserWarning
+from ..goddard.astro import gcirc
 
 
 class chunks(object):
@@ -376,7 +378,6 @@ class groups(object):
         longitude-latitude or right ascension-declination form.  Assumes
         everything is already in radians.
         """
-        from ..goddard.astro import gcirc
         return gcirc(x1[0], x1[1], x2[0], x2[1], units=0)
 
     def __init__(self, coordinates, distance, separation='euclid'):
@@ -503,7 +504,7 @@ def spheregroup(ra, dec, linklength, chunksize=None):
 
     Raises
     ------
-    PydlutilsException
+    :exc:`PydlutilsException`
         If the array of coordinates only contains one point.
 
     Notes
@@ -512,7 +513,6 @@ def spheregroup(ra, dec, linklength, chunksize=None):
 
     .. warning:: Behavior at the poles is not well tested.
     """
-    from warnings import warn
     npoints = ra.size
     if npoints == 1:
         raise PydlutilsException("Cannot group only one point!")
@@ -597,7 +597,6 @@ def spherematch(ra1, dec1, ra2, dec2, matchlength, chunksize=None,
 
     .. warning:: Behavior at the poles is not well tested.
     """
-    from ..goddard.astro import gcirc
     #
     # Set default values
     #

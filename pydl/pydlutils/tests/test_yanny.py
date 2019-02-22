@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 import warnings
 import json
-import numpy as np
-from collections import OrderedDict
-from astropy.tests.helper import catch_warnings, raises
-from astropy.utils.data import get_pkg_data_filename
-from astropy.extern import six
-from astropy.table import Table
-from astropy.io.registry import (register_identifier, register_reader,
-                                 register_writer)
 from os import chmod, remove
 from os.path import exists, join
 from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
+from collections import OrderedDict
+import six
+import numpy as np
+from astropy.tests.helper import catch_warnings, raises
+from astropy.utils.data import get_pkg_data_filename
+from astropy.table import Table
+from astropy.io.registry import (register_identifier, register_reader,
+                                 register_writer)
 from .. import PydlutilsException, PydlutilsUserWarning
 from ..yanny import (write_ndarray_to_yanny, yanny, is_yanny,
                      read_table_yanny, write_table_yanny)

@@ -2,7 +2,21 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the spec1d directory in idlspec2d.
 """
+import glob
+import os
+import time
+from warnings import warn
 import numpy as np
+from numpy.linalg import solve
+import matplotlib
+matplotlib.use('Agg')
+matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import fontManager, FontProperties
+from astropy import log
+from astropy.io import ascii, fits
+from six import integer_types
+from . import Pydlspec2dException, Pydlspec2dUserWarning
 
 #
 # Used by findspec
@@ -67,8 +81,6 @@ class HMF(object):
 
     def __init__(self, spectra, invvar, K=4, n_iter=None, seed=None,
                  nonnegative=False, epsilon=None, verbose=False):
-        from astropy import log
-        self.log = log
         self.spectra = spectra
         self.invvar = invvar
         self.K = K
@@ -86,7 +98,7 @@ class HMF(object):
         self.a = None
         self.g = None
         if self.verbose:
-            self.log.setLevel('DEBUG')
+            log.setLevel('DEBUG')
         return
 
     def solve(self):
@@ -102,7 +114,7 @@ class HMF(object):
             npix = self.spectra.shape[0]
         else:
             nobj, npix = self.spectra.shape
-        self.log.info("Building HMF from {0:d} object spectra.".format(nobj))
+        log.info("Building HMF from %d object spectra.", nobj)
         fluxdict = dict()
         #
         # If there is only one object spectrum, then all we can do is return it.
@@ -150,7 +162,6 @@ class HMF(object):
     def astep(self):
         """Update for coefficients at fixed component spectra.
         """
-        from numpy.linalg import solve
         N, M = self.spectra.shape
         K, M = self.g.shape
         a = np.zeros((N, K), dtype=self.g.dtype)
@@ -169,7 +180,6 @@ class HMF(object):
     def gstep(self):
         """Update for component spectra at fixed coefficients.
         """
-        from numpy.linalg import solve
         N, M = self.spectra.shape
         N, K = self.a.shape
         g = np.zeros((K, M), dtype=self.a.dtype)
@@ -241,7 +251,6 @@ class HMF(object):
         :func:`tuple` of :class:`numpy.ndarray`
             The fitting coefficients and fitted functions, respectively.
         """
-        import time
         from scipy.cluster.vq import kmeans, whiten
         from ..pydlutils.math import find_contiguous
         N, M = self.spectra.shape
@@ -256,16 +265,16 @@ class HMF(object):
         #
         si = self.spectra * self.invvar
         if (self.spectra.sum(0) == 0).any():
-            self.log.warn("Columns of zeros detected in spectra!")
+            log.warn("Columns of zeros detected in spectra!")
         if (self.invvar.sum(0) == 0).any():
-            self.log.warn("Columns of zeros detected in invvar!")
+            log.warn("Columns of zeros detected in invvar!")
         if (si.sum(0) == 0).any():
-            self.log.warn("Columns of zeros detected in spectra*invvar!")
+            log.warn("Columns of zeros detected in spectra*invvar!")
         zerocol = ((self.spectra.sum(0) == 0) | (self.invvar.sum(0) == 0) |
                    (si.sum(0) == 0))
         n_zero = zerocol.sum()
         if n_zero > 0:
-            self.log.warn("Found {0:d} bad columns in input data!".format(n_zero))
+            log.warn("Found %d bad columns in input data!", n_zero)
         #
         # Find the largest set of contiguous pixels
         #
@@ -280,10 +289,10 @@ class HMF(object):
         if self.seed is not None:
             np.random.seed(self.seed)
         whitespectra = whiten(self.spectra)
-        self.log.debug(whitespectra[0:3, 0:3])
+        log.debug(whitespectra[0:3, 0:3])
         self.g, foo = kmeans(whitespectra, self.K)
         self.g /= np.repeat(self.normbase(), M).reshape(self.g.shape)
-        self.log.debug(self.g[0:3, 0:3])
+        log.debug(self.g[0:3, 0:3])
         #
         # Initialize a matrix
         #
@@ -297,7 +306,7 @@ class HMF(object):
         #
         t0 = time.time()
         for m in range(self.n_iter):
-            self.log.info("Starting iteration #{0:4d}.".format(m+1))
+            log.info("Starting iteration #%4d.", m+1)
             if self.nonnegative:
                 self.a = self.astepnn()
                 self.g = self.gstepnn()
@@ -308,10 +317,10 @@ class HMF(object):
             norm = self.normbase()
             self.g /= np.repeat(norm, M).reshape(self.g.shape)
             self.a = (self.a.T*np.repeat(norm, N).reshape(self.K, N)).T
-            self.log.debug(self.a[0:3, 0:3])
-            self.log.debug(self.g[0:3, 0:3])
-            self.log.debug("Chi**2 after iteration #{0:4d} = {1:f}.".format(m+1, self.badness()))
-            self.log.info("The elapsed time for iteration #{0:4d} is {1:6.2f} s.".format(m+1, time.time()-t0))
+            log.debug(self.a[0:3, 0:3])
+            log.debug(self.g[0:3, 0:3])
+            log.debug("Chi**2 after iteration #%4d = %f.", m+1, self.badness())
+            log.info("The elapsed time for iteration #%4d is %6.2f s.", m+1, time.time()-t0)
         return (self.a, self.g)
 
 
@@ -349,15 +358,9 @@ def findspec(*args, **kwargs):
     :class:`dict`
         A dictionary containing plate, MJD, fiber, etc.
     """
-    import os
-    import os.path
-    import glob
-    from astropy.io import ascii, fits
-    from warnings import warn
     from .. import uniq
     from ..pydlutils.misc import struct_print
     from ..pydlutils.spheregroup import spherematch
-    from . import Pydlspec2dException, Pydlspec2dUserWarning
     global findspec_cache
     #
     # Set up default values
@@ -533,9 +536,7 @@ def latest_mjd(plate, **kwargs):
     :class:`numpy.ndarray`
         An array of MJD values for each plate.
     """
-    import glob
     import re
-    from astropy.extern.six import integer_types
     if isinstance(plate, integer_types) or plate.shape == ():
         platevec = np.array([plate], dtype='i4')
     else:
@@ -568,10 +569,6 @@ def number_of_fibers(plate, **kwargs):
     :class:`numpy.ndarray`
         The number of fibers on each plate.
     """
-    import os
-    import os.path
-    from astropy.io import fits as pyfits
-    from astropy.extern.six import integer_types
     #
     # Get mjd values
     #
@@ -597,7 +594,7 @@ def number_of_fibers(plate, **kwargs):
         platelistpath = os.path.join(kwargs['path'], 'platelist.fits')
     else:
         platelistpath = os.path.join(os.environ['BOSS_SPECTRO_REDUX'], 'platelist.fits')
-    platelist = pyfits.open(platelistpath)
+    platelist = fits.open(platelistpath)
     platentotal = platelist[1].data.field('N_TOTAL')
     plateplate = platelist[1].data.field('PLATE')
     platemjd = platelist[1].data.field('MJD')
@@ -647,8 +644,6 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
     :class:`dict`
         The PCA solution.
     """
-    import time
-    from astropy import log
     from .. import pcomp
     from ..pydlutils.math import computechi2, djs_reject
     if verbose:
@@ -660,7 +655,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
         npix = newflux.shape[0]
     else:
         nobj, npix = newflux.shape
-    log.info("Building PCA from {0:d} object spectra.".format(nobj))
+    log.info("Building PCA from %d object spectra.", nobj)
     nzi = newivar.nonzero()
     first_nonzero = (np.arange(nobj, dtype=nzi[0].dtype),
                      np.array([nzi[1][nzi[0] == k].min() for k in range(nobj)]))
@@ -734,7 +729,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
                                      synwvec*out.yfit) / (maskivar[iobj, :] +
                                                           synwvec)
                 acoeff[iobj, :] = out.acoeff
-            log.info("The elapsed time for iteration #{0:2d} is {1:6.2f} s.".format(ipiter+1, time.time()-t0))
+            log.info("The elapsed time for iteration #%2d is %6.2f s.", ipiter+1, time.time()-t0)
         #
         # Now set ymodel for rejecting points.
         #
@@ -762,21 +757,11 @@ def plot_eig(filename, title='Unknown'):
     title : :class:`str`, optional
         Title to put on the plot.
 
-    Returns
-    -------
-    None
-
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If an unknown template type was input in `filename`.
     """
-    from astropy.io import fits
-    import matplotlib
-    matplotlib.use('Agg')
-    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
-    import matplotlib.pyplot as plt
-    # from matplotlib.font_manager import fontManager, FontProperties
     #
     # Set title based on filename
     #
@@ -848,10 +833,6 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
     :class:`dict`
         A dictionary containing the data read.
     """
-    import os
-    import os.path
-    from astropy import log
-    from astropy.io import fits as pyfits
     try:
         nplate = len(platein)
         plate = platein
@@ -933,7 +914,7 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
             sppath = spec_path(thisplate, run2d=run2d)
         spfile = os.path.join(sppath[0], "spPlate-{0}.fits".format(pmjdstr))
         log.info(spfile)
-        spplate = pyfits.open(spfile)
+        spplate = fits.open(spfile)
         #
         # Get wavelength coefficients from primary header
         #
@@ -1013,7 +994,7 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
                                      "{0:04d}".format(int(thisplate)),
                                      "photoPlate-{0}.fits".format(pmjdstr))
         if os.path.exists(photofile):
-            photop = pyfits.open(photofile)
+            photop = fits.open(photofile)
             tmp = photop[1].data[thisfiber-1]
             if 'tsobj' not in spplate_data:
                 spplate_data['tsobj'] = dict()
@@ -1035,7 +1016,7 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
             zfile = os.path.join(sppath[0], run1d,
                                  "spZbest-{0}.fits".format(pmjdstr))
         if os.path.exists(zfile):
-            spz = pyfits.open(zfile)
+            spz = fits.open(zfile)
             if 'znum' in kwargs:
                 nper = spz[0].header['DIMS0']
                 zfiber = (thisfiber-1)*nper + kwargs['znum'] - 1
@@ -1177,32 +1158,29 @@ def spec_path(plate, path=None, topdir=None, run2d=None):
 
     Raises
     ------
-    KeyError
+    :exc:`KeyError`
         If environment variables are not supplied.
     """
-    from os import environ
-    from os.path import join
-    from astropy.extern.six import integer_types
     if isinstance(plate, integer_types) or plate.shape == ():
         platevec = np.array([plate], dtype='i4')
     else:
         platevec = plate
     if path is None:
         if run2d is None:
-            run2d = environ['RUN2D']
+            run2d = os.environ['RUN2D']
         if topdir is None:
             env = "SPECTRO_REDUX"
             try:
                 ir = int(run2d)
             except ValueError:
                 env = 'BOSS_SPECTRO_REDUX'
-            topdir = environ[env]
+            topdir = os.environ[env]
     paths = list()
     for p in platevec:
         if path is not None:
             paths.append(path)
         else:
-            paths.append(join(topdir, run2d, '{0:04d}'.format(p)))
+            paths.append(os.path.join(topdir, run2d, '{0:04d}'.format(p)))
     return paths
 
 
@@ -1240,7 +1218,6 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
         The resampled flux, inverse variance and wavelength solution,
         respectively.
     """
-    from astropy import log
     from .spec2d import combine1fiber
     if verbose:
         log.setLevel('DEBUG')
@@ -1287,7 +1264,7 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
             indx = loglam > 0
             rowloglam = loglam[indx]
         for iobj in range(nobj):
-            log.info("OBJECT {0:5d}".format(iobj))
+            log.info("OBJECT %5d", iobj)
             if loglam.ndim > 1:
                 if loglam.shape[0] != nobj:
                     raise ValueError('Wrong number of dimensions for loglam.')
@@ -1319,15 +1296,12 @@ def template_metadata(inputfile, verbose=False):
         A tuple containing the list of input spectra and a dictionary
         containing other metadata.
     """
-    import os
-    from astropy import log
-    from . import Pydlspec2dException
     from ..pydlutils.yanny import yanny
     if verbose:
         log.setLevel('DEBUG')
     if not os.path.exists(inputfile):
         raise Pydlspec2dException("Could not find {0}!".format(inputfile))
-    log.debug("Reading input data from {0}.".format(inputfile))
+    log.debug("Reading input data from %s.", inputfile)
     par = yanny(inputfile)
     required_metadata = {'object': str, 'method': str, 'aesthetics': str,
                          'run2d': str, 'run1d': str,
@@ -1337,7 +1311,7 @@ def template_metadata(inputfile, verbose=False):
     for key in required_metadata:
         try:
             metadata[key] = required_metadata[key](par[key])
-            log.debug('{0} = {1}'.format(key, par[key]))
+            log.debug('%s = %s', key, par[key])
         except KeyError:
             raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
         except ValueError:
@@ -1379,23 +1353,9 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         If ``True``, plot the individual input spectra.
     verbose : :class:`bool`, optional
         If ``True``, print lots of extra information.
-
-    Returns
-    -------
-    None
     """
-    import os
     import pickle
-    import matplotlib
-    matplotlib.use('Agg')
-    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
-    import matplotlib.pyplot as plt
-    from matplotlib.font_manager import fontManager, FontProperties
-    from astropy.io import fits
     from astropy.constants import c as cspeed
-    from astropy import log
-    from warnings import warn
-    from . import Pydlspec2dException, Pydlspec2dUserWarning
     from .. import uniq
     from .. import __version__ as pydl_version
     from ..goddard.astro import get_juldate
@@ -1419,7 +1379,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     # Read the input spectra
     #
     if os.path.exists(dumpfile):
-        log.info("Loading data from {0}.".format(dumpfile))
+        log.info("Loading data from %s.", dumpfile)
         with open(dumpfile) as f:
             inputflux = pickle.load(f)
         newflux = inputflux['newflux']
@@ -1438,8 +1398,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         if missing.any():
             imissing = missing.nonzero()[0]
             for k in imissing:
-                log.error("Missing plate={0:d} mjd={1:d} fiberid={2:d}".format(
-                          slist.plate[k], slist.mjd[k], slist.fiberid[k]))
+                log.error("Missing plate=%d mjd=%d fiberid=%d",
+                          slist.plate[k], slist.mjd[k], slist.fiberid[k])
             raise ValueError("{0:d} missing object(s).".format(missing.sum()))
         #
         # Do not fit where the spectrum may be dominated by sky-sub residuals.
@@ -1702,9 +1662,7 @@ def template_qso(metadata, newflux, newivar, verbose=False):
     :class:`dict`
         A dictonary containing flux, eigenvalues, etc.
     """
-    from . import Pydlspec2dException
     from ..pydlutils.math import computechi2
-    from astropy import log
     if metadata['object'].lower() != 'qso':
         raise Pydlspec2dException("You appear to be passing the wrong kind of object to template_qso()!")
     if len(newflux.shape) == 1:
@@ -1714,7 +1672,7 @@ def template_qso(metadata, newflux, newivar, verbose=False):
         nobj, npix = newflux.shape
     objflux = newflux.copy()
     for ikeep in range(metadata['nkeep']):
-        log.info("Solving for eigencomponent #{0:d} of {1:d}".format(ikeep+1, nkeep))
+        log.info("Solving for eigencomponent #%d of %d", ikeep+1, nkeep)
         if metadata['method'].lower() == 'pca':
             pcaflux1 = pca_solve(objflux, newivar,
                                  niter=metadata['niter'], nkeep=1,
@@ -1793,15 +1751,8 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
     :class:`dict`
         A dictonary containing flux, eigenvalues, etc.
     """
-    from . import Pydlspec2dException
     from .. import uniq
     from ..pydlutils.image import djs_maskinterp
-    from astropy import log
-    import matplotlib
-    matplotlib.use('Agg')
-    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
-    import matplotlib.pyplot as plt
-    from matplotlib.font_manager import fontManager, FontProperties
     if metadata['object'].lower() != 'star':
         raise Pydlspec2dException("You appear to be passing the wrong kind of object to template_star()!")
     #
@@ -1819,7 +1770,7 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
         #
         # Find the subclasses for this stellar type
         #
-        log.info("Finding eigenspectra for Stellar class {0}.".format(c))
+        log.info("Finding eigenspectra for Stellar class %s.", c)
         indx = (slist['class'] == c).nonzero()[0]
         nindx = indx.size
         thesesubclass = slist['subclass'][indx]
@@ -1946,7 +1897,6 @@ def template_input_main():  # pragma: no cover
     #
     # Imports for main()
     #
-    import os
     import sys
     from argparse import ArgumentParser
 

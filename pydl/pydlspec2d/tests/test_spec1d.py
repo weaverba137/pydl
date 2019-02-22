@@ -5,7 +5,7 @@ import os
 from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from .. import Pydlspec2dException
-from ..spec1d import (HMF, findspec, spec_append, spec_path, template_metadata,
+from ..spec1d import (HMF, findspec, log, spec_append, spec_path, template_metadata,
                       wavevector)
 
 
@@ -46,10 +46,10 @@ class TestSpec1d(object):
         invvar = np.random.random((20, 100))
         hmf = HMF(spec, invvar)
         assert hmf.K == 4
-        assert hmf.log.level == 20  # INFO
+        assert log.level == 20  # INFO
         hmf = HMF(spec, invvar, K=6, verbose=True)
         assert hmf.K == 6
-        assert hmf.log.level == 10  # DEBUG
+        assert log.level == 10  # DEBUG
 
     def test_spec_append(self):
         spec1 = np.array([[1, 1, 1, 1, 1],

@@ -2,13 +2,21 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the bspline directory in idlutils.
 """
+from warnings import warn
 import numpy as np
+from numpy.linalg.linalg import LinAlgError
+from scipy.linalg import cholesky_banded, cho_solve_banded
+from . import PydlutilsUserWarning
+from .math import djs_reject
+from .trace import fchebyshev
+from .. import uniq
+from ..goddard.math import flegendre
 
 
 class bspline(object):
-    """Bspline class.
+    """B-spline class.
 
-    Functions in the bspline library are implemented as methods on this
+    Functions in the idlutils bspline library are implemented as methods on this
     class.
 
     Parameters
@@ -16,15 +24,14 @@ class bspline(object):
     x : :class:`numpy.ndarray`
         The data.
     nord : :class:`int`, optional
-        To be documented.
+        The order of the B-spline.  Default is 4, which is cubic.
     npoly : :class:`int`, optional
-        To be documented.
+        Polynomial order to fit over 2nd variable, if supplied.  If not
+        supplied the order is 1.
     bkpt : :class:`numpy.ndarray`, optional
         To be documented.
     bkspread : :class:`float`, optional
         To be documented.
-    verbose : :class:`bool`, optional.
-        If ``True`` print extra information.
 
     Attributes
     ----------
@@ -49,9 +56,9 @@ class bspline(object):
     """
 
     def __init__(self, x, nord=4, npoly=1, bkpt=None, bkspread=1.0,
-                 verbose=False, **kwargs):
+                 **kwargs):
         """Init creates an object whose attributes are similar to the
-        structure returned by the create_bspline function.
+        structure returned by the ``create_bsplineset()`` function.
         """
         #
         # Set the breakpoints.
@@ -90,12 +97,12 @@ class bspline(object):
         imin = bkpt.argmin()
         imax = bkpt.argmax()
         if x.min() < bkpt[imin]:
-            if verbose:
-                print('Lowest breakpoint does not cover lowest x value: changing.')
+            warn('Lowest breakpoint does not cover lowest x value: changing.',
+                 PydlutilsUserWarning)
             bkpt[imin] = x.min()
         if x.max() > bkpt[imax]:
-            if verbose:
-                print('Highest breakpoint does not cover highest x value: changing.')
+            warn('Highest breakpoint does not cover highest x value: changing.',
+                 PydlutilsUserWarning)
             bkpt[imax] = x.max()
         nshortbkpt = bkpt.size
         fullbkpt = bkpt.copy()
@@ -129,8 +136,8 @@ class bspline(object):
     def fit(self, xdata, ydata, invvar, x2=None):
         """Calculate a B-spline in the least-squares sense.
 
-        Fit is based on two variables: x which is sorted and spans a large range
-        where bkpts are required y which can be described with a low order
+        Fit is based on two variables: `xdata` which is sorted and spans a large range
+        where breakpoints are required `ydata` which can be described with a low order
         polynomial.
 
         Parameters
@@ -179,23 +186,13 @@ class bspline(object):
                 alpha.T.flat[bo+itop*bw] += work.flat[bi]
                 beta[itop:ibottom+1] += wb
         min_influence = 1.0e-10 * invvar.sum() / nfull
-        errb = cholesky_band(alpha, mininf=min_influence)  # ,verbose=True)
+        errb = cholesky_band(alpha, mininf=min_influence)
         if isinstance(errb[0], int) and errb[0] == -1:
             a = errb[1]
         else:
             yfit, foo = self.value(xdata, x2=x2, action=a1, upper=upper, lower=lower)
             return (self.maskpoints(errb[0]), yfit)
-        errs = cholesky_solve(a, beta)
-        if isinstance(errs[0], int) and errs[0] == -1:
-            sol = errs[1]
-        else:
-            #
-            # It is not possible for this to get called, because cholesky_solve
-            # has only one return statement, & that statement guarantees that
-            # errs[0] == -1
-            #
-            yfit, foo = self.value(xdata, x2=x2, action=a1, upper=upper, lower=lower)
-            return (self.maskpoints(errs[0]), yfit)
+        sol = cholesky_solve(a, beta)
         if self.npoly > 1:
             self.icoeff[:, goodbk] = np.array(a[0, 0:nfull].reshape(self.npoly, nn), dtype=a.dtype)
             self.coeff[:, goodbk] = np.array(sol[0:nfull].reshape(self.npoly, nn), dtype=sol.dtype)
@@ -206,7 +203,7 @@ class bspline(object):
         return (0, yfit)
 
     def action(self, x, x2=None):
-        """Construct banded bspline matrix, with dimensions [ndata, bandwidth].
+        """Construct banded B-spline matrix, with dimensions [ndata, bandwidth].
 
         Parameters
         ----------
@@ -218,14 +215,11 @@ class bspline(object):
         Returns
         -------
         :func:`tuple`
-            A tuple containing the b-spline action matrix; the 'lower' parameter,
+            A tuple containing the B-spline action matrix; the 'lower' parameter,
             a list of pixel positions, each corresponding to the first
             occurence of position greater than breakpoint indx; and 'upper',
             Same as lower, but denotes the upper pixel positions.
         """
-        from .. import uniq
-        from ..goddard.math import flegendre
-        from .trace import fchebyshev
         nx = x.size
         nbkpt = self.mask.sum()
         if nbkpt < 2*self.nord:
@@ -270,10 +264,10 @@ class bspline(object):
         return (action, lower, upper)
 
     def intrv(self, x):
-        """Find the segment between breakpoints which contain each value in the array x.
+        """Find the segment between breakpoints which contain each value in the array `x`.
 
-        The minimum breakpoint is nbkptord -1, and the maximum
-        is nbkpt - nbkptord - 1.
+        The minimum breakpoint is ``nbkptord - 1``, and the maximum
+        is ``nbkpt - nbkptord - 1``.
 
         Parameters
         ----------
@@ -296,19 +290,20 @@ class bspline(object):
         return indx
 
     def bsplvn(self, x, ileft):
-        """To be documented.
+        """Calculates the value of all possibly nonzero B-splines at `x`
+        of a certain order.
 
         Parameters
         ----------
         x : :class:`numpy.ndarray`
-            To be documented.
+            Independent variable.
         ileft : :class:`int`
-            To be documented
+            Breakpoint segements that contain `x`.
 
         Returns
         -------
         :class:`numpy.ndarray`
-            To be documented.
+            B-spline values.
         """
         bkpt = self.breakpoints[self.mask]
         vnikx = np.zeros((x.size, self.nord), dtype=x.dtype)
@@ -331,7 +326,7 @@ class bspline(object):
         return vnikx
 
     def value(self, x, x2=None, action=None, lower=None, upper=None):
-        """Evaluate a bspline at specified values.
+        """Evaluate a B-spline at specified values.
 
         Parameters
         ----------
@@ -439,18 +434,25 @@ class bspline(object):
             return -2
 
 
-def cholesky_band(l, mininf=0.0, verbose=False):
-    """Compute Cholesky decomposition of banded matrix.
+def cholesky_band(l, mininf=0.0):
+    """Compute *lower* Cholesky decomposition of a banded matrix.
+
+    This function provides informative error messages to pass back to the
+    :class:`~pydl.pydlutils.bspline.bspline` machinery; the actual
+    computation is delegated to :func:`scipy.linalg.cholesky_banded`.
 
     Parameters
     ----------
     l : :class:`numpy.ndarray`
-        A matrix on which to perform the Cholesky decomposition.
+        A matrix on which to perform the Cholesky decomposition.  The
+        matrix must be in a special, *lower* form described in
+        :func:`scipy.linalg.cholesky_banded`.  In addition, the input
+        must be padded.  If the original, square matrix has size
+        :math:`N \\times N`, and the width of the band is :math:`b`,
+        `l` must be :math:`b \\times (N + b)`.
     mininf : :class:`float`, optional
         Entries in the `l` matrix are considered negative if they are less
         than this value (default 0.0).
-    verbose : :class:`bool`, optional
-        If set to ``True``, print some debugging information.
 
     Returns
     -------
@@ -460,66 +462,68 @@ def cholesky_band(l, mininf=0.0, verbose=False):
         be the input matrix.  If no problems were detected, the first item
         will be -1, and the second item will be the Cholesky decomposition.
     """
-    from warnings import warn
-    from . import PydlutilsUserWarning
-    lower = l.copy()
-    bw, nn = lower.shape
+    bw, nn = l.shape
     n = nn - bw
-    negative = lower[0, 0:n] <= mininf
-    if negative.any() or not np.all(np.isfinite(lower)):
+    negative = l[0, 0:n] <= mininf
+    if negative.any() or not np.all(np.isfinite(l)):
         warn('Bad entries: ' + str(negative.nonzero()[0]), PydlutilsUserWarning)
         return (negative.nonzero()[0], l)
-    kn = bw - 1
-    spot = np.arange(kn, dtype='i4') + 1
-    bi = np.arange(kn, dtype='i4')
-    for i in range(1, kn):
-        bi = np.append(bi, np.arange(kn-i, dtype='i4') + (kn+1)*i)
-    for j in range(n):
-        lower[0, j] = np.sqrt(lower[0, j])
-        lower[spot, j] /= lower[0, j]
-        x = lower[spot, j]
-        if not np.all(np.isfinite(x)):
-            warn('NaN found in cholesky_band.', PydlutilsUserWarning)
-            return (j, l)
-        hmm = np.outer(x, x)
-        here = bi+(j+1)*bw
-        lower.T.flat[here] -= hmm.flat[bi]
-    return (-1, lower)
+    try:
+        lower = cholesky_banded(l[:, 0:n], lower=True)
+    except LinAlgError:
+        #
+        # Figure out where the error is.
+        #
+        lower = l.copy()
+        kn = bw - 1
+        spot = np.arange(kn, dtype='i4') + 1
+        for j in range(n):
+            lower[0, j] = np.sqrt(lower[0, j])
+            lower[spot, j] /= lower[0, j]
+            x = lower[spot, j]
+            if not np.all(np.isfinite(x)):
+                warn('NaN found in cholesky_band.', PydlutilsUserWarning)
+                return (j, l)
+    #
+    # Restore padding.
+    #
+    L = np.zeros(l.shape, dtype=l.dtype)
+    L[:, 0:n] = lower
+    return (-1, L)
 
 
 def cholesky_solve(a, bb):
-    """Solve the equation Ax=b where A is a Cholesky-banded matrix.
+    """Solve the equation :math:`A x = b` where `a` is a *lower*
+    Cholesky-banded matrix.
+
+    In the :class:`~pydl.pydlutils.bspline.bspline` machinery, `a` needs to
+    be padded.  This function should only used with the output of
+    :func:`~pydl.pydlutils.bspline.cholesky_band`, to ensure the proper
+    padding on `a`.  Otherwise the computation is delegated to
+    :func:`scipy.linalg.cho_solve_banded`.
 
     Parameters
     ----------
     a : :class:`numpy.ndarray`
-        :math:`A` in :math:`A x = b`.
+        *Lower* Cholesky decomposition of :math:`A` in :math:`A x = b`.
     bb : :class:`numpy.ndarray`
         :math:`b` in :math:`A x = b`.
 
     Returns
     -------
-    :func:`tuple`
-        A tuple containing the status and the result of the solution.  The
-        status is always -1.
+    :class:`numpy.ndarray`
+        The solution, padded to be the same shape as `bb`.
     """
-    b = bb.copy()
     bw = a.shape[0]
-    n = b.shape[0] - bw
-    kn = bw - 1
-    spot = np.arange(kn, dtype='i4') + 1
-    for j in range(n):
-        b[j] /= a[0, j]
-        b[j+spot] -= b[j]*a[spot, j]
-    spot = kn - np.arange(kn, dtype='i4')
-    for j in range(n-1, -1, -1):
-        b[j] = (b[j] - np.sum(a[spot, j] * b[j+spot]))/a[0, j]
-    return (-1, b)
+    n = bb.shape[0] - bw
+    x = np.zeros(bb.shape, dtype=bb.dtype)
+    x[0:n] = cho_solve_banded((a[:, 0:n], True), bb[0:n])
+    return x
 
 
 def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
             maxiter=10, **kwargs):
-    """Iteratively fit a b-spline set to data, with rejection.
+    """Iteratively fit a B-spline set to data, with rejection.
 
     Parameters
     ----------
@@ -527,12 +531,12 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         Independent variable.
     ydata : :class:`numpy.ndarray`
         Dependent variable.
-    invvar : :class:`numpy.ndarray`
+    invvar : :class:`numpy.ndarray`, optional
         Inverse variance of `ydata`.  If not set, it will be calculated based
         on the standard deviation.
-    upper : :class:`int` or :class:`float`
+    upper : :class:`int` or :class:`float`, optional
         Upper rejection threshold in units of sigma, defaults to 5 sigma.
-    lower : :class:`int` or :class:`float`
+    lower : :class:`int` or :class:`float`, optional
         Lower rejection threshold in units of sigma, defaults to 5 sigma.
     x2 : :class:`numpy.ndarray`, optional
         Orthogonal dependent variable for 2d fits.
@@ -545,7 +549,6 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     :func:`tuple`
         A tuple containing the fitted bspline object and an output mask.
     """
-    from .math import djs_reject
     nx = xdata.size
     if ydata.size != nx:
         raise ValueError('Dimensions of xdata and ydata do not agree.')
@@ -564,7 +567,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     if x2 is not None:
         if x2.size != nx:
             raise ValueError('Dimensions of xdata and x2 do not agree.')
-    yfit = np.zeros(ydata.shape)
+    yfit = np.zeros(ydata.shape, dtype=ydata.dtype)
     if invvar.size == 1:
         outmask = True
     else:
@@ -578,13 +581,13 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     else:
         if not maskwork.any():
             raise ValueError('No valid data points.')
-            # return (None,None)
         if 'fullbkpt' in kwargs:
             fullbkpt = kwargs['fullbkpt']
         else:
             sset = bspline(xdata[xsort[maskwork]], **kwargs)
             if maskwork.sum() < sset.nord:
-                print('Number of good data points fewer than nord.')
+                warn('Number of good data points fewer than nord.',
+                     PydlutilsUserWarning)
                 return (sset, outmask)
             if x2 is not None:
                 if 'xmin' in kwargs:

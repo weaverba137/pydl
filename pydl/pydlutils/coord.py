@@ -5,6 +5,7 @@
 import numpy as np
 import astropy.units as u
 import astropy.coordinates as ac
+from ..goddard.astro import get_juldate
 
 
 class SDSSMuNu(ac.BaseCoordinateFrame):
@@ -33,9 +34,9 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
 
     Notes
     -----
-    http://www.sdss.org/dr12/algorithms/surveycoords/
+    https://www.sdss.org/dr14/algorithms/surveycoords/
 
-    .. _`Stripe Number`: http://www.sdss.org/dr14/help/glossary/#stripe
+    .. _`Stripe Number`: https://www.sdss.org/dr14/help/glossary/#stripe
     """
     default_representation = ac.SphericalRepresentation
     frame_specific_representation_info = {
@@ -61,7 +62,6 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
 def current_mjd():
     """Return the current MJD.
     """
-    from ..goddard.astro import get_juldate
     return get_juldate() - 2400000.5
 
 

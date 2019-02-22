@@ -45,7 +45,7 @@ def djs_laxisgen(dims, iaxis=0):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `iaxis` is greater than or equal to the number of dimensions.
 
     Notes
@@ -86,7 +86,7 @@ def djs_laxisnum(dims, iaxis=0):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `iaxis` is greater than or equal to the number of dimensions, or
         if number of dimensions is greater than three.
 
@@ -159,7 +159,6 @@ def hogg_iau_name(ra, dec, prefix='SDSS', precision=1):
     >>> hogg_iau_name(354.120375,-0.544777778)
     'SDSS J233628.89-003241.2'
     """
-    import numpy as np
     #
     # Promote scalar values to arrays.
     #

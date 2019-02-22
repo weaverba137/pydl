@@ -6,7 +6,7 @@ PyDL Changelog
 ------------------
 
 *This version will only support Python 3 and Astropy 3.*  This release is
-planned for the Summer or Fall of 2018.
+planned for early 2019.
 
 0.7.0 (unreleased)
 ------------------
@@ -20,12 +20,18 @@ planned for the Summer or Fall of 2018.
   and :func:`~pydl.goddard.astro.vactoair` (PR `#41`_).
 * Change Exelis to Harris Geospatial (PR `#42`_).
 * Fix ``FutureWarning`` in ``re`` in Python 3.7 due to nested sets (PR `#44`_).
+* Use ``six`` instead of ``astropy.extern.six`` (PR `#48`_).
+* Update ``_astropy_init.py`` (PR `#47`_ via PR `#48`_).
+* Update `astropy_helpers`_/v2.0.8 (PR `#45`_ via PR `#48`_).
 
-.. _`#42`: https://github.com/weaverba137/pydl/pull/42
-.. _`#41`: https://github.com/weaverba137/pydl/pull/41
-.. _`#40`: https://github.com/weaverba137/pydl/pull/40
 .. _`#37`: https://github.com/weaverba137/pydl/issues/37.
+.. _`#40`: https://github.com/weaverba137/pydl/pull/40
+.. _`#41`: https://github.com/weaverba137/pydl/pull/41
+.. _`#42`: https://github.com/weaverba137/pydl/pull/42
 .. _`#44`: https://github.com/weaverba137/pydl/pull/44
+.. _`#45`: https://github.com/weaverba137/pydl/pull/45
+.. _`#47`: https://github.com/weaverba137/pydl/pull/47
+.. _`#48`: https://github.com/weaverba137/pydl/pull/48
 
 0.6.0 (2017-09-19)
 ------------------

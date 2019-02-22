@@ -16,7 +16,7 @@ class TestPhotoobj(object):
         pass
 
     def test_sdss_calibv(self):
-        assert np.allclose(0.2650306748466258, sdss_calibv())
+        assert np.allclose(0.2650306748466258, sdss_calibv().value)
 
     def test_unwrap_objid(self):
         objid = unwrap_objid(np.array([1237661382772195474]))

@@ -3,7 +3,10 @@
 """This module corresponds to the math directory in idlutils.
 """
 import numpy as np
+from numpy.linalg import svd
 import astropy.utils as au
+from .misc import djs_laxisnum
+from ..median import median
 
 
 class computechi2(object):
@@ -28,7 +31,6 @@ class computechi2(object):
     def __init__(self, bvec, sqivar, amatrix):
         """Initialize the object and perform initial computations.
         """
-        from numpy.linalg import svd
         #
         # Save the inputs
         #
@@ -129,7 +131,6 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
         then the result simply ``numpy.median(array,dimension)``.
         If `width` is set, the result has the same shape as the input array.
     """
-    from ..median import median
     if dimension is None and width is None:
         return np.median(array)
     elif width is None:
@@ -250,10 +251,9 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If dimensions of various inputs do not match.
     """
-    from .misc import djs_laxisnum
     #
     # Create outmask setting = 1 for good data.
     #
@@ -358,7 +358,7 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
                     raise ValueError('groupdim is larger than the number of dimensions for ydata.')
                 dimnum = djs_laxisnum(ydata.shape, iaxis=groupdim[iloop]-1)
             else:
-                dimnum = 0
+                dimnum = np.asarray([0])
             #
             # Loop over each vector specified by groupdim. For example, if
             # this is a 2-D array with groupdim=1, then loop over each
@@ -435,9 +435,10 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     if sticky:
         newmask = newmask & outmask
     #
-    # Set qdone if the input outmask is identical to the output outmask.
+    # Set qdone if the input outmask is identical to the output outmask;
+    # convert np.bool to Python built-in bool.
     #
-    qdone = np.all(newmask == outmask)
+    qdone = bool(np.all(newmask == outmask))
     outmask = newmask
     return (outmask, qdone)
 

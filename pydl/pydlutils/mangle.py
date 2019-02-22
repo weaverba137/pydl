@@ -21,7 +21,7 @@ bounded by *great circles*.  Mangle allows polygons to be bounded by
 module to formulas in the mathematical literature.
 
 .. _Mangle: http://space.mit.edu/~molly/mangle/
-.. _`window function`: http://www.sdss.org/dr12/algorithms/resolve/
+.. _`window function`: https://www.sdss.org/dr14/algorithms/resolve/
 
 References
 ----------
@@ -30,11 +30,12 @@ References
     Hill, J. Colin, 2008 MNRAS 387, 1391
     <http://adsabs.harvard.edu/abs/2008MNRAS.387.1391S>`_.
 """
-import numpy as np
-from astropy.io import fits
-from astropy.extern import six
-# import astropy.utils as au
+import re
 import warnings
+import numpy as np
+import six
+from astropy.io import fits
+# import astropy.utils as au
 from . import PydlutilsException, PydlutilsUserWarning
 
 
@@ -675,7 +676,6 @@ def read_mangle_polygons(filename):
         :class:`~pydl.pydlutils.mangle.ManglePolygon` objects and
         any metadata.
     """
-    import re
     with open(filename, 'rU') as ply:
         lines = ply.read().split(ply.newlines)
     try:
@@ -816,7 +816,7 @@ def _single_polygon(poly):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If the conversion is not possible.
     """
     if isinstance(poly, ManglePolygon):

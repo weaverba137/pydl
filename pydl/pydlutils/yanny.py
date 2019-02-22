@@ -44,15 +44,15 @@ close reading of the specifications indicates that multidimensional arrays
 were only ever intended to be supported for type ``char``.  So no
 multidimensional arrays, sorry.
 
-.. _specifications: http://www.sdss.org/dr12/software/par/
+.. _specifications: https://www.sdss.org/dr14/software/par/
 """
 import re
 import os
 import datetime
-import numpy
 import warnings
 from collections import OrderedDict
-from astropy.extern import six
+import six
+import numpy as np
 from astropy.table import Table
 # from astropy.io.registry import register_identifier, register_writer
 from . import PydlutilsException, PydlutilsUserWarning
@@ -173,7 +173,7 @@ class yanny(OrderedDict):
         >>> yanny.protect('This string contains a #hashtag.')
         '"This string contains a #hashtag."'
         """
-        if isinstance(x, numpy.bytes_):
+        if isinstance(x, np.bytes_):
             s = x.decode()
         else:
             s = str(x)
@@ -626,7 +626,7 @@ class yanny(OrderedDict):
                 dt.append((str(c), str(d), (self.array_length(structure, c),)))
             else:
                 dt.append((str(c), str(d)))
-        dt = numpy.dtype(dt)
+        dt = np.dtype(dt)
         return dt
 
     def convert(self, structure, variable, value):
@@ -1155,10 +1155,10 @@ class yanny(OrderedDict):
         #
         if not self.raw:
             for t in self.tables():
-                record = numpy.zeros((self.size(t),), dtype=self.dtype(t))
+                record = np.zeros((self.size(t),), dtype=self.dtype(t))
                 for c in self.columns(t):
                     record[c] = self[t][c]
-                self[t] = record.view(numpy.recarray)
+                self[t] = record.view(np.recarray)
         return
 
 
@@ -1199,8 +1199,6 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
     PydlutilsException
         If `filename` already exists, or if the metadata are incorrect.
     """
-    from numpy import ndarray, recarray
-    from astropy.extern.six import string_types
     par = yanny(filename)
     if par:
         #
@@ -1208,12 +1206,12 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
         #
         raise PydlutilsException(
               "Apparently {0} already exists.".format(filename))
-    if isinstance(datatables, (ndarray, recarray, Table)):
+    if isinstance(datatables, (np.ndarray, np.recarray, Table)):
         datatables = (datatables,)
     if structnames is None:
         structnames = ["MYSTRUCT{0:d}".format(k)
                        for k in range(len(datatables))]
-    if isinstance(structnames, string_types):
+    if isinstance(structnames, six.string_types):
         structnames = (structnames,)
     if len(datatables) != len(structnames):
         raise PydlutilsException(
@@ -1290,9 +1288,9 @@ def read_table_yanny(filename, tablename=None):
 
     Raises
     ------
-    PydlutilsException
+    :exc:`PydlutilsException`
         If `tablename` is not set.
-    KeyError
+    :exc:`KeyError`
         If `tablename` does not exist in the file.
     """
     if tablename is None:

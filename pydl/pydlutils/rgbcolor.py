@@ -13,6 +13,8 @@ References
     <http://adsabs.harvard.edu/abs/2004PASP..116..133L>`_.
 """
 import numpy as np
+from warnings import warn
+from . import PydlutilsUserWarning
 
 
 def nw_arcsinh(colors, nonlinearity=3.0):
@@ -36,7 +38,7 @@ def nw_arcsinh(colors, nonlinearity=3.0):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `colors` has the wrong shape.
     """
     if nonlinearity == 0:
@@ -75,7 +77,7 @@ def nw_cut_to_box(colors, origin=(0.0, 0.0, 0.0)):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `colors` or `origin` has the wrong shape.
     """
     if len(origin) != 3:
@@ -112,8 +114,6 @@ def nw_float_to_byte(image, bits=8):
     :class:`~numpy.ndarray`
         Converted image.
     """
-    from warnings import warn
-    from . import PydlutilsUserWarning
     if bits > 8:
         warn("bits > 8 not supported; setting bits = 8.", PydlutilsUserWarning)
         bits = 8
@@ -142,7 +142,7 @@ def nw_scale_rgb(colors, scales=(1.0, 1.0, 1.0)):
 
     Raises
     ------
-    ValueError
+    :exc:`ValueError`
         If `colors` or `scales` has the wrong shape.
     """
     if len(scales) != 3:

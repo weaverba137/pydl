@@ -21,9 +21,6 @@ def smooth(signal, owidth, edge_truncate=False):
     array-like
         A smoothed array with the same dimesions and type as `signal`.
 
-    Notes
-    -----
-
     References
     ----------
     http://www.harrisgeospatial.com/docs/smooth.html

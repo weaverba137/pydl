@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the image directory in idlutils.
 """
+import numpy as np
 
 
 def djs_maskinterp1(yval, mask, xval=None, const=False):
@@ -26,7 +27,6 @@ def djs_maskinterp1(yval, mask, xval=None, const=False):
     :class:`numpy.ndarray`
         The `yval` array with masked values replaced by interpolated values.
     """
-    import numpy as np
     good = mask == 0
     if good.all():
         return yval
@@ -83,7 +83,6 @@ def djs_maskinterp(yval, mask, xval=None, axis=None, const=False):
     :class:`numpy.ndarray`
         The interpolated array.
     """
-    import numpy as np
     if mask.shape != yval.shape:
         raise ValueError('mask must have the same shape as yval.')
     if xval is not None:
