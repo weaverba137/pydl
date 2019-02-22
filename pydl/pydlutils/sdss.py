@@ -5,7 +5,7 @@
 import os
 import re
 import numpy as np
-from astropy.extern.six import string_types
+from six import string_types
 from astropy.io import fits
 from astropy.utils.data import download_file
 from . import PydlutilsException

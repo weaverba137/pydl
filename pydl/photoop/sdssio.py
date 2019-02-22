@@ -4,7 +4,7 @@
 """
 import os
 import numpy as np
-from astropy.extern.six import string_types
+from six import string_types
 
 
 #

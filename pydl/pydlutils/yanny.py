@@ -51,8 +51,8 @@ import os
 import datetime
 import warnings
 from collections import OrderedDict
+import six
 import numpy as np
-from astropy.extern import six
 from astropy.table import Table
 # from astropy.io.registry import register_identifier, register_writer
 from . import PydlutilsException, PydlutilsUserWarning

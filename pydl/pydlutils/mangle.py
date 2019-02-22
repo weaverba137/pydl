@@ -31,11 +31,11 @@ References
     <http://adsabs.harvard.edu/abs/2008MNRAS.387.1391S>`_.
 """
 import re
-import numpy as np
-from astropy.io import fits
-from astropy.extern import six
-# import astropy.utils as au
 import warnings
+import numpy as np
+import six
+from astropy.io import fits
+# import astropy.utils as au
 from . import PydlutilsException, PydlutilsUserWarning
 
 

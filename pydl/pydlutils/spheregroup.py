@@ -4,7 +4,7 @@
 """
 from warnings import warn
 import numpy as np
-from astropy.extern.six import string_types
+from six import string_types
 from . import PydlutilsException, PydlutilsUserWarning
 from ..goddard.astro import gcirc
 

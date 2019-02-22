@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import fontManager, FontProperties
 from astropy import log
 from astropy.io import ascii, fits
-from astropy.extern.six import integer_types
+from six import integer_types
 from . import Pydlspec2dException, Pydlspec2dUserWarning
 
 #

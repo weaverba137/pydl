@@ -41,6 +41,7 @@ Other Notes
 .. toctree::
    :maxdepth: 1
 
+   templates.rst
    changes.rst
    todo.rst
    credits.rst
