@@ -6,9 +6,9 @@ PyDL
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.1095151.svg
-    :target: https://doi.org/10.5281/zenodo.1095151
-    :alt: DOI: 10.5281/zenodo.1095151
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2575874.svg
+    :target: https://doi.org/10.5281/zenodo.2575874
+    :alt: DOI: 10.5281/zenodo.2575874
 
 .. image:: https://img.shields.io/pypi/v/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
