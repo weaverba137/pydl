@@ -39,7 +39,7 @@ env:
         # so Cython is required for testing. If your package does not include
         # Cython code, you can set CONDA_DEPENDENCIES=''
         - CONDA_DEPENDENCIES='scipy matplotlib'
-        - CONDA_DEPENDENCIES_DOC='sphinx-astropy'
+        - CONDA_DEPENDENCIES_DOC='scipy matplotlib sphinx-astropy'
 
         # List other runtime dependencies for the package that are available as
         # pip packages here.
