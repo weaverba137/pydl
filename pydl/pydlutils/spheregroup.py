@@ -4,7 +4,6 @@
 """
 from warnings import warn
 import numpy as np
-from six import string_types
 from . import PydlutilsException, PydlutilsUserWarning
 from ..goddard.astro import gcirc
 
@@ -391,7 +390,7 @@ class groups(object):
         #
         if callable(separation):
             self.separation = separation
-        elif isinstance(separation, string_types):
+        elif isinstance(separation, (str,)):
             if separation == 'euclid':
                 self.separation = self.euclid
             elif separation == 'sphereradec':

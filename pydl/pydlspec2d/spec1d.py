@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import fontManager, FontProperties
 from astropy import log
 from astropy.io import ascii, fits
-from six import integer_types
 from . import Pydlspec2dException, Pydlspec2dUserWarning
 
 #
@@ -537,7 +536,7 @@ def latest_mjd(plate, **kwargs):
         An array of MJD values for each plate.
     """
     import re
-    if isinstance(plate, integer_types) or plate.shape == ():
+    if isinstance(plate, (int,)) or plate.shape == ():
         platevec = np.array([plate], dtype='i4')
     else:
         platevec = plate
@@ -572,7 +571,7 @@ def number_of_fibers(plate, **kwargs):
     #
     # Get mjd values
     #
-    if isinstance(plate, integer_types) or plate.shape == ():
+    if isinstance(plate, (int,)) or plate.shape == ():
         platevec = np.array([plate], dtype='i4')
     else:
         platevec = plate
@@ -1161,7 +1160,7 @@ def spec_path(plate, path=None, topdir=None, run2d=None):
     :exc:`KeyError`
         If environment variables are not supplied.
     """
-    if isinstance(plate, integer_types) or plate.shape == ():
+    if isinstance(plate, (int,)) or plate.shape == ():
         platevec = np.array([plate], dtype='i4')
     else:
         platevec = plate

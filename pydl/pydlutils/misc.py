@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the misc directory in idlutils.
 """
-from __future__ import print_function
 import numpy as np
 from . import PydlutilsException
 

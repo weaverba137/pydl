@@ -5,7 +5,6 @@
 import os
 import re
 import numpy as np
-from six import string_types
 from astropy.io import fits
 from astropy.utils.data import download_file
 from . import PydlutilsException
@@ -167,7 +166,7 @@ def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
     #
     # Make sure label is a list
     #
-    if isinstance(bitname, string_types):
+    if isinstance(bitname, (str,)):
         bitnames = [bitname.upper()]
     else:
         bitnames = [b.upper() for b in bitname]
@@ -273,7 +272,7 @@ def sdss_flagval(flagname, bitname):
     #
     # Make sure inlabel is a list
     #
-    if isinstance(bitname, string_types):
+    if isinstance(bitname, (str,)):
         bitnames = [bitname.upper()]
     else:
         bitnames = [b.upper() for b in bitname]

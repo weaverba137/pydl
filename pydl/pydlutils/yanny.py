@@ -1,4 +1,4 @@
-# Licensed under a 3-clause BSD style license - see LICENSE.rst
+(str,)# Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
 """This module corresponds to the yanny directory in idlutils.
 
@@ -51,7 +51,6 @@ import os
 import datetime
 import warnings
 from collections import OrderedDict
-import six
 import numpy as np
 from astropy.table import Table
 # from astropy.io.registry import register_identifier, register_writer
@@ -339,7 +338,7 @@ class yanny(OrderedDict):
             #
             # Handle file-like objects
             #
-            if isinstance(filename, six.string_types):
+            if isinstance(filename, (str,)):
                 if os.access(filename, os.R_OK):
                     self.filename = filename
                     with open(filename, 'r') as f:
@@ -654,14 +653,7 @@ class yanny(OrderedDict):
         :class:`int`, :class:`long`, :class:`float` or :class:`str`
             `value` converted to a Python numerical type.
         """
-        if six.PY3:
-            intTypes = set(['short', 'int', 'long'])
-            longTypes = set()
-            mylong = int
-        else:
-            intTypes = set(['short', 'int'])
-            longTypes = set(['long'])
-            mylong = long
+        intTypes = set(['short', 'int', 'long'])
         floatTypes = set(['float', 'double'])
         typ = self.basetype(structure, variable)
         if typ in intTypes:
@@ -669,11 +661,6 @@ class yanny(OrderedDict):
                 return [int(v) for v in value]
             else:
                 return int(value)
-        if typ in longTypes:
-            if self.isarray(structure, variable):
-                return [mylong(v) for v in value]
-            else:
-                return mylong(value)
         if typ in floatTypes:
             if self.isarray(structure, variable):
                 return [float(v) for v in value]
@@ -880,7 +867,7 @@ class yanny(OrderedDict):
                         '%Y-%m-%d %H:%M:%S UTC')
             comments = "#\n# {0}\n#\n# Created by pydl.pydlutils.yanny.yanny\n#\n# {1}\n#\n".format(basefile, timestamp)
         else:
-            if isinstance(comments, six.string_types):
+            if isinstance(comments, (str,)):
                 if not comments.startswith('#'):
                     comments = '# ' + comments
                 if not comments.endswith('\n'):
@@ -1211,7 +1198,7 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
     if structnames is None:
         structnames = ["MYSTRUCT{0:d}".format(k)
                        for k in range(len(datatables))]
-    if isinstance(structnames, six.string_types):
+    if isinstance(structnames, (str,)):
         structnames = (structnames,)
     if len(datatables) != len(structnames):
         raise PydlutilsException(

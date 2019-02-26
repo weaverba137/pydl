@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the goddard/misc directory in idlutils.
 """
-from __future__ import absolute_import
 # Needed for Python 2 because there is a math.py module in the same directory.
 from math import pi
 

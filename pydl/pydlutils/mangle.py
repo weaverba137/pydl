@@ -33,7 +33,6 @@ References
 import re
 import warnings
 import numpy as np
-import six
 from astropy.io import fits
 # import astropy.utils as au
 from . import PydlutilsException, PydlutilsUserWarning
@@ -401,7 +400,7 @@ class FITS_polygon(fits.FITS_rec):
         super(FITS_polygon, self).__array_finalize__(obj)
 
     def __getitem__(self, key):
-        if isinstance(key, six.string_types):
+        if isinstance(key, (str,)):
             if key in self._pkey:
                 return super(FITS_polygon, self).__getitem__(self._pkey[key])
         return super(FITS_polygon, self).__getitem__(key)

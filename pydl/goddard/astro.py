@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the goddard/astro directory in idlutils.
 """
-from __future__ import print_function
 from time import time
 import numpy as np
 from astropy.units import Angstrom

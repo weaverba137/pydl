@@ -1,37 +1,17 @@
 #!/usr/bin/env python
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
+# Note: This file needs to be Python 2 / <3.6 compatible, so that the nice
+# "This package only supports Python 3.x+" error prints without syntax errors etc.
 
 import glob
 import os
 import sys
-
-# Enforce Python version check - this is the same check as in __init__.py but
-# this one has to happen before importing ah_bootstrap.
-if sys.version_info < tuple((int(val) for val in "2.7".split('.'))):
-    sys.stderr.write("ERROR: packagename requires Python {} or later\n".format(2.7))
-    sys.exit(1)
-
-import ah_bootstrap
-from setuptools import setup
-
-# A dirty hack to get around some early import/configurations ambiguities
-if sys.version_info[0] >= 3:
-    import builtins
-else:
-    import __builtin__ as builtins
-builtins._ASTROPY_SETUP_ = True
-
-from astropy_helpers.setup_helpers import (register_commands, get_debug_option,
-                                           get_package_info)
-from astropy_helpers.git_helpers import get_git_devstr
-from astropy_helpers.version_helpers import generate_version_py
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
 
 # Get some values from the setup.cfg
-try:
-    from ConfigParser import ConfigParser
-except ImportError:
-    from configparser import ConfigParser
-
 conf = ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
@@ -41,7 +21,28 @@ DESCRIPTION = metadata.get('description', 'Astropy Package Template')
 AUTHOR = metadata.get('author', 'Astropy Developers')
 AUTHOR_EMAIL = metadata.get('author_email', '')
 LICENSE = metadata.get('license', 'unknown')
-URL = metadata.get('url', 'http://astropy.org')
+URL = metadata.get('url', 'http://docs.astropy.org/projects/package-template/')
+__minimum_python_version__ = metadata.get("minimum_python_version", "3.6")
+
+# Enforce Python version check - this is the same check as in __init__.py but
+# this one has to happen before importing ah_bootstrap.
+if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
+    sys.stderr.write("ERROR: packagename requires Python {} or later\n".format(__minimum_python_version__))
+    sys.exit(1)
+
+# Import ah_bootstrap after the python version validation
+
+import ah_bootstrap
+from setuptools import setup
+
+import builtins
+builtins._ASTROPY_SETUP_ = True
+
+from astropy_helpers.setup_helpers import (register_commands, get_debug_option,
+                                           get_package_info)
+from astropy_helpers.git_helpers import get_git_devstr
+from astropy_helpers.version_helpers import generate_version_py
+
 
 # order of priority for long_description:
 #   (1) set in setup.cfg,
@@ -72,7 +73,7 @@ else:
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
 # VERSION should be PEP440 compatible (http://www.python.org/dev/peps/pep-0440)
-VERSION = metadata.get('version', '0.0.dev0')
+VERSION = metadata.get('version', '0.0.dev')
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -147,11 +148,10 @@ setup(name=PACKAGENAME,
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: Physics',
         'Topic :: Scientific/Engineering :: Astronomy',
         ],
-      python_requires='>={}'.format("2.7"),
+      python_requires='>={}'.format(__minimum_python_version__),
       **package_info
 )
