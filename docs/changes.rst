@@ -8,6 +8,10 @@ PyDL Changelog
 *This version will only support Python 3 and Astropy 3.*  This release is
 planned for early 2019.
 
+* Remove all Python 2 constructs; add tests in :mod:`~pydl.photoop.window` (PR `#51`_).
+
+.. _`#51`: https://github.com/weaverba137/pydl/pull/51
+
 0.7.0 (2019-02-22)
 ------------------
 
