@@ -8,7 +8,6 @@ from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
 from collections import OrderedDict
-import six
 import numpy as np
 from astropy.tests.helper import catch_warnings, raises
 from astropy.utils.data import get_pkg_data_filename
@@ -318,7 +317,7 @@ class TestYanny(YannyTestCase):
                             np.array([17.5, 17.546, 17.4, 16.1, 16.0]))
         assert np.allclose(par['MYSTRUCT'].mag[5],
                             np.array([19.3, 18.2, 17.1, 16.0, 15.9]))
-        assert par['MYSTRUCT'].foo[1] == six.b("My dog has no nose.")
+        assert par['MYSTRUCT'].foo[1] == b"My dog has no nose."
         assert np.allclose(par['MYSTRUCT'].c[2], 7.24345567)
         assert (par['MYSTRUCT']['flags'][2] == np.array([123123, 0])).all()
         #

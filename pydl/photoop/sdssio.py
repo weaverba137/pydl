@@ -4,7 +4,6 @@
 """
 import os
 import numpy as np
-from six import string_types
 
 
 #
@@ -80,7 +79,7 @@ def filtername(f):
     >>> filtername(0)
     'u'
     """
-    if isinstance(f, string_types):
+    if isinstance(f, (str,)):
         return f
     fname = ('u', 'g', 'r', 'i', 'z')
     return fname[f]

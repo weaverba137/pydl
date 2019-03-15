@@ -20,7 +20,7 @@ def sdss_score(flist, silent=True):
     Parameters
     ----------
     flist : :class:`~astropy.io.fits.HDUList`
-        Opened FITS file.
+        Opened FITS file, typically ``window_flist.fits``.
     silent : :class:`bool`, optional
         If ``False``, print extra information.
 
@@ -162,46 +162,65 @@ def sdss_score(flist, silent=True):
     return fdata.field('SCORE')
 
 
-def window_read(**kwargs):
-    """Read window files in $PHOTO_RESOLVE.
+def window_read(flist=False, rescore=False, blist=False, bcaps=False,
+                balkans=False, findx=False, bindx=False):
+    """Read window files in :envvar:`PHOTO_RESOLVE`.
+
+    Parameters
+    ----------
+    flist : :class:`bool`, optional
+        If ``True``, read the ``window_flist.fits`` file.
+    rescore : :class:`bool`, optional
+        If `flist` is ``True``, look for ``window_flist_rescore.fits``, and run
+        :func:`~pydl.photoop.window.window_score` if it is not found.
+    blist : :class:`bool`, optional
+        If ``True``, read the ``window_blist.fits`` file.
+    bcaps : :class:`bool`, optional
+        If ``True``, read the ``window_bcaps.fits`` file.
+    balkans : :class:`bool`, optional
+        If ``True``, construct the balkans from the ``window_blist.fits`` and
+        ``window_bcaps.fits`` files.
+    findx : :class:`bool`, optional
+        If ``True``, read the ``window_findx.fits`` file.
+    bindx : :class:`bool`, optional
+        If ``True``, read the ``window_bindx.fits`` file.
+
+    Returns
+    -------
+    :class:`dict`
+        A dictionary containing the requested window data.
     """
     try:
         resolve_dir = os.environ['PHOTO_RESOLVE']
     except KeyError:
         raise PhotoopException(('You have not set the environment variable ' +
                                 'PHOTO_RESOLVE!'))
-    if 'silent' not in kwargs:
-        kwargs['silent'] = True
     r = dict()
-    if 'flist' in kwargs:
-        if 'rescore' in kwargs:
+    if flist:
+        flist_file = os.path.join(resolve_dir, 'window_flist.fits')
+        if rescore:
             flist_file = os.path.join(resolve_dir, 'window_flist_rescore.fits')
-            if not os.path.exists(rescore_file):
-                #
-                # This will be called if window_flist_rescore.fits doesn't exist.
-                #
-                window_score()
-        else:
-            flist_file = os.path.join(resolve_dir, 'window_flist.fits')
-        with fits.open(rescore_file) as fit:
+            if not os.path.exists(flist_file):
+                window_score(rescore=rescore)
+        with fits.open(flist_file) as fit:
             r['flist'] = fit[1].data
-    if 'blist' in kwargs or 'balkans' in kwargs:
+    if blist or balkans:
         blist_file = os.path.join(resolve_dir, 'window_blist.fits')
-        with fits.open(balkan_file) as fit:
+        with fits.open(blist_file) as fit:
             r['blist'] = fit[1].data
-    if 'bcaps' in kwargs or 'balkans' in kwargs:
+    if bcaps or balkans:
         bcaps_file = os.path.join(resolve_dir, 'window_bcaps.fits')
         with fits.open(bcaps_file) as fit:
             r['bcaps'] = fit[1].data
-    if 'findx' in kwargs:
+    if findx:
         findx_file = os.path.join(resolve_dir, 'window_findx.fits')
         with fits.open(findx_file) as fit:
             r['findx'] = fit[1].data
-    if 'bindx' in kwargs:
+    if bindx:
         bindx_file = os.path.join(resolve_dir, 'window_bindx.fits')
         with fits.open(bindx_file) as fit:
             r['bindx'] = fit[1].data
-    if 'balkans' in kwargs:
+    if balkans:
         #
         # Copy blist data to balkans
         #
@@ -209,7 +228,7 @@ def window_read(**kwargs):
         r['balkans']['caps'] = {'X': list(), 'CM': list()}
         r['balkans']['use_caps'] = np.zeros(r['balkans']['ICAP'].shape,
                                             dtype=np.uint64)
-        if 'blist' not in kwargs:
+        if not blist:
             del r['blist']
         #
         # Copy bcaps data into balkans
@@ -222,16 +241,19 @@ def window_read(**kwargs):
                 r['balkans']['caps']['CM'][k],
                 r['balkans']['use_caps'][k],
                 allow_doubles=True)
-        if 'bcaps' not in kwargs:
+        if not bcaps:
             del r['bcaps']
     return r
 
 
-def window_score(**kwargs):
+def window_score(rescore=False):
     """For uber-resolve, score all the fields from zero to one.
 
-    If 'rescore' is set, then write a new file 'window_flist_rescore.fits'
-    rather than over-writing the file 'window_flist.fits'
+    Parameters
+    ----------
+    rescore : :class:`bool`, optional
+        If `rescore` is ``True``, then write a new file 'window_flist_rescore.fits'
+        rather than over-writing the file 'window_flist.fits'
     """
     #
     # Be certain not to use global calibrations
@@ -251,7 +273,7 @@ def window_score(**kwargs):
         raise PhotoopException(('You have not set the environment variable ' +
                                 'PHOTO_RESOLVE!'))
     filename = os.path.join(resolve_dir, 'window_flist.fits')
-    if 'rescore' in kwargs:
+    if rescore:
         fitsmode = 'readonly'
     else:
         fitsmode = 'update'
@@ -262,8 +284,8 @@ def window_score(**kwargs):
     #
     # Construct the scores filling in the values to FLIST.SCORE
     #
-    flist.field('SCORE')[:] = sdss_score(flist)
-    if 'rescore' in kwargs:
+    flist[1].data['SCORE'][:] = sdss_score(flist)
+    if rescore:
         flist.writeto(os.path.join(resolve_dir, 'window_flist_rescore.fits'))
     flist.close()
     #

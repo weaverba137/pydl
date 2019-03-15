@@ -10,6 +10,7 @@ If we have neglected to include you, please let us know right away!
 * `Matt Craig <https://github.com/mwcraig>`_
 * `Christoph Deil <https://github.com/cdeil>`_
 * `Mike DiPompeo <https://github.com/mdipompe>`_
+* `Joe Hennawi <https://github.com/jhennawi>`_
 * `igoldste <https://github.com/igoldste>`_
 * `Duncan Macleod <https://github.com/duncanmmacleod>`_
 * `Demitri Muna <https://github.com/demitri>`_

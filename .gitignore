@@ -15,8 +15,10 @@ __pycache__
 pydl/pydl.cfg
 htmlcov
 .coverage
+.coverage.subprocess
 MANIFEST
 .ipynb_checkpoints
+.pytest_cache
 
 # Sphinx
 docs/api

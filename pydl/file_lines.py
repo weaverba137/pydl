@@ -37,9 +37,8 @@ def file_lines(path, compress=False):
     >>> file_lines(join(dirname(__file__),'tests','t','this-file-contains-42-lines.txt'))
     42
     """
-    from six import string_types
     scalar = False
-    if isinstance(path, string_types):
+    if isinstance(path, (str,)):
         working_path = [path]
         scalar = True
     else:
