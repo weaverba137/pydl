@@ -27,6 +27,25 @@ class TestWindow(object):
         assert (str(e.value) ==
                 'You have not set the environment variable PHOTO_RESOLVE!')
 
+    def test_window_read_all(self, monkeypatch, mocker):
+        monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+        flist_size = 10
+        hhh = mocker.MagicMock()
+        hhh.data = {'SCORE': np.zeros((flist_size,), dtype=np.int16) }
+        hh = mocker.MagicMock()
+        hh[0] = None
+        hh[1] = hhh
+        h = mocker.patch('astropy.io.fits.open')
+        h.return_value = hh
+        r = window_read(flist=True, rescore=False, blist=True,
+                        bcaps=True, balkans=True, findx=True, bindx=True)
+        assert h.call_count == 5
+        h.assert_any_call('/another/fake/directory/window_flist.fits')
+        h.assert_any_call('/another/fake/directory/window_blist.fits')
+        h.assert_any_call('/another/fake/directory/window_bcaps.fits')
+        h.assert_any_call('/another/fake/directory/window_findx.fits')
+        h.assert_any_call('/another/fake/directory/window_bindx.fits')
+
     def test_window_score_no_photo_calib(self, monkeypatch):
         monkeypatch.delenv('PHOTO_CALIB', raising=False)
         with raises(PhotoopException) as e:
