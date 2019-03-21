@@ -10,6 +10,7 @@ dependencies:
     - matplotlib
     - numpy
     - scipy
-    - sphinx-astropy
-#   - pip:
-#       - dependency_from_pip
+#     - sphinx-astropy
+    - pip:
+        - sphinx-astropy
+        - sphinx-gallery
