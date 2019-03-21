@@ -48,3 +48,40 @@ class TestWindow(object):
         with raises(PhotoopException) as e:
             window_score()
         assert str(e.value) == 'Unable to read FLIST file.'
+
+    def test_window_score_fits_open(self, monkeypatch, mocker):
+        monkeypatch.setenv('PHOTO_CALIB', '/fake/directory')
+        monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+        score_size = 10
+        hhh = mocker.MagicMock()
+        hhh.data = {'SCORE': np.zeros((score_size,), dtype=np.int16) }
+        hh = mocker.MagicMock()
+        hh[0] = None
+        hh[1] = hhh
+        h = mocker.patch('astropy.io.fits.open')
+        h.return_value = hh
+        s = mocker.patch('pydl.photoop.window.sdss_score')
+        s.return_value = np.zeros((score_size,), dtype=np.int16)
+        window_score()
+        h.assert_called_once_with('/another/fake/directory/window_flist.fits',
+                                  mode='update')
+        s.assert_called_once_with(h.return_value)
+
+    def test_window_score_fits_open_rescore(self, monkeypatch, mocker):
+        monkeypatch.setenv('PHOTO_CALIB', '/fake/directory')
+        monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+        score_size = 10
+        hhh = mocker.MagicMock()
+        hhh.data = {'SCORE': np.zeros((score_size,), dtype=np.int16) }
+        hh = mocker.MagicMock()
+        hh[0] = None
+        hh[1] = hhh
+        h = mocker.patch('astropy.io.fits.open')
+        h.return_value = hh
+        s = mocker.patch('pydl.photoop.window.sdss_score')
+        s.return_value = np.zeros((score_size,), dtype=np.int16)
+        window_score(rescore=True)
+        assert s.call_count == 1
+        h.assert_called_once_with('/another/fake/directory/window_flist.fits',
+                                  mode='readonly')
+        s.assert_called_once_with(h.return_value)
