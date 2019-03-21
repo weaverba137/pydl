@@ -15,10 +15,13 @@ def fits_open(request):
     data_size = 10
     m = request.getfixturevalue("mocker")
     hhh = m.MagicMock()
-    hhh.data = {'SCORE': np.zeros((data_size,), dtype=np.int16) }
+    hhh.data = {'SCORE': np.zeros((data_size,), dtype=np.int16),
+                'ICAP': np.arange(data_size, dtype=np.int16),
+                'NCAPS': np.ones((data_size,), dtype=np.int16),
+                'X': np.zeros((data_size,), dtype=np.float32),
+                'CM': np.zeros((data_size,), dtype=np.float32)}
     hh = m.MagicMock()
-    hh[0] = None
-    hh[1] = hhh
+    hh.__enter__.return_value = [None, hhh]
     h = m.patch('astropy.io.fits.open')
     h.return_value = hh
     h.data_size = data_size
@@ -37,8 +40,10 @@ def test_window_read_no_photo_resolve(monkeypatch):
             'You have not set the environment variable PHOTO_RESOLVE!')
 
 
-def test_window_read_all(monkeypatch, fits_open):
+def test_window_read_all(monkeypatch, mocker, fits_open):
     monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    s = mocker.patch('pydl.photoop.window.set_use_caps')
+    s.return_value = 1
     r = window_read(flist=True, rescore=False, blist=True,
                     bcaps=True, balkans=True, findx=True, bindx=True)
     assert fits_open.call_count == 5
@@ -49,10 +54,14 @@ def test_window_read_all(monkeypatch, fits_open):
     fits_open.assert_any_call('/another/fake/directory/window_bindx.fits')
     for k in ('flist', 'blist', 'bcaps', 'findx', 'bindx', 'balkans'):
         assert k in r
+    for k in ('caps', 'use_caps'):
+        assert k in r['balkans']
 
 
-def test_window_read_balkans_only(monkeypatch, fits_open):
+def test_window_read_balkans_only(monkeypatch, mocker, fits_open):
     monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    s = mocker.patch('pydl.photoop.window.set_use_caps')
+    s.return_value = 1
     r = window_read(flist=True, rescore=False, balkans=True)
     assert fits_open.call_count == 3
     fits_open.assert_any_call('/another/fake/directory/window_flist.fits')

@@ -234,8 +234,8 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
         # Copy bcaps data into balkans
         #
         for k in range(len(r['balkans']['ICAP'])):
-            r['balkans']['caps']['X'].append(r['bcaps']['X'][balkans['ICAP'][k]:balkans['ICAP'][k]+balkans['NCAPS'][k]])
-            r['balkans']['caps']['CM'].append(r['bcaps']['CM'][balkans['ICAP'][k]:balkans['ICAP'][k]+balkans['NCAPS'][k]])
+            r['balkans']['caps']['X'].append(r['bcaps']['X'][r['balkans']['ICAP'][k]:r['balkans']['ICAP'][k]+r['balkans']['NCAPS'][k]])
+            r['balkans']['caps']['CM'].append(r['bcaps']['CM'][r['balkans']['ICAP'][k]:r['balkans']['ICAP'][k]+r['balkans']['NCAPS'][k]])
             r['balkans']['use_caps'][k] = set_use_caps(
                 r['balkans']['caps']['X'][k],
                 r['balkans']['caps']['CM'][k],
