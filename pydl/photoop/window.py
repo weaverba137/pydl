@@ -225,7 +225,8 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
                               str=r['blist']['STR'][k],
                               id=r['blist']['IPRIMARY'][k],
                               pixel=r['blist']['IBINDX'][k])
-            u = set_use_caps(p, np.arange(p.ncaps), allow_doubles=True)
+            u = set_use_caps(p, np.arange(p.ncaps, dtype=np.int32),
+                             allow_doubles=True)
             r['balkans'].append(p)
         if not blist:
             del r['blist']
