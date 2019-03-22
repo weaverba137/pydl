@@ -217,20 +217,14 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
         bindx_file = os.path.join(resolve_dir, 'window_bindx.fits')
         r['bindx'] = Table.read(bindx_file, hdu=1)
     if balkans:
-        #
-        # Copy blist data to balkans
-        #
         r['balkans'] = PolygonList()
-        #
-        # Copy bcaps data into balkans
-        #
         for k in range(len(r['blist'])):
             p = ManglePolygon(x=r['bcaps']['X'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k], :],
                               cm=r['bcaps']['CM'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k]],
                               weight=r['blist']['WEIGHT'][k],
                               str=r['blist']['STR'][k],
                               id=r['blist']['IPRIMARY'][k],
-                              pixel=r['blist']['IBINX'][k])
+                              pixel=r['blist']['IBINDX'][k])
             u = set_use_caps(p, np.arange(p.ncaps), allow_doubles=True)
             r['balkans'].append(p)
         if not blist:
