@@ -8,9 +8,10 @@ from warnings import warn
 import numpy as np
 from astropy import log
 from astropy.io import fits
+from astropy.table import Table
 from . import PhotoopException
 from .sdssio import sdss_name, sdss_calib
-from ..pydlutils.mangle import set_use_caps
+from ..pydlutils.mangle import PolygonList, ManglePolygon, set_use_caps
 from ..pydlutils.sdss import sdss_flagval
 
 
@@ -202,45 +203,38 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
             flist_file = os.path.join(resolve_dir, 'window_flist_rescore.fits')
             if not os.path.exists(flist_file):
                 window_score(rescore=rescore)
-        with fits.open(flist_file) as fit:
-            r['flist'] = fit[1].data
+        r['flist'] = Table.read(flist_file, hdu=1)
     if blist or balkans:
         blist_file = os.path.join(resolve_dir, 'window_blist.fits')
-        with fits.open(blist_file) as fit:
-            r['blist'] = fit[1].data
+        r['blist'] = Table.read(blist_file, hdu=1)
     if bcaps or balkans:
         bcaps_file = os.path.join(resolve_dir, 'window_bcaps.fits')
-        with fits.open(bcaps_file) as fit:
-            r['bcaps'] = fit[1].data
+        r['bcaps'] = Table.read(bcaps_file, hdu=1)
     if findx:
         findx_file = os.path.join(resolve_dir, 'window_findx.fits')
-        with fits.open(findx_file) as fit:
-            r['findx'] = fit[1].data
+        r['findx'] = Table.read(findx_file, hdu=1)
     if bindx:
         bindx_file = os.path.join(resolve_dir, 'window_bindx.fits')
-        with fits.open(bindx_file) as fit:
-            r['bindx'] = fit[1].data
+        r['bindx'] = Table.read(bindx_file, hdu=1)
     if balkans:
         #
         # Copy blist data to balkans
         #
-        r['balkans'] = r['blist'].copy()
-        r['balkans']['caps'] = {'X': list(), 'CM': list()}
-        r['balkans']['use_caps'] = np.zeros(r['balkans']['ICAP'].shape,
-                                            dtype=np.uint64)
-        if not blist:
-            del r['blist']
+        r['balkans'] = PolygonList()
         #
         # Copy bcaps data into balkans
         #
-        for k in range(len(r['balkans']['ICAP'])):
-            r['balkans']['caps']['X'].append(r['bcaps']['X'][r['balkans']['ICAP'][k]:r['balkans']['ICAP'][k]+r['balkans']['NCAPS'][k]])
-            r['balkans']['caps']['CM'].append(r['bcaps']['CM'][r['balkans']['ICAP'][k]:r['balkans']['ICAP'][k]+r['balkans']['NCAPS'][k]])
-            r['balkans']['use_caps'][k] = set_use_caps(
-                r['balkans']['caps']['X'][k],
-                r['balkans']['caps']['CM'][k],
-                r['balkans']['use_caps'][k],
-                allow_doubles=True)
+        for k in range(len(r['blist'])):
+            p = ManglePolygon(x=r['bcaps']['X'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k], :],
+                              cm=r['bcaps']['CM'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k]],
+                              weight=r['blist']['WEIGHT'][k],
+                              str=r['blist']['STR'][k],
+                              id=r['blist']['IPRIMARY'][k],
+                              pixel=r['blist']['IBINX'][k])
+            u = set_use_caps(p, np.arange(p.ncaps), allow_doubles=True)
+            r['balkans'].append(p)
+        if not blist:
+            del r['blist']
         if not bcaps:
             del r['bcaps']
     return r
