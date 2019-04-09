@@ -35,7 +35,11 @@ def sdss_psf_recon(pstruct, row, col, counts=None, trim=False):
     -------
     >>> import numpy as np
     >>> from astropy.io import fits
-    >>> psField = '/sdss/dr14/eboss/photo/redux/301/3366/objcs/3/psField-003366-3-0110.fit'
+    >>> from astropy.utils.data import get_readable_fileobj
+    >>> from pydl.photoop.image import sdss_psf_recon
+    >>> psfile = ('https://data.sdss.org/sas/dr14/eboss/photo/redux/301/' +
+    ...           '3366/objcs/3/psField-003366-3-0110.fit')
+    >>> psField = get_readable_fileobj(psfile)  # doctest: +REMOTE_DATA
     >>> with fits.open(psField) as hdulist:
     ...     pstruct = hdulist[3].data
     >>> psf = sdss_psf_recon(pstruct, 500, 500)

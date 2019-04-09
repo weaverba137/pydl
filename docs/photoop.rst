@@ -56,7 +56,7 @@ compare     Obsolete        Compare the same images in two different data reduct
 database    Obsolete        Experimental database loading code.
 flats       None            Analysis of flat-field files.
 hoggpipe    Obsolete        Another version of "Apache Wheel" processing code.
-image       None            Tools for creating "`corrected frame`_" images.  These are flux-calibrated and sky-subtracted images with physical flux units.
+image       Rudimentary     Tools for creating "`corrected frame`_" images.  These are flux-calibrated and sky-subtracted images with physical flux units.
 ircam       Obsolete        Tools for processing all-sky "cloud camera" images, used to establish photometricity.
 match       None            Tools for matching SDSS spectra to corresponding photometric objects.
 misc        None            Code with no obvious home in any other category.
@@ -83,6 +83,8 @@ API
 +++
 
 .. automodapi:: pydl.photoop
+
+.. automodapi:: pydl.photoop.image
 
 .. automodapi:: pydl.photoop.photoobj
 
