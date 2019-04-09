@@ -8,10 +8,11 @@ from warnings import warn
 import numpy as np
 from astropy import log
 from astropy.io import fits
+from astropy.io.fits.fitsrec import FITS_rec
 from astropy.table import Table
 from . import PhotoopException
 from .sdssio import sdss_name, sdss_calib
-from ..pydlutils.mangle import PolygonList, ManglePolygon, set_use_caps
+from ..pydlutils.mangle import FITS_polygon  #, PolygonList, ManglePolygon, set_use_caps
 from ..pydlutils.sdss import sdss_flagval
 
 
@@ -190,6 +191,14 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
     -------
     :class:`dict`
         A dictionary containing the requested window data.
+
+    Notes
+    -----
+    If `balkans` is ``True``, the balkans data will be in the form of a
+    :class:`~pydl.pydlutils.mangle.FITS_polygon` object, to facilitate
+    interoperability with :mod:`pydl.pydlutils.mangle`.  In this object,
+    the keyword ``IFIELD`` is equivalent to ``IPRIMARY`` and ``PIXEL`` is
+    eqivalent to ``IBINDX``.
     """
     try:
         resolve_dir = os.environ['PHOTO_RESOLVE']
@@ -217,17 +226,35 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
         bindx_file = os.path.join(resolve_dir, 'window_bindx.fits')
         r['bindx'] = Table.read(bindx_file, hdu=1)
     if balkans:
-        r['balkans'] = PolygonList()
+        max_caps = r['blist']['NCAPS'].max()
+        r['balkans'] = np.recarray((len(r['blist']),),
+                                   dtype=[('IFIELD', r['blist']['IPRIMARY'].dtype),
+                                          ('PIXEL', r['blist']['IBINDX'].dtype),
+                                          ('NCAPS', r['blist']['NCAPS'].dtype),
+                                          ('USE_CAPS', np.int32),
+                                          ('WEIGHT', r['blist']['WEIGHT'].dtype),
+                                          ('STR', r['blist']['STR'].dtype),
+                                          ('XCAPS', r['bcaps']['X'].dtype, (max_caps, 3)),
+                                          ('CMCAPS', r['bcaps']['CM'].dtype, (max_caps,)),
+                                          ]).view(FITS_rec)
+        r['balkans']['IFIELD'] = r['blist']['IPRIMARY']
+        r['balkans']['PIXEL'] = r['blist']['IBINDX']
+        r['balkans']['NCAPS'] = r['blist']['NCAPS']
+        r['balkans']['USE_CAPS'] = (1 << r['blist']['NCAPS']) - 1
+        r['balkans']['WEIGHT'] = r['blist']['WEIGHT']
+        r['balkans']['STR'] = r['blist']['STR']
         for k in range(len(r['blist'])):
-            p = ManglePolygon(x=r['bcaps']['X'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k], :],
-                              cm=r['bcaps']['CM'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k]],
-                              weight=r['blist']['WEIGHT'][k],
-                              str=r['blist']['STR'][k],
-                              id=r['blist']['IPRIMARY'][k],
-                              pixel=r['blist']['IBINDX'][k])
-            u = set_use_caps(p, np.arange(p.ncaps, dtype=np.int32),
-                             allow_doubles=True)
-            r['balkans'].append(p)
+            r['balkans'][k]['XCAPS'][0:r['blist']['NCAPS'][k], :] = r['bcaps']['X'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k], :]
+            r['balkans'][k]['CMCAPS'][0:r['blist']['NCAPS'][k]] = r['bcaps']['CM'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k]]
+            #
+            # Since allow_doubles is True, would set_use_caps ever return anything but the default value?
+            # Comparing to the IDL code, it does appear to be the case that
+            # set_use_caps is completely useless.
+            #
+            # r['balkans'][k]['USE_CAPS'] = set_use_caps(ManglePolygon(r['balkans'][k]),
+            #                                            np.arange(r['balkans'][k]['NCAPS'], dtype=np.int32),
+            #                                            allow_doubles=True)
+        r['balkans'] = r['balkans'].view(FITS_polygon)
         if not blist:
             del r['blist']
         if not bcaps:
