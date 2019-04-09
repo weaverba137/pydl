@@ -39,10 +39,9 @@ def sdss_psf_recon(pstruct, row, col, counts=None, trim=False):
     >>> from pydl.photoop.image import sdss_psf_recon
     >>> psfile = ('https://data.sdss.org/sas/dr14/eboss/photo/redux/301/' +
     ...           '3366/objcs/3/psField-003366-3-0110.fit')
-    >>> psField = get_readable_fileobj(psfile)  # doctest: +REMOTE_DATA
-    >>> with fits.open(psField) as hdulist:
-    ...     pstruct = hdulist[3].data
-    >>> psf = sdss_psf_recon(pstruct, 500, 500)
+    >>> with get_readable_fileobj(psfile, encoding='binary') as psField:  # doctest: +REMOTE_DATA
+    ...     with fits.open(psField) as hdulist:
+    ...         psf = sdss_psf_recon(hdulist[3].data, 500, 500)
     """
     rcs = 0.001
     nrow_b = pstruct['nrow_b'][0]
