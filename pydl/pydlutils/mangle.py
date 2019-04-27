@@ -26,9 +26,9 @@ module to formulas in the mathematical literature.
 References
 ----------
 
-..  [1] `Swanson, M. E. C.; Tegmark, Max; Hamilton, Andrew J. S.;
-    Hill, J. Colin, 2008 MNRAS 387, 1391
-    <http://adsabs.harvard.edu/abs/2008MNRAS.387.1391S>`_.
+.. [1] `Swanson, M. E. C.; Tegmark, Max; Hamilton, Andrew J. S.;
+   Hill, J. Colin, 2008 MNRAS 387, 1391
+   <http://adsabs.harvard.edu/abs/2008MNRAS.387.1391S>`_.
 """
 import re
 import warnings
@@ -230,8 +230,8 @@ class ManglePolygon(object):
         References
         ----------
 
-        ..  [1] `Hamilton, A. J. S.; Tegmark, Max, 2004 MNRAS 349, 115
-            <http://adsabs.harvard.edu/abs/2004MNRAS.349..115H>`_.
+        .. [1] `Hamilton, A. J. S.; Tegmark, Max, 2004 MNRAS 349, 115
+           <http://adsabs.harvard.edu/abs/2004MNRAS.349..115H>`_.
         """
         smallest_cap = self.cmminf()
         if smallest_cap is None:

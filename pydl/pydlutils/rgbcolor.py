@@ -9,8 +9,8 @@ images in astronomical filter bands.
 References
 ----------
 
-..  [2] `Lupton, Robert, et al., 2004 PASP 116, 113
-    <http://adsabs.harvard.edu/abs/2004PASP..116..133L>`_.
+.. [2] `Lupton, Robert, et al., 2004 PASP 116, 113
+   <http://adsabs.harvard.edu/abs/2004PASP..116..133L>`_.
 """
 import numpy as np
 from warnings import warn
