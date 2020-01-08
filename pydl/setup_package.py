@@ -7,6 +7,7 @@ def get_package_data():
     # to deal with a directory hierarchy of files, so just explicitly list.
     return {
         'pydl.tests': ['coveragerc', 't/*'],
+        'pydl.photoop.tests': ['t/*'],
         'pydl.pydlspec2d.tests': ['t/*'],
         'pydl.pydlutils': ['data/cooling/*', 'data/filters/*'],
         'pydl.pydlutils.tests': ['t/*'],

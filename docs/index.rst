@@ -42,6 +42,7 @@ Other Notes
    :maxdepth: 1
 
    templates.rst
+   window.rst
    changes.rst
    todo.rst
    credits.rst

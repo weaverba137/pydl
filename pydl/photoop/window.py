@@ -8,9 +8,11 @@ from warnings import warn
 import numpy as np
 from astropy import log
 from astropy.io import fits
+from astropy.io.fits.fitsrec import FITS_rec
+from astropy.table import Table
 from . import PhotoopException
 from .sdssio import sdss_name, sdss_calib
-from ..pydlutils.mangle import set_use_caps
+from ..pydlutils.mangle import FITS_polygon  #, PolygonList, ManglePolygon, set_use_caps
 from ..pydlutils.sdss import sdss_flagval
 
 
@@ -189,6 +191,14 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
     -------
     :class:`dict`
         A dictionary containing the requested window data.
+
+    Notes
+    -----
+    If `balkans` is ``True``, the balkans data will be in the form of a
+    :class:`~pydl.pydlutils.mangle.FITS_polygon` object, to facilitate
+    interoperability with :mod:`pydl.pydlutils.mangle`.  In this object,
+    the keyword ``IFIELD`` is equivalent to ``IPRIMARY`` and ``PIXEL`` is
+    eqivalent to ``IBINDX``.
     """
     try:
         resolve_dir = os.environ['PHOTO_RESOLVE']
@@ -202,45 +212,51 @@ def window_read(flist=False, rescore=False, blist=False, bcaps=False,
             flist_file = os.path.join(resolve_dir, 'window_flist_rescore.fits')
             if not os.path.exists(flist_file):
                 window_score(rescore=rescore)
-        with fits.open(flist_file) as fit:
-            r['flist'] = fit[1].data
+        r['flist'] = Table.read(flist_file, hdu=1)
     if blist or balkans:
         blist_file = os.path.join(resolve_dir, 'window_blist.fits')
-        with fits.open(blist_file) as fit:
-            r['blist'] = fit[1].data
+        r['blist'] = Table.read(blist_file, hdu=1)
     if bcaps or balkans:
         bcaps_file = os.path.join(resolve_dir, 'window_bcaps.fits')
-        with fits.open(bcaps_file) as fit:
-            r['bcaps'] = fit[1].data
+        r['bcaps'] = Table.read(bcaps_file, hdu=1)
     if findx:
         findx_file = os.path.join(resolve_dir, 'window_findx.fits')
-        with fits.open(findx_file) as fit:
-            r['findx'] = fit[1].data
+        r['findx'] = Table.read(findx_file, hdu=1)
     if bindx:
         bindx_file = os.path.join(resolve_dir, 'window_bindx.fits')
-        with fits.open(bindx_file) as fit:
-            r['bindx'] = fit[1].data
+        r['bindx'] = Table.read(bindx_file, hdu=1)
     if balkans:
-        #
-        # Copy blist data to balkans
-        #
-        r['balkans'] = r['blist'].copy()
-        r['balkans']['caps'] = {'X': list(), 'CM': list()}
-        r['balkans']['use_caps'] = np.zeros(r['balkans']['ICAP'].shape,
-                                            dtype=np.uint64)
+        max_caps = r['blist']['NCAPS'].max()
+        r['balkans'] = np.recarray((len(r['blist']),),
+                                   dtype=[('IFIELD', r['blist']['IPRIMARY'].dtype),
+                                          ('PIXEL', r['blist']['IBINDX'].dtype),
+                                          ('NCAPS', r['blist']['NCAPS'].dtype),
+                                          ('USE_CAPS', np.int32),
+                                          ('WEIGHT', r['blist']['WEIGHT'].dtype),
+                                          ('STR', r['blist']['STR'].dtype),
+                                          ('XCAPS', r['bcaps']['X'].dtype, (max_caps, 3)),
+                                          ('CMCAPS', r['bcaps']['CM'].dtype, (max_caps,)),
+                                          ]).view(FITS_rec)
+        r['balkans']['IFIELD'] = r['blist']['IPRIMARY']
+        r['balkans']['PIXEL'] = r['blist']['IBINDX']
+        r['balkans']['NCAPS'] = r['blist']['NCAPS']
+        r['balkans']['USE_CAPS'] = (1 << r['blist']['NCAPS']) - 1
+        r['balkans']['WEIGHT'] = r['blist']['WEIGHT']
+        r['balkans']['STR'] = r['blist']['STR']
+        for k in range(len(r['blist'])):
+            r['balkans'][k]['XCAPS'][0:r['blist']['NCAPS'][k], :] = r['bcaps']['X'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k], :]
+            r['balkans'][k]['CMCAPS'][0:r['blist']['NCAPS'][k]] = r['bcaps']['CM'][r['blist']['ICAP'][k]:r['blist']['ICAP'][k]+r['blist']['NCAPS'][k]]
+            #
+            # Since allow_doubles is True, would set_use_caps ever return anything but the default value?
+            # Comparing to the IDL code, it does appear to be the case that
+            # set_use_caps is completely useless.
+            #
+            # r['balkans'][k]['USE_CAPS'] = set_use_caps(ManglePolygon(r['balkans'][k]),
+            #                                            np.arange(r['balkans'][k]['NCAPS'], dtype=np.int32),
+            #                                            allow_doubles=True)
+        r['balkans'] = r['balkans'].view(FITS_polygon)
         if not blist:
             del r['blist']
-        #
-        # Copy bcaps data into balkans
-        #
-        for k in range(len(r['balkans']['ICAP'])):
-            r['balkans']['caps']['X'].append(r['bcaps']['X'][balkans['ICAP'][k]:balkans['ICAP'][k]+balkans['NCAPS'][k]])
-            r['balkans']['caps']['CM'].append(r['bcaps']['CM'][balkans['ICAP'][k]:balkans['ICAP'][k]+balkans['NCAPS'][k]])
-            r['balkans']['use_caps'][k] = set_use_caps(
-                r['balkans']['caps']['X'][k],
-                r['balkans']['caps']['CM'][k],
-                r['balkans']['use_caps'][k],
-                allow_doubles=True)
         if not bcaps:
             del r['bcaps']
     return r
