@@ -105,6 +105,7 @@ matrix:
         # Do a coverage test.
         - os: linux
           stage: Initial tests
+          python: 3.7
           env: TOXENV='coverage'
 
         # Check for sphinx doc build warnings - we do this first because it
@@ -194,6 +195,7 @@ install:
 
     - pip install --upgrade pip
     - pip install --upgrade tox
+    - if [[ ${TOXENV} == 'coverage' ]]; then pip install coveralls; fi
 
     # As described above, using ci-helpers, you should be able to set up an
     # environment with dependencies installed using conda and pip, but in some
