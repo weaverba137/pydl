@@ -103,9 +103,9 @@ matrix:
           env: TOXENV='test'
 
         # Do a coverage test.
-        # - os: linux
-        #   stage: Initial tests
-        #   env: SETUP_CMD='test --coverage'
+        - os: linux
+          stage: Initial tests
+          env: TOXENV='coverage'
 
         # Check for sphinx doc build warnings - we do this first because it
         # may run for a long time
