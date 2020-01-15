@@ -4,8 +4,6 @@
 
 import os
 import sys
-# Needed to import local helpers when pyproject.toml exists.
-# sys.path.append(".")
 from setuptools import setup
 from distutils.command.sdist import sdist as DistutilsSdist
 

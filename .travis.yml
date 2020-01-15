@@ -92,9 +92,15 @@ matrix:
 
         # Try MacOS X, usually enough only to run from cron as hardly there are
         # issues that are not picked up by a linux worker
-        # - os: osx
-        #   stage: Cron tests
-        #   env: SETUP_CMD='test' EVENT_TYPE='cron'
+        - os: osx
+          stage: Cron tests
+          python: 3.7
+          env: TOXENV='test'
+
+        - os: windows
+          stage: Cron tests
+          python: 3.7
+          env: TOXENV='test'
 
         # Do a coverage test.
         # - os: linux
@@ -111,6 +117,14 @@ matrix:
         # - os: linux
         #   env: ASTROPY_VERSION=development
         #        EVENT_TYPE='pull_request push cron'
+        - os: linux
+          python: 3.7
+          env: TOXENV='test-dev'
+               EVENT_TYPE='pull_request push cron'
+
+        - os: linux
+          python: 3.6
+          env: TOXENV='test-astropy2'
         # - os: linux
         #   env: PYTHON_VERSION=3.6 ASTROPY_VERSION=2.0.16 NUMPY_VERSION=1.14 PYTEST_VERSION='<3.7'
 
@@ -122,6 +136,12 @@ matrix:
         #   env: ASTROPY_VERSION=development NUMPY_VERSION=development
         #        EVENT_TYPE='cron'
 
+        - os: linux
+          stage: Cron tests
+          python: 3.7
+          env: TOXENV='test-all-dev'
+               EVENT_TYPE='cron'
+
         # Try all python versions and Numpy versions. Since we can assume that
         # the Numpy developers have taken care of testing Numpy with different
         # versions of Python, we can vary Python and Numpy versions at the same
@@ -131,6 +151,14 @@ matrix:
         #   env: PYTHON_VERSION=3.6 NUMPY_VERSION=1.16
         # - os: linux
         #   env: NUMPY_VERSION=1.16
+
+        - os: linux
+          python: 3.6
+          env: TOXENV='test-numpy116'
+
+        - os: linux
+          python: 3.7
+          env: TOXENV='test-numpy117'
 
         # Do a PEP8 test with flake8
         - os: linux
@@ -164,7 +192,8 @@ install:
         source ci-helpers/travis/setup_conda.sh;
       fi
 
-    - pip install tox --upgrade
+    - pip install --upgrade pip
+    - pip install --upgrade tox
 
     # As described above, using ci-helpers, you should be able to set up an
     # environment with dependencies installed using conda and pip, but in some
