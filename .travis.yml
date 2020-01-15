@@ -124,7 +124,7 @@ matrix:
 
         - os: linux
           python: 3.6
-          env: TOXENV='test-astropy2'
+          env: TOXENV='astropy2'
         # - os: linux
         #   env: PYTHON_VERSION=3.6 ASTROPY_VERSION=2.0.16 NUMPY_VERSION=1.14 PYTEST_VERSION='<3.7'
 
