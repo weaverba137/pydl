@@ -1,15 +1,19 @@
 include README.rst
+include LICENSE.rst
 # include CHANGES.rst
 
 include ah_bootstrap.py
+include pyproject.toml
 include setup.cfg
 include pydl/tests/coveragerc
 
-recursive-include pydl *.pyx *.c *.pxd
+# recursive-include pydl *.pyx *.c *.pxd
 recursive-include docs *
-recursive-include licenses *
-recursive-include cextern *
-recursive-include scripts *
+recursive-include pydl/*/data/* *
+recursive-include pydl/tests/t *
+recursive-include pydl/*/tests/t *
+# recursive-include cextern *
+# recursive-include scripts *
 
 prune build
 prune docs/_build

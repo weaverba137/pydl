@@ -1,17 +1,24 @@
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+# -*- coding: utf-8 -*-
+#
 # This file is used to configure the behavior of pytest when using the Astropy
 # test infrastructure.
+#
+import os
 
 from astropy.version import version as astropy_version
 if astropy_version < '3.0':
+    #
     # With older versions of Astropy, we actually need to import the pytest
     # plugins themselves in order to make them discoverable by pytest.
+    #
     from astropy.tests.pytest_plugins import *
+    del pytest_report_header
 else:
-    # As of Astropy 3.0, the pytest plugins provided by Astropy are
-    # automatically made available when Astropy is installed. This means it's
-    # not necessary to import them here, but we still need to import global
-    # variables that are used for configuration.
-    from astropy.tests.plugins.display import PYTEST_HEADER_MODULES, TESTED_VERSIONS
+    # As of Astropy 4.0, the pytest plugins provided by Astropy are
+    # now in the pytest-astropy-header package.  This is backward-compatible
+    # with Astropy 3.
+    from pytest_astropy_header.display import PYTEST_HEADER_MODULES, TESTED_VERSIONS
 
 from astropy.tests.helper import enable_deprecations_as_exceptions
 
@@ -27,38 +34,24 @@ from astropy.tests.helper import enable_deprecations_as_exceptions
 ##     warnings_to_ignore_by_pyver={(MAJOR, MINOR): ['Message to ignore']}
 # enable_deprecations_as_exceptions()
 
-## Uncomment and customize the following lines to add/remove entries from
-## the list of packages for which version numbers are displayed when running
-## the tests. Making it pass for KeyError is essential in some cases when
-## the package uses other astropy affiliated packages.
-try:
+def pytest_configure(config):
+
+    config.option.astropy_header = True
+    #
+    # Customize the following lines to add/remove entries from
+    # the list of packages for which version numbers are displayed when running
+    # the tests.
+    #
     PYTEST_HEADER_MODULES['Astropy'] = 'astropy'
     PYTEST_HEADER_MODULES['PyDL'] = 'pydl'
-    try:
-        del PYTEST_HEADER_MODULES['h5py']
-    except KeyError:
-        pass
-    try:
-        del PYTEST_HEADER_MODULES['Pandas']
-    except KeyError:
-        pass
-except (NameError, KeyError):  # NameError is needed to support Astropy < 1.0
-    pass
+    PYTEST_HEADER_MODULES.pop('Pandas', None)
+    PYTEST_HEADER_MODULES.pop('h5py', None)
 
-## Uncomment the following lines to display the version number of the
-## package rather than the version number of Astropy in the top line when
-## running the tests.
-import os
-
-## This is to figure out the package version, rather than
-## using Astropy's
-try:
-    from .version import version
-except ImportError:
-    version = 'dev'
-
-try:
+    from .version import version  #, astropy_helpers_version
     packagename = os.path.basename(os.path.dirname(__file__))
+    #
+    # Display the version number of the package rather than the version number
+    # of Astropy in the top line when running the tests.
+    #
     TESTED_VERSIONS[packagename] = version
-except NameError:   # Needed to support Astropy <= 1.0.0
-    pass
+    # TESTED_VERSIONS['astropy_helpers'] = astropy_helpers_version

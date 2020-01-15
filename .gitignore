@@ -54,6 +54,7 @@ distribute-*.tar.gz
 
 # Other
 .cache
+.tmp
 .tox
 .*.sw[op]
 *~
