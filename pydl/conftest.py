@@ -13,7 +13,7 @@ if astropy_version < '3.0':
     # plugins themselves in order to make them discoverable by pytest.
     #
     from astropy.tests.pytest_plugins import *
-    del pytest_report_header
+    # del pytest_report_header
 else:
     # As of Astropy 4.0, the pytest plugins provided by Astropy are
     # now in the pytest-astropy-header package.  This is backward-compatible
@@ -34,24 +34,24 @@ from astropy.tests.helper import enable_deprecations_as_exceptions
 ##     warnings_to_ignore_by_pyver={(MAJOR, MINOR): ['Message to ignore']}
 # enable_deprecations_as_exceptions()
 
-def pytest_configure(config):
+# def pytest_configure(config):
 
-    config.option.astropy_header = True
-    #
-    # Customize the following lines to add/remove entries from
-    # the list of packages for which version numbers are displayed when running
-    # the tests.
-    #
-    PYTEST_HEADER_MODULES['Astropy'] = 'astropy'
-    PYTEST_HEADER_MODULES['PyDL'] = 'pydl'
-    PYTEST_HEADER_MODULES.pop('Pandas', None)
-    PYTEST_HEADER_MODULES.pop('h5py', None)
+# config.option.astropy_header = True
+#
+# Customize the following lines to add/remove entries from
+# the list of packages for which version numbers are displayed when running
+# the tests.
+#
+PYTEST_HEADER_MODULES['Astropy'] = 'astropy'
+PYTEST_HEADER_MODULES['PyDL'] = 'pydl'
+PYTEST_HEADER_MODULES.pop('Pandas', None)
+PYTEST_HEADER_MODULES.pop('h5py', None)
 
-    from .version import version  #, astropy_helpers_version
-    packagename = os.path.basename(os.path.dirname(__file__))
-    #
-    # Display the version number of the package rather than the version number
-    # of Astropy in the top line when running the tests.
-    #
-    TESTED_VERSIONS[packagename] = version
-    # TESTED_VERSIONS['astropy_helpers'] = astropy_helpers_version
+from .version import version  #, astropy_helpers_version
+packagename = os.path.basename(os.path.dirname(__file__))
+#
+# Display the version number of the package rather than the version number
+# of Astropy in the top line when running the tests.
+#
+TESTED_VERSIONS[packagename] = version
+# TESTED_VERSIONS['astropy_helpers'] = astropy_helpers_version
