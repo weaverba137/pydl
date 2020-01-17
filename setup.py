@@ -1,33 +1,57 @@
 #!/usr/bin/env python
-
+# -*- coding: utf-8 -*-
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-import builtins
-
-# Ensure that astropy-helpers is available
-import ah_bootstrap  # noqa
-
+import os
+import sys
 from setuptools import setup
-from setuptools.config import read_configuration
+from distutils.command.sdist import sdist as DistutilsSdist
 
-from astropy_helpers.setup_helpers import register_commands, get_package_info
-from astropy_helpers.version_helpers import generate_version_py
+TEST_HELP = """
+Note: running tests is no longer done using 'python setup.py test'. Instead
+you will need to run:
 
-# Store the package name in a built-in variable so it's easy
-# to get from other parts of the setup infrastructure
-builtins._ASTROPY_PACKAGE_NAME_ = read_configuration('setup.cfg')['metadata']['name']
+    tox -e test
 
-# Create a dictionary with setup command overrides. Note that this gets
-# information about the package (name and version) from the setup.cfg file.
-cmdclass = register_commands()
+If you don't already have tox installed, you can install it with:
 
-# Freeze build information in version.py. Note that this gets information
-# about the package (name and version) from the setup.cfg file.
-version = generate_version_py()
+    pip install tox
 
-# Get configuration information from all of the various subpackages.
-# See the docstring for setup_helpers.update_package_files for more
-# details.
-package_info = get_package_info()
+If you only want to run part of the test suite, you can also use pytest
+directly with::
 
-setup(version=version, cmdclass=cmdclass, **package_info)
+    pip install -e .
+    pytest
+
+For more information, see:
+
+  http://docs.astropy.org/en/latest/development/testguide.html#running-tests
+"""
+
+if 'test' in sys.argv:
+    print(TEST_HELP)
+    sys.exit(1)
+
+DOCS_HELP = """
+Note: building the documentation is no longer done using
+'python setup.py build_docs'. Instead you will need to run:
+
+    tox -e build_docs
+
+If you don't already have tox installed, you can install it with:
+
+    pip install tox
+
+For more information, see:
+
+  http://docs.astropy.org/en/latest/install.html#builddocs
+"""
+
+if 'build_docs' in sys.argv or 'build_sphinx' in sys.argv:
+    print(DOCS_HELP)
+    sys.exit(1)
+
+cmdclass = {'sdist': DistutilsSdist}
+
+setup(use_scm_version={"write_to": os.path.join("pydl", "version.py")},
+      cmdclass=cmdclass)

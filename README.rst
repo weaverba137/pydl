@@ -6,6 +6,10 @@ PyDL
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
+.. image:: https://img.shields.io/pypi/l/pydl.svg
+    :target: https://pypi.python.org/pypi/pydl
+    :alt: License
+
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2575874.svg
     :target: https://doi.org/10.5281/zenodo.2575874
     :alt: DOI: 10.5281/zenodo.2575874
@@ -13,6 +17,18 @@ PyDL
 .. image:: https://img.shields.io/pypi/v/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
     :alt: PyPI Badge
+
+.. image:: https://img.shields.io/travis/weaverba137/pydl.svg
+    :target: https://travis-ci.org/weaverba137/pydl
+    :alt: Travis Build Status
+
+.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=master&service=github
+    :target: https://coveralls.io/github/weaverba137/pydl?branch=master
+    :alt: Test Coverage Status
+
+.. image:: https://readthedocs.org/projects/pydl/badge/?version=latest
+    :target: http://pydl.readthedocs.org/en/latest/
+    :alt: Documentation Status
 
 Description
 -----------
@@ -36,11 +52,6 @@ Full Documentation
 
 Please visit `PyDL on Read the Docs`_
 
-.. image:: https://readthedocs.org/projects/pydl/badge/?version=latest
-    :target: http://pydl.readthedocs.org/en/latest/
-    :alt: Documentation Status
-
-
 History
 -------
 
@@ -48,32 +59,11 @@ This package was initially developed on the SDSS-III_ `svn repository`_.  It was
 moved to the new GitHub_ repository on 2013-03-06.  The present location of
 the repository is http://github.com/weaverba137/pydl .
 
-
-Travis Build Status
--------------------
-
-.. image:: https://img.shields.io/travis/weaverba137/pydl.svg
-    :target: https://travis-ci.org/weaverba137/pydl
-    :alt: Travis Build Status
-
-
-Test Coverage Status
---------------------
-
-.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/weaverba137/pydl?branch=master
-    :alt: Test Coverage Status
-
-
 License
 -------
-.. image:: https://img.shields.io/pypi/l/pydl.svg
-    :target: https://pypi.python.org/pypi/pydl
-    :alt: License
 
 PyDL is free software licensed under a 3-clause BSD-style license. For details see
-the ``licenses/LICENSE.rst`` file.
-
+the ``LICENSE.rst`` file.
 
 Legal
 -----

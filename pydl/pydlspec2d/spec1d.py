@@ -8,11 +8,14 @@ import time
 from warnings import warn
 import numpy as np
 from numpy.linalg import solve
-import matplotlib
-matplotlib.use('Agg')
-matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
-import matplotlib.pyplot as plt
-from matplotlib.font_manager import fontManager, FontProperties
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
+    import matplotlib.pyplot as plt
+    from matplotlib.font_manager import fontManager, FontProperties
+except ImportError:
+    pass
 from astropy import log
 from astropy.io import ascii, fits
 from . import Pydlspec2dException, Pydlspec2dUserWarning

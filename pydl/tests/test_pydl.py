@@ -7,7 +7,7 @@ import numpy as np
 try:
     from astropy.tests.compat import assert_allclose
 except ImportError:
-    from numpy.testing.utils import assert_allclose
+    from numpy.testing import assert_allclose
 from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from ..file_lines import file_lines

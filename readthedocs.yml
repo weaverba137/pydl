@@ -1,7 +1,0 @@
-# See https://docs.readthedocs.io/en/latest/yaml-config.html
-conda:
-  file: .rtd-environment.yml
-
-python:
-  version: 3
-  setup_py_install: true
