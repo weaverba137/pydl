@@ -105,7 +105,7 @@ def rebin(x, d, sample=False):
                     r[sliceobj] = xx[sliceobj0]
                 else:
                     sliceobj0[k] = slice(int(f*i), int(f*(i+1)))
-                    rshape = r[sliceobj].shape
+                    rshape = r[tuple(sliceobj)].shape
                     r[sliceobj] = xx[sliceobj0].sum(k).reshape(rshape)/f
         xx = r
     return r
