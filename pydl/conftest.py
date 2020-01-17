@@ -55,3 +55,4 @@ packagename = os.path.basename(os.path.dirname(__file__))
 #
 TESTED_VERSIONS[packagename] = version
 # TESTED_VERSIONS['astropy_helpers'] = astropy_helpers_version
+TESTED_VERSIONS.pop('astropy_helpers', None)
