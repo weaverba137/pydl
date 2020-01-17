@@ -286,7 +286,7 @@ class ManglePolygon(object):
         """
         if self.gzeroar():
             return 0.0
-        warnings.warn(("The ManglePolygon.garea() method is incomplete" +
+        warnings.warn(("The ManglePolygon.garea() method is incomplete " +
                        "and is returning a dummy value."),
                       PydlutilsUserWarning)
         return 1.0
@@ -675,7 +675,7 @@ def read_mangle_polygons(filename):
         :class:`~pydl.pydlutils.mangle.ManglePolygon` objects and
         any metadata.
     """
-    with open(filename, 'rU') as ply:
+    with open(filename, 'r') as ply:
         lines = ply.read().split(ply.newlines)
     try:
         npoly = int(lines[0].split()[0])
