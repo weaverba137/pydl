@@ -44,9 +44,9 @@ def rebin(x, d, sample=False):
     >>> from numpy import arange, float
     >>> from pydl import rebin
     >>> rebin(arange(10, dtype=float), (5,)) # doctest: +NORMALIZE_WHITESPACE
-    array([ 0.5,  2.5,  4.5,  6.5,  8.5])
+    array([0.5, 2.5, 4.5, 6.5, 8.5])
     >>> rebin(arange(5, dtype=float), (10,)) # doctest: +NORMALIZE_WHITESPACE
-    array([ 0. ,  0.5,  1. ,  1.5,  2. ,  2.5,  3. ,  3.5,  4. ,  4. ])
+    array([0. , 0.5, 1. , 1.5, 2. , 2.5, 3. , 3.5, 4. , 4. ])
     """
     from numpy import floor, zeros
     d0 = x.shape
@@ -80,32 +80,32 @@ def rebin(x, d, sample=False):
                 sliceobj0[k] = slice(fp, fp + 1)
                 sliceobj[k] = slice(i, i + 1)
                 if sample:
-                    r[sliceobj] = xx[sliceobj0]
+                    r[tuple(sliceobj)] = xx[tuple(sliceobj0)]
                 else:
                     if p < d0[k] - 1:
                         sliceobj1[k] = slice(fp + 1, fp + 2)
-                        rshape = r[sliceobj].shape
-                        r[sliceobj] = (xx[sliceobj0].reshape(rshape) +
-                                       (p - fp)*(xx[sliceobj1] -
-                                                 xx[sliceobj0]).reshape(rshape)
+                        rshape = r[tuple(sliceobj)].shape
+                        r[tuple(sliceobj)] = (xx[tuple(sliceobj0)].reshape(rshape) +
+                                       (p - fp)*(xx[tuple(sliceobj1)] -
+                                                 xx[tuple(sliceobj0)]).reshape(rshape)
                                       )
                     else:
-                        r[sliceobj] = xx[sliceobj0]
+                        r[tuple(sliceobj)] = xx[tuple(sliceobj0)]
         elif d[k] == d0[k]:
             for i in range(d[k]):
                 sliceobj0[k] = slice(i, i + 1)
                 sliceobj[k] = slice(i, i + 1)
-                r[sliceobj] = xx[sliceobj0]
+                r[tuple(sliceobj)] = xx[tuple(sliceobj0)]
         else:
             for i in range(d[k]):
                 sliceobj[k] = slice(i, i + 1)
                 if sample:
                     fp = int(floor(f*i))
                     sliceobj0[k] = slice(fp, fp + 1)
-                    r[sliceobj] = xx[sliceobj0]
+                    r[tuple(sliceobj)] = xx[tuple(sliceobj0)]
                 else:
                     sliceobj0[k] = slice(int(f*i), int(f*(i+1)))
                     rshape = r[tuple(sliceobj)].shape
-                    r[sliceobj] = xx[sliceobj0].sum(k).reshape(rshape)/f
+                    r[tuple(sliceobj)] = xx[tuple(sliceobj0)].sum(k).reshape(rshape)/f
         xx = r
     return r
