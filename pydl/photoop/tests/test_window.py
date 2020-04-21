@@ -65,15 +65,16 @@ def test_window_read_no_photo_resolve(monkeypatch):
 
 
 def test_window_read_all(monkeypatch, mocker, table_read):
-    monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    fake_dir = os.path.join('another', 'fake', 'directory')
+    monkeypatch.setenv('PHOTO_RESOLVE', fake_dir)
     r = window_read(flist=True, rescore=False, blist=True,
                     bcaps=True, balkans=True, findx=True, bindx=True)
     assert table_read.call_count == 5
-    table_read.assert_any_call('/another/fake/directory/window_flist.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_blist.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_bcaps.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_findx.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_bindx.fits', hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_flist.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_blist.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_bcaps.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_findx.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_bindx.fits'), hdu=1)
     for k in ('flist', 'blist', 'bcaps', 'findx', 'bindx', 'balkans'):
         assert k in r
     for k in ('x', 'cm', 'use_caps'):

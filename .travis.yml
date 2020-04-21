@@ -131,7 +131,7 @@ matrix:
           python: 3.6
           name: Legacy Astropy 2 test
           stage: Comprehensive tests
-          env: TOXENV='astropy2'
+          env: TOXENV=py36-test-astropy20
 
     allow_failures:
         # Do a PEP8 test with flake8
