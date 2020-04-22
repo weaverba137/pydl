@@ -676,9 +676,10 @@ def read_mangle_polygons(filename):
         any metadata.
     """
     with open(filename, 'r') as ply:
-        lines = ply.read().split(ply.newlines)
+        # lines = ply.read().split(ply.newlines)
+        lines = ply.readlines()
     try:
-        npoly = int(lines[0].split()[0])
+        npoly = int(lines[0].strip().split()[0])
     except ValueError:
         raise PydlutilsException(("Invalid first line of {0}!  " +
                                   "Are you sure this is a Mangle " +
