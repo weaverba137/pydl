@@ -1,10 +1,8 @@
 include README.rst
-include LICENSE.rst
 # include CHANGES.rst
-
-include pyproject.toml
 include setup.cfg
-include pydl/tests/coveragerc
+include LICENSE.rst
+include pyproject.toml
 
 # recursive-include pydl *.pyx *.c *.pxd
 recursive-include docs *

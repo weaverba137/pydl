@@ -12,18 +12,16 @@ __pycache__
 # Other generated files
 */version.py
 */cython_version.py
-pydl/pydl.cfg
 htmlcov
 .coverage
-.coverage.subprocess
 MANIFEST
 .ipynb_checkpoints
 .pytest_cache
+pydl/pydl.cfg
 
 # Sphinx
 docs/api
 docs/_build
-docs/docs
 
 # Eclipse editor project files
 .project
@@ -51,7 +49,6 @@ sdist
 develop-eggs
 .installed.cfg
 distribute-*.tar.gz
-pip-wheel-metadata
 
 # Other
 .cache
@@ -62,6 +59,7 @@ pip-wheel-metadata
 .project
 .pydevproject
 .settings
+pip-wheel-metadata/
 
 # Mac OSX
 .DS_Store

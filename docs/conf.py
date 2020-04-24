@@ -28,7 +28,7 @@
 import os
 import sys
 import datetime
-from pkg_resources import get_distribution
+from importlib import import_module
 
 try:
     from sphinx_astropy.conf.v1 import *  # noqa
@@ -76,9 +76,13 @@ copyright = '{0}, {1}'.format(
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 
-release = get_distribution(setup_cfg['name']).version
-# for example take major/minor
-version = '.'.join(release.split('.')[:2])
+import_module(setup_cfg['name'])
+package = sys.modules[setup_cfg['name']]
+
+# The short X.Y version.
+version = package.__version__.split('-', 1)[0]
+# The full version, including alpha/beta/rc tags.
+release = package.__version__
 
 
 # -- Options for HTML output --------------------------------------------------
@@ -150,15 +154,12 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 # -- Options for the edit_on_github extension ---------------------------------
 
-if eval(setup_cfg.get('edit_on_github')):
+if setup_cfg.get('edit_on_github').lower() == 'true':
+
     extensions += ['sphinx_astropy.ext.edit_on_github']
 
-    versionmod = __import__(setup_cfg['package_name'] + '.version')
     edit_on_github_project = setup_cfg['github_project']
-    if versionmod.version.release:
-        edit_on_github_branch = "v" + versionmod.version.version
-    else:
-        edit_on_github_branch = "master"
+    edit_on_github_branch = "master"
 
     edit_on_github_source_root = ""
     edit_on_github_doc_root = "docs"
