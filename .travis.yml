@@ -160,8 +160,10 @@ script:
 
 after_success:
     # If coveralls.io is set up for this package, uncomment the two lines below.
-    - pip install coveralls
-    - coveralls
+    - if [[ $TOXENV == *-cov ]]; then
+        pip install coveralls;
+        coveralls;
+      fi
     # If codecov is set up for this package, uncomment the two lines below
     # pip install codecov
     # codecov
