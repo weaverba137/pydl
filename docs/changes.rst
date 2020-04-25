@@ -28,7 +28,7 @@ planned for early 2019.
 * Update ``_astropy_init.py`` (PR `#47`_ via PR `#48`_).
 * Update `astropy_helpers`_/v2.0.8 (PR `#45`_ via PR `#48`_).
 
-.. _`#37`: https://github.com/weaverba137/pydl/issues/37.
+.. _`#37`: https://github.com/weaverba137/pydl/issues/37
 .. _`#40`: https://github.com/weaverba137/pydl/pull/40
 .. _`#41`: https://github.com/weaverba137/pydl/pull/41
 .. _`#42`: https://github.com/weaverba137/pydl/pull/42
@@ -47,7 +47,7 @@ planned for early 2019.
 * Use the new :class:`astropy.coordinates.Attribute` class.
 * Fix typo (PR `#26`_).
 
-.. _`#31`: https://github.com/weaverba137/pydl/issues/31.
+.. _`#31`: https://github.com/weaverba137/pydl/issues/31
 .. _`#26`: https://github.com/weaverba137/pydl/pull/26
 
 0.5.4 (2017-05-04)

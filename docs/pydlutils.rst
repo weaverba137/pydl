@@ -66,13 +66,13 @@ wise        None            Used for matching WISE catalogs to SDSS data.
 yanny       Good            Tools for manipulating `SDSS parameter files`_.
 =========== =============== ===================================================
 
-.. _idlutils: https://www.sdss.org/dr14/software/idlutils/
+.. _idlutils: https://www.sdss.org/dr16/software/idlutils/
 .. _SDSS: https://www.sdss.org
-.. _`The IDL® Astronomy User's Libary`: http://idlastro.gsfc.nasa.gov/
+.. _`The IDL® Astronomy User's Libary`: https://idlastro.gsfc.nasa.gov/
 .. _healpy: https://healpy.readthedocs.io/en/latest/
-.. _bitmasks: https://www.sdss.org/dr14/algorithms/bitmasks/
+.. _bitmasks: https://www.sdss.org/dr16/algorithms/bitmasks/
 .. _`sweep files`: https://data.sdss.org/datamodel/files/PHOTO_SWEEP/RERUN/calibObj.html
-.. _`SDSS parameter files`: https://www.sdss.org/dr14/algorithms/software/par/
+.. _`SDSS parameter files`: https://www.sdss.org/dr16/software/par/
 
 API
 +++

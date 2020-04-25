@@ -9,7 +9,7 @@ from astropy.utils.data import get_pkg_data_contents
 
 def read_ds_cooling(fname, logT=None):
     """Read in the `Sutherland & Dopita (1993)
-    <http://adsabs.harvard.edu/abs/1993ApJS...88..253S>`_ cooling function.
+    <https://ui.adsabs.harvard.edu/abs/1993ApJS...88..253S/abstract>`_ cooling function.
 
     Parameters
     ----------

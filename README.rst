@@ -70,11 +70,11 @@ Legal
 
 * IDL is a registered trademark of `Harris Geospatial Solutions`_.
 
-.. _Python: http://python.org
-.. _`IDL®`: http://www.harrisgeospatial.com/SoftwareTechnology/IDL.aspx
-.. _idlutils: https://www.sdss.org/dr14/software/idlutils/
+.. _Python: https://www.python.org
+.. _`IDL®`: https://www.harrisgeospatial.com/Software-Technology/IDL
+.. _idlutils: https://www.sdss.org/dr16/software/idlutils/
 .. _SDSS: https://www.sdss.org
-.. _`Goddard utilities`: http://idlastro.gsfc.nasa.gov/
+.. _`Goddard utilities`: https://idlastro.gsfc.nasa.gov/
 .. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
 .. _BOSS: https://www.sdss.org/surveys/boss/
 .. _eBOSS: https://www.sdss.org/surveys/eboss/
@@ -83,6 +83,6 @@ Legal
 .. _PyPI: https://pypi.python.org/pypi/pydl/
 .. _`PyDL on Read the Docs`: https://pydl.readthedocs.io/en/latest/
 .. _SDSS-III: http://www.sdss3.org
-.. _`svn repository`: https://www.sdss.org/dr14/software/products/
+.. _`svn repository`: https://www.sdss.org/dr16/software/products/
 .. _GitHub: https://github.com
-.. _`Harris Geospatial Solutions`: http://www.harrisgeospatial.com/
+.. _`Harris Geospatial Solutions`: https://www.harrisgeospatial.com/

@@ -76,9 +76,9 @@ class HMF(object):
     References
     ----------
     .. [1] `Tsalmantza, P., Decarli, R., Dotti, M., Hogg, D. W., 2011 ApJ 738, 20
-        <http://adsabs.harvard.edu/abs/2011ApJ...738...20T>`_
+        <https://ui.adsabs.harvard.edu/abs/2011ApJ...738...20T/abstract>`_
     .. [2] `Tsalmantza, P., Hogg, D. W., 2012 ApJ 753, 122
-        <http://adsabs.harvard.edu/abs/2012ApJ...753..122T>`_
+        <https://ui.adsabs.harvard.edu/abs/2012ApJ...753..122T/abstract>`_
     """
 
     def __init__(self, spectra, invvar, K=4, n_iter=None, seed=None,

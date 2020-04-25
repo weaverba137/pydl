@@ -10,7 +10,7 @@ References
 ----------
 
 .. [2] `Lupton, Robert, et al., 2004 PASP 116, 113
-   <http://adsabs.harvard.edu/abs/2004PASP..116..133L>`_.
+   <https://ui.adsabs.harvard.edu/abs/2004PASP..116..133L/abstract>`_.
 """
 import numpy as np
 from warnings import warn

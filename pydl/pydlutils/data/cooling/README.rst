@@ -8,7 +8,7 @@ Introduction
 This file has been adapted from http://www.mso.anu.edu.au/~ralph/data/cool/ABOUT.txt.
 
 The associated files contain the cooling functions calculated for the paper
-by `Sutherland & Dopita (1993) <http://adsabs.harvard.edu/abs/1993ApJS...88..253S>`_.
+by `Sutherland & Dopita (1993) <https://ui.adsabs.harvard.edu/abs/1993ApJS...88..253S/abstract>`_.
 See paper or preprint for details.
 
 FILE LIST
