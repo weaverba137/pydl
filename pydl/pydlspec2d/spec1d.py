@@ -878,7 +878,7 @@ def readspec(platein, mjd=None, fiber=None, **kwargs):
             fibervec = np.array(fiber, dtype='i4')
         else:
             fibervec = np.zeros(nplate, dtype='i4') + fiber
-    if 'mjd' is None:
+    if mjd is None:
         mjdvec = latest_mjd(platevec, **kwargs)
     else:
         try:

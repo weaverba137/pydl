@@ -163,7 +163,7 @@ after_success:
     - if [[ ${TOXENV} == *-cov ]]; then
         if [[ -f .tmp/${TOXENV}/.coverage ]]; then cp -p .tmp/${TOXENV}/.coverage .; fi;
         pip install coveralls;
-        coveralls debug --rcfile=setup.cfg;
+        coveralls --verbose --rcfile=setup.cfg;
       fi
     # If codecov is set up for this package, uncomment the two lines below
     # pip install codecov
