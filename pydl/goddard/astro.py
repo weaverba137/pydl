@@ -27,7 +27,7 @@ def airtovac(air):
     Notes
     -----
     * Formula from `P. E. Ciddor, Applied Optics, 35, 1566 (1996)
-      <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
+      <https://ui.adsabs.harvard.edu/abs/1996ApOpt..35.1566C/abstract>`_.
     * Values of wavelength below 2000 Å are not converted.
     """
     try:
@@ -88,7 +88,7 @@ def gcirc(ra1, dec1, ra2, dec2, units=2):
     -----
     The formula below is the one best suited to handling small angular
     separations.  See:
-    http://en.wikipedia.org/wiki/Great-circle_distance
+    https://en.wikipedia.org/wiki/Great-circle_distance
     """
     if units == 0:
         rarad1 = ra1
@@ -174,7 +174,7 @@ def vactoair(vacuum):
     Notes
     -----
     * Formula from `P. E. Ciddor, Applied Optics, 35, 1566 (1996)
-      <http://adsabs.harvard.edu/abs/1996ApOpt..35.1566C>`_.
+      <https://ui.adsabs.harvard.edu/abs/1996ApOpt..35.1566C/abstract>`_.
     * Values of wavelength below 2000 Å are not converted.
     """
     try:

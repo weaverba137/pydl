@@ -65,15 +65,16 @@ def test_window_read_no_photo_resolve(monkeypatch):
 
 
 def test_window_read_all(monkeypatch, mocker, table_read):
-    monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    fake_dir = os.path.join('another', 'fake', 'directory')
+    monkeypatch.setenv('PHOTO_RESOLVE', fake_dir)
     r = window_read(flist=True, rescore=False, blist=True,
                     bcaps=True, balkans=True, findx=True, bindx=True)
     assert table_read.call_count == 5
-    table_read.assert_any_call('/another/fake/directory/window_flist.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_blist.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_bcaps.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_findx.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_bindx.fits', hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_flist.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_blist.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_bcaps.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_findx.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_bindx.fits'), hdu=1)
     for k in ('flist', 'blist', 'bcaps', 'findx', 'bindx', 'balkans'):
         assert k in r
     for k in ('x', 'cm', 'use_caps'):
@@ -81,26 +82,28 @@ def test_window_read_all(monkeypatch, mocker, table_read):
 
 
 def test_window_read_balkans_only(monkeypatch, mocker, table_read):
-    monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    fake_dir = os.path.join('another', 'fake', 'directory')
+    monkeypatch.setenv('PHOTO_RESOLVE', fake_dir)
     r = window_read(flist=True, rescore=False, balkans=True)
     assert table_read.call_count == 3
-    table_read.assert_any_call('/another/fake/directory/window_flist.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_blist.fits', hdu=1)
-    table_read.assert_any_call('/another/fake/directory/window_bcaps.fits', hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_flist.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_blist.fits'), hdu=1)
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_bcaps.fits'), hdu=1)
     for k in ('flist', 'balkans'):
         assert k in r
     assert isinstance(r['balkans'], FITS_polygon)
 
 
 def test_window_read_rescore(monkeypatch, mocker, table_read):
-    monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    fake_dir = os.path.join('another', 'fake', 'directory')
+    monkeypatch.setenv('PHOTO_RESOLVE', fake_dir)
     e = mocker.patch('os.path.exists')
     e.return_value = False
     w = mocker.patch('pydl.photoop.window.window_score')
     r = window_read(flist=True, rescore=True)
     assert table_read.call_count == 1
-    table_read.assert_any_call('/another/fake/directory/window_flist_rescore.fits', hdu=1)
-    # e.assert_called_once_with('/another/fake/directory/window_flist_rescore.fits')
+    table_read.assert_any_call(os.path.join(fake_dir, 'window_flist_rescore.fits'), hdu=1)
+    # e.assert_called_once_with(os.path.join(fake_dir, 'window_flist_rescore.fits'))
     w.assert_called_once_with(rescore=True)
     for k in ('flist',):
         assert k in r
@@ -132,24 +135,26 @@ def test_window_score_no_window_flist(monkeypatch):
 
 
 def test_window_score_fits_open(monkeypatch, mocker, fits_open):
+    fake_dir = os.path.join('another', 'fake', 'directory')
     monkeypatch.setenv('PHOTO_CALIB', '/fake/directory')
-    monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    monkeypatch.setenv('PHOTO_RESOLVE', fake_dir)
     s = mocker.patch('pydl.photoop.window.sdss_score')
     s.return_value = np.zeros((fits_open.data_size,), dtype=np.int16)
     window_score()
-    fits_open.assert_called_once_with('/another/fake/directory/window_flist.fits',
+    fits_open.assert_called_once_with(os.path.join(fake_dir, 'window_flist.fits'),
                                       mode='update')
     s.assert_called_once_with(fits_open.return_value)
 
 
 def test_window_score_fits_open_rescore(monkeypatch, mocker, fits_open):
+    fake_dir = os.path.join('another', 'fake', 'directory')
     monkeypatch.setenv('PHOTO_CALIB', '/fake/directory')
-    monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
+    monkeypatch.setenv('PHOTO_RESOLVE', fake_dir)
     s = mocker.patch('pydl.photoop.window.sdss_score')
     s.return_value = np.zeros((fits_open.data_size,), dtype=np.int16)
     window_score(rescore=True)
     assert s.call_count == 1
-    fits_open.assert_called_once_with('/another/fake/directory/window_flist.fits',
+    fits_open.assert_called_once_with(os.path.join(fake_dir, 'window_flist.fits'),
                                       mode='readonly')
-    fits_open.return_value.writeto.assert_called_once_with('/another/fake/directory/window_flist_rescore.fits')
+    fits_open.return_value.writeto.assert_called_once_with(os.path.join(fake_dir, 'window_flist_rescore.fits'))
     s.assert_called_once_with(fits_open.return_value)

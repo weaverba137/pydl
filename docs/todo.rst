@@ -3,6 +3,7 @@ TODO
 ====
 
 * Increase test coverage.
+* Finish documentation of :mod:`~pydl.photoop.window`.
 * :mod:`pydl.pydlutils.mangle` needs more work.
 
   - Area (solid angle) calculation.
@@ -12,4 +13,5 @@ TODO
 
 * Check ``groupdim``, ``groupsize`` in :func:`~pydl.pydlutils.math.djs_reject`.
   Make sure integer division works.
-* Document :class:`~pydl.pydlutils.bspline.bspline`.
+* Document :class:`~pydl.pydlutils.bspline.bspline`, and incorporate changes
+  suggested by the pypit team.

@@ -20,15 +20,15 @@ bounded by *great circles*.  Mangle allows polygons to be bounded by
 *any* circle, great or not.  Use care when comparing formulas in this
 module to formulas in the mathematical literature.
 
-.. _Mangle: http://space.mit.edu/~molly/mangle/
-.. _`window function`: https://www.sdss.org/dr14/algorithms/resolve/
+.. _Mangle: https://space.mit.edu/~molly/mangle/
+.. _`window function`: https://www.sdss.org/dr16/algorithms/resolve/
 
 References
 ----------
 
 .. [1] `Swanson, M. E. C.; Tegmark, Max; Hamilton, Andrew J. S.;
    Hill, J. Colin, 2008 MNRAS 387, 1391
-   <http://adsabs.harvard.edu/abs/2008MNRAS.387.1391S>`_.
+   <https://ui.adsabs.harvard.edu/abs/2008MNRAS.387.1391S/abstract>`_.
 """
 import re
 import warnings
@@ -231,7 +231,7 @@ class ManglePolygon(object):
         ----------
 
         .. [1] `Hamilton, A. J. S.; Tegmark, Max, 2004 MNRAS 349, 115
-           <http://adsabs.harvard.edu/abs/2004MNRAS.349..115H>`_.
+           <https://ui.adsabs.harvard.edu/abs/2004MNRAS.349..115H/abstract>`_.
         """
         smallest_cap = self.cmminf()
         if smallest_cap is None:
@@ -676,9 +676,11 @@ def read_mangle_polygons(filename):
         any metadata.
     """
     with open(filename, 'r') as ply:
-        lines = ply.read().split(ply.newlines)
+        # lines = ply.read().split(ply.newlines)
+        lines = ply.readlines()
+    lines = [l.strip() for l in lines]
     try:
-        npoly = int(lines[0].split()[0])
+        npoly = int(lines[0].strip().split()[0])
     except ValueError:
         raise PydlutilsException(("Invalid first line of {0}!  " +
                                   "Are you sure this is a Mangle " +
