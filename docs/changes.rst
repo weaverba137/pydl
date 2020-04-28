@@ -2,15 +2,20 @@
 PyDL Changelog
 ==============
 
-1.0.0 (unreleased)
-------------------
+1.0.0rc1 (2020-04-28)
+---------------------
 
-*This version will only support Python 3 and Astropy 3.*  This release is
-planned for early 2019.
+*This version will only support Python 3.*
 
+* Various bug fixes in preparation for 1.0 (PR `#58`_).
+* Remove `astropy_helpers`_ entirely (PR `#55`_).
+* Update test infrastructure (PR `#54`_).
 * Remove all Python 2 constructs; add tests in :mod:`~pydl.photoop.window` (PR `#51`_).
 
 .. _`#51`: https://github.com/weaverba137/pydl/pull/51
+.. _`#54`: https://github.com/weaverba137/pydl/pull/54
+.. _`#55`: https://github.com/weaverba137/pydl/pull/55
+.. _`#58`: https://github.com/weaverba137/pydl/pull/58
 
 0.7.0 (2019-02-22)
 ------------------
