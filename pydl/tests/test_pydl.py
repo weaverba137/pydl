@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Test the top-level pydl functions.
 """
-# import pytest
+import pytest
 import numpy as np
 try:
     from astropy.tests.compat import assert_allclose
