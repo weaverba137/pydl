@@ -82,12 +82,12 @@ jobs:
       run: |
         tox -e ${{ matrix.toxenv }}
     # This is an example of how to upload coverage to codecov
-    - name: Upload coverage to Coveralls
-      if: "contains(matrix.toxenv, '-cov')"
-      env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: coveralls
+    # - name: Upload coverage to Coveralls
+    #   if: "contains(matrix.toxenv, '-cov')"
+    #   env:
+    #       COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   run: coveralls
       # uses: codecov/codecov-action@v1
       # with:
         # file: ./coverage.xml
