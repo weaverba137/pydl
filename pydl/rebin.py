@@ -35,6 +35,15 @@ def rebin(x, d, sample=False):
     :exc:`ValueError`
         If the new dimensions are incompatible with the algorithm.
 
+    Warnings
+    --------
+    This function may not be 100% compatible with the IDL version
+    *for integer inputs*. It is not possible at present to examine the details
+    of the IDL code to determine the exact type manipulation that are used.
+    For further discussion see Issue `#60`_.
+
+    .. _`#60`: https://github.com/weaverba137/pydl/issues/60
+
     References
     ----------
     http://www.harrisgeospatial.com/docs/rebin.html
