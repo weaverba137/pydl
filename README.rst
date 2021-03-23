@@ -2,31 +2,33 @@
 PyDL
 ====
 
-.. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
+|Astropy Status| |License| |Zenodo| |PyPI Status| |Actions Status| |Coveralls Status| |Documentation Status|
+
+.. |Astropy Status| image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
     :target: http://www.astropy.org
     :alt: Powered by Astropy Badge
 
-.. image:: https://img.shields.io/pypi/l/pydl.svg
+.. |License| image:: https://img.shields.io/pypi/l/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
     :alt: License
 
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2575874.svg
+.. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2575874.svg
     :target: https://doi.org/10.5281/zenodo.2575874
     :alt: DOI: 10.5281/zenodo.2575874
 
-.. image:: https://img.shields.io/pypi/v/pydl.svg
+.. |PyPI Status| image:: https://img.shields.io/pypi/v/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
     :alt: PyPI Badge
 
-.. image:: https://img.shields.io/travis/weaverba137/pydl.svg
-    :target: https://travis-ci.org/weaverba137/pydl
-    :alt: Travis Build Status
+.. |Actions Status| image:: https://github.com/weaverba137/pydl/workflows/CI/badge.svg
+    :target: https://github.com/weaverba137/pydl/actions
+    :alt: GitHub Actions CI Status
 
-.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=main&service=github
+.. |Coveralls Status| image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=main&service=github
     :target: https://coveralls.io/github/weaverba137/pydl?branch=main
     :alt: Test Coverage Status
 
-.. image:: https://readthedocs.org/projects/pydl/badge/?version=latest
+.. |Documentation Status| image:: https://readthedocs.org/projects/pydl/badge/?version=latest
     :target: http://pydl.readthedocs.org/en/latest/
     :alt: Documentation Status
 

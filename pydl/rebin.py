@@ -19,7 +19,7 @@ def rebin(x, d, sample=False):
     ----------
     x : :class:`~numpy.ndarray`
         The array to resample.
-    d : :func:`tuple`
+    d : :class:`tuple`
         The new shape of the array.
     sample : :class:`bool`, optional
         If ``True``, nearest-neighbor techniques will be used instead of
