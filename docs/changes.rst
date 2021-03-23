@@ -5,7 +5,10 @@ PyDL Changelog
 1.0.0rc2 (unreleased)
 ---------------------
 
-* No changes yet.
+* Document behavior of :func:`pydl.rebin` for integer inputs; begin migration
+  to GitHub Actions for CI. (PR `#61`_)
+
+.. _`#61`: https://github.com/weaverba137/pydl/pull/61
 
 1.0.0rc1 (2020-04-28)
 ---------------------

@@ -35,6 +35,15 @@ def rebin(x, d, sample=False):
     :exc:`ValueError`
         If the new dimensions are incompatible with the algorithm.
 
+    Warnings
+    --------
+    This function may not be 100% compatible with the IDL version
+    *for integer inputs*. It is not possible at present to examine the details
+    of the IDL code to determine the exact type manipulation that are used.
+    For further discussion see Issue `#60`_.
+
+    .. _`#60`: https://github.com/weaverba137/pydl/issues/60
+
     References
     ----------
     http://www.harrisgeospatial.com/docs/rebin.html
@@ -72,8 +81,8 @@ def rebin(x, d, sample=False):
         sliceobj0 = [slice(None)]*len(d0)
         sliceobj1 = [slice(None)]*len(d0)
         sliceobj = [slice(None)]*len(d)
-        f = d0[k]/d[k]
         if d[k] > d0[k]:
+            f = d0[k]/d[k]
             for i in range(d[k]):
                 p = f*i
                 fp = int(floor(p))
@@ -97,6 +106,7 @@ def rebin(x, d, sample=False):
                 sliceobj[k] = slice(i, i + 1)
                 r[tuple(sliceobj)] = xx[tuple(sliceobj0)]
         else:
+            f = d0[k]//d[k]
             for i in range(d[k]):
                 sliceobj[k] = slice(i, i + 1)
                 if sample:
@@ -106,6 +116,10 @@ def rebin(x, d, sample=False):
                 else:
                     sliceobj0[k] = slice(int(f*i), int(f*(i+1)))
                     rshape = r[tuple(sliceobj)].shape
-                    r[tuple(sliceobj)] = xx[tuple(sliceobj0)].sum(k).reshape(rshape)/f
+                    rr = xx[tuple(sliceobj0)].sum(k).reshape(rshape)
+                    if xx.dtype.kind == 'u' or xx.dtype.kind == 'i':
+                        r[tuple(sliceobj)] = rr//f
+                    else:
+                        r[tuple(sliceobj)] = rr/f
         xx = r
     return r
