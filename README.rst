@@ -22,8 +22,8 @@ PyDL
     :target: https://travis-ci.org/weaverba137/pydl
     :alt: Travis Build Status
 
-.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=master&service=github
-    :target: https://coveralls.io/github/weaverba137/pydl?branch=master
+.. image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=main&service=github
+    :target: https://coveralls.io/github/weaverba137/pydl?branch=main
     :alt: Test Coverage Status
 
 .. image:: https://readthedocs.org/projects/pydl/badge/?version=latest
