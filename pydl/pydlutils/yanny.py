@@ -124,7 +124,7 @@ class yanny(OrderedDict):
 
         Returns
         -------
-        :func:`tuple`
+        :class:`tuple`
             A tuple containing the first word and the remainder of the string.
 
         Examples

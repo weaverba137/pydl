@@ -66,7 +66,7 @@ def nw_cut_to_box(colors, origin=(0.0, 0.0, 0.0)):
     ----------
     colors : :class:`~numpy.ndarray`
         3D Array containing RGB image.  The dimensions should be (X, Y, 3).
-    origin : :func:`tuple` or :class:`~numpy.ndarray`
+    origin : :class:`tuple` or :class:`~numpy.ndarray`
         An array with 3 elements.  The "distance" from this origin is
         considered saturated.
 
@@ -132,7 +132,7 @@ def nw_scale_rgb(colors, scales=(1.0, 1.0, 1.0)):
     ----------
     colors : :class:`~numpy.ndarray`
         3D Array containing RGB image.  The dimensions should be (X, Y, 3).
-    scales : :func:`tuple` or :class:`~numpy.ndarray`, optional
+    scales : :class:`tuple` or :class:`~numpy.ndarray`, optional
         An array with 3 elements.
 
     Returns

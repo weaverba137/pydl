@@ -490,7 +490,7 @@ def circle_cap(radius, points):
 
     Returns
     -------
-    :func:`tuple`
+    :class:`tuple`
         A tuple containing ``X`` and ``CM`` values for the cap.
     """
     npoints, ncol = points.shape
@@ -607,7 +607,7 @@ def is_in_window(polygons, points, ncaps=0):
 
     Returns
     -------
-    :func:`tuple`
+    :class:`tuple`
         A tuple containing two :class:`~numpy.ndarray`.  First, a boolean
         vector giving the result for each point.  Second, an integer vector
         giving the index of the polygon that contains the point.

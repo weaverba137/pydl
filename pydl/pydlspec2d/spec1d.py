@@ -250,7 +250,7 @@ class HMF(object):
 
         Returns
         -------
-        :func:`tuple` of :class:`numpy.ndarray`
+        :class:`tuple` of :class:`numpy.ndarray`
             The fitting coefficients and fitted functions, respectively.
         """
         from scipy.cluster.vq import kmeans, whiten
@@ -1216,7 +1216,7 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
 
     Returns
     -------
-    :func:`tuple` of :class:`numpy.ndarray`
+    :class:`tuple` of :class:`numpy.ndarray`
         The resampled flux, inverse variance and wavelength solution,
         respectively.
     """
@@ -1294,7 +1294,7 @@ def template_metadata(inputfile, verbose=False):
 
     Returns
     -------
-    :func:`tuple`
+    :class:`tuple`
         A tuple containing the list of input spectra and a dictionary
         containing other metadata.
     """

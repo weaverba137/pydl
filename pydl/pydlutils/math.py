@@ -244,7 +244,7 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
 
     Returns
     -------
-    :func:`tuple`
+    :class:`tuple`
         A tuple containing a mask where rejected data values are ``False`` and
         a boolean value set to ``True`` if `djs_reject` believes there is no
         further rejection to be done.

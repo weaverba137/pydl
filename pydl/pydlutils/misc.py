@@ -251,7 +251,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
 
     Returns
     -------
-    :func:`tuple`
+    :class:`tuple`
         A tuple containing a list of the lines in the table.  If `html` is
         ``True``, also returns a list of lines of CSS for formatting the
         table.

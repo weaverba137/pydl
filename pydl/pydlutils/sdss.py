@@ -157,7 +157,7 @@ def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
 
     Returns
     -------
-    :class:`bool` or :func:`tuple`
+    :class:`bool` or :class:`tuple`
         A boolean value or a tuple of bool.
     """
     global maskbits

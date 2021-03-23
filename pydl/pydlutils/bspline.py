@@ -153,7 +153,7 @@ class bspline(object):
 
         Returns
         -------
-        :func:`tuple`
+        :class:`tuple`
             A tuple containing an integer error code, and the evaluation of the
             b-spline at the input values.  An error code of -2 is a failure,
             -1 indicates dropped breakpoints, 0 is success, and positive
@@ -214,7 +214,7 @@ class bspline(object):
 
         Returns
         -------
-        :func:`tuple`
+        :class:`tuple`
             A tuple containing the B-spline action matrix; the 'lower' parameter,
             a list of pixel positions, each corresponding to the first
             occurence of position greater than breakpoint indx; and 'upper',
@@ -345,7 +345,7 @@ class bspline(object):
 
         Returns
         -------
-        :func:`tuple`
+        :class:`tuple`
             A tuple containing the results of the bspline evaluation and a
             mask indicating where the evaluation was good.
         """
@@ -456,7 +456,7 @@ def cholesky_band(l, mininf=0.0):
 
     Returns
     -------
-    :func:`tuple`
+    :class:`tuple`
         If problems were detected, the first item will be the index or
         indexes where the problem was detected, and the second item will simply
         be the input matrix.  If no problems were detected, the first item
@@ -546,7 +546,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
 
     Returns
     -------
-    :func:`tuple`
+    :class:`tuple`
         A tuple containing the fitted bspline object and an output mask.
     """
     nx = xdata.size

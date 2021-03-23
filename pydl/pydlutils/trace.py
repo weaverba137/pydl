@@ -169,7 +169,7 @@ def func_fit(x, y, ncoeff, invvar=None, function_name='legendre', ia=None,
 
     Returns
     -------
-    :func:`tuple` of array-like
+    :class:`tuple` of array-like
         Fit coefficients, length `ncoeff`; fitted values.
 
     Raises
@@ -396,7 +396,7 @@ class TraceSet(object):
 
         Returns
         -------
-        :func:`tuple` of array-like
+        :class:`tuple` of array-like
             The x, y positions.
         """
         do_jump = self.has_jump and (not ignore_jump)
@@ -475,7 +475,7 @@ def traceset2xy(tset, xpos=None, ignore_jump=False):
 
     Returns
     -------
-    :func:`tuple` of array-like
+    :class:`tuple` of array-like
         The x, y positions.
     """
     return tset.xy(xpos, ignore_jump)
