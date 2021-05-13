@@ -677,7 +677,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
         return None
 
 
-def set_maskbits(idlutils_version='v5_5_24', maskbits_file=None):
+def set_maskbits(idlutils_version='v5_5_33', maskbits_file=None):
     """Populate the maskbits cache.
 
     Parameters
