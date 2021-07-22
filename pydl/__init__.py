@@ -16,7 +16,7 @@ functions are implemented to support this.
 # Packages may add whatever they like to this file, but
 # should keep this content at the top.
 # ----------------------------------------------------------------------------
-from ._astropy_init import *
+from ._astropy_init import *   # noqa
 # ----------------------------------------------------------------------------
 
 # Enforce Python version check during package import.
@@ -31,14 +31,13 @@ class UnsupportedPythonError(Exception):
 if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
     raise UnsupportedPythonError("packagename does not support Python < {}".format(__minimum_python_version__))
 
-if not _ASTROPY_SETUP_:
-    # For egg_info test builds to pass, put package imports here.
-    from .file_lines import file_lines
-    from .median import median
-    from .pcomp import pcomp
-    from .rebin import rebin
-    from .smooth import smooth
-    from .uniq import uniq
+
+from .file_lines import file_lines
+from .median import median
+from .pcomp import pcomp
+from .rebin import rebin
+from .smooth import smooth
+from .uniq import uniq
 
 
 # Workaround: Numpy 1.14.x changes the way arrays are printed.
