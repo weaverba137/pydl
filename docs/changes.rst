@@ -5,10 +5,12 @@ PyDL Changelog
 1.0.0rc2 (unreleased)
 ---------------------
 
+* Update idlutils tag for SDSS bitmasks (PR `#62`_).
 * Document behavior of :func:`pydl.rebin` for integer inputs; begin migration
-  to GitHub Actions for CI. (PR `#61`_)
+  to GitHub Actions for CI (PR `#61`_).
 
 .. _`#61`: https://github.com/weaverba137/pydl/pull/61
+.. _`#62`: https://github.com/weaverba137/pydl/pull/62
 
 1.0.0rc1 (2020-04-28)
 ---------------------
