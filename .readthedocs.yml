@@ -12,3 +12,5 @@ python:
           extra_requirements:
                 - docs
                 - all
+
+formats: []
