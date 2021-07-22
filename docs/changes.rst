@@ -2,15 +2,17 @@
 PyDL Changelog
 ==============
 
-1.0.0rc2 (unreleased)
+1.0.0rc2 (2021-07-22)
 ---------------------
 
+* Updates to package infrastructure (PR `#63`_).
 * Update idlutils tag for SDSS bitmasks (PR `#62`_).
 * Document behavior of :func:`pydl.rebin` for integer inputs; begin migration
   to GitHub Actions for CI (PR `#61`_).
 
 .. _`#61`: https://github.com/weaverba137/pydl/pull/61
 .. _`#62`: https://github.com/weaverba137/pydl/pull/62
+.. _`#63`: https://github.com/weaverba137/pydl/pull/63
 
 1.0.0rc1 (2020-04-28)
 ---------------------
