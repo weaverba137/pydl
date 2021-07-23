@@ -5,7 +5,9 @@ PyDL Changelog
 1.0.0 (unreleased)
 ------------------
 
-* No changes yet.
+* Update links to documentation (PR `#64`_).
+
+.. _`#64`: https://github.com/weaverba137/pydl/pull/64
 
 1.0.0rc2 (2021-07-22)
 ---------------------
@@ -234,7 +236,7 @@ PyDL Changelog
 ----------------
 
 * Initial tag (made in svn, not visible in git).  Visible at
-  http://www.sdss3.org/svn/repo/pydl/tags/0.1 .
+  https://svn.sdss.org/public/sdss3/repo/pydl/tags/0.1/ .
 
 .. _`astropy_helpers`: https://github.com/astropy/astropy-helpers
 .. _package-template: https://github.com/astropy/package-template

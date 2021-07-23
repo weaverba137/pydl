@@ -28,7 +28,7 @@ def file_lines(path, compress=False):
 
     References
     ----------
-    http://www.harrisgeospatial.com/docs/file_lines.html
+    http://www.l3harrisgeospatial.com/docs/file_lines.html
 
     Examples
     --------

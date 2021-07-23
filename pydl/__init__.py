@@ -10,7 +10,7 @@ part of astronomical IDL libraries.  The emphasis is on reproducing results of
 the astronomical library functions.  Only the bare minimum of IDL_ built-in
 functions are implemented to support this.
 
-.. _IDL: https://www.harrisgeospatial.com/Software-Technology/IDL
+.. _IDL: https://www.l3harrisgeospatial.com/Software-Technology/IDL
 """
 
 # Packages may add whatever they like to this file, but
