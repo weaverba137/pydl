@@ -5,7 +5,9 @@ PyDL Changelog
 1.0.0 (unreleased)
 ------------------
 
-* No changes yet.
+* Update links to documentation (PR `#64`_).
+
+.. _`#64`: https://github.com/weaverba137/pydl/pull/64
 
 1.0.0rc2 (2021-07-22)
 ---------------------
