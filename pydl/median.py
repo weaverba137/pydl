@@ -40,6 +40,10 @@ def median(array, width=None, axis=None, even=False):
       :func:`scipy.signal.medfilt2d` under the hood, but patches up the
       values on the array boundaries to match the return values of the
       IDL ``MEDIAN()`` function.
+
+    References
+    ----------
+    http://www.l3harrisgeospatial.com/docs/median.html
     """
     import numpy as np
     from scipy.signal import medfilt, medfilt2d

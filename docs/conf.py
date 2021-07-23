@@ -174,7 +174,7 @@ github_issues_url = 'https://github.com/{0}/issues/'.format(setup_cfg['github_pr
 # -- Options for linkcheck output -------------------------------------------
 linkcheck_retry = 5
 linkcheck_ignore = [
-    r'https://github\.com/astropy/astropy/(?:issues|pull)/\d+',
+    r'https://github\.com/weaverba137/pydl/(?:issues|pull)/\d+',
 ]
 linkcheck_timeout = 180
 linkcheck_anchors = False

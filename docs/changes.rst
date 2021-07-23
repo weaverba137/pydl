@@ -234,7 +234,7 @@ PyDL Changelog
 ----------------
 
 * Initial tag (made in svn, not visible in git).  Visible at
-  http://www.sdss3.org/svn/repo/pydl/tags/0.1 .
+  https://svn.sdss.org/public/sdss3/repo/pydl/tags/0.1/ .
 
 .. _`astropy_helpers`: https://github.com/astropy/astropy-helpers
 .. _package-template: https://github.com/astropy/package-template
