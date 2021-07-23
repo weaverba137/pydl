@@ -11,7 +11,7 @@ jobs:
   # Testing links in documents is a good example of something to run on a schedule
   # to catch links that stop working for some reason.
   doc_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python to build docs with sphinx
