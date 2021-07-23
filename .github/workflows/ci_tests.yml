@@ -89,8 +89,8 @@ jobs:
   # TEMPORARY link test
   #
   doc_test:
-    # runs-on: ubuntu-latest
-    runs-on: macos-latest
+    runs-on: ubuntu-18.04
+    # runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python to build docs with sphinx
