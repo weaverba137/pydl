@@ -33,8 +33,8 @@ class YannyTestCase(object):
         self.temp_dir = mkdtemp(prefix='yanny-test-')
         # Ignore deprecation warnings--this only affects Python 2.5 and 2.6,
         # since deprecation warnings are ignored by defualt on 2.7
-        warnings.simplefilter('ignore')
-        warnings.simplefilter('always', UserWarning)
+        # warnings.simplefilter('ignore')
+        # warnings.simplefilter('always', UserWarning)
         # raise ValueError("I am setting up a subclass of YannyTestCase!")
         with open(get_pkg_data_filename("t/yanny_data.json")) as js:
             self.test_data = json.load(js)
