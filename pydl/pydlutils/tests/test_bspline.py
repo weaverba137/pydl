@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """Test the functions in pydl.pydlutils.bspline.
 """
+import pytest
 import numpy as np
-from astropy.tests.helper import catch_warnings
 from .. import PydlutilsUserWarning
 from ..bspline import cholesky_band, cholesky_solve, iterfit
 from ... import smooth
@@ -53,13 +53,13 @@ def test_cholesky_band():
     i, ll = cholesky_band(ab)
     assert np.allclose(l, ll)
     ab[0, 0] = 1.0e-6
-    with catch_warnings(PydlutilsUserWarning) as w:
+    with pytest.warns(PydlutilsUserWarning) as w:
         i, ll = cholesky_band(ab, mininf=1.0e-5)
     assert len(w) > 0
     assert str(w[0].message) == "Bad entries: [0]"
     assert i == 0
     # ab[0, :] = np.array([ 1., 2., 3., 4., 5., 6., 7., 0., 0., 0.])
-    # with catch_warnings(PydlutilsUserWarning) as w:
+    # with pytest.warns(PydlutilsUserWarning) as w:
     #     i, ll = cholesky_band(ab)
     # assert len(w) > 0
 

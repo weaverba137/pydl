@@ -10,7 +10,6 @@ from time import sleep
 from collections import OrderedDict
 import pytest
 import numpy as np
-from astropy.tests.helper import catch_warnings
 from astropy.utils.data import get_pkg_data_filename
 from astropy.table import Table
 from astropy.io.registry import (register_identifier, register_reader,
@@ -327,7 +326,7 @@ class TestYanny(YannyTestCase):
         # This should fail, since test.par already exists.
         with pytest.raises(PydlutilsException):
             par.write()
-        with catch_warnings(PydlutilsUserWarning) as w:
+        with pytest.warns(PydlutilsUserWarning) as w:
             par.append({})
         datatable = {'status_update': {'state': ['SUCCESS', 'SUCCESS'],
             'timestamp': ['2008-06-22 01:27:33', '2008-06-22 01:27:36']},

@@ -4,7 +4,6 @@
 """
 import pytest
 import numpy as np
-from astropy.tests.helper import catch_warnings
 from astropy.utils.data import get_pkg_data_filename
 from ..spheregroup import spheregroup, spherematch
 from .. import PydlutilsException, PydlutilsUserWarning
@@ -63,7 +62,7 @@ def test_spheregroup():
     #
     # warnings
     #
-    with catch_warnings(PydlutilsUserWarning) as w:
+    with pytest.warns(PydlutilsUserWarning) as w:
         group = spheregroup(ra, dec, linklength, chunksize=linklength)
     # w = recwarn.pop(PydlutilsUserWarning)
     assert "chunksize changed to" in str(w[0].message)

@@ -4,7 +4,6 @@
 """
 import pytest
 import numpy as np
-from astropy.tests.helper import catch_warnings
 from .. import PydlutilsUserWarning
 from ..rgbcolor import (nw_arcsinh, nw_cut_to_box, nw_float_to_byte,
                         nw_scale_rgb)
@@ -47,7 +46,7 @@ def test_nw_float_to_byte():
     colors = np.ones((10, 10, 3), dtype=np.float)
     byte_colors = nw_float_to_byte(colors)
     assert (byte_colors == 255).all()
-    with catch_warnings(PydlutilsUserWarning) as w:
+    with pytest.warns(PydlutilsUserWarning) as w:
         byte_colors = nw_float_to_byte(colors, bits=16)
     assert len(w) > 0
 
