@@ -103,7 +103,7 @@ def test_hogg_iau_name():
 
 
 def test_struct_print():
-    slist = np.zeros((5,), dtype=[('a', 'c16'), ('b', np.bool)])
+    slist = np.zeros((5,), dtype=[('a', 'c16'), ('b', bool)])
     with pytest.raises(PydlutilsException):
         lines, css = struct_print(slist, silent=True)
     slist = np.array([(1, 2.34, 'five'),

@@ -3,7 +3,6 @@
 import pytest
 import numpy as np
 import pydl.pydlutils.sdss
-from astropy.tests.helper import remote_data
 from astropy.utils.data import get_pkg_data_filename
 from ..sdss import (default_skyversion, sdss_flagexist, sdss_flagname,
                     sdss_flagval, set_maskbits, sdss_astrombad,
@@ -116,7 +115,7 @@ class TestSDSS(object):
             foo = sdss_astrombad(np.array([77, 85, 251]), np.array([1, 2, 3]),
                                 np.array([20]))
 
-    @remote_data
+    @pytest.mark.remote_data
     def test_sdss_astrombad_remote(self):
         pydl.pydlutils.sdss.opbadfields = None
         assert not sdss_astrombad(77, 1, 20)

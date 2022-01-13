@@ -583,7 +583,7 @@ def is_in_polygon(polygon, points, ncaps=0):
     usencaps = p['ncaps']
     if ncaps > 0:
         usencaps = min(ncaps, p['ncaps'])
-    in_polygon = np.ones((npoints,), dtype=np.bool)
+    in_polygon = np.ones((npoints,), dtype=bool)
     for icap in range(usencaps):
         if is_cap_used(p['use_caps'], icap):
             in_polygon &= is_in_cap(p['x'][icap, :], p['cm'][icap], points)

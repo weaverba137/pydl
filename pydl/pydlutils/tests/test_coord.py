@@ -14,7 +14,7 @@ def test_current_mjd():
 
 def test_munu_to_radec():
     munu = SDSSMuNu(mu=0.0*u.deg, nu=0.0*u.deg, stripe=10)
-    radec = munu.transform_to(ICRS)
+    radec = munu.transform_to(ICRS())
     assert radec.ra.value == 0.0
     assert radec.dec.value == 0.0
 

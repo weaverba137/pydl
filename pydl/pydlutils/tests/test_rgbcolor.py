@@ -40,10 +40,10 @@ def test_nw_cut_to_box():
 
 
 def test_nw_float_to_byte():
-    colors = np.zeros((10, 10, 3), dtype=np.float)
+    colors = np.zeros((10, 10, 3), dtype=np.float32)
     byte_colors = nw_float_to_byte(colors)
     assert (byte_colors == 0).all()
-    colors = np.ones((10, 10, 3), dtype=np.float)
+    colors = np.ones((10, 10, 3), dtype=np.float32)
     byte_colors = nw_float_to_byte(colors)
     assert (byte_colors == 255).all()
     with pytest.warns(PydlutilsUserWarning) as w:

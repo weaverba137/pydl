@@ -3,7 +3,7 @@
 import pytest
 import numpy as np
 from astropy.utils.data import get_pkg_data_filename
-from .. import PydlutilsException
+from .. import PydlutilsException, PydlutilsUserWarning
 from .. import mangle as mng
 
 
@@ -70,7 +70,8 @@ class TestMangle(object):
         poly2 = poly.add_caps(np.array([[0.0, 1.0, 0.0], ]), np.array([1.0, ]))
         assert poly2.ncaps == 3
         assert poly2.use_caps == poly.use_caps
-        assert poly2.str == 1.0  # dummy value!
+        with pytest.warns(PydlutilsUserWarning):
+            assert poly2.str == 1.0  # dummy value!
         poly3 = poly.polyn(poly2, 2)
         assert poly3.ncaps == 3
         assert poly3.use_caps == poly.use_caps
