@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """Test the pydl.goddard package.
 """
+import pytest
 import numpy as np
 import astropy.units as u
-from astropy.tests.helper import raises
 from ..astro import airtovac, gcirc, get_juldate, vactoair
 from ..math import flegendre
 from ..misc import cirrange
@@ -65,7 +65,7 @@ def test_flegendre():
     #
     # Test order
     #
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         f = flegendre(x, 0)
     #
     # m = 1
@@ -140,7 +140,7 @@ def test_gcirc():
     #
     # Units = whatever
     #
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         d0 = gcirc(ra1, dec1, ra2, dec2, units=5)
 
 

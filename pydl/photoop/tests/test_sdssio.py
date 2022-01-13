@@ -5,7 +5,6 @@
 import os
 import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from ..sdssio import (filtername, filternum, sdss_calib, sdss_name, sdss_path,
                       sdssflux2ab)
 
@@ -109,7 +108,7 @@ def test_sdss_name(sdss_env):
     #
     # Bad ftype
     #
-    with raises(KeyError):
+    with pytest.raises(KeyError):
         p = sdss_name('fooBar', 137, 4, 42)
     for ftype in name_data:
         assert sdss_name(ftype, 137, 4, 42, '301', 'r',
@@ -131,7 +130,7 @@ def test_sdss_name_reObj(sdss_env):
 
 
 def test_sdss_path(sdss_env):
-    with raises(KeyError):
+    with pytest.raises(KeyError):
         p = sdss_path('fooBar', 137)
     for ftype in path_data:
         assert sdss_path(ftype, 137, 4, '301') == path_data[ftype]

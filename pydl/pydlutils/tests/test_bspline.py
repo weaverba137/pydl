@@ -3,7 +3,7 @@
 """Test the functions in pydl.pydlutils.bspline.
 """
 import numpy as np
-from astropy.tests.helper import catch_warnings, raises
+from astropy.tests.helper import catch_warnings
 from .. import PydlutilsUserWarning
 from ..bspline import cholesky_band, cholesky_solve, iterfit
 from ... import smooth

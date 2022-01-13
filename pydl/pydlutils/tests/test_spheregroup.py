@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 """Test the functions in pydl.pydlutils.spheregroup.
 """
+import pytest
 import numpy as np
-from astropy.tests.helper import raises, catch_warnings
+from astropy.tests.helper import catch_warnings
 from astropy.utils.data import get_pkg_data_filename
 from ..spheregroup import spheregroup, spherematch
 from .. import PydlutilsException, PydlutilsUserWarning
@@ -57,7 +58,7 @@ def test_spheregroup():
     #
     # Exceptions
     #
-    with raises(PydlutilsException):
+    with pytest.raises(PydlutilsException):
         group = spheregroup(np.array([137.0]), np.array([55.0]), linklength)
     #
     # warnings

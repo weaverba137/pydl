@@ -5,7 +5,6 @@
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import ICRS
-# from astropy.tests.helper import raises
 from ..coord import SDSSMuNu, current_mjd, stripe_to_eta, stripe_to_incl
 
 

@@ -3,9 +3,9 @@
 """Test the functions in pydl.pydlutils.misc.
 """
 import os
+import pytest
 import numpy as np
 import tempfile
-from astropy.tests.helper import raises
 from .. import PydlutilsException
 from ..misc import djs_laxisgen, djs_laxisnum, hogg_iau_name, struct_print
 
@@ -25,7 +25,7 @@ def test_djs_laxisgen():
                     dtype='i4')
     assert (l == djs_laxisgen((4, 4))).all()
     assert (l.T == djs_laxisgen((4, 4), iaxis=1)).all()
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_laxisgen((4, 4), iaxis=2)
     #
     # 3d
@@ -37,12 +37,12 @@ def test_djs_laxisgen():
     assert (l == djs_laxisgen((4, 4, 4))).all()
     assert (l.swapaxes(0, 1) == djs_laxisgen((4, 4, 4), iaxis=1)).all()
     assert (l.swapaxes(0, 2) == djs_laxisgen((4, 4, 4), iaxis=2)).all()
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_laxisgen((4, 4, 4), iaxis=3)
     #
     # More d
     #
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_laxisgen((4, 4, 4, 4))
 
 
@@ -61,7 +61,7 @@ def test_djs_laxisnum():
                     dtype='i4')
     assert (l == djs_laxisnum((4, 4))).all()
     assert (l.T == djs_laxisnum((4, 4), iaxis=1)).all()
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_laxisnum((4, 4), iaxis=2)
     #
     # 3d
@@ -73,12 +73,12 @@ def test_djs_laxisnum():
     assert (l == djs_laxisnum((4, 4, 4))).all()
     assert (l.swapaxes(0, 1) == djs_laxisnum((4, 4, 4), iaxis=1)).all()
     assert (l.swapaxes(0, 2) == djs_laxisnum((4, 4, 4), iaxis=2)).all()
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_laxisnum((4, 4, 4), iaxis=3)
     #
     # More d
     #
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_laxisnum((4, 4, 4, 4))
 
 
@@ -104,7 +104,7 @@ def test_hogg_iau_name():
 
 def test_struct_print():
     slist = np.zeros((5,), dtype=[('a', 'c16'), ('b', np.bool)])
-    with raises(PydlutilsException):
+    with pytest.raises(PydlutilsException):
         lines, css = struct_print(slist, silent=True)
     slist = np.array([(1, 2.34, 'five'),
                       (2, 3.456, 'seven'),

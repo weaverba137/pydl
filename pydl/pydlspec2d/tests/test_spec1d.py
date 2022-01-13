@@ -5,7 +5,6 @@
 import os
 import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from .. import Pydlspec2dException
 from ..spec1d import (HMF, findspec, log, spec_append, spec_path, template_metadata,
@@ -96,7 +95,7 @@ def test_spec_path(sdss_env):
 
 
 def test_template_metadata():
-    with raises(Pydlspec2dException):
+    with pytest.raises(Pydlspec2dException):
         slist, metadata = template_metadata('/no/such/file.par')
     inputfile = get_pkg_data_filename('t/test_template_metadata.par')
     slist, metadata = template_metadata(inputfile)

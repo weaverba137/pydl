@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """Test the functions in pydl.photoop.photoobj.
 """
+import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from ..photoobj import sdss_calibv, unwrap_objid
 
 
@@ -36,5 +36,5 @@ def test_unwrap_objid():
     assert objid.firstfield == 1
     assert objid.frame == 618
     assert objid.id == 459
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         objid = unwrap_objid(np.array([3.14159]))

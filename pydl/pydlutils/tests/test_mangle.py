@@ -1,7 +1,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from .. import PydlutilsException
 from .. import mangle as mng
@@ -40,7 +40,7 @@ class TestMangle(object):
         #
         # Bad inputs
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             poly = mng.ManglePolygon(weight=1.0)
         #
         # Multiple caps
@@ -93,7 +93,7 @@ class TestMangle(object):
     def test_cap_distance(self):
         x = np.array([0.0, 0.0, 1.0])
         cm = 1.0
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             d = mng.cap_distance(x, cm, np.array([[1.0, 2.0, 3.0, 4.0], ]))
         d = mng.cap_distance(x, cm, np.array([[0.0, 45.0], ]))
         assert np.allclose(d, np.array([45.0]))
@@ -106,7 +106,7 @@ class TestMangle(object):
         assert np.allclose(d, np.array([45.0]))
 
     def test_circle_cap(self):
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             x, cm = mng.circle_cap(90.0, np.array([[1.0, 2.0, 3.0, 4.0], ]))
         xin = np.array([[0.0, 0.0, 1.0], ])
         x, cm = mng.circle_cap(90.0, xin)
@@ -122,7 +122,7 @@ class TestMangle(object):
         x, cm = mng.circle_cap(np.array([90.0, ]), radec)
         assert np.allclose(x, xin)
         assert np.allclose(cm, np.array([1.0, ]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             x, cm = mng.circle_cap(np.array([90.0, 90.0]), radec)
 
     def test_is_cap_used(self):
@@ -175,7 +175,7 @@ class TestMangle(object):
         #
         assert (poly['USE_CAPS'] == use_caps).all()
         assert (poly['use_caps'] == use_caps).all()
-        with raises(AttributeError):
+        with pytest.raises(AttributeError):
             foo = poly.no_such_attribute
         cm0 = np.array([-1.0, -0.99369437, 1.0, -1.0, 0.00961538])
         assert np.allclose(poly.cm[0][0:poly.ncaps[0]], cm0)
@@ -196,7 +196,7 @@ class TestMangle(object):
         assert poly[0].ncaps == 1
 
     def test_read_mangle_polygons(self):
-        with raises(PydlutilsException):
+        with pytest.raises(PydlutilsException):
             poly = mng.read_mangle_polygons(self.bad_ply)
         poly = mng.read_mangle_polygons(self.poly_ply)
         assert len(poly.header) == 3
@@ -262,7 +262,7 @@ class TestMangle(object):
         pl.append(p)
         p2 = mng._single_polygon(pl)
         assert id(p2) == id(p)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             pl.append(p2)
             p3 = mng._single_polygon(pl)
         p = mng.read_fits_polygons(self.no_id_fits)

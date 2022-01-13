@@ -8,8 +8,9 @@ from shutil import copy, rmtree
 from tempfile import mkdtemp
 from time import sleep
 from collections import OrderedDict
+import pytest
 import numpy as np
-from astropy.tests.helper import catch_warnings, raises
+from astropy.tests.helper import catch_warnings
 from astropy.utils.data import get_pkg_data_filename
 from astropy.table import Table
 from astropy.io.registry import (register_identifier, register_reader,
@@ -103,9 +104,9 @@ class TestYanny(YannyTestCase):
         """Test reading to an astropy Table.
         """
         filename = self.data('test_table.par')
-        with raises(PydlutilsException):
+        with pytest.raises(PydlutilsException):
             t = Table.read(filename)
-        with raises(KeyError):
+        with pytest.raises(KeyError):
             t = Table.read(filename, tablename='foo')
         t = Table.read(filename, tablename='test')
         assert isinstance(t.meta, OrderedDict)
@@ -192,10 +193,10 @@ class TestYanny(YannyTestCase):
         for col in table['dtype']:
             mystruct[col[0]] = np.array(table['data'][col[0]], dtype=col[1])
         enums = {'new_flag': test_data['enums']['new_flag']}
-        with raises(PydlutilsException):
+        with pytest.raises(PydlutilsException):
             par = write_ndarray_to_yanny(self.data('test.par'), mystruct,
                                         structnames='magnitudes', enums=enums)
-        with raises(PydlutilsException):
+        with pytest.raises(PydlutilsException):
             par = write_ndarray_to_yanny(self.temp('tempfile3.par'), mystruct,
                                     structnames=('magnitudes', 'my_status'),
                                     enums=enums)
@@ -324,7 +325,7 @@ class TestYanny(YannyTestCase):
         # Test expected write failures.
         #
         # This should fail, since test.par already exists.
-        with raises(PydlutilsException):
+        with pytest.raises(PydlutilsException):
             par.write()
         with catch_warnings(PydlutilsUserWarning) as w:
             par.append({})
@@ -333,6 +334,6 @@ class TestYanny(YannyTestCase):
             'new_keyword': 'new_value'}
         par.filename = self.temp('test_append.par')
         # This should also fail, because test_append.par does not exist.
-        with raises(PydlutilsException):
+        with pytest.raises(PydlutilsException):
             par.append(datatable)
         return

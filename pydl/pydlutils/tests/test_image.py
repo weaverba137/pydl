@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """Test the functions in pydl.pydlutils.image.
 """
+import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from ..image import djs_maskinterp1, djs_maskinterp
 
 
@@ -56,11 +56,11 @@ def test_djs_maskinterp1():
 def test_djs_maskinterp():
     y = np.array([0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
     mask = np.array([0, 1, 0])
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         yi = djs_maskinterp(y, mask)
     mask = np.array([0, 1, 0, 0, 0])
     x = np.array([0.0, 0.5, 1.0], dtype=y.dtype)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         yi = djs_maskinterp(y, mask, xval=x)
     # 1-D case
     yi = djs_maskinterp(y, mask)
@@ -70,11 +70,11 @@ def test_djs_maskinterp():
     x = np.vstack((x, x, x))
     y = np.vstack((y, y, y))
     mask = np.vstack((mask, mask, mask))
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         yi = djs_maskinterp(y, mask)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         yi = djs_maskinterp(y, mask, axis=-1)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         yi = djs_maskinterp(y, mask, axis=2)
     yi = djs_maskinterp(y, mask, axis=0)
     assert np.allclose(y, yi)
@@ -110,5 +110,5 @@ def test_djs_maskinterp():
     assert np.allclose(y, yi)
     # 4-D case
     y = np.random.random((2, 2, 2, 2))
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         yi = djs_maskinterp(y, (y > 0.5), axis=0)

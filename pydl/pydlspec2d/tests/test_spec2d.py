@@ -6,7 +6,6 @@ import os
 import pytest
 import numpy as np
 from astropy.io import fits
-from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from ..spec2d import aesthetics, combine1fiber, filter_thru
 from .. import Pydlspec2dException
@@ -42,7 +41,7 @@ def test_aesthetics():
     #
     # Bad method
     #
-    with raises(Pydlspec2dException):
+    with pytest.raises(Pydlspec2dException):
         f = aesthetics(flux, ivar, 'badmethod')
     #
     # Nothing
@@ -75,9 +74,9 @@ def test_filter_thru(sdss_env):
     #
     # Test bad input.
     #
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         f = filter_thru(flux)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         f = filter_thru(flux, waveimg=waveimg, filter_prefix='sdss')
     return
 
