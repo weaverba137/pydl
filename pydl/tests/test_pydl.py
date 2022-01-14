@@ -8,7 +8,6 @@ try:
     from astropy.tests.compat import assert_allclose
 except ImportError:
     from numpy.testing import assert_allclose
-from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from ..file_lines import file_lines
 from ..median import median
@@ -55,7 +54,7 @@ def test_median():
     assert median(even_data) == 7
     assert median(even_data, even=True) == 6.5
     assert (median(odd_data, 3) == odd_data).all()
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = median(np.ones((9, 9, 9)), 3)
     odd_data2 = np.vstack((odd_data, odd_data, odd_data, odd_data, odd_data))
     assert (median(odd_data2, 3) == odd_data2).all()
@@ -67,7 +66,7 @@ def test_median():
 def test_pcomp():
     test_data_file = get_pkg_data_filename('t/pcomp_data.txt')
     test_data = np.loadtxt(test_data_file, dtype='d', delimiter=',')
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = pcomp(np.arange(10))
     pcomp_data = test_data[0:20, :]
     m = 4
@@ -126,11 +125,11 @@ def test_pcomp():
 
 def test_rebin():
     x = np.arange(40)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         r = rebin(x, d=(10, 10))
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         r = rebin(x, d=(70,))
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         r = rebin(x, d=(30,))
     x = np.array([[1.0, 2.0], [2.0, 3.0]])
     rexpect = np.array([[1.0, 2.0], [1.5, 2.5], [2.0, 3.0], [2.0, 3.0]])

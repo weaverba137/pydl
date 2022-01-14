@@ -5,7 +5,6 @@
 import os
 import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from .. import PhotoopException
 from ..window import sdss_score, window_read, window_score
 from ...pydlutils.mangle import FITS_polygon
@@ -58,7 +57,7 @@ def test_sdss_score():
 
 def test_window_read_no_photo_resolve(monkeypatch):
     monkeypatch.delenv('PHOTO_RESOLVE', raising=False)
-    with raises(PhotoopException) as e:
+    with pytest.raises(PhotoopException) as e:
         window_read()
     assert (str(e.value) ==
             'You have not set the environment variable PHOTO_RESOLVE!')
@@ -111,7 +110,7 @@ def test_window_read_rescore(monkeypatch, mocker, table_read):
 
 def test_window_score_no_photo_calib(monkeypatch):
     monkeypatch.delenv('PHOTO_CALIB', raising=False)
-    with raises(PhotoopException) as e:
+    with pytest.raises(PhotoopException) as e:
         window_score()
     assert (str(e.value) ==
             'You have not set the environment variable PHOTO_CALIB!')
@@ -120,7 +119,7 @@ def test_window_score_no_photo_calib(monkeypatch):
 def test_window_score_no_photo_resolve(monkeypatch):
     monkeypatch.setenv('PHOTO_CALIB', '/fake/directory')
     monkeypatch.delenv('PHOTO_RESOLVE', raising=False)
-    with raises(PhotoopException) as e:
+    with pytest.raises(PhotoopException) as e:
         window_score()
     assert (str(e.value) ==
             'You have not set the environment variable PHOTO_RESOLVE!')
@@ -129,7 +128,7 @@ def test_window_score_no_photo_resolve(monkeypatch):
 def test_window_score_no_window_flist(monkeypatch):
     monkeypatch.setenv('PHOTO_CALIB', '/fake/directory')
     monkeypatch.setenv('PHOTO_RESOLVE', '/another/fake/directory')
-    with raises(PhotoopException) as e:
+    with pytest.raises(PhotoopException) as e:
         window_score()
     assert str(e.value) == 'Unable to read FLIST file.'
 

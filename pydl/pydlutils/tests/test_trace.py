@@ -1,8 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+import pytest
 import numpy as np
 from astropy.io import fits
-from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from ..trace import (fchebyshev, fchebyshev_split, fpoly, func_fit,
                     TraceSet, traceset2xy, xy2traceset)
@@ -31,7 +31,7 @@ class TestTrace(object):
         #
         # Test order
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             f = fchebyshev(x, 0)
         #
         # m = 1
@@ -73,9 +73,9 @@ class TestTrace(object):
         #
         # Test order
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             f = fchebyshev_split(x, 0)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             f = fchebyshev_split(x, 1)
         #
         # m = 2
@@ -122,7 +122,7 @@ class TestTrace(object):
         #
         # Test order
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             f = fpoly(x, 0)
         #
         # m = 1
@@ -166,13 +166,13 @@ class TestTrace(object):
         #
         # Bad inputs
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = func_fit(x, np.array([1, 2, 3]), 3)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = func_fit(x, y, 3, invvar=np.array([0, 0, 0]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = func_fit(x, y, 3, inputfunc=np.array([1.0, 1.0, 1.0]))
-        with raises(KeyError):
+        with pytest.raises(KeyError):
             foo = func_fit(x, y, 3, function_name='npoly')
         #
         # No good points
@@ -263,12 +263,12 @@ class TestTrace(object):
         tset = TraceSet(self.boss[1].data)
         x, y = traceset2xy(tset)
         iv = 2.0 * np.ones(x.shape, dtype=x.dtype)
-        im = np.ones(x.shape, dtype=np.bool)
+        im = np.ones(x.shape, dtype=bool)
         im[1] = False
         tset2 = TraceSet(x, y, func='chebyshev', invvar=iv, maxiter=20,
                          inmask=im)
         assert tset2.func == 'chebyshev'
 
     def test_traceset_bad(self):
-        with raises(PydlutilsException):
+        with pytest.raises(PydlutilsException):
             tset = TraceSet(1, 2, 3)

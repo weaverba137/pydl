@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """Test the functions in pydl.pydlutils.math.
 """
+import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from astropy.utils.data import get_pkg_data_filename
 from ..math import computechi2, djs_median, find_contiguous
 
@@ -62,17 +62,17 @@ def test_djs_median():
     #
     # Exceptions
     #
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_median(data, width=5, boundary='nearest')
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_median(data, width=5, boundary='wrap')
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_median(data, width=5, boundary='foobar')
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_median(data2, width=5, dimension=1)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_median(data3, width=5)
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         foo = djs_median(data3, width=5, boundary='reflect')
 
 

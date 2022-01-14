@@ -1,8 +1,8 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+import pytest
 import numpy as np
 import pydl.pydlutils.sdss
-from astropy.tests.helper import remote_data, raises
 from astropy.utils.data import get_pkg_data_filename
 from ..sdss import (default_skyversion, sdss_flagexist, sdss_flagname,
                     sdss_flagval, set_maskbits, sdss_astrombad,
@@ -58,7 +58,7 @@ class TestSDSS(object):
         names = sdss_flagname('ANCILLARY_TARGET1', 2310346608843161600,
                             concat=True)
         assert names == 'BRIGHTGAL BLAZGX ELG'
-        with raises(KeyError):
+        with pytest.raises(KeyError):
             names = sdss_flagname('ABADMASK', 123456789)
 
     def test_sdss_flagval(self):
@@ -66,9 +66,9 @@ class TestSDSS(object):
         assert val == 2**9
         val = sdss_flagval('ANCILLARY_TARGET1', ['BLAZGX', 'ELG', 'BRIGHTGAL'])
         assert val == 2310346608843161600
-        with raises(KeyError):
+        with pytest.raises(KeyError):
             val = sdss_flagval('TARGET', 'ROSAT_Q')
-        with raises(KeyError):
+        with pytest.raises(KeyError):
             val = sdss_flagval('ABADMASK', "ABADFLAG")
 
     def test_set_maskbits(self):
@@ -98,24 +98,24 @@ class TestSDSS(object):
                 np.array([False, True, True])).all()
 
     def test_sdss_astrombad_raises(self):
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = sdss_astrombad(77, 32, 20)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = sdss_astrombad(-1, 1, 20)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = sdss_astrombad(2**17, 1, 20)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = sdss_astrombad(-2, 1, 20)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = sdss_astrombad(251, 1, 2**16)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = sdss_astrombad(np.array([77, 85, 251]), np.array([1]),
                                 np.array([20, 15, 151]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             foo = sdss_astrombad(np.array([77, 85, 251]), np.array([1, 2, 3]),
                                 np.array([20]))
 
-    @remote_data
+    @pytest.mark.remote_data
     def test_sdss_astrombad_remote(self):
         pydl.pydlutils.sdss.opbadfields = None
         assert not sdss_astrombad(77, 1, 20)
@@ -136,47 +136,47 @@ class TestSDSS(object):
         #
         # Exceptions
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(run, 3, 91, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, camcol, 91, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, field, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, obj)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, rerun=np.array([137, 301]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, skyversion=np.array([2, 3]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, firstfield=np.array([0, 1]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, skyversion=-2)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, skyversion=16)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, firstfield=-2)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, firstfield=2)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, rerun=-2)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 146, rerun=2**11)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(-2, 3, 91, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(2**16, 3, 91, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 0, 91, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 7, 91, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, -2, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 2**12, 146)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, -2)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             objid = sdss_objid(3704, 3, 91, 2**16)
 
     def test_sdss_specobjid(self):
@@ -198,49 +198,49 @@ class TestSDSS(object):
         #
         # Exceptions
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(np.array([4055, 4056]), 408, 55359, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, np.array([408, 409]), 55359, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, np.array([55359, 55360]), 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359,
                                np.array(['v5_7_0', 'v5_7_2']))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0',
                                line=np.array([137, 138]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0',
                                index=np.array([137, 138]))
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=137,
                                index=137)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'V5.7.0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(-1, 408, 55359, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(2**15, 408, 55359, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, -1, 55359, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 2**12, 55359, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 49999, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 2**15, 'v5_7_0')
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, -1)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 2**15)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=-1)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', line=2**10)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', index=-1)
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             s = sdss_specobjid(4055, 408, 55359, 'v5_7_0', index=2**10)
 
     def test_unwrap_specobjid(self):
@@ -291,6 +291,6 @@ class TestSDSS(object):
         #
         # Exceptions
         #
-        with raises(ValueError):
+        with pytest.raises(ValueError):
             d = unwrap_specobjid(np.array([4565636362342690816],
                                  dtype=np.int64))

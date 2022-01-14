@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 """Test the functions in pydl.pydlutils.cooling.
 """
+import pytest
 import numpy as np
-from astropy.tests.helper import raises
 from ..cooling import read_ds_cooling
 
 
 def test_read_ds_cooling():
-    with raises(ValueError):
+    with pytest.raises(ValueError):
         logT, loglambda = read_ds_cooling('m-99.cie')
     logT, logL = read_ds_cooling('m-15.cie')
     assert np.allclose(logT[0:5], np.array([4.0, 4.05, 4.1, 4.15, 4.2]))

@@ -5,9 +5,11 @@ PyDL Changelog
 1.0.0 (unreleased)
 ------------------
 
+* Update testing infrastructure (PR `#67`_).
 * Update links to documentation (PR `#64`_).
 
 .. _`#64`: https://github.com/weaverba137/pydl/pull/64
+.. _`#67`: https://github.com/weaverba137/pydl/pull/67
 
 1.0.0rc2 (2021-07-22)
 ---------------------
