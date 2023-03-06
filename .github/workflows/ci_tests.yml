@@ -74,7 +74,7 @@ jobs:
     - name: Install base dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install tox coveralls
+        python -m pip install tox\<4 coveralls
     - name: Install graphviz dependency
       if: "endsWith(matrix.toxenv, 'build_docs')"
       run: sudo apt-get -y install graphviz
