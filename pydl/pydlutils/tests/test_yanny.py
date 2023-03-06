@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import warnings
 import json
+import stat
+import sys
 from os import chmod, remove
 from os.path import exists, join
 from shutil import copy, rmtree
@@ -82,7 +84,11 @@ class YannyTestCase(object):
                 stuff.append(tuple([str(k[0]), str(k[1]), tuple(k[2])]))
             else:
                 stuff.append(tuple([str(k[0]), str(k[1])]))
-        return np.dtype(stuff)
+        d = np.dtype(stuff)
+        if sys.byteorder == 'little':
+            return d
+        else:
+            return d.newbyteorder()
 
 
 class TestYanny(YannyTestCase):
