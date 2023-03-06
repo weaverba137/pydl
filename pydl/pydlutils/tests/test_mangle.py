@@ -11,15 +11,12 @@ class TestMangle(object):
     """Test the functions in pydl.pydlutils.mangle.
     """
 
-    def setup(self):
+    def setup_method(self):
         self.poly_fits = get_pkg_data_filename('t/polygon.fits')
         self.no_id_fits = get_pkg_data_filename('t/polygon_no_id.fits')
         self.one_cap_fits = get_pkg_data_filename('t/polygon_one_cap.fits')
         self.poly_ply = get_pkg_data_filename('t/polygon.ply')
         self.bad_ply = get_pkg_data_filename('t/median_data.txt')
-
-    def teardown(self):
-        pass
 
     def test_ManglePolygon(self):
         #

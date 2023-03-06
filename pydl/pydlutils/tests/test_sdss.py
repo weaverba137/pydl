@@ -13,7 +13,7 @@ class TestSDSS(object):
     """Test the functions in pydl.pydlutils.sdss.
     """
 
-    def setup(self):
+    def setup_method(self):
         pydl.pydlutils.sdss.maskbits = set_maskbits(
             maskbits_file=get_pkg_data_filename('t/testMaskbits.par'))
         self.opbadfields = np.array([
@@ -27,9 +27,6 @@ class TestSDSS(object):
             dtype=[('run', '<i4'), ('problem', 'S8'), ('firstfield', '<i4'), ('lastfield', '<i4'), ('comments', 'S47')])
         pydl.pydlutils.sdss.opbadfields = self.opbadfields
         return
-
-    def teardown(self):
-        pass
 
     def test_default_skyversion(self):
         assert default_skyversion() == 2
