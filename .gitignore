@@ -36,6 +36,7 @@ docs/_build
 .flooignore
 
 # Visual Studio Code project files
+.env
 .vscode
 
 # Packages/installer info

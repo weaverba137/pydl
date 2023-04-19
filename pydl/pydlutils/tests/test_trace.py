@@ -13,7 +13,7 @@ class TestTrace(object):
     """Test the functions in pydl.pydlutils.trace.
     """
 
-    def setup(self):
+    def setup_method(self):
         # extracted from spFrame-b1-00057618.fits
 
         self.sdss = fits.open(get_pkg_data_filename('t/sdss_traceset.fits'))
@@ -21,7 +21,7 @@ class TestTrace(object):
         self.boss = fits.open(get_pkg_data_filename('t/boss_traceset.fits'))
         return
 
-    def teardown(self):
+    def teardown_method(self):
         self.sdss.close()
         self.boss.close()
         return

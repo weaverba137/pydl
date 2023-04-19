@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 import warnings
 import json
+import stat
+import sys
 from os import chmod, remove
 from os.path import exists, join
 from shutil import copy, rmtree
@@ -29,7 +31,7 @@ class YannyTestCase(object):
     """
     save_temp = False
 
-    def setup(self):
+    def setup_method(self):
         self.temp_dir = mkdtemp(prefix='yanny-test-')
         # Ignore deprecation warnings--this only affects Python 2.5 and 2.6,
         # since deprecation warnings are ignored by defualt on 2.7
@@ -39,7 +41,7 @@ class YannyTestCase(object):
         with open(get_pkg_data_filename("t/yanny_data.json")) as js:
             self.test_data = json.load(js)
 
-    def teardown(self):
+    def teardown_method(self):
         warnings.resetwarnings()
         if not self.save_temp:
             if hasattr(self, 'temp_dir') and exists(self.temp_dir):
@@ -82,7 +84,11 @@ class YannyTestCase(object):
                 stuff.append(tuple([str(k[0]), str(k[1]), tuple(k[2])]))
             else:
                 stuff.append(tuple([str(k[0]), str(k[1])]))
-        return np.dtype(stuff)
+        d = np.dtype(stuff)
+        if sys.byteorder == 'little':
+            return d
+        else:
+            return d.newbyteorder()
 
 
 class TestYanny(YannyTestCase):

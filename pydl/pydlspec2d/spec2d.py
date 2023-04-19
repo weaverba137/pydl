@@ -436,7 +436,7 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
     pixnorm, logdiff = traceset2xy(diffset)
     logdiff = np.absolute(logdiff)
     if mask is not None:
-        flux_interp = djs_maskinterp(flux, mask, iaxis=0)
+        flux_interp = djs_maskinterp(flux, mask, axis=0)
     res = np.zeros((nTrace, len(ffiles)), dtype=flux.dtype)
     for i, f in enumerate(ffiles):
         filter_data = ascii.read(f, comment='#.*', names=('lam', 'respt',
