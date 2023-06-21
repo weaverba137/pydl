@@ -522,7 +522,7 @@ def findspec(*args, **kwargs):
     if 'print' in kwargs:
         foo = struct_print(slist)
     if 'outfile' in kwargs:
-        foo = struct_print(slist, filename=outfile)
+        foo = struct_print(slist, filename=kwargs['outfile'])
     return slist
 
 
@@ -1420,7 +1420,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         # be a safe assumption in the future.
         #
         try:
-            objdloglam = float(par['binsz'])
+            objdloglam = float(metadata['binsz'])
         except:
             objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
         if metadata['object'].lower() == 'star':
@@ -1675,7 +1675,7 @@ def template_qso(metadata, newflux, newivar, verbose=False):
         nobj, npix = newflux.shape
     objflux = newflux.copy()
     for ikeep in range(metadata['nkeep']):
-        log.info("Solving for eigencomponent #%d of %d", ikeep+1, nkeep)
+        log.info("Solving for eigencomponent #%d of %d", ikeep+1, metadata['nkeep'])
         if metadata['method'].lower() == 'pca':
             pcaflux1 = pca_solve(objflux, newivar,
                                  niter=metadata['niter'], nkeep=1,
