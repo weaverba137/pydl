@@ -77,7 +77,7 @@ API
 .. automodapi:: pydl.pydlspec2d
 
 .. automodapi:: pydl.pydlspec2d.spec1d
-    :skip: warn, solve, Pydlspec2dException, Pydlspec2dUserWarning, fontManager, FontProperties
+    :skip: warn, solve, Pydlspec2dException, Pydlspec2dUserWarning, FontProperties
 
 .. automodapi:: pydl.pydlspec2d.spec2d
     :skip: warn, erf, get_pkg_data_filename, smooth, iterfit, djs_maskinterp, djs_median, sdss_flagval, traceset2xy, xy2traceset, vactoair
