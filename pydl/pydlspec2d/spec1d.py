@@ -13,9 +13,10 @@ try:
     matplotlib.use('Agg')
     matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
     import matplotlib.pyplot as plt
-    from matplotlib.font_manager import fontManager, FontProperties
+    from matplotlib.font_manager import FontProperties
 except ImportError:
-    pass
+    # automodapi can only skip this if it exists.
+    FontProperties = None
 from astropy import log
 from astropy.io import ascii, fits
 from . import Pydlspec2dException, Pydlspec2dUserWarning
