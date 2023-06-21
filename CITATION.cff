@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Weaver
+    given-names: "Benjamin Alan"
+  - family-names: Robitaille
+    given-names: "Thomas P."
+    orcid: "https://orcid.org/0000-0002-8642-1329"
+  - family-names: Tollerud
+    given-names: Erik
+    orcid: "https://orcid.org/0000-0002-9599-310X"
+  - family-names: "Sánchez-Gallego"
+    given-names: José
+  - family-names: Deil
+    given-names: Christoph
+  - family-names: Barbary
+    given-names: Kyle
+    orcid: "https://orcid.org/0000-0002-2532-3696"
+  - family-names: Sipőcz
+    given-names: "Brigitta M."
+    orcid: "https://orcid.org/0000-0002-3713-6337"
+  - family-names: Bradley
+    given-names: Larry
+    orcid: "https://orcid.org/0000-0002-7908-9284"
+  - family-names: Craig
+    given-names: "Matthew W."
+    orcid: "https://orcid.org/0000-0001-7988-8919"
+  - family-names: Macleod
+    given-names: Duncan
+title: "weaverba137/pydl: Last Python 2 Release"
+version: 0.7.0
+doi: 10.5281/zenodo.2575873
+date-released: "2019-02-22"
+repository-code: "https://github.com/weaverba137/pydl"
+license: BSD-3-Clause
+identifiers:
+  - description: "Version 0.7.0 of PyDL"
+    type: doi
+    value: 10.5281/zenodo.2575874
