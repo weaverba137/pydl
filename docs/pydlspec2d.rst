@@ -66,10 +66,10 @@ testsuite  None            Tools for high-level quality assurance, *e.g.* compar
 ========== =============== ===================================================
 
 .. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
-.. _`SDSS Legacy`: https://classic.sdss.org/legacy/index.html
-.. _BOSS: https://www.sdss.org/surveys/boss/
-.. _eBOSS: https://www.sdss.org/surveys/eboss/
-.. _APOGEE-2: https://www.sdss.org/surveys/apogee-2/
+.. _`SDSS Legacy`: https://classic.sdss.org/legacy/index.php
+.. _BOSS: https://www.sdss4.org/surveys/boss/
+.. _eBOSS: https://www.sdss4.org/surveys/eboss/
+.. _APOGEE-2: https://www.sdss4.org/surveys/apogee-2/
 
 API
 +++

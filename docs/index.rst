@@ -61,8 +61,8 @@ Base API
 .. _SDSS: https://www.sdss.org
 .. _`Goddard utilities`: https://idlastro.gsfc.nasa.gov/
 .. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
-.. _BOSS: https://www.sdss.org/surveys/boss/
-.. _eBOSS: https://www.sdss.org/surveys/eboss/
+.. _BOSS: https://www.sdss4.org/surveys/boss/
+.. _eBOSS: https://www.sdss4.org/surveys/eboss/
 .. _photoop: https://svn.sdss.org/public/repo/sdss/photoop/trunk/
 .. .. _astropy: http://www.astropy.org
 .. _PyPI: https://pypi.org/project/pydl/
