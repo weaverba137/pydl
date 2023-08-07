@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the mangle directory in idlutils.
 
-Mangle_ [1]_ is a software suite that supports the concept of polygons on
+Mangle [1]_ is a software suite that supports the concept of polygons on
 a sphere, and is used to, for example, describe the `window function`_ of the
 Sloan Digital Sky Survey.
 
@@ -20,8 +20,7 @@ bounded by *great circles*.  Mangle allows polygons to be bounded by
 *any* circle, great or not.  Use care when comparing formulas in this
 module to formulas in the mathematical literature.
 
-.. _Mangle: https://space.mit.edu/~molly/mangle/
-.. _`window function`: https://www.sdss.org/dr16/algorithms/resolve/
+.. _`window function`: https://www.sdss4.org/dr16/algorithms/resolve/
 
 References
 ----------

@@ -10,7 +10,7 @@ the "resolve" algorithm, which determines the highest quality ("primary")
 SDSS image that covers a region of the sky.  For further low-level details,
 see the `SDSS documentation`_ of the resolve algorithm.
 
-.. _`SDSS documentation`: https://www.sdss.org/dr16/algorithms/resolve/
+.. _`SDSS documentation`: https://www.sdss4.org/dr16/algorithms/resolve/
 
 In the PyDL package, the :mod:`~pydl.photoop.window` and :mod:`~pydl.pydlutils.mangle`
 modules are used to access the window function.  In this document we will

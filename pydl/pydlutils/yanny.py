@@ -44,7 +44,7 @@ close reading of the specifications indicates that multidimensional arrays
 were only ever intended to be supported for type ``char``.  So no
 multidimensional arrays, sorry.
 
-.. _specifications: https://www.sdss.org/dr16/software/par/
+.. _specifications: https://www.sdss4.org/dr16/software/par/
 """
 import re
 import os
