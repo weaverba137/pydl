@@ -7,6 +7,7 @@ PyDL Changelog
 
 * Update testing infrastructure (PR `#67`_).
 * Update links to documentation (PR `#64`_).
+* Change Harris Geospatial to NV5 Geospatial.
 
 .. _`#64`: https://github.com/weaverba137/pydl/pull/64
 .. _`#67`: https://github.com/weaverba137/pydl/pull/67
@@ -162,7 +163,7 @@ PyDL Changelog
 * :func:`~pydl.pydlspec2d.spec1d.spec_path` can now find SDSS spectra, not just
   BOSS.
 
-.. _`PEP 8`: https://www.python.org/dev/peps/pep-0008/
+.. _`PEP 8`: https://peps.python.org/pep-0008/
 .. _`#7`: https://github.com/weaverba137/pydl/pull/7
 
 0.4.1 (2015-09-22)

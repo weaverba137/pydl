@@ -23,7 +23,7 @@ def smooth(signal, owidth, edge_truncate=False):
 
     References
     ----------
-    http://www.l3harrisgeospatial.com/docs/smooth.html
+    https://www.nv5geospatialsoftware.com/docs/smooth.html
 
     Examples
     --------

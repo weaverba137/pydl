@@ -20,7 +20,7 @@ There are four astronomical libraries targeted:
 
 This package affiliated with the astropy_ project and is registered with PyPI_.
 
-IDL® is a registered trademark of `Harris Geospatial Solutions`_.
+IDL® is a registered trademark of `NV5 Geospatial`_.
 
 Components
 ++++++++++
@@ -56,8 +56,8 @@ Base API
 
 
 .. _Python: https://www.python.org
-.. _`IDL®`: https://www.l3harrisgeospatial.com/Software-Technology/IDL
-.. _idlutils: https://www.sdss.org/dr16/software/idlutils/
+.. _`IDL®`: https://www.nv5geospatialsoftware.com/Products/IDL
+.. _idlutils: https://www.sdss4.org/dr16/software/idlutils/
 .. _SDSS: https://www.sdss.org
 .. _`Goddard utilities`: https://idlastro.gsfc.nasa.gov/
 .. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
@@ -68,6 +68,6 @@ Base API
 .. _PyPI: https://pypi.org/project/pydl/
 .. _`PyDL on Read the Docs`: https://pydl.readthedocs.io/en/latest/
 .. _SDSS-III: http://www.sdss3.org
-.. _`svn repository`: https://www.sdss.org/dr16/software/products/
+.. _`svn repository`: https://www.sdss4.org/dr16/software/products/
 .. _GitHub: https://github.com
-.. _`Harris Geospatial Solutions`: https://www.l3harrisgeospatial.com/
+.. _`NV5 Geospatial`: https://www.nv5geospatialsoftware.com/

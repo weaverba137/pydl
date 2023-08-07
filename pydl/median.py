@@ -43,7 +43,7 @@ def median(array, width=None, axis=None, even=False):
 
     References
     ----------
-    http://www.l3harrisgeospatial.com/docs/median.html
+    https://www.nv5geospatialsoftware.com/docs/median.html
     """
     import numpy as np
     from scipy.signal import medfilt, medfilt2d

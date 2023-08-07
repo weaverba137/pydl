@@ -5,12 +5,12 @@
 pydl
 ====
 
-Python replacements for functions that are part of the IDL_ built-in library, or
-part of astronomical IDL libraries.  The emphasis is on reproducing results of
-the astronomical library functions.  Only the bare minimum of IDL_ built-in
+Python replacements for functions that are part of the `IDL®`_ built-in library, or
+part of astronomical `IDL®`_ libraries.  The emphasis is on reproducing results of
+the astronomical library functions.  Only the bare minimum of `IDL®`_ built-in
 functions are implemented to support this.
 
-.. _IDL: https://www.l3harrisgeospatial.com/Software-Technology/IDL
+.. _`IDL®`: https://www.nv5geospatialsoftware.com/Products/IDL
 """
 
 # Packages may add whatever they like to this file, but

@@ -31,7 +31,7 @@ def uniq(x, index=None):
 
     References
     ----------
-    http://www.l3harrisgeospatial.com/docs/uniq.html
+    https://www.nv5geospatialsoftware.com/docs/uniq.html
 
     Examples
     --------

@@ -73,11 +73,11 @@ window      Rudimentary     Tools for determining the sky coverage of the survey
 =========== =============== ===================================================
 
 .. _photoop: https://svn.sdss.org/public/repo/sdss/photoop/trunk/
-.. _reduce: https://www.sdss.org/dr16/imaging/pipeline/
-.. _resolve: https://www.sdss.org/dr16/algorithms/resolve/
-.. _flux-calibrate: https://www.sdss.org/dr16/algorithms/fluxcal/
+.. _reduce: https://www.sdss4.org/dr16/imaging/pipeline/
+.. _resolve: https://www.sdss4.org/dr16/algorithms/resolve/
+.. _flux-calibrate: https://www.sdss4.org/dr16/algorithms/fluxcal/
 .. _`corrected frame`: https://data.sdss.org/datamodel/files/BOSS_PHOTOOBJ/frames/RERUN/RUN/CAMCOL/frame.html
-.. _ubercalibration: https://www.sdss.org/dr16/algorithms/fluxcal/
+.. _ubercalibration: https://www.sdss4.org/dr16/algorithms/fluxcal/
 
 API
 +++

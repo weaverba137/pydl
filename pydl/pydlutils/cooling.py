@@ -32,7 +32,7 @@ def read_ds_cooling(fname, logT=None):
     Notes
     -----
     The data have been retrieved from
-    http://www.mso.anu.edu.au/~ralph/data/cool/ and stored in the package.
+    https://www.mso.anu.edu.au/~ralph/data/cool/ and stored in the package.
 
     Examples
     --------

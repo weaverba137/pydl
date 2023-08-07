@@ -48,7 +48,7 @@ results were the same, to some numerical precision.
 
 .. _SDSS: https://www.sdss.org
 .. _BOSS: https://www.sdss4.org/surveys/boss/
-.. _`IDL®`: https://www.l3harrisgeospatial.com/Software-Technology/IDL
+.. _`IDL®`: https://www.nv5geospatialsoftware.com/Products/IDL
 .. [1] `Bolton, Adam, et al. 2012 AJ 144, 144 <https://ui.adsabs.harvard.edu/abs/2011ApJ...738...20T/abstract>`_.
 .. [2] `Tsalmantza, P., Decarli, R., Dotti, M., Hogg, D. W., 2011 ApJ 738, 20
     <https://ui.adsabs.harvard.edu/abs/2011ApJ...738...20T/abstract>`_
