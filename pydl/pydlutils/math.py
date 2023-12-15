@@ -228,10 +228,16 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     maxrej : :class:`int` or :class:`numpy.ndarray`, optional
         Maximum number of points to reject in this iteration.  If `groupsize` or
         `groupdim` are set to arrays, this should be an array as well.
-    groupdim
-        To be documented.
-    groupsize
-        To be documented.
+    groupdim : :class:`int` or :class:`numpy.ndarray`, optional
+        Dimension along which to group the data; set to 1 to group
+        along the 1st dimension, 2 for the 2nd dimension, etc.
+        If `data` has dimensions ``(100, 200)``, then setting ``groupdim=2``
+        is equivalent to grouping the data with ``groupsize=100``.
+        In either case, there are 200 groups, specified by ``[*, i]``.
+    groupsize : :class:`int` or :class:`numpy.ndarray`, optional
+        If this and `maxrej` are set, then reject a maximum of `maxrej`
+        points per group of `groupsize` points.  If `groupdim` is also
+        set, then this specifies sub-groups within that.
     groupbadpix : :class:`bool`, optional
         If set to ``True``, consecutive sets of bad pixels are considered groups,
         overriding the values of `groupsize`.
@@ -253,6 +259,10 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     ------
     :exc:`ValueError`
         If dimensions of various inputs do not match.
+
+    Notes
+    -----
+    The original code may not have been well tested with multidimensional data.
     """
     #
     # Create outmask setting = 1 for good data.
@@ -353,10 +363,10 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
             # Assign an index number in this dimension to each data point.
             #
             if len(groupdim) > 0:
-                yndim = len(ydata.shape)
+                yndim = len(data.shape)
                 if groupdim[iloop] > yndim:
-                    raise ValueError('groupdim is larger than the number of dimensions for ydata.')
-                dimnum = djs_laxisnum(ydata.shape, iaxis=groupdim[iloop]-1)
+                    raise ValueError('groupdim is larger than the number of dimensions for data.')
+                dimnum = djs_laxisnum(data.shape, iaxis=groupdim[iloop]-1)
             else:
                 dimnum = np.asarray([0])
             #
@@ -385,7 +395,8 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
                     # The IDL version of this test makes no sense because
                     # groupsize will always be set.
                     #
-                    if 'groupsize' in kwargs:
+                    # if 'groupsize' in kwargs:
+                    if groupsize is not None:
                         ngroups = nin/groupsize + 1
                         groups_lower = np.arange(ngroups, dtype='i4')*groupsize
                         foo = (np.arange(ngroups, dtype='i4')+1)*groupsize

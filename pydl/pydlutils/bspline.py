@@ -29,34 +29,51 @@ class bspline(object):
         Polynomial order to fit over 2nd variable, if supplied.  If not
         supplied the order is 1.
     bkpt : :class:`numpy.ndarray`, optional
-        To be documented.
+        An initial breakpoint vector. If omitted, breakpoints will be
+        computed from other options.
     bkspread : :class:`float`, optional
-        To be documented.
+        Applies a scale factor to the difference between successive value of `bkpt`.
+    placed : :class:`numpy.ndarray`, optional
+        Precalculated breakpoint positions.
+    bkspace : :class:`float`, optional
+        Spacing of breakpoints in units of `x`.
+    nbkpts : :class:`int`, optional
+        Number of breakpoints to span `x` range; minimum is 2 (the endpoints).
+    everyn : :class:`int`, optional
+        Spacing of breakpoints in good pixels.
 
     Attributes
     ----------
     breakpoints
-        To be documented.
+        The processed breakpoints for the fit, based on the initialization options.
     nord
-        To be documented.
+        The order of the B-spline.  Default is 4, which is cubic.
     npoly
-        To be documented.
+        Polynomial order to fit over 2nd variable, if supplied.  If not
+        supplied the order is 1.
     mask
-        To be documented.
+        A mask for `breakpoints`.
     coeff
-        To be documented.
+        Internal attribute used by :meth:`~pydl.pydlutils.bspline.bspline.fit`.
     icoeff
-        To be documented.
+        Internal attribute used by :meth:`~pydl.pydlutils.bspline.bspline.fit`.
     xmin
-        To be documented.
+        Normalization minimum for the second variable in 2-dimensional fits.
     xmax
-        To be documented.
+        Normalization maximum for the second variable in 2-dimensional fits.
     funcname
-        To be documented.
+        For 2-dimensional fits, this is the function for the second variable.
+        The default is 'legendre'.
+
+    Notes
+    -----
+    Although this code has been tested (in the sense that it reproduces the
+    original idlutils code) and appears to work for a subset 1-dimensional cases,
+    it should not be used for 2 dimensions or more exotic 1-dimensional cases.
     """
 
     def __init__(self, x, nord=4, npoly=1, bkpt=None, bkspread=1.0,
-                 **kwargs):
+                 placed=None, bkspace=None, nbkpts=None, everyn=None):
         """Init creates an object whose attributes are similar to the
         structure returned by the ``create_bsplineset()`` function.
         """
@@ -66,27 +83,27 @@ class bspline(object):
         if bkpt is None:
             startx = x.min()
             rangex = x.max() - startx
-            if 'placed' in kwargs:
-                w = ((kwargs['placed'] >= startx) &
-                     (kwargs['placed'] <= startx+rangex))
+            if placed is not None:
+                w = ((placed >= startx) &
+                     (placed <= startx+rangex))
                 if w.sum() < 2:
                     bkpt = np.arange(2, dtype='f') * rangex + startx
                 else:
-                    bkpt = kwargs['placed'][w]
-            elif 'bkspace' in kwargs:
-                nbkpts = int(rangex/kwargs['bkspace']) + 1
+                    bkpt = placed[w]
+            elif bkspace is not None:
+                nbkpts = int(rangex/bkspace) + 1
                 if nbkpts < 2:
                     nbkpts = 2
                 tempbkspace = rangex/float(nbkpts-1)
                 bkpt = np.arange(nbkpts, dtype='f')*tempbkspace + startx
-            elif 'nbkpts' in kwargs:
-                nbkpts = kwargs['nbkpts']
+            elif nbkpts is not None:
                 if nbkpts < 2:
                     nbkpts = 2
                 tempbkspace = rangex/float(nbkpts-1)
                 bkpt = np.arange(nbkpts, dtype='f') * tempbkspace + startx
-            elif 'everyn' in kwargs:
-                npkpts = max(nx/kwargs['everyn'], 1)
+            elif everyn is not None:
+                nx = x.size
+                nbkpts = max(nx//everyn, 1)
                 if nbkpts == 1:
                     xspot = [0]
                 else:
@@ -419,9 +436,9 @@ class bspline(object):
         if np.any(hmm >= n):
             return -2
         test = np.zeros(nbkpt, dtype='bool')
-        for jj in range(-np.ceil(nord/2.0), nord/2.0):
+        for jj in range(-np.ceil(self.nord/2.0), self.nord/2.0):
             foo = np.where((hmm+jj) > 0, hmm+jj, np.zeros(hmm.shape, dtype=hmm.dtype))
-            inside = np.where((foo+nord) < n-1, foo+nord, np.zeros(hmm.shape, dtype=hmm.dtype)+n-1)
+            inside = np.where((foo+self.nord) < n-1, foo+self.nord, np.zeros(hmm.shape, dtype=hmm.dtype)+n-1)
             test[inside] = True
         if test.any():
             reality = self.mask[test]
