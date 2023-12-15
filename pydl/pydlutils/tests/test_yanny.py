@@ -320,9 +320,9 @@ class TestYanny(YannyTestCase):
         # Test values
         #
         assert np.allclose(par['MYSTRUCT'].mag[0],
-                            np.array([17.5, 17.546, 17.4, 16.1, 16.0]))
+                           np.array([17.5, 17.546, 17.4, 16.1, 16.0]))
         assert np.allclose(par['MYSTRUCT'].mag[5],
-                            np.array([19.3, 18.2, 17.1, 16.0, 15.9]))
+                           np.array([19.3, 18.2, 17.1, 16.0, 15.9]))
         assert par['MYSTRUCT'].foo[1] == b"My dog has no nose."
         assert np.allclose(par['MYSTRUCT'].c[2], 7.24345567)
         assert (par['MYSTRUCT']['flags'][2] == np.array([123123, 0])).all()

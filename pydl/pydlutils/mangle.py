@@ -759,8 +759,7 @@ def set_use_caps(polygon, index_list, add=False, tol=1.0e-10,
                             if ((np.absolute(polygon.cm[i] -
                                              polygon.cm[j]) < tol) or
                                 ((polygon.cm[i] +
-                                  polygon.cm[j]) < tol and
-                                  not allow_neg_doubles)):
+                                  polygon.cm[j]) < tol and not allow_neg_doubles)):
                                 #
                                 # Don't use
                                 #

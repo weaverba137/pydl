@@ -865,8 +865,7 @@ class yanny(OrderedDict):
                   "{0} exists, aborting write!".format(newfile))
         if comments is None:
             basefile = os.path.basename(newfile)
-            timestamp = datetime.datetime.utcnow().strftime(
-                        '%Y-%m-%d %H:%M:%S UTC')
+            timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
             comments = f"""#
 # {basefile}
 #
@@ -948,8 +947,7 @@ class yanny(OrderedDict):
         if not isinstance(datatable, dict):
             raise ValueError("Data to append is not of the correct type. " +
                              "Use a dict!")
-        timestamp = datetime.datetime.utcnow().strftime(
-                    '%Y-%m-%d %H:%M:%S UTC')
+        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
         contents = ''
         #
         # Print any key/value pairs
@@ -1051,12 +1049,10 @@ class yanny(OrderedDict):
         #
         # Find structure & enumeration definitions & strip them out
         #
-        self._symbols['struct'] = re.findall(
-                                    r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;',
-                                    lines)
-        self._symbols['enum'] = re.findall(
-                                  r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;',
-                                  lines)
+        self._symbols['struct'] = re.findall(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;',
+                                             lines)
+        self._symbols['enum'] = re.findall(r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;',
+                                           lines)
         lines = re.sub(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;', '', lines)
         lines = re.sub(r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;', '', lines)
         #

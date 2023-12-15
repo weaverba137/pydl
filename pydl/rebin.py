@@ -95,9 +95,8 @@ def rebin(x, d, sample=False):
                         sliceobj1[k] = slice(fp + 1, fp + 2)
                         rshape = r[tuple(sliceobj)].shape
                         r[tuple(sliceobj)] = (xx[tuple(sliceobj0)].reshape(rshape) +
-                                       (p - fp)*(xx[tuple(sliceobj1)] -
-                                                 xx[tuple(sliceobj0)]).reshape(rshape)
-                                      )
+                                              (p - fp)*(xx[tuple(sliceobj1)] -
+                                                        xx[tuple(sliceobj0)]).reshape(rshape))
                     else:
                         r[tuple(sliceobj)] = xx[tuple(sliceobj0)]
         elif d[k] == d0[k]:

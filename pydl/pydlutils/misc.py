@@ -186,10 +186,9 @@ def hogg_iau_name(ra, dec, prefix='SDSS', precision=1):
         des = des.astype(np.int32)
     ded = ded.astype(np.int32)
     dem = dem.astype(np.int32)
-    adformat = "{{0:02d}}{{1:02d}}{ras}{{3:s}}{{4:02d}}{{5:02d}}{des}".format(
-                ras=rasformat, des=desformat)
-    adstr = [adformat.format(*x) for x in zip(
-            rah, ram, ras, desgn, ded, dem, des)]
+    adformat = f"{{0:02d}}{{1:02d}}{rasformat}{{3:s}}{{4:02d}}{{5:02d}}{desformat}"
+    adstr = [adformat.format(*x)
+             for x in zip(rah, ram, ras, desgn, ded, dem, des)]
     if prefix == '':
         jstr = 'J'
     else:
@@ -212,7 +211,7 @@ def hogg_iau_name_main():  # pragma: no cover
                         metavar='STR', default='SDSS',
                         help='Add this prefix to the name.')
     parser.add_argument('ra', metavar='RA', type=float,
-                            help='Right Ascension.')
+                        help='Right Ascension.')
     parser.add_argument('dec', metavar='Dec', type=float,
                         help='Declination.')
     options = parser.parse_args()
@@ -344,8 +343,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
                 thisn = max(d.itemsize, len(tag))
                 thiscode = "{{{0:d}:{1:d}s}}".format(k, thisn)
             else:
-                raise PydlutilsException(
-                        "Unsupported kind: {0}".format(d.kind))
+                raise PydlutilsException("Unsupported kind: {0}".format(d.kind))
             formatcodes[tag] = thiscode
         nchar[tag] = thisn
     #
@@ -362,11 +360,12 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
         lines.append(hdr1)
     else:
         if not no_head:
-            hdr1 = (headstart + headsep.join([("{{0:{0:d}s}}".format(
-                    nchar[tag])).format(alias[tag])
-                    for tag in array.dtype.names]) + headend)
-            hdr2 = (headstart + headsep.join(['-' * nchar[tag]
-                    for tag in array.dtype.names]) + headend)
+            hdr1 = (headstart +
+                    headsep.join([("{{0:{0:d}s}}".format(nchar[tag])).format(alias[tag])
+                                  for tag in array.dtype.names]) + headend)
+            hdr2 = (headstart +
+                    headsep.join(['-' * nchar[tag]
+                                  for tag in array.dtype.names]) + headend)
             lines.append(hdr1)
             lines.append(hdr2)
     #
@@ -375,8 +374,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
     rowformat = (colstart + colsep.join([formatcodes[tag]
                 for tag in array.dtype.names]) + colend)
     for k in range(array.size):
-        lines.append(rowformat.format(
-                    *([decode_mixed(l) for l in array[k].tolist()])))
+        lines.append(rowformat.format(*([decode_mixed(l) for l in array[k].tolist()])))
     if html:
         lines.append('</table>')
     f = None   # This variable will store a file handle

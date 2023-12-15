@@ -42,12 +42,10 @@ class computechi2(object):
         else:
             self.nstar = 1
         self.bvec = bvec * sqivar
-        self.mmatrix = self.amatrix * np.tile(sqivar, self.nstar).reshape(
-                       self.nstar, bvec.size).transpose()
+        self.mmatrix = self.amatrix * np.tile(sqivar, self.nstar).reshape(self.nstar, bvec.size).transpose()
         mm = np.dot(self.mmatrix.T, self.mmatrix)
         self.uu, self.ww, self.vv = svd(mm, full_matrices=False)
-        self.mmi = np.dot((self.vv.T / np.tile(self.ww, self.nstar).reshape(
-                   self.nstar, self.nstar)), self.uu.T)
+        self.mmi = np.dot((self.vv.T / np.tile(self.ww, self.nstar).reshape(self.nstar, self.nstar)), self.uu.T)
         return
 
     @au.lazyproperty
@@ -152,15 +150,13 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 bigarr = np.zeros(array.shape[0]+2*padsize, dtype=array.dtype)
                 bigarr[padsize:padsize+array.shape[0]] = array
                 bigarr[0:padsize] = array[0:padsize][::-1]
-                bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (
-                        array[array.shape[0]-padsize:array.shape[0]][::-1])
+                bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (array[array.shape[0]-padsize:array.shape[0]][::-1])
                 f = median(bigarr, width)
                 medarray = f[padsize:padsize+array.shape[0]]
                 return medarray
             elif array.ndim == 2:
                 bigarr = np.zeros((array.shape[0]+2*padsize,
-                                    array.shape[1]+2*padsize),
-                                    dtype=array.dtype)
+                                   array.shape[1]+2*padsize), dtype=array.dtype)
                 bigarr[padsize:padsize+array.shape[0], padsize:padsize+array.shape[1]] = array
                 # Copy into top + bottom
                 bigarr[0:padsize, padsize:array.shape[1]+padsize] = array[0:padsize, :][::-1, :]

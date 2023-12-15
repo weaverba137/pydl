@@ -117,7 +117,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
             else:
                 iversion = 'tags/'+photolog_version
             baseurl = ('https://svn.sdss.org/public/data/sdss/photolog/' +
-                        '{0}/opfiles/opBadfields.par').format(iversion)
+                       '{0}/opfiles/opBadfields.par').format(iversion)
             filename = download_file(baseurl, cache=True)
         else:
             filename = os.path.join(os.getenv('PHOTOLOG_DIR'), 'opfiles',
@@ -599,7 +599,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     ira = np.array([ra])
     idec = np.array([dec])
     m1, m2, d12 = spherematch(index['RA'], index['DEC'], ira, idec,
-                                radius+0.36, maxmatch=0)
+                              radius+0.36, maxmatch=0)
     if len(m1) == 0:
         return None
     if not allobj:

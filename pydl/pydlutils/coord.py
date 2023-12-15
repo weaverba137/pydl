@@ -47,8 +47,7 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
                                     defaultunit=u.deg)
             ]
         }
-    frame_specific_representation_info['unitspherical'] = (
-            frame_specific_representation_info['spherical'])
+    frame_specific_representation_info['unitspherical'] = frame_specific_representation_info['spherical']
     stripe = ac.Attribute(default=0)
     node = ac.QuantityAttribute(default=ac.Angle(95.0, unit=u.deg),
                                 unit=u.deg)

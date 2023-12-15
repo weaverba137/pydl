@@ -283,8 +283,7 @@ class TraceSet(object):
         When initialized with x,y positions, this contains the fitted y
         values.
     """
-    _func_map = {'poly': fpoly, 'legendre': flegendre,
-                    'chebyshev': fchebyshev}
+    _func_map = {'poly': fpoly, 'legendre': flegendre, 'chebyshev': fchebyshev}
 
     def __init__(self, *args, **kwargs):
         """This class can be initialized either with a set of xy positions,
