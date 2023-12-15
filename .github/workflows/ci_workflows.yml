@@ -25,6 +25,11 @@ jobs:
             python: 3.x
             toxenv: codestyle
 
+          - name: Code style checks
+            os: ubuntu-latest
+            python: 3.x
+            toxenv: build_docs
+
           - name: Python 3.11 with astropy data and coverage
             os: ubuntu-latest
             python: '3.11'
