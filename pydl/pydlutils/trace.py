@@ -205,16 +205,14 @@ def func_fit(x, y, ncoeff, invvar=None, function_name='legendre', ia=None,
         yfit += y[igood[0]]
     else:
         ncfit = min(ngood, ncoeff)
-        function_map = {
-            'legendre': flegendre,
-            'flegendre': flegendre,
-            'chebyshev': fchebyshev,
-            'fchebyshev': fchebyshev,
-            'chebyshev_split': fchebyshev_split,
-            'fchebyshev_split': fchebyshev_split,
-            'poly': fpoly,
-            'fpoly': fpoly
-            }
+        function_map = {'legendre': flegendre,
+                        'flegendre': flegendre,
+                        'chebyshev': fchebyshev,
+                        'fchebyshev': fchebyshev,
+                        'chebyshev_split': fchebyshev_split,
+                        'fchebyshev_split': fchebyshev_split,
+                        'poly': fpoly,
+                        'fpoly': fpoly}
         try:
             legarr = function_map[function_name](x, ncfit)
         except KeyError:
