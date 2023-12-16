@@ -478,14 +478,14 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
     if line is not None and index is not None:
         raise ValueError("line and index inputs cannot both be non-zero!")
     if isinstance(plate, int):
-        plate = np.array([plate], dtype=np.uint64)
+        plate = np.array([plate])
     if isinstance(fiber, int):
-        fiber = np.array([fiber], dtype=np.uint64)
+        fiber = np.array([fiber])
     if isinstance(mjd, int):
-        mjd = np.array([mjd], dtype=np.uint64) - 50000
+        mjd = np.array([mjd]) - 50000
     if isinstance(run2d, str):
         try:
-            run2d = np.array([int(run2d)], dtype=np.uint64)
+            run2d = np.array([int(run2d)])
         except ValueError:
             # Try a "vN_M_P" string.
             m = re.match(r'v(\d+)_(\d+)_(\d+)', run2d)
@@ -496,17 +496,17 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
             run2d = np.array([(int(N) - 5)*10000 + int(M) * 100 + int(P)],
                              dtype=np.uint64)
     elif isinstance(run2d, int):
-        run2d = np.array([run2d], dtype=np.uint64)
+        run2d = np.array([run2d])
     if line is None:
         line = np.zeros(plate.shape, dtype=plate.dtype)
     else:
         if isinstance(line, int):
-            line = np.array([line], dtype=np.uint64)
+            line = np.array([line])
     if index is None:
         index = np.zeros(plate.shape, dtype=plate.dtype)
     else:
         if isinstance(index, int):
-            index = np.array([index], dtype=np.uint64)
+            index = np.array([index])
     #
     # Check that all inputs have the same shape.
     #
@@ -538,11 +538,11 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
     #
     # Compute the specObjID
     #
-    specObjID = ((plate << 50) |
-                 (fiber << 38) |
-                 (mjd << 24) |
-                 (run2d << 10) |
-                 (line | index))
+    specObjID = ((plate.astype(np.uint64) << 50) |
+                 (fiber.astype(np.uint64) << 38) |
+                 (mjd.astype(np.uint64) << 24) |
+                 (run2d.astype(np.uint64) << 10) |
+                 (line.astype(np.uint64) | index.astype(np.uint64)))
     return specObjID
 
 
