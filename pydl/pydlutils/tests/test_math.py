@@ -43,7 +43,7 @@ def test_djs_median():
     data2 = 100.0*np.random.random((10, 10))
     data3 = 100.0*np.random.random((10, 10, 10))
     data_width_5 = test_data[0, :]
-    data_width_5_reflect = test_data[1, :]
+    # data_width_5_reflect = test_data[1, :]
     #
     # Degenerate cases that fall back on numpy.median().
     #
@@ -58,22 +58,22 @@ def test_djs_median():
     assert np.allclose(data, djs_median(data, width=1))
     assert np.allclose(data_width_5, djs_median(data, width=5))
     # assert np.allclose(data_width_5_reflect,
-    #                 djs_median(data, width=5, boundary='reflect'))
+    #                    djs_median(data, width=5, boundary='reflect'))
     #
     # Exceptions
     #
     with pytest.raises(ValueError):
-        foo = djs_median(data, width=5, boundary='nearest')
+        _ = djs_median(data, width=5, boundary='nearest')
     with pytest.raises(ValueError):
-        foo = djs_median(data, width=5, boundary='wrap')
+        _ = djs_median(data, width=5, boundary='wrap')
     with pytest.raises(ValueError):
-        foo = djs_median(data, width=5, boundary='foobar')
+        _ = djs_median(data, width=5, boundary='foobar')
     with pytest.raises(ValueError):
-        foo = djs_median(data2, width=5, dimension=1)
+        _ = djs_median(data2, width=5, dimension=1)
     with pytest.raises(ValueError):
-        foo = djs_median(data3, width=5)
+        _ = djs_median(data3, width=5)
     with pytest.raises(ValueError):
-        foo = djs_median(data3, width=5, boundary='reflect')
+        _ = djs_median(data3, width=5, boundary='reflect')
 
 
 def test_find_contiguous():

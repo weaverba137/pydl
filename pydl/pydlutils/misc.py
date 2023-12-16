@@ -22,7 +22,7 @@ def decode_mixed(x):
     """
     try:
         return x.decode()
-    except:
+    except AttributeError:
         return x
 
 
@@ -270,21 +270,21 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
         colsep = '</td><td>'
         colend = '</td></tr>'
         css = ['<style type="text/css">',
-            'table {',
-            '    border-collapse: collapse;',
-            '}',
-            'th {',
-            '    padding: 2px;',
-            '    text-align: right;',
-            '    border: 1px solid black;',
-            '    font-weight: bold;',
-            '}',
-            'td {',
-            '    padding: 2px;',
-            '    text-align: right;',
-            '    border: 1px solid black;',
-            '}',
-            '</style>']
+               'table {',
+               '    border-collapse: collapse;',
+               '}',
+               'th {',
+               '    padding: 2px;',
+               '    text-align: right;',
+               '    border: 1px solid black;',
+               '    font-weight: bold;',
+               '}',
+               'td {',
+               '    padding: 2px;',
+               '    text-align: right;',
+               '    border: 1px solid black;',
+               '}',
+               '</style>']
     else:
         headstart = ''
         headsep = ' '
@@ -372,7 +372,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
     # Create a format string for the data from the individual format codes
     #
     rowformat = (colstart + colsep.join([formatcodes[tag]
-                for tag in array.dtype.names]) + colend)
+                                         for tag in array.dtype.names]) + colend)
     for k in range(array.size):
         lines.append(rowformat.format(*([decode_mixed(l) for l in array[k].tolist()])))
     if html:

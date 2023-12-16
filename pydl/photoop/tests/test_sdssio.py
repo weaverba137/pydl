@@ -31,8 +31,7 @@ path_data = {
     'reObjGlobal': "/PHOTO_RESOLVE/301/137/resolve/4",
     'reObjRun': "/PHOTO_REDUX/301/137/resolve/4",
     'reObjTmp': "/PHOTO_RESOLVE/301/137/resolve/4",
-    'tsField': "/PHOTO_REDUX/301/137/calibChunks/4",
-    }
+    'tsField': "/PHOTO_REDUX/301/137/calibChunks/4"}
 
 
 name_data = {
@@ -57,8 +56,7 @@ name_data = {
     'reObjGlobal': "reObjGlobal-000137-4-0042.fits",
     'reObjRun': "reObjRun-000137-4-0042.fits",
     'reObjTmp': "reObjTmp-000137-4-0042.fits",
-    'tsField': "tsField-000137-4-301-0042.fit",
-    }
+    'tsField': "tsField-000137-4-301-0042.fit"}
 
 
 @pytest.fixture
@@ -109,7 +107,7 @@ def test_sdss_name(sdss_env):
     # Bad ftype
     #
     with pytest.raises(KeyError):
-        p = sdss_name('fooBar', 137, 4, 42)
+        _ = sdss_name('fooBar', 137, 4, 42)
     for ftype in name_data:
         assert sdss_name(ftype, 137, 4, 42, '301', 'r',
                          no_path=True) == name_data[ftype]
@@ -131,7 +129,7 @@ def test_sdss_name_reObj(sdss_env):
 
 def test_sdss_path(sdss_env):
     with pytest.raises(KeyError):
-        p = sdss_path('fooBar', 137)
+        _ = sdss_path('fooBar', 137)
     for ftype in path_data:
         assert sdss_path(ftype, 137, 4, '301') == path_data[ftype]
 

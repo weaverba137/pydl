@@ -242,7 +242,7 @@ class bspline(object):
         if nbkpt < 2*self.nord:
             return (-2, 0, 0)
         n = nbkpt - self.nord
-        gb = self.breakpoints[self.mask]
+        # gb = self.breakpoints[self.mask]
         bw = self.npoly*self.nord
         lower = np.zeros((n - self.nord + 1,), dtype='i4')
         upper = np.zeros((n - self.nord + 1,), dtype='i4') - 1
@@ -599,7 +599,8 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         if not maskwork.any():
             raise ValueError('No valid data points.')
         if 'fullbkpt' in kwargs:
-            fullbkpt = kwargs['fullbkpt']
+            # fullbkpt = kwargs['fullbkpt']
+            raise ValueError('Input via fullbkpt is not supported!')
         else:
             sset = bspline(xdata[xsort[maskwork]], **kwargs)
             if maskwork.sum() < sset.nord:

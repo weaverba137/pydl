@@ -121,10 +121,10 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
             filename = download_file(baseurl, cache=True)
         else:
             filename = os.path.join(os.getenv('PHOTOLOG_DIR'), 'opfiles',
-                            'opBadfields.par')
+                                    'opBadfields.par')
         astrombadfile = yanny(filename)
         w = ((astrombadfile['BADFIELDS']['problem'] == 'astrom'.encode()) |
-            (astrombadfile['BADFIELDS']['problem'] == 'rotator'.encode()))
+             (astrombadfile['BADFIELDS']['problem'] == 'rotator'.encode()))
         opbadfields = astrombadfile['BADFIELDS'][w]
     #
     # opbadfields already has astrom problems selected at this point
@@ -132,7 +132,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
     bad = np.zeros(run.shape, dtype=bool)
     for row in opbadfields:
         w = ((run == row['run']) &
-        (field >= row['firstfield']) & (field < row['lastfield']))
+             (field >= row['firstfield']) & (field < row['lastfield']))
         if w.any():
             bad[w] = True
     return bad
@@ -405,17 +405,17 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None,
     # Compute the objid
     #
     objid = ((skyversion << 59) |
-        (rerun << 48) |
-        (run << 32) |
-        (camcol << 29) |
-        (firstfield << 28) |
-        (field << 16) |
-        (objnum))
+             (rerun << 48) |
+             (run << 32) |
+             (camcol << 29) |
+             (firstfield << 28) |
+             (field << 16) |
+             (objnum))
     return objid
 
 
 def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
-    """Convert SDSS spectrum identifiers into CAS-style specObjID.
+    r"""Convert SDSS spectrum identifiers into CAS-style specObjID.
 
     Bits are assigned in specObjID thus:
 
@@ -467,7 +467,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
       SDSS DR8 and subsequent data releases.  It is not compatible with
       SDSS DR7 or earlier.
     * If the string form of `run2d` is used, the bits are assigned by
-      the formula :math:`(N - 5) \\times 10000 + M \\times 100 + P`.
+      the formula :math:`(N - 5) \times 10000 + M \times 100 + P`.
 
     Examples
     --------
@@ -613,7 +613,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     #
     if allobj:
         n = index['IEND'][m1] - index['ISTART'][m1] + 1
-        ntot = (where(n > 0, n, np.zeros(n.shape, dtype=n.dtype))).sum()
+        ntot = (np.where(n > 0, n, np.zeros(n.shape, dtype=n.dtype))).sum()
     else:
         ntot = index['NPRIMARY'][m1].sum()
     #
@@ -642,8 +642,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
             # Read in the rows of that file
             #
             swfile = os.path.join(os.getenv('PHOTO_SWEEP'), rerun,
-                            'calibObj-{0:06d}-{1:1d}-{2}.fits.gz'.format(
-                            int(run), int(camcol), stype))
+                                  f'calibObj-{run:06d}-{camcol:1d}-{stype}.fits.gz')
             with fits.open(swfile) as f:
                 tmp_objs = f[1].data[ist:ind]
             if tmp_objs.size > 0:
@@ -659,8 +658,8 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
                     #
                     if not allobj:
                         w = ((tmp_objs['RESOLVE_STATUS'] &
-                            sdss_flagval('RESOLVE_STATUS',
-                                        'SURVEY_PRIMARY')) > 0)
+                             sdss_flagval('RESOLVE_STATUS',
+                                          'SURVEY_PRIMARY')) > 0)
                         if w.any():
                             tmp_objs = tmp_objs[w]
                         else:
@@ -760,8 +759,7 @@ def unwrap_specobjid(specObjID, run2d_integer=False, specLineIndex=False):
               dtype=[('plate', '<i4'), ('fiber', '<i4'), ('mjd', '<i4'), ('run2d', '<U8'), ('line', '<i4')])
 
     """
-    if (specObjID.dtype.type is np.string_ or
-        specObjID.dtype.type is np.unicode_):
+    if (specObjID.dtype.type is np.string_ or specObjID.dtype.type is np.unicode_):
         tempobjid = specObjID.astype(np.uint64)
     elif specObjID.dtype.type is np.uint64:
         tempobjid = specObjID.copy()

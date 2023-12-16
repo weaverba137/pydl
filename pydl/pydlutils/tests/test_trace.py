@@ -5,7 +5,7 @@ import numpy as np
 from astropy.io import fits
 from astropy.utils.data import get_pkg_data_filename
 from ..trace import (fchebyshev, fchebyshev_split, fpoly, func_fit,
-                    TraceSet, traceset2xy, xy2traceset)
+                     TraceSet, traceset2xy, xy2traceset)
 from .. import PydlutilsException
 
 
@@ -123,7 +123,7 @@ class TestTrace(object):
         # Test order
         #
         with pytest.raises(ValueError):
-            f = fpoly(x, 0)
+            _ = fpoly(x, 0)
         #
         # m = 1
         #
@@ -167,13 +167,13 @@ class TestTrace(object):
         # Bad inputs
         #
         with pytest.raises(ValueError):
-            foo = func_fit(x, np.array([1, 2, 3]), 3)
+            _ = func_fit(x, np.array([1, 2, 3]), 3)
         with pytest.raises(ValueError):
-            foo = func_fit(x, y, 3, invvar=np.array([0, 0, 0]))
+            _ = func_fit(x, y, 3, invvar=np.array([0, 0, 0]))
         with pytest.raises(ValueError):
-            foo = func_fit(x, y, 3, inputfunc=np.array([1.0, 1.0, 1.0]))
+            _ = func_fit(x, y, 3, inputfunc=np.array([1.0, 1.0, 1.0]))
         with pytest.raises(KeyError):
-            foo = func_fit(x, y, 3, function_name='npoly')
+            _ = func_fit(x, y, 3, function_name='npoly')
         #
         # No good points
         #
@@ -202,20 +202,20 @@ class TestTrace(object):
         # Fixed points
         #
         res, yfit = func_fit(x, y, 3, invvar=invvar, function_name='poly',
-                            ia=np.array([False, True, True]),
-                            inputans=np.array([1.0, 0, 0]))
+                             ia=np.array([False, True, True]),
+                             inputans=np.array([1.0, 0, 0]))
         # assert np.allclose(res,np.array([1., 1.99454782, 1.00149949]))
         assert np.allclose(res, np.array([1., 1.99340359, 1.00147743]))
         res, yfit = func_fit(x, y, 3, invvar=invvar, function_name='poly',
-                            ia=np.array([False, True, False]),
-                            inputans=np.array([1.0, 0, 1.0]))
+                             ia=np.array([False, True, False]),
+                             inputans=np.array([1.0, 0, 1.0]))
         # assert np.allclose(res,np.array([1., 1.99403239, 1.]))
         assert np.allclose(res, np.array([1., 1.99735654, 1.]))
         #
         # inputfunc
         #
         res, yfit = func_fit(x, y, 3, invvar=invvar, function_name='poly',
-                            inputfunc=np.ones(x.shape, dtype=x.dtype))
+                             inputfunc=np.ones(x.shape, dtype=x.dtype))
         # assert np.allclose(res,np.array([0.99665423, 1.9945388, 1.00172303]))
         assert np.allclose(res, np.array([0.99996197, 1.99340315, 1.00148004]))
         #
@@ -223,7 +223,7 @@ class TestTrace(object):
         #
         y = x**2 + 2*x + 0.05*np.random.randn(50)
         res, yfit = func_fit(x, y, 3, invvar=invvar, function_name='poly',
-                            ia=np.array([False, True, True]))
+                             ia=np.array([False, True, True]))
         assert np.allclose(res, np.array([0., 1.99994188, 0.99915111]))
 
     def test_traceset_sdss(self):
@@ -271,4 +271,4 @@ class TestTrace(object):
 
     def test_traceset_bad(self):
         with pytest.raises(PydlutilsException):
-            tset = TraceSet(1, 2, 3)
+            _ = TraceSet(1, 2, 3)

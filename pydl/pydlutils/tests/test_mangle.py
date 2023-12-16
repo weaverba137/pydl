@@ -85,7 +85,7 @@ class TestMangle(object):
                                         [1.0, 0.0, 0.0]]))
         a = mng.angles_to_x(np.array([[0.0, 90.0], [90.0, 0.0],
                                       [0.0, 0.0]]), latitude=True)
-        assert np.allclose(x, np.array([[0.0, 0.0, 1.0], [0.0, 1.0, 0.0],
+        assert np.allclose(a, np.array([[0.0, 0.0, 1.0], [0.0, 1.0, 0.0],
                                         [1.0, 0.0, 0.0]]))
 
     def test_cap_distance(self):
@@ -174,7 +174,7 @@ class TestMangle(object):
         assert (poly['USE_CAPS'] == use_caps).all()
         assert (poly['use_caps'] == use_caps).all()
         with pytest.raises(AttributeError):
-            foo = poly.no_such_attribute
+            _ = poly.no_such_attribute
         cm0 = np.array([-1.0, -0.99369437, 1.0, -1.0, 0.00961538])
         assert np.allclose(poly.cm[0][0:poly.ncaps[0]], cm0)
         assert poly[0]['NCAPS'] == 5
@@ -207,7 +207,7 @@ class TestMangle(object):
 
     def test_set_use_caps(self):
         poly = mng.read_fits_polygons(self.poly_fits, convert=True)
-        old_use_caps = poly[0].use_caps
+        # old_use_caps = poly[0].use_caps
         index_list = list(range(poly[0].ncaps))
         use_caps = mng.set_use_caps(poly[0], index_list, allow_doubles=True)
         assert use_caps == poly[0].use_caps
@@ -262,7 +262,7 @@ class TestMangle(object):
         assert id(p2) == id(p)
         with pytest.raises(ValueError):
             pl.append(p2)
-            p3 = mng._single_polygon(pl)
+            _ = mng._single_polygon(pl)
         p = mng.read_fits_polygons(self.no_id_fits)
         p2 = mng._single_polygon(p)
         assert p2.ncaps == 4
@@ -289,6 +289,7 @@ def fits_polygon_file():
     hdulist2 = fits.HDUList([hdu0, hdu1])
     hdulist2.writeto('polygon.fits')
     return 0
+
 
 if __name__ == '__main__':
     from sys import exit

@@ -12,12 +12,14 @@ from astropy.io.fits.fitsrec import FITS_rec
 from astropy.table import Table
 from . import PhotoopException
 from .sdssio import sdss_name, sdss_calib
-from ..pydlutils.mangle import FITS_polygon  #, PolygonList, ManglePolygon, set_use_caps
+from ..pydlutils.mangle import FITS_polygon
 from ..pydlutils.sdss import sdss_flagval
 
 
-def sdss_score(flist, silent=True):
+def sdss_score(flist, silent=True, **kwargs):
     """Score a list of imaging fields from zero to one.
+
+    Additional keyword arguments are passed to :func:`~pydl.photoop.sdssio.sdss_calib`.
 
     Parameters
     ----------
@@ -31,10 +33,13 @@ def sdss_score(flist, silent=True):
     :class:`numpy.ndarray`
         A vector of scores, one for each row of the FITS file.
     """
-    lat = 32.780361
-    lng = 360.0 - 105.820417
-    tzone = 7
-    scores = 1
+    #
+    # Not sure why these were defined.
+    #
+    # lat = 32.780361
+    # lng = 360.0 - 105.820417
+    # tzone = 7
+    # scores = 1
     #
     # Read the PHOTO status bits
     #

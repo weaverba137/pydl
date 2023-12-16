@@ -181,7 +181,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
         bitval = sdss_flagval('SPPIXMASK', 'NODATA')
         if 'finalmask' in kwargs:
             bitval |= (sdss_flagval('SPPIXMASK', 'NOPLUG') *
-                       (finalmask[0] & sdss_flagval('SPPIXMASK', 'NODATA')))
+                       (kwargs['finalmask'][0] & sdss_flagval('SPPIXMASK', 'NODATA')))
         andmask = andmask | bitval
         ormask = ormask | bitval
         return (newflux, newivar)
@@ -274,9 +274,8 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                         objivar.ravel()[ss[ireplace]] = 0.0
                         log.debug('Replaced {0:d} pixels in objivar.'.format(len(ss[ireplace])))
                     if 'finalmask' in kwargs:
-                        finalmask[ss[ireplace]] = (finalmask[ss[ireplace]] |
-                                                   sdss_flagval('SPPIXMASK',
-                                                   'COMBINEREJ'))
+                        kwargs['finalmask'][ss[ireplace]] = (kwargs['finalmask'][ss[ireplace]] |
+                                                             sdss_flagval('SPPIXMASK', 'COMBINEREJ'))
             fullcombmask[ss] = bmask
         #
         # Restore objivar
@@ -314,10 +313,10 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                 lowside = np.floor((inloglam_r[these]-newloglam[0])/binsz).astype('i4')
                 highside = lowside + 1
                 if 'finalmask' in kwargs:
-                    andmask[lowside] &= finalmask[these]
-                    andmask[highside] &= finalmask[these]
-                    ormask[lowside] |= finalmask[these]
-                    ormask[highside] |= finalmask[these]
+                    andmask[lowside] &= kwargs['finalmask'][these]
+                    andmask[highside] &= kwargs['finalmask'][these]
+                    ormask[lowside] |= kwargs['finalmask'][these]
+                    ormask[highside] |= kwargs['finalmask'][these]
                 #
                 # Combine the dispersions + skies in the dumbest way possible
                 # [sic].
@@ -327,11 +326,11 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                     newdisp[jnbetween] += (result *
                                            np.interp(newloglam[jnbetween],
                                                      inloglam_r[these],
-                                                     indisp.ravel()[these]))
+                                                     kwargs['indisp'].ravel()[these]))
                     newsky[jnbetween] += (result *
                                           np.interp(newloglam[jnbetween],
                                                     inloglam_r[these],
-                                                    skyflux.ravel()[these]))
+                                                    kwargs['skyflux'].ravel()[these]))
         if 'indisp' in kwargs:
             newdisp /= newdispweight + (newdispweight == 0)
             newsky /= newdispweight + (newdispweight == 0)
@@ -419,7 +418,7 @@ def filter_thru(flux, waveimg=None, wset=None, mask=None,
     if filter_prefix != 'sdss_jun2001':
         raise ValueError("Filters other than {0} are not available!".format('sdss_jun2001'))
     ffiles = [_get_pkg_filename_compat('data/filters/{0}_{1}_atm.dat'.format(filter_prefix, f),
-                                    package='pydl.pydlutils') for f in 'ugriz']
+                                       package='pydl.pydlutils') for f in 'ugriz']
     if waveimg is None and wset is None:
         raise ValueError("Either waveimg or wset must be specified!")
     if waveimg is None:

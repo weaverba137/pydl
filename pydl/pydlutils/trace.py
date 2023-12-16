@@ -143,7 +143,7 @@ def fpoly(x, m):
 
 
 def func_fit(x, y, ncoeff, invvar=None, function_name='legendre', ia=None,
-            inputans=None, inputfunc=None):
+             inputans=None, inputfunc=None):
     """Fit `x`, `y` positions to a functional form.
 
     Parameters
@@ -235,7 +235,7 @@ def func_fit(x, y, ncoeff, invvar=None, function_name='legendre', ia=None,
         # extra2 = finalarr * np.outer(np.ones((nparams,), dtype=x.dtype),
         #                             (invvar > 0))
         extra2 = finalarr * np.outer(np.ones((nparams,), dtype=x.dtype),
-                                    invvar)
+                                     invvar)
         alpha = np.dot(finalarr, extra2.T)
         # assert alpha.dtype == x.dtype
         if nparams > 1:
@@ -370,9 +370,9 @@ class TraceSet(object):
                 thismask = tempivar > 0
                 while (not qdone) and (iIter <= maxiter):
                     res, ycurfit = func_fit(xvec, ypos[iTrace, :], self.ncoeff,
-                        invvar=tempivar, function_name=self.func)
+                                            invvar=tempivar, function_name=self.func)
                     thismask, qdone = djs_reject(ypos[iTrace, :], ycurfit,
-                                                invvar=tempivar)
+                                                 invvar=tempivar)
                     iIter += 1
                 self.yfit[iTrace, :] = ycurfit
                 self.coeff[iTrace, :] = res
@@ -449,7 +449,7 @@ class TraceSet(object):
         if jump:
             # Vector specifying what fraction of the jump has passed:
             jfrac = np.minimum(np.maximum(((xinput - self.xjumplo) /
-                                (self.xjumphi - self.xjumplo)), 0.), 1.)
+                                           (self.xjumphi - self.xjumplo)), 0.), 1.)
             # Conversion to "natural" x baseline:
             xnatural = xinput + jfrac * self.xjumpval
         else:

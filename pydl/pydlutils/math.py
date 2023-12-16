@@ -57,7 +57,7 @@ class computechi2(object):
 
     @au.lazyproperty
     def chi2(self):
-        """(:class:`float <numpy.generic>`) The :math:`\chi^2` value of the fit.
+        r"""(:class:`float <numpy.generic>`) The :math:`\chi^2` value of the fit.
         """
         return np.sum((np.dot(self.mmatrix, self.acoeff) - self.bvec)**2)
 
@@ -143,7 +143,7 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 return median(array, width)
             else:
                 raise ValueError('Unsupported number of dimensions with ' +
-                                'this boundary condition.')
+                                 'this boundary condition.')
         elif boundary == 'reflect':
             padsize = int(np.ceil(width/2.0))
             if array.ndim == 1:
@@ -177,7 +177,7 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 return medarray
             else:
                 raise ValueError('Unsupported number of dimensions with ' +
-                                'this boundary condition.')
+                                 'this boundary condition.')
         elif boundary == 'nearest':
             raise ValueError('This boundary condition not implemented')
         elif boundary == 'wrap':

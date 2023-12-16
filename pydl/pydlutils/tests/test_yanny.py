@@ -172,11 +172,11 @@ class TestYanny(YannyTestCase):
             status[col[0]] = np.array(table['data'][col[0]], dtype=col[1])
         enums = test_data['enums']
         par = write_ndarray_to_yanny(self.temp('tempfile2.par'),
-                                    (mystruct, status),
-                                    structnames=('magnitudes', 'my_status'),
-                                    enums=enums,
-                                    comments=['This is a test',
-                                    'This is another test'])
+                                     (mystruct, status),
+                                     structnames=('magnitudes', 'my_status'),
+                                     enums=enums,
+                                     comments=['This is a test',
+                                               'This is another test'])
         assert ('typedef enum {\n    FALSE,\n    TRUE\n} BOOLEAN;' in
                 par._symbols['enum'])
         assert 'typedef enum {\n    FAILURE,\n    INCOMPLETE,\n    SUCCESS\n} STATUS;' in par._symbols['enum']
@@ -199,12 +199,12 @@ class TestYanny(YannyTestCase):
             mystruct[col[0]] = np.array(table['data'][col[0]], dtype=col[1])
         enums = {'new_flag': test_data['enums']['new_flag']}
         with pytest.raises(PydlutilsException):
-            par = write_ndarray_to_yanny(self.data('test.par'), mystruct,
-                                        structnames='magnitudes', enums=enums)
+            _ = write_ndarray_to_yanny(self.data('test.par'), mystruct,
+                                       structnames='magnitudes', enums=enums)
         with pytest.raises(PydlutilsException):
-            par = write_ndarray_to_yanny(self.temp('tempfile3.par'), mystruct,
-                                    structnames=('magnitudes', 'my_status'),
-                                    enums=enums)
+            _ = write_ndarray_to_yanny(self.temp('tempfile3.par'), mystruct,
+                                       structnames=('magnitudes', 'my_status'),
+                                       enums=enums)
 
     def test_write_ndarray_to_yanny_misc(self):
         """Test other minor features of write_ndarray_to_yanny.
@@ -218,7 +218,7 @@ class TestYanny(YannyTestCase):
         enums = {'new_flag': test_data['enums']['new_flag']}
         hdr = test_data['pairs']
         par = write_ndarray_to_yanny(self.temp('tempfile1.par'), mystruct,
-                                    hdr=hdr, enums=enums)
+                                     hdr=hdr, enums=enums)
         assert 'MYSTRUCT0' in par
         assert par['keyword1'] == hdr['keyword1']
         assert par['keyword2'] == hdr['keyword2']
@@ -231,35 +231,33 @@ class TestYanny(YannyTestCase):
         #
         pair_data = self.test_data["test.par"]["pairs"]
         struct_data = self.test_data["test.par"]["structures"]
-        symbols = [
-"""typedef struct {
+        s1 = """typedef struct {
     float mag[5];
     char b[5][];
     char foo[25];
     double c;
     int flags[2];
     BOOLEAN new_flag;
-} MYSTRUCT;""",
-"""typedef struct {
+} MYSTRUCT;"""
+        s2 = """typedef struct {
     float foo<3>; # This is archaic array notation, strongly deprecated,
     char bar<10>; # but still technically supported.
-} OLD;""",
-"""typedef struct {
+} OLD;"""
+        s3 = """typedef struct {
     STATUS state;
     char timestamp[]; #UTC timestamp in format 2008-06-21T00:27:33
-} STATUS_UPDATE;""",
-            ]
-        enum = [
-"""typedef enum {
+} STATUS_UPDATE;"""
+        symbols = [s1, s2, s3]
+        e1 = """typedef enum {
     FALSE,
     TRUE
-} BOOLEAN;""",
-"""typedef enum {
+} BOOLEAN;"""
+        e2 = """typedef enum {
     FAILURE,
     INCOMPLETE,
     SUCCESS
-} STATUS;""",
-            ]
+} STATUS;"""
+        enum = [e1, e2]
         with open(self.data('test.par')) as f:
             file_data = f.read()
         #
@@ -332,11 +330,11 @@ class TestYanny(YannyTestCase):
         # This should fail, since test.par already exists.
         with pytest.raises(PydlutilsException):
             par.write()
-        with pytest.warns(PydlutilsUserWarning) as w:
+        with pytest.warns(PydlutilsUserWarning):
             par.append({})
         datatable = {'status_update': {'state': ['SUCCESS', 'SUCCESS'],
-            'timestamp': ['2008-06-22 01:27:33', '2008-06-22 01:27:36']},
-            'new_keyword': 'new_value'}
+                                       'timestamp': ['2008-06-22 01:27:33', '2008-06-22 01:27:36']},
+                     'new_keyword': 'new_value'}
         par.filename = self.temp('test_append.par')
         # This should also fail, because test_append.par does not exist.
         with pytest.raises(PydlutilsException):

@@ -141,7 +141,7 @@ class HMF(object):
         return self.spectra - self.model()
 
     def chi(self):
-        """Compute :math:`\chi`, the scaled residual.
+        r"""Compute :math:`\chi`, the scaled residual.
         """
         return self.resid() * np.sqrt(self.invvar)
 
@@ -153,7 +153,7 @@ class HMF(object):
         return self.epsilon * np.sum(np.diff(self.g)**2)
 
     def badness(self):
-        """Compute :math:`\chi^2`, including possible non-smoothness penalty.
+        r"""Compute :math:`\chi^2`, including possible non-smoothness penalty.
         """
         return np.sum(self.chi()**2) + self.penalty()
 
@@ -393,8 +393,7 @@ def findspec(*args, **kwargs):
             run1d = os.environ['RUN1D']
     if findspec_cache is None:
         findspec_cache = {'lasttopdir': topdir, 'plist': None}
-    if (findspec_cache['plist'] is None or
-        topdir != findspec_cache['lasttopdir']):
+    if (findspec_cache['plist'] is None or topdir != findspec_cache['lasttopdir']):
         findspec_cache['lasttopdir'] = topdir
         platelist_file = os.path.join(topdir, "platelist.fits")
         plates_files = glob.glob(os.path.join(topdir, "plates-*.fits"))
@@ -520,9 +519,9 @@ def findspec(*args, **kwargs):
     # Print to terminal or output file
     #
     if 'print' in kwargs:
-        foo = struct_print(slist)
+        _ = struct_print(slist)
     if 'outfile' in kwargs:
-        foo = struct_print(slist, filename=kwargs['outfile'])
+        _ = struct_print(slist, filename=kwargs['outfile'])
     return slist
 
 
@@ -792,7 +791,7 @@ def plot_eig(filename, title='Unknown'):
     ax = fig.add_subplot(111)
     colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
     for l in range(neig):
-        p = ax.plot(lam, spectro_data[l, :],
+        _ = ax.plot(lam, spectro_data[l, :],
                     colorvec[l % len(colorvec)]+'-', linewidth=1)
     ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Flux [Arbitrary Units]')
@@ -1174,7 +1173,7 @@ def spec_path(plate, path=None, topdir=None, run2d=None):
         if topdir is None:
             env = "SPECTRO_REDUX"
             try:
-                ir = int(run2d)
+                _ = int(run2d)
             except ValueError:
                 env = 'BOSS_SPECTRO_REDUX'
             topdir = os.environ[env]
@@ -1318,7 +1317,7 @@ def template_metadata(inputfile, verbose=False):
         except KeyError:
             raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
         except ValueError:
-            raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+            raise ValueError('The {0} keyword has invalid value, {1}!'.format(key, par[key]))
     slist = par['EIGENOBJ']
     for r in ('run2d', 'run1d'):
         try:
@@ -1335,7 +1334,7 @@ def template_metadata(inputfile, verbose=False):
             except KeyError:
                 raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
             except ValueError:
-                raise ValueError('The {0} keyword has invalid value, {0}!'.format(key, par[key]))
+                raise ValueError('The {0} keyword has invalid value, {1}!'.format(key, par[key]))
     return (slist, metadata)
 
 
@@ -1359,7 +1358,6 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     """
     import pickle
     from astropy.constants import c as cspeed
-    from .. import uniq
     from .. import __version__ as pydl_version
     from ..goddard.astro import get_juldate
     from ..pydlutils.image import djs_maskinterp
@@ -1421,7 +1419,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         #
         try:
             objdloglam = float(metadata['binsz'])
-        except:
+        except (KeyError, ValueError):
             objdloglam = spplate['loglam'][0, 1] - spplate['loglam'][0, 0]
         if metadata['object'].lower() == 'star':
             newloglam = spplate['loglam'][0, :]
@@ -1515,7 +1513,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
             fig = plt.figure(dpi=100)
             ax = fig.add_subplot(111)
             for l in range(istart, iend+1):
-                p = ax.plot(10.0**pcaflux['newloglam'],
+                _ = ax.plot(10.0**pcaflux['newloglam'],
                             pcaflux['newflux'][l, :] + separation*(l % nfluxes),
                             colorvec[l % len(colorvec)]+'-',
                             linewidth=1)
@@ -1530,7 +1528,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     #
     fig = plt.figure(dpi=100)
     ax = fig.add_subplot(111)
-    p = ax.plot(10.0**pcaflux['newloglam'], (pcaflux['newivar'] == 0).sum(0)/float(nspectra), 'k-')
+    _ = ax.plot(10.0**pcaflux['newloglam'], (pcaflux['newivar'] == 0).sum(0)/float(nspectra), 'k-')
     ax.set_xlabel(r'Wavelength [$\AA$]')
     ax.set_ylabel('Fraction of spectra with missing data')
     ax.set_title('Missing Data')
@@ -1543,7 +1541,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     if 'usemask' in pcaflux:
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
-        p = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
+        _ = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
                         pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-',
                         10.0**pcaflux['newloglam'],
                         np.zeros(pcaflux['newloglam'].shape,
@@ -1564,9 +1562,9 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         aratio30 = pcaflux['acoeff'][:, 3]/pcaflux['acoeff'][:, 0]
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
-        p = ax.plot(aratio10, aratio20, marker='None', linestyle='None')
+        _ = ax.plot(aratio10, aratio20, marker='None', linestyle='None')
         for k in range(len(aratio10)):
-            t = ax.text(aratio10[k], aratio20[k],
+            _ = ax.text(aratio10[k], aratio20[k],
                         '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
                         horizontalalignment='center', verticalalignment='center',
                         color=colorvec[k % len(colorvec)],
@@ -1580,9 +1578,9 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         plt.close(fig)
         fig = plt.figure(dpi=100)
         ax = fig.add_subplot(111)
-        p = ax.plot(aratio20, aratio30, marker='None', linestyle='None')
+        _ = ax.plot(aratio20, aratio30, marker='None', linestyle='None')
         for k in range(len(aratio10)):
-            t = ax.text(aratio20[k], aratio30[k],
+            _ = ax.text(aratio20[k], aratio30[k],
                         '{0:04d}-{1:04d}'.format(slist.plate[k], slist.fiberid[k]),
                         horizontalalignment='center', verticalalignment='center',
                         color=colorvec[k % len(colorvec)],
@@ -1790,8 +1788,8 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
             nkeep = 2
         if metadata['method'].lower() == 'pca':
             pcaflux1 = pca_solve(newflux[indx, :], newivar[indx, :],
-                                niter=metadata['niter'], nkeep=nkeep,
-                                verbose=verbose)
+                                 niter=metadata['niter'], nkeep=nkeep,
+                                 verbose=verbose)
         elif metadata['method'].lower() == 'hmf':
             hmf = HMF(newflux[indx, :], newivar[indx, :],
                       K=metadata['nkeep'],
@@ -1871,7 +1869,7 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
                 ax.set_xlabel(r'Wavelength [$\AA$]')
                 ax.set_ylabel('Flux [arbitrary units]')
                 ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
-            t = ax.text(10.0**newloglam[-1], plotflux[-1],
+            _ = ax.text(10.0**newloglam[-1], plotflux[-1],
                         subclasslist[isub],
                         horizontalalignment='right', verticalalignment='center',
                         color=colorvec[isub % len(colorvec)], fontproperties=smallfont)
@@ -1954,12 +1952,12 @@ def wavevector(minfullwave, maxfullwave, zeropoint=3.5, binsz=1.0e-4,
     if wavemin is not None:
         spotmin = 0
         spotmax = int((maxfullwave - wavemin)/binsz)
-        wavemax = spotmax * binsz + wavemin
+        # wavemax = spotmax * binsz + wavemin
     else:
         spotmin = int((minfullwave - zeropoint)/binsz) + 1
         spotmax = int((maxfullwave - zeropoint)/binsz)
         wavemin = spotmin * binsz + zeropoint
-        wavemax = spotmax * binsz + zeropoint
+        # wavemax = spotmax * binsz + zeropoint
     nfinalpix = spotmax - spotmin + 1
     finalwave = np.arange(nfinalpix, dtype='d') * binsz + wavemin
     return finalwave

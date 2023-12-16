@@ -25,7 +25,7 @@ def test_djs_laxisgen():
     assert (l == djs_laxisgen((4, 4))).all()
     assert (l.T == djs_laxisgen((4, 4), iaxis=1)).all()
     with pytest.raises(ValueError):
-        foo = djs_laxisgen((4, 4), iaxis=2)
+        _ = djs_laxisgen((4, 4), iaxis=2)
     #
     # 3d
     #
@@ -37,12 +37,12 @@ def test_djs_laxisgen():
     assert (l.swapaxes(0, 1) == djs_laxisgen((4, 4, 4), iaxis=1)).all()
     assert (l.swapaxes(0, 2) == djs_laxisgen((4, 4, 4), iaxis=2)).all()
     with pytest.raises(ValueError):
-        foo = djs_laxisgen((4, 4, 4), iaxis=3)
+        _ = djs_laxisgen((4, 4, 4), iaxis=3)
     #
     # More d
     #
     with pytest.raises(ValueError):
-        foo = djs_laxisgen((4, 4, 4, 4))
+        _ = djs_laxisgen((4, 4, 4, 4))
 
 
 def test_djs_laxisnum():
@@ -60,7 +60,7 @@ def test_djs_laxisnum():
     assert (l == djs_laxisnum((4, 4))).all()
     assert (l.T == djs_laxisnum((4, 4), iaxis=1)).all()
     with pytest.raises(ValueError):
-        foo = djs_laxisnum((4, 4), iaxis=2)
+        _ = djs_laxisnum((4, 4), iaxis=2)
     #
     # 3d
     #
@@ -72,12 +72,12 @@ def test_djs_laxisnum():
     assert (l.swapaxes(0, 1) == djs_laxisnum((4, 4, 4), iaxis=1)).all()
     assert (l.swapaxes(0, 2) == djs_laxisnum((4, 4, 4), iaxis=2)).all()
     with pytest.raises(ValueError):
-        foo = djs_laxisnum((4, 4, 4), iaxis=3)
+        _ = djs_laxisnum((4, 4, 4), iaxis=3)
     #
     # More d
     #
     with pytest.raises(ValueError):
-        foo = djs_laxisnum((4, 4, 4, 4))
+        _ = djs_laxisnum((4, 4, 4, 4))
 
 
 def test_hogg_iau_name():
@@ -174,7 +174,7 @@ def test_struct_print():
     with tempfile.NamedTemporaryFile(delete=False) as spf1:
         spf1_name = spf1.name
         lines, css = struct_print(slist, silent=True,
-            filename=spf1_name)
+                                  filename=spf1_name)
     with open(spf1_name, 'rb') as f:
         data = f.read().decode('utf-8')
     assert "\n".join(lines)+"\n" == data

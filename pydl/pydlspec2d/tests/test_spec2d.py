@@ -7,7 +7,7 @@ import pytest
 import numpy as np
 from astropy.io import fits
 from astropy.utils.data import get_pkg_data_filename
-from ..spec2d import aesthetics, combine1fiber, filter_thru
+from ..spec2d import aesthetics, filter_thru
 from .. import Pydlspec2dException
 
 
@@ -90,7 +90,7 @@ def prepare_data():
     spPlateOut = os.path.join(os.path.dirname(__file__), 't',
                               'spPlate-4055-55359-0020.fits')
     with fits.open(spPlate) as hdulist:
-        newhdu = fits.PrimaryHDU(hdulist[0].data[0:20, :],
+        newhdu = fits.PrimaryHDU(hdulist[0].data[0:nTrace, :],
                                  header=hdulist[0].header)
         newhdulist = fits.HDUList([newhdu])
         newhdulist.writeto(spPlateOut)
