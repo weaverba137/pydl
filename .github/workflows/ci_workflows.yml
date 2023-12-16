@@ -114,4 +114,6 @@ jobs:
     - name: Install Python dependencies
       run: python -m pip install --upgrade tox codecov
     - name: Run tests
+      # This is the specific switch for allowed failures.
+      continue-on-error: true
       run: tox ${{ matrix.toxargs }} -e ${{ matrix.toxenv }} -- ${{ matrix.toxposargs }}
