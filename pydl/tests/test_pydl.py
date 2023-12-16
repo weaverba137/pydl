@@ -262,7 +262,11 @@ def test_smooth():
 def test_uniq():
     items = np.array([1, 2, 3, 1, 5, 6, 1, 7, 3, 2, 5, 9, 11, 1])
     items_sorted = np.sort(items)
-    items_argsorted = np.argsort(items)
+    #
+    # On some systems, kind='quicksort', which is the default, gives different
+    # results depending on numpy version.
+    #
+    items_argsorted = np.argsort(items, kind='stable')
     #
     # Test pre-sorted array.
     #

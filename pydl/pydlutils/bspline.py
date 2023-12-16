@@ -542,6 +542,9 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
             maxiter=10, **kwargs):
     """Iteratively fit a B-spline set to data, with rejection.
 
+    Additional keyword parameters are passed to
+    :class:`~pydl.pydlutils.bspline.bspline`.
+
     Parameters
     ----------
     xdata : :class:`numpy.ndarray`
@@ -626,6 +629,8 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     ywork = ydata[xsort]
     invwork = invvar[xsort]
     if x2 is not None:
+        warn('2D bspline fits may be buggy and will be fully removed in the future.',
+             DeprecationWarning)
         x2work = x2[xsort]
     else:
         x2work = None
