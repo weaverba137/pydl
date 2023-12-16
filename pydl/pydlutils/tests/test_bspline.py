@@ -42,6 +42,7 @@ def test_iterfit():
     # print(yfit)
     # pylab.plot(x, y, 'k-', x, yfit, 'r-')
 
+
 def test_iterfit_2d():
     y0 = np.array([0.661984, 0.134913, 0.0410350, 0.940134, 0.411034,
                    0.484675, 0.169943, 0.325046, 0.269194, 0.552381,
@@ -74,6 +75,7 @@ def test_iterfit_2d():
     assert str(w[0].message) == '2D bspline fits may be buggy and will be fully removed in the future.'
     assert sset.npoly == 1
     assert sset.funcname == 'legendre'
+
 
 def test_cholesky_band():
     ab = np.array([[8., 9., 10., 11., 12., 13., 14., 0., 0., 0.],
