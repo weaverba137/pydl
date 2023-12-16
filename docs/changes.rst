@@ -8,13 +8,13 @@ PyDL Changelog
 * Update testing infrastructure (PR `#67`_).
 * Update links to documentation (PR `#64`_).
 * Remove support for 2-dimensional B-spline, which is better supported in
-  other packages such as PypeIt_ or specreduce_ (PR `#69`_).
-* Use specutils_ as an informal template for Python packaging boilerplate (PR `#69`_).
+  other packages such as PypeIt_ or specreduce_ (PR `#73`_).
+* Use specutils_ as an informal template for Python packaging boilerplate (PR `#73`_).
 * Change Harris Geospatial to NV5 Geospatial.
 
 .. _`#64`: https://github.com/weaverba137/pydl/pull/64
 .. _`#67`: https://github.com/weaverba137/pydl/pull/67
-.. _`#69`: https://github.com/weaverba137/pydl/pull/69
+.. _`#73`: https://github.com/weaverba137/pydl/pull/73
 .. _PypeIt: https://pypeit.readthedocs.io/en/release/index.html
 .. _specreduce: https://specreduce.readthedocs.io/en/latest/
 .. _specutils: https://specutils.readthedocs.io/en/latest/
