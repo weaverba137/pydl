@@ -1,19 +1,8 @@
-include README.rst
-include CITATION.cff
-include setup.cfg
-include LICENSE.rst
-include pyproject.toml
-
-# recursive-include pydl *.pyx *.c *.pxd
-recursive-include docs *
-recursive-include pydl/*/data/* *
-recursive-include pydl/tests/t *
-recursive-include pydl/*/tests/t *
-# recursive-include cextern *
-# recursive-include scripts *
-
 prune build
 prune docs/_build
 prune docs/api
-
+prune .github
+exclude .gitignore
+exclude .mailmap
+exclude .readthedocs.yml
 global-exclude *.pyc *.o
