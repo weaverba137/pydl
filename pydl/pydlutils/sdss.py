@@ -117,14 +117,14 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
             else:
                 iversion = 'tags/'+photolog_version
             baseurl = ('https://svn.sdss.org/public/data/sdss/photolog/' +
-                        '{0}/opfiles/opBadfields.par').format(iversion)
+                       '{0}/opfiles/opBadfields.par').format(iversion)
             filename = download_file(baseurl, cache=True)
         else:
             filename = os.path.join(os.getenv('PHOTOLOG_DIR'), 'opfiles',
-                            'opBadfields.par')
+                                    'opBadfields.par')
         astrombadfile = yanny(filename)
         w = ((astrombadfile['BADFIELDS']['problem'] == 'astrom'.encode()) |
-            (astrombadfile['BADFIELDS']['problem'] == 'rotator'.encode()))
+             (astrombadfile['BADFIELDS']['problem'] == 'rotator'.encode()))
         opbadfields = astrombadfile['BADFIELDS'][w]
     #
     # opbadfields already has astrom problems selected at this point
@@ -132,7 +132,7 @@ def sdss_astrombad(run, camcol, field, photolog_version='dr10'):
     bad = np.zeros(run.shape, dtype=bool)
     for row in opbadfields:
         w = ((run == row['run']) &
-        (field >= row['firstfield']) & (field < row['lastfield']))
+             (field >= row['firstfield']) & (field < row['lastfield']))
         if w.any():
             bad[w] = True
     return bad
@@ -405,17 +405,17 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None,
     # Compute the objid
     #
     objid = ((skyversion << 59) |
-        (rerun << 48) |
-        (run << 32) |
-        (camcol << 29) |
-        (firstfield << 28) |
-        (field << 16) |
-        (objnum))
+             (rerun << 48) |
+             (run << 32) |
+             (camcol << 29) |
+             (firstfield << 28) |
+             (field << 16) |
+             (objnum))
     return objid
 
 
 def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
-    """Convert SDSS spectrum identifiers into CAS-style specObjID.
+    r"""Convert SDSS spectrum identifiers into CAS-style specObjID.
 
     Bits are assigned in specObjID thus:
 
@@ -467,7 +467,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
       SDSS DR8 and subsequent data releases.  It is not compatible with
       SDSS DR7 or earlier.
     * If the string form of `run2d` is used, the bits are assigned by
-      the formula :math:`(N - 5) \\times 10000 + M \\times 100 + P`.
+      the formula :math:`(N - 5) \times 10000 + M \times 100 + P`.
 
     Examples
     --------
@@ -478,14 +478,14 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
     if line is not None and index is not None:
         raise ValueError("line and index inputs cannot both be non-zero!")
     if isinstance(plate, int):
-        plate = np.array([plate], dtype=np.uint64)
+        plate = np.array([plate])
     if isinstance(fiber, int):
-        fiber = np.array([fiber], dtype=np.uint64)
+        fiber = np.array([fiber])
     if isinstance(mjd, int):
-        mjd = np.array([mjd], dtype=np.uint64) - 50000
+        mjd = np.array([mjd]) - 50000
     if isinstance(run2d, str):
         try:
-            run2d = np.array([int(run2d)], dtype=np.uint64)
+            run2d = np.array([int(run2d)])
         except ValueError:
             # Try a "vN_M_P" string.
             m = re.match(r'v(\d+)_(\d+)_(\d+)', run2d)
@@ -496,17 +496,17 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
             run2d = np.array([(int(N) - 5)*10000 + int(M) * 100 + int(P)],
                              dtype=np.uint64)
     elif isinstance(run2d, int):
-        run2d = np.array([run2d], dtype=np.uint64)
+        run2d = np.array([run2d])
     if line is None:
         line = np.zeros(plate.shape, dtype=plate.dtype)
     else:
         if isinstance(line, int):
-            line = np.array([line], dtype=np.uint64)
+            line = np.array([line])
     if index is None:
         index = np.zeros(plate.shape, dtype=plate.dtype)
     else:
         if isinstance(index, int):
-            index = np.array([index], dtype=np.uint64)
+            index = np.array([index])
     #
     # Check that all inputs have the same shape.
     #
@@ -538,11 +538,11 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
     #
     # Compute the specObjID
     #
-    specObjID = ((plate << 50) |
-                 (fiber << 38) |
-                 (mjd << 24) |
-                 (run2d << 10) |
-                 (line | index))
+    specObjID = ((plate.astype(np.uint64) << 50) |
+                 (fiber.astype(np.uint64) << 38) |
+                 (mjd.astype(np.uint64) << 24) |
+                 (run2d.astype(np.uint64) << 10) |
+                 (line.astype(np.uint64) | index.astype(np.uint64)))
     return specObjID
 
 
@@ -599,7 +599,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     ira = np.array([ra])
     idec = np.array([dec])
     m1, m2, d12 = spherematch(index['RA'], index['DEC'], ira, idec,
-                                radius+0.36, maxmatch=0)
+                              radius+0.36, maxmatch=0)
     if len(m1) == 0:
         return None
     if not allobj:
@@ -613,7 +613,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     #
     if allobj:
         n = index['IEND'][m1] - index['ISTART'][m1] + 1
-        ntot = (where(n > 0, n, np.zeros(n.shape, dtype=n.dtype))).sum()
+        ntot = (np.where(n > 0, n, np.zeros(n.shape, dtype=n.dtype))).sum()
     else:
         ntot = index['NPRIMARY'][m1].sum()
     #
@@ -642,8 +642,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
             # Read in the rows of that file
             #
             swfile = os.path.join(os.getenv('PHOTO_SWEEP'), rerun,
-                            'calibObj-{0:06d}-{1:1d}-{2}.fits.gz'.format(
-                            int(run), int(camcol), stype))
+                                  f'calibObj-{run:06d}-{camcol:1d}-{stype}.fits.gz')
             with fits.open(swfile) as f:
                 tmp_objs = f[1].data[ist:ind]
             if tmp_objs.size > 0:
@@ -659,8 +658,8 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
                     #
                     if not allobj:
                         w = ((tmp_objs['RESOLVE_STATUS'] &
-                            sdss_flagval('RESOLVE_STATUS',
-                                        'SURVEY_PRIMARY')) > 0)
+                             sdss_flagval('RESOLVE_STATUS',
+                                          'SURVEY_PRIMARY')) > 0)
                         if w.any():
                             tmp_objs = tmp_objs[w]
                         else:
@@ -760,8 +759,7 @@ def unwrap_specobjid(specObjID, run2d_integer=False, specLineIndex=False):
               dtype=[('plate', '<i4'), ('fiber', '<i4'), ('mjd', '<i4'), ('run2d', '<U8'), ('line', '<i4')])
 
     """
-    if (specObjID.dtype.type is np.string_ or
-        specObjID.dtype.type is np.unicode_):
+    if (specObjID.dtype.type is np.string_ or specObjID.dtype.type is np.unicode_):
         tempobjid = specObjID.astype(np.uint64)
     elif specObjID.dtype.type is np.uint64:
         tempobjid = specObjID.copy()

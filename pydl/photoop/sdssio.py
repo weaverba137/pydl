@@ -31,8 +31,7 @@ _name_formats = {
     'reObjGlobal': "{ftype}-{run:06d}-{camcol:1d}-{field:04d}.fits",
     'reObjRun': "{ftype}-{run:06d}-{camcol:1d}-{field:04d}.fits",
     'reObjTmp': "{ftype}-{run:06d}-{camcol:1d}-{field:04d}.fits",
-    'tsField': "{ftype}-{run:06d}-{camcol:1d}-{rerun}-{field:04d}.fit",
-    }
+    'tsField': "{ftype}-{run:06d}-{camcol:1d}-{rerun}-{field:04d}.fit"}
 
 
 _path_formats = {
@@ -57,8 +56,7 @@ _path_formats = {
     'reObjGlobal': "{resolve}/{rerun}/{run:d}/resolve/{camcol:1d}",
     'reObjRun': "{redux}/{rerun}/{run:d}/resolve/{camcol:1d}",
     'reObjTmp': "{resolve}/{rerun}/{run:d}/resolve/{camcol:1d}",
-    'tsField': "{redux}/{rerun}/{run:d}/calibChunks/{camcol:1d}",
-    }
+    'tsField': "{redux}/{rerun}/{run:d}/calibChunks/{camcol:1d}"}
 
 
 def filtername(f):
@@ -219,18 +217,16 @@ def sdss_path(ftype, run, camcol=0, rerun=''):
         If the file type is unknown.
 
     """
-    indict = {
-        'run': run,
-        'camcol': camcol,
-        'rerun': rerun,
-        'calib': os.getenv('PHOTO_CALIB'),
-        'data': os.getenv('PHOTO_DATA'),
-        'photoobj': os.getenv('BOSS_PHOTOOBJ'),
-        'redux': os.getenv('PHOTO_REDUX'),
-        'resolve': os.getenv('PHOTO_RESOLVE'),
-        'sky': os.getenv('PHOTO_SKY'),
-        'sweep': os.getenv('PHOTO_SWEEP'),
-        }
+    indict = {'run': run,
+              'camcol': camcol,
+              'rerun': rerun,
+              'calib': os.getenv('PHOTO_CALIB'),
+              'data': os.getenv('PHOTO_DATA'),
+              'photoobj': os.getenv('BOSS_PHOTOOBJ'),
+              'redux': os.getenv('PHOTO_REDUX'),
+              'resolve': os.getenv('PHOTO_RESOLVE'),
+              'sky': os.getenv('PHOTO_SKY'),
+              'sweep': os.getenv('PHOTO_SWEEP')}
     try:
         datadir = _path_formats[ftype].format(**indict)
     except KeyError:

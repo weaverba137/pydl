@@ -817,7 +817,8 @@ class yanny(OrderedDict):
 
             >>> from os.path import dirname
             >>> from pydl.pydlutils.yanny import yanny
-            >>> new_dict = yanny(dirname(__file__)+'/tests/t/test.par').new_dict_from_pairs()
+            >>> y = yanny(dirname(__file__)+'/tests/t/test.par')
+            >>> new_dict = y.new_dict_from_pairs()
             >>> new_dict['mjd']
             '54579'
             >>> new_dict['alpha']
@@ -835,12 +836,13 @@ class yanny(OrderedDict):
 
         This assumes that the filename used to create the object was not that
         of a pre-existing file.  If a file of the same name is detected,
-        this method will *not* attempt to overwrite it, but will print a warning.
-        This also assumes that the special 'symbols' key has been properly
-        created.  This will not necessarily make the file very human-readable,
-        especially if the data lines are long.  If the name of a new file is
-        given, it will write to the new file (assuming it doesn't exist).
-        If the writing is successful, the data in the object will be updated.
+        this method will *not* attempt to overwrite it, but will print a
+        warning. This also assumes that the special 'symbols' key has been
+        properly created.  This will not necessarily make the file very
+        human-readable, especially if the data lines are long. If the name of a
+        new file is given, it will write to the new file (assuming it doesn't
+        exist). If the writing is successful, the data in the object will be
+        updated.
 
         Parameters
         ----------
@@ -863,9 +865,15 @@ class yanny(OrderedDict):
                   "{0} exists, aborting write!".format(newfile))
         if comments is None:
             basefile = os.path.basename(newfile)
-            timestamp = datetime.datetime.utcnow().strftime(
-                        '%Y-%m-%d %H:%M:%S UTC')
-            comments = "#\n# {0}\n#\n# Created by pydl.pydlutils.yanny.yanny\n#\n# {1}\n#\n".format(basefile, timestamp)
+            timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            comments = f"""#
+# {basefile}
+#
+# Created by pydl.pydlutils.yanny.yanny
+#
+# {timestamp}
+#
+"""
         else:
             if isinstance(comments, (str,)):
                 if not comments.startswith('#'):
@@ -939,8 +947,7 @@ class yanny(OrderedDict):
         if not isinstance(datatable, dict):
             raise ValueError("Data to append is not of the correct type. " +
                              "Use a dict!")
-        timestamp = datetime.datetime.utcnow().strftime(
-                    '%Y-%m-%d %H:%M:%S UTC')
+        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
         contents = ''
         #
         # Print any key/value pairs
@@ -997,7 +1004,7 @@ class yanny(OrderedDict):
 
         Parsing proceeds in this order:
 
-        #. Lines that end with a backslash character ``\`` are reattached
+        #. Lines that end with a backslash character are reattached
            to following lines.
         #. Structure & enum definitions are identified, saved into the
            'symbols' dictionary & stripped from the contents.
@@ -1042,12 +1049,10 @@ class yanny(OrderedDict):
         #
         # Find structure & enumeration definitions & strip them out
         #
-        self._symbols['struct'] = re.findall(
-                                    r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;',
-                                    lines)
-        self._symbols['enum'] = re.findall(
-                                  r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;',
-                                  lines)
+        self._symbols['struct'] = re.findall(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;',
+                                             lines)
+        self._symbols['enum'] = re.findall(r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;',
+                                           lines)
         lines = re.sub(r'typedef\s+struct\s*\{[^}]+\}\s*\w+\s*;', '', lines)
         lines = re.sub(r'typedef\s+enum\s*\{[^}]+\}\s*\w+\s*;', '', lines)
         #
@@ -1110,8 +1115,8 @@ class yanny(OrderedDict):
                             if self.isarray(uckey, column):
                                 #
                                 # An array value
-                                # if it's character data, it won't be
-                                # delimited by {} unless it is a multidimensional
+                                # if it's character data, it won't be delimited
+                                # by {} unless it is a multidimensional
                                 # string array.  It may or may not be delimited
                                 # by double quotes
                                 #
@@ -1159,9 +1164,9 @@ def write_ndarray_to_yanny(filename, datatables, structnames=None,
     ----------
     filename : :class:`str`
         The name of a parameter file.
-    datatables : :class:`numpy.ndarray`, :class:`numpy.recarray` or :class:`list` of these.
+    datatables : :class:`numpy.ndarray`, :class:`numpy.recarray`, :class:`list`
         A NumPy record array containing data that can be copied into a
-        `yanny` object.
+        `yanny` object. A :class:`list` *containing* arrays can also be passed.
     structnames : :class:`str` or :class:`list` of :class:`str`, optional
         The name(s) to give the structure(s) in the yanny file.  Defaults to
         'MYSTRUCT0'.

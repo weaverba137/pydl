@@ -110,7 +110,7 @@ def gcirc(ra1, dec1, ra2, dec2, units=2):
     deldec2 = (dcrad2-dcrad1)/2.0
     delra2 = (rarad2-rarad1)/2.0
     sindis = np.sqrt(np.sin(deldec2)*np.sin(deldec2) +
-                  np.cos(dcrad1)*np.cos(dcrad2)*np.sin(delra2)*np.sin(delra2))
+                     np.cos(dcrad1)*np.cos(dcrad2)*np.sin(delra2)*np.sin(delra2))
     dis = 2.0*np.arcsin(sindis)
     if units == 0:
         return dis

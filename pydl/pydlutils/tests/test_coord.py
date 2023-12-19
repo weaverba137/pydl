@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Test the functions in pydl.pydlutils.coord.
 """
-import numpy as np
 from astropy import units as u
 from astropy.coordinates import ICRS
 from ..coord import SDSSMuNu, current_mjd, stripe_to_eta, stripe_to_incl

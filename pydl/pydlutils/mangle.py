@@ -210,7 +210,7 @@ class ManglePolygon(object):
         return kmin
 
     def garea(self):
-        """Compute the area of a polygon.
+        r"""Compute the area of a polygon.
 
         See [1]_ for the detailed area formula, which is summarized here:
 
@@ -679,7 +679,7 @@ def read_mangle_polygons(filename):
         lines = ply.readlines()
     lines = [l.strip() for l in lines]
     try:
-        npoly = int(lines[0].strip().split()[0])
+        _ = int(lines[0].strip().split()[0])
     except ValueError:
         raise PydlutilsException(("Invalid first line of {0}!  " +
                                   "Are you sure this is a Mangle " +
@@ -759,8 +759,7 @@ def set_use_caps(polygon, index_list, add=False, tol=1.0e-10,
                             if ((np.absolute(polygon.cm[i] -
                                              polygon.cm[j]) < tol) or
                                 ((polygon.cm[i] +
-                                  polygon.cm[j]) < tol and
-                                  not allow_neg_doubles)):
+                                  polygon.cm[j]) < tol and not allow_neg_doubles)):
                                 #
                                 # Don't use
                                 #

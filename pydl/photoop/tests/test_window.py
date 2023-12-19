@@ -6,7 +6,7 @@ import os
 import pytest
 import numpy as np
 from .. import PhotoopException
-from ..window import sdss_score, window_read, window_score
+from ..window import window_read, window_score
 from ...pydlutils.mangle import FITS_polygon
 
 
@@ -32,9 +32,11 @@ def fits_open(request):
 def table_read(request):
     data_size = 10
     m = request.getfixturevalue("mocker")
+
     class fake_table(dict):
         def __len__(self):
             return data_size
+
     hh = fake_table()
     hh['SCORE'] = np.zeros((data_size,), dtype=np.int16)
     hh['IPRIMARY'] = np.zeros((data_size,), dtype=np.int16)

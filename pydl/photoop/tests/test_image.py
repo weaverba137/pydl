@@ -13,7 +13,7 @@ def test_sdss_psf_recon():
     with fits.open(psField) as hdulist:
         psf = sdss_psf_recon(hdulist[3].data, 600, 500)
     assert np.allclose(psf[23:26, 25],
-                       np.array([0.02220068,  0.0738798 ,  0.11940149]))
+                       np.array([0.02220068, 0.0738798, 0.11940149]))
 
 
 def test_sdss_psf_norm():
@@ -22,7 +22,7 @@ def test_sdss_psf_norm():
         psf = sdss_psf_recon(hdulist[3].data, 600, 500, normalize=100.0)
     assert np.allclose(psf.sum(), 100.0)
     assert np.allclose(psf[23:26, 25],
-                       np.array([2.194198,   7.301887,  11.801009]))
+                       np.array([2.194198, 7.301887, 11.801009]))
 
 
 def test_sdss_psf_recon_trim():
@@ -31,4 +31,4 @@ def test_sdss_psf_recon_trim():
         psf = sdss_psf_recon(hdulist[3].data, 600, 500, trimdim=(25, 25))
     # print(psf)
     assert np.allclose(psf[10:13, 12],
-                       np.array([0.02220068,  0.0738798 ,  0.11940149]))
+                       np.array([0.02220068, 0.0738798, 0.11940149]))

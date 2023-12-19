@@ -42,12 +42,10 @@ class computechi2(object):
         else:
             self.nstar = 1
         self.bvec = bvec * sqivar
-        self.mmatrix = self.amatrix * np.tile(sqivar, self.nstar).reshape(
-                       self.nstar, bvec.size).transpose()
+        self.mmatrix = self.amatrix * np.tile(sqivar, self.nstar).reshape(self.nstar, bvec.size).transpose()
         mm = np.dot(self.mmatrix.T, self.mmatrix)
         self.uu, self.ww, self.vv = svd(mm, full_matrices=False)
-        self.mmi = np.dot((self.vv.T / np.tile(self.ww, self.nstar).reshape(
-                   self.nstar, self.nstar)), self.uu.T)
+        self.mmi = np.dot((self.vv.T / np.tile(self.ww, self.nstar).reshape(self.nstar, self.nstar)), self.uu.T)
         return
 
     @au.lazyproperty
@@ -59,7 +57,7 @@ class computechi2(object):
 
     @au.lazyproperty
     def chi2(self):
-        """(:class:`float <numpy.generic>`) The :math:`\chi^2` value of the fit.
+        r"""(:class:`float <numpy.generic>`) The :math:`\chi^2` value of the fit.
         """
         return np.sum((np.dot(self.mmatrix, self.acoeff) - self.bvec)**2)
 
@@ -145,22 +143,20 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 return median(array, width)
             else:
                 raise ValueError('Unsupported number of dimensions with ' +
-                                'this boundary condition.')
+                                 'this boundary condition.')
         elif boundary == 'reflect':
             padsize = int(np.ceil(width/2.0))
             if array.ndim == 1:
                 bigarr = np.zeros(array.shape[0]+2*padsize, dtype=array.dtype)
                 bigarr[padsize:padsize+array.shape[0]] = array
                 bigarr[0:padsize] = array[0:padsize][::-1]
-                bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (
-                        array[array.shape[0]-padsize:array.shape[0]][::-1])
+                bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (array[array.shape[0]-padsize:array.shape[0]][::-1])
                 f = median(bigarr, width)
                 medarray = f[padsize:padsize+array.shape[0]]
                 return medarray
             elif array.ndim == 2:
                 bigarr = np.zeros((array.shape[0]+2*padsize,
-                                    array.shape[1]+2*padsize),
-                                    dtype=array.dtype)
+                                   array.shape[1]+2*padsize), dtype=array.dtype)
                 bigarr[padsize:padsize+array.shape[0], padsize:padsize+array.shape[1]] = array
                 # Copy into top + bottom
                 bigarr[0:padsize, padsize:array.shape[1]+padsize] = array[0:padsize, :][::-1, :]
@@ -181,7 +177,7 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 return medarray
             else:
                 raise ValueError('Unsupported number of dimensions with ' +
-                                'this boundary condition.')
+                                 'this boundary condition.')
         elif boundary == 'nearest':
             raise ValueError('This boundary condition not implemented')
         elif boundary == 'wrap':
@@ -228,10 +224,16 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     maxrej : :class:`int` or :class:`numpy.ndarray`, optional
         Maximum number of points to reject in this iteration.  If `groupsize` or
         `groupdim` are set to arrays, this should be an array as well.
-    groupdim
-        To be documented.
-    groupsize
-        To be documented.
+    groupdim : :class:`int` or :class:`numpy.ndarray`, optional
+        Dimension along which to group the data; set to 1 to group
+        along the 1st dimension, 2 for the 2nd dimension, etc.
+        If `data` has dimensions ``(100, 200)``, then setting ``groupdim=2``
+        is equivalent to grouping the data with ``groupsize=100``.
+        In either case, there are 200 groups, specified by ``[*, i]``.
+    groupsize : :class:`int` or :class:`numpy.ndarray`, optional
+        If this and `maxrej` are set, then reject a maximum of `maxrej`
+        points per group of `groupsize` points.  If `groupdim` is also
+        set, then this specifies sub-groups within that.
     groupbadpix : :class:`bool`, optional
         If set to ``True``, consecutive sets of bad pixels are considered groups,
         overriding the values of `groupsize`.
@@ -253,6 +255,10 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
     ------
     :exc:`ValueError`
         If dimensions of various inputs do not match.
+
+    Notes
+    -----
+    The original code may not have been well tested with multidimensional data.
     """
     #
     # Create outmask setting = 1 for good data.
@@ -353,10 +359,10 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
             # Assign an index number in this dimension to each data point.
             #
             if len(groupdim) > 0:
-                yndim = len(ydata.shape)
+                yndim = len(data.shape)
                 if groupdim[iloop] > yndim:
-                    raise ValueError('groupdim is larger than the number of dimensions for ydata.')
-                dimnum = djs_laxisnum(ydata.shape, iaxis=groupdim[iloop]-1)
+                    raise ValueError('groupdim is larger than the number of dimensions for data.')
+                dimnum = djs_laxisnum(data.shape, iaxis=groupdim[iloop]-1)
             else:
                 dimnum = np.asarray([0])
             #
@@ -385,7 +391,8 @@ def djs_reject(data, model, outmask=None, inmask=None, sigma=None,
                     # The IDL version of this test makes no sense because
                     # groupsize will always be set.
                     #
-                    if 'groupsize' in kwargs:
+                    # if 'groupsize' in kwargs:
+                    if groupsize is not None:
                         ngroups = nin/groupsize + 1
                         groups_lower = np.arange(ngroups, dtype='i4')*groupsize
                         foo = (np.arange(ngroups, dtype='i4')+1)*groupsize

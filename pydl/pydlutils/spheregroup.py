@@ -41,8 +41,7 @@ class chunks(object):
             decMin = -90.0
         if decMax > 90.0 - 3.0*minSize:
             decMax = 90.0
-        self.decBounds = decMin + ((decMax - decMin) * np.arange(self.nDec + 1,
-                                    dtype='d'))/float(self.nDec)
+        self.decBounds = decMin + ((decMax - decMin) * np.arange(self.nDec + 1, dtype='d'))/float(self.nDec)
         #
         # Find ra offset which minimizes the range in ra (this should take care
         # of the case that ra crosses zero in some parts
@@ -96,8 +95,8 @@ class chunks(object):
             if self.decBounds[i] == -90.0 or self.decBounds[i+1] == 90.0:
                 self.nRa[i] = 1
             self.raBounds.append(raMinTmp +
-                (raMaxTmp - raMinTmp) * np.arange(self.nRa[i] + 1, dtype='d') /
-                float(self.nRa[i]))
+                                 (raMaxTmp - raMinTmp) * np.arange(self.nRa[i] + 1, dtype='d') /
+                                 float(self.nRa[i]))
         #
         # Create an empty set of lists to hold the output of self.assign()
         #
@@ -200,8 +199,8 @@ class chunks(object):
         # Find the declination slice without regard to marginSize
         #
         decChunkMin = int(np.floor((dec - self.decBounds[0]) *
-            float(self.nDec) /
-            (self.decBounds[self.nDec]-self.decBounds[0])))
+                                   float(self.nDec) /
+                                   (self.decBounds[self.nDec]-self.decBounds[0])))
         decChunkMax = decChunkMin
         if decChunkMin < 0 or decChunkMin > self.nDec - 1:
             raise PydlutilsException("decChunkMin out of range in chunks.getbounds().")
@@ -220,8 +219,8 @@ class chunks(object):
         for i in range(decChunkMin, decChunkMax+1):
             cosDecMin = self.cosDecMin(i)
             raChunkMin[i-decChunkMin] = int(np.floor((ra - self.raBounds[i][0]) *
-                float(self.nRa[i]) /
-                (self.raBounds[i][self.nRa[i]] - self.raBounds[i][0])))
+                                                     float(self.nRa[i]) /
+                                                     (self.raBounds[i][self.nRa[i]] - self.raBounds[i][0])))
             raChunkMax[i-decChunkMin] = raChunkMin[i-decChunkMin]
             if raChunkMin[i-decChunkMin] < 0 or raChunkMin[i-decChunkMin] > self.nRa[i]-1:
                 raise PydlutilsException("raChunkMin out of range in chunks.getbounds().")
@@ -257,15 +256,15 @@ class chunks(object):
         # Find dec chunk
         #
         decChunk = int(np.floor((dec - self.decBounds[0]) *
-            float(self.nDec) /
-            (self.decBounds[self.nDec]-self.decBounds[0])))
+                                float(self.nDec) /
+                                (self.decBounds[self.nDec]-self.decBounds[0])))
         #
         # Find ra chunk
         #
         if decChunk < self.nDec and decChunk >= 0:
             raChunk = int(np.floor((ra - self.raBounds[decChunk][0]) *
-                float(self.nRa[decChunk]) /
-                (self.raBounds[decChunk][self.nRa[decChunk]] - self.raBounds[decChunk][0])))
+                                   float(self.nRa[decChunk]) /
+                                   (self.raBounds[decChunk][self.nRa[decChunk]] - self.raBounds[decChunk][0])))
             if raChunk < 0 or raChunk > self.nRa[decChunk]-1:
                 raise PydlutilsException("raChunk out of range in chunks.get()")
         else:

@@ -16,15 +16,18 @@ class TestSDSS(object):
     def setup_method(self):
         pydl.pydlutils.sdss.maskbits = set_maskbits(
             maskbits_file=get_pkg_data_filename('t/testMaskbits.par'))
-        self.opbadfields = np.array([
-            (77, 'astrom', 30, 73, 'Large astrometric offset at field 39... 72'),
-            (85, 'astrom', 8, 28, 'Large astrometric offset at field 11... 27'),
-            (85, 'rotator', 242, 253, 'Large rotator offset at field 251 252'),
-            (209, 'astrom', 8, 116, 'Tel. offsets before r-band field 115 -DJS'),
-            (209, 'astrom', 137, 175, 'Tel. offsets after r-band field 145 -DJS'),
-            (250, 'astrom', 456, 468, 'Large astrometric offset -Manual'),
-            (251, 'astrom', 147, 159, 'Large astrometric offset at field 156 158')],
-            dtype=[('run', '<i4'), ('problem', 'S8'), ('firstfield', '<i4'), ('lastfield', '<i4'), ('comments', 'S47')])
+        self.opbadfields = np.array([(77, 'astrom', 30, 73, 'Large astrometric offset at field 39... 72'),
+                                     (85, 'astrom', 8, 28, 'Large astrometric offset at field 11... 27'),
+                                     (85, 'rotator', 242, 253, 'Large rotator offset at field 251 252'),
+                                     (209, 'astrom', 8, 116, 'Tel. offsets before r-band field 115 -DJS'),
+                                     (209, 'astrom', 137, 175, 'Tel. offsets after r-band field 145 -DJS'),
+                                     (250, 'astrom', 456, 468, 'Large astrometric offset -Manual'),
+                                     (251, 'astrom', 147, 159, 'Large astrometric offset at field 156 158')],
+                                    dtype=[('run', '<i4'),
+                                           ('problem', 'S8'),
+                                           ('firstfield', '<i4'),
+                                           ('lastfield', '<i4'),
+                                           ('comments', 'S47')])
         pydl.pydlutils.sdss.opbadfields = self.opbadfields
         return
 
@@ -34,17 +37,17 @@ class TestSDSS(object):
     def test_sdss_flagexist(self):
         assert sdss_flagexist('TARGET', 'ROSAT_A')
         assert sdss_flagexist('TARGET',
-                            ['rosat_a', 'rosat_b', 'rosat_c', 'rosat_d'])
+                              ['rosat_a', 'rosat_b', 'rosat_c', 'rosat_d'])
         l, f = sdss_flagexist('target', 'FOOBAR', flagexist=True)
         assert not l
         assert f
         l, which = sdss_flagexist('TARGET', ['rosat_a', 'rosat_b', 'rosat_c',
-                                'rosat_d', 'foobar'], whichexist=True)
+                                             'rosat_d', 'foobar'], whichexist=True)
         assert not l
         assert tuple(which) == (True, True, True, True, False)
         l, f, which = sdss_flagexist('TARGET', ['rosat_a', 'rosat_b',
-                                    'rosat_c', 'rosat_d', 'foobar'],
-                                    flagexist=True, whichexist=True)
+                                                'rosat_c', 'rosat_d', 'foobar'],
+                                     flagexist=True, whichexist=True)
         assert not l
         assert f
         assert tuple(which) == (True, True, True, True, False)
@@ -53,7 +56,7 @@ class TestSDSS(object):
         names = sdss_flagname('ANCILLARY_TARGET1', 2310346608843161600)
         assert tuple(names) == ('BRIGHTGAL', 'BLAZGX', 'ELG')
         names = sdss_flagname('ANCILLARY_TARGET1', 2310346608843161600,
-                            concat=True)
+                              concat=True)
         assert names == 'BRIGHTGAL BLAZGX ELG'
         with pytest.raises(KeyError):
             names = sdss_flagname('ABADMASK', 123456789)
@@ -71,19 +74,19 @@ class TestSDSS(object):
     def test_set_maskbits(self):
         maskbits = pydl.pydlutils.sdss.maskbits
         assert (set(maskbits.keys()) ==
-            set(['TARGET', 'BOSS_TARGET1', 'PRIMTARGET', 'ANCILLARY_TARGET1',
-                'ZWARNING', 'TTARGET', 'SECTARGET', 'LEGACY_TARGET2',
-                'LEGACY_TARGET1', 'SPECIAL_TARGET2', 'FLUXMATCH_STATUS']))
+                set(['TARGET', 'BOSS_TARGET1', 'PRIMTARGET', 'ANCILLARY_TARGET1',
+                     'ZWARNING', 'TTARGET', 'SECTARGET', 'LEGACY_TARGET2',
+                     'LEGACY_TARGET1', 'SPECIAL_TARGET2', 'FLUXMATCH_STATUS']))
         assert (set(maskbits['TARGET'].keys()) ==
-            set(['QSO_FIRST_SKIRT', 'QSO_CAP', 'GALAXY_RED', 'STAR_CARBON',
-                'STAR_WHITE_DWARF', 'GALAXY_RED_II', 'GALAXY_BIG',
-                'GALAXY_BRIGHT_CORE', 'SERENDIP_MANUAL', 'STAR_SUB_DWARF',
-                'QSO_FIRST_CAP', 'QSO_SKIRT', 'STAR_PN', 'STAR_BHB', 'QSO_HIZ',
-                'STAR_BROWN_DWARF', 'SERENDIP_FIRST', 'SOUTHERN_SURVEY',
-                'STAR_RED_DWARF', 'STAR_CATY_VAR', 'QSO_REJECT', 'GALAXY',
-                'SERENDIP_RED', 'SERENDIP_DISTANT', 'QSO_MAG_OUTLIER',
-                'ROSAT_A', 'ROSAT_C', 'ROSAT_B', 'ROSAT_E', 'ROSAT_D',
-                'SERENDIP_BLUE']))
+                set(['QSO_FIRST_SKIRT', 'QSO_CAP', 'GALAXY_RED', 'STAR_CARBON',
+                     'STAR_WHITE_DWARF', 'GALAXY_RED_II', 'GALAXY_BIG',
+                     'GALAXY_BRIGHT_CORE', 'SERENDIP_MANUAL', 'STAR_SUB_DWARF',
+                     'QSO_FIRST_CAP', 'QSO_SKIRT', 'STAR_PN', 'STAR_BHB', 'QSO_HIZ',
+                     'STAR_BROWN_DWARF', 'SERENDIP_FIRST', 'SOUTHERN_SURVEY',
+                     'STAR_RED_DWARF', 'STAR_CATY_VAR', 'QSO_REJECT', 'GALAXY',
+                     'SERENDIP_RED', 'SERENDIP_DISTANT', 'QSO_MAG_OUTLIER',
+                     'ROSAT_A', 'ROSAT_C', 'ROSAT_B', 'ROSAT_E', 'ROSAT_D',
+                     'SERENDIP_BLUE']))
 
     def test_sdss_astrombad(self):
         assert not sdss_astrombad(77, 1, 20)
@@ -96,21 +99,21 @@ class TestSDSS(object):
 
     def test_sdss_astrombad_raises(self):
         with pytest.raises(ValueError):
-            foo = sdss_astrombad(77, 32, 20)
+            _ = sdss_astrombad(77, 32, 20)
         with pytest.raises(ValueError):
-            foo = sdss_astrombad(-1, 1, 20)
+            _ = sdss_astrombad(-1, 1, 20)
         with pytest.raises(ValueError):
-            foo = sdss_astrombad(2**17, 1, 20)
+            _ = sdss_astrombad(2**17, 1, 20)
         with pytest.raises(ValueError):
-            foo = sdss_astrombad(-2, 1, 20)
+            _ = sdss_astrombad(-2, 1, 20)
         with pytest.raises(ValueError):
-            foo = sdss_astrombad(251, 1, 2**16)
+            _ = sdss_astrombad(251, 1, 2**16)
         with pytest.raises(ValueError):
-            foo = sdss_astrombad(np.array([77, 85, 251]), np.array([1]),
-                                np.array([20, 15, 151]))
+            _ = sdss_astrombad(np.array([77, 85, 251]), np.array([1]),
+                               np.array([20, 15, 151]))
         with pytest.raises(ValueError):
-            foo = sdss_astrombad(np.array([77, 85, 251]), np.array([1, 2, 3]),
-                                np.array([20]))
+            _ = sdss_astrombad(np.array([77, 85, 251]), np.array([1, 2, 3]),
+                               np.array([20]))
 
     @pytest.mark.remote_data
     def test_sdss_astrombad_remote(self):
@@ -134,47 +137,47 @@ class TestSDSS(object):
         # Exceptions
         #
         with pytest.raises(ValueError):
-            objid = sdss_objid(run, 3, 91, 146)
+            _ = sdss_objid(run, 3, 91, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, camcol, 91, 146)
+            _ = sdss_objid(3704, camcol, 91, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, field, 146)
+            _ = sdss_objid(3704, 3, field, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, obj)
+            _ = sdss_objid(3704, 3, 91, obj)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, rerun=np.array([137, 301]))
+            _ = sdss_objid(3704, 3, 91, 146, rerun=np.array([137, 301]))
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, skyversion=np.array([2, 3]))
+            _ = sdss_objid(3704, 3, 91, 146, skyversion=np.array([2, 3]))
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, firstfield=np.array([0, 1]))
+            _ = sdss_objid(3704, 3, 91, 146, firstfield=np.array([0, 1]))
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, skyversion=-2)
+            _ = sdss_objid(3704, 3, 91, 146, skyversion=-2)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, skyversion=16)
+            _ = sdss_objid(3704, 3, 91, 146, skyversion=16)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, firstfield=-2)
+            _ = sdss_objid(3704, 3, 91, 146, firstfield=-2)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, firstfield=2)
+            _ = sdss_objid(3704, 3, 91, 146, firstfield=2)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, rerun=-2)
+            _ = sdss_objid(3704, 3, 91, 146, rerun=-2)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 146, rerun=2**11)
+            _ = sdss_objid(3704, 3, 91, 146, rerun=2**11)
         with pytest.raises(ValueError):
-            objid = sdss_objid(-2, 3, 91, 146)
+            _ = sdss_objid(-2, 3, 91, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(2**16, 3, 91, 146)
+            _ = sdss_objid(2**16, 3, 91, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 0, 91, 146)
+            _ = sdss_objid(3704, 0, 91, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 7, 91, 146)
+            _ = sdss_objid(3704, 7, 91, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, -2, 146)
+            _ = sdss_objid(3704, 3, -2, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 2**12, 146)
+            _ = sdss_objid(3704, 3, 2**12, 146)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, -2)
+            _ = sdss_objid(3704, 3, 91, -2)
         with pytest.raises(ValueError):
-            objid = sdss_objid(3704, 3, 91, 2**16)
+            _ = sdss_objid(3704, 3, 91, 2**16)
 
     def test_sdss_specobjid(self):
         s = sdss_specobjid(4055, 408, 55359, 'v5_7_0')

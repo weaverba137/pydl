@@ -40,15 +40,11 @@ class SDSSMuNu(ac.BaseCoordinateFrame):
     """
     default_representation = ac.SphericalRepresentation
     frame_specific_representation_info = {
-        'spherical': [
-            ac.RepresentationMapping(reprname='lon', framename='mu',
-                                    defaultunit=u.deg),
-            ac.RepresentationMapping(reprname='lat', framename='nu',
-                                    defaultunit=u.deg)
-            ]
-        }
-    frame_specific_representation_info['unitspherical'] = (
-            frame_specific_representation_info['spherical'])
+        'spherical': [ac.RepresentationMapping(reprname='lon', framename='mu',
+                                               defaultunit=u.deg),
+                      ac.RepresentationMapping(reprname='lat', framename='nu',
+                                               defaultunit=u.deg)]}
+    frame_specific_representation_info['unitspherical'] = frame_specific_representation_info['spherical']
     stripe = ac.Attribute(default=0)
     node = ac.QuantityAttribute(default=ac.Angle(95.0, unit=u.deg),
                                 unit=u.deg)

@@ -7,7 +7,7 @@ import pytest
 import numpy as np
 from astropy.utils.data import get_pkg_data_filename
 from .. import Pydlspec2dException
-from ..spec1d import (HMF, findspec, log, spec_append, spec_path, template_metadata,
+from ..spec1d import (HMF, log, spec_append, spec_path, template_metadata,
                       wavevector)
 
 

@@ -12,25 +12,13 @@ functions are implemented to support this.
 
 .. _`IDL®`: https://www.nv5geospatialsoftware.com/Products/IDL
 """
+import os
+from astropy.tests.runner import TestRunner
 
-# Packages may add whatever they like to this file, but
-# should keep this content at the top.
-# ----------------------------------------------------------------------------
-from ._astropy_init import *   # noqa
-# ----------------------------------------------------------------------------
-
-# Enforce Python version check during package import.
-# This is the same check as the one at the top of setup.py
-import sys
-
-__minimum_python_version__ = "3.5"
-
-class UnsupportedPythonError(Exception):
-    pass
-
-if sys.version_info < tuple((int(val) for val in __minimum_python_version__.split('.'))):
-    raise UnsupportedPythonError("packagename does not support Python < {}".format(__minimum_python_version__))
-
+try:
+    from .version import version as __version__
+except ImportError:
+    __version__ = ''
 
 from .file_lines import file_lines
 from .median import median
@@ -40,12 +28,9 @@ from .smooth import smooth
 from .uniq import uniq
 
 
-# Workaround: Numpy 1.14.x changes the way arrays are printed.
-# try:
-#     from numpy import set_printoptions
-#     set_printoptions(legacy='1.13')
-# except Exception:
-#     pass
+# Create the test function for self test
+test = TestRunner.make_test_runner_in(os.path.dirname(__file__))
+test.__test__ = False
 
 
 class PydlException(Exception):
@@ -53,5 +38,10 @@ class PydlException(Exception):
     """
     pass
 
+
 __all__ = ['file_lines', 'median', 'pcomp', 'rebin', 'smooth', 'uniq',
            'PydlException']
+
+# Clean up namespace
+del os
+del TestRunner
