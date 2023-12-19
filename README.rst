@@ -20,8 +20,8 @@ PyDL
     :target: https://pypi.python.org/pypi/pydl
     :alt: PyPI Badge
 
-.. |Actions Status| image:: https://github.com/weaverba137/pydl/actions/workflows/ci_tests.yml/badge.svg
-    :target: https://github.com/weaverba137/pydl/actions/workflows/ci_tests.yml
+.. |Actions Status| image:: https://github.com/weaverba137/pydl/actions/workflows/ci_workflows.yml/badge.svg
+    :target: https://github.com/weaverba137/pydl/actions/workflows/ci_workflows.yml
     :alt: GitHub Actions CI Status
 
 .. |Coveralls Status| image:: https://coveralls.io/repos/weaverba137/pydl/badge.svg?branch=main&service=github
