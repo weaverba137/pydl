@@ -12,9 +12,9 @@ PyDL
     :target: https://pypi.python.org/pypi/pydl
     :alt: License
 
-.. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2575874.svg
-    :target: https://doi.org/10.5281/zenodo.2575874
-    :alt: DOI: 10.5281/zenodo.2575874
+.. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10452785.svg
+    :target: https://doi.org/10.5281/zenodo.10452785
+    :alt: DOI: 10.5281/zenodo.10452785
 
 .. |PyPI Status| image:: https://img.shields.io/pypi/v/pydl.svg
     :target: https://pypi.python.org/pypi/pydl
