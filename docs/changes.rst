@@ -2,7 +2,12 @@
 PyDL Changelog
 ==============
 
-1.0.0 (unreleased)
+1.0.1 (unreleased)
+------------------
+
+* No changes yet.
+
+1.0.0 (2024-01-02)
 ------------------
 
 * Deprecate support for 2-dimensional B-spline, which is better supported in
