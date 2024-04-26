@@ -4,7 +4,9 @@
 """
 from warnings import warn
 import numpy as np
-from numpy.linalg.linalg import LinAlgError
+from numpy.linalg import LinAlgError
+# except ImportError:
+#     from numpy.linalg.linalg import LinAlgError
 from scipy.linalg import cholesky_banded, cho_solve_banded
 from . import PydlutilsUserWarning
 from .math import djs_reject
