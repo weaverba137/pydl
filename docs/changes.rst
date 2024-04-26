@@ -5,7 +5,7 @@ PyDL Changelog
 1.0.1 (unreleased)
 ------------------
 
-* No changes yet.
+* Allow the ``groupbadpix`` keyword to be passed to :func:`~pydl.pydlutils.math.djs_reject`.
 
 1.0.0 (2024-01-02)
 ------------------
