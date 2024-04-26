@@ -68,9 +68,11 @@ def unwrap_objid(objid):
     """
     try:
         np_string = np.string_  # Numpy 1.x
+        np_unicode = np.unicode_
     except AttributeError:
         np_string = np.bytes_  # Numpy 2.x
-    if objid.dtype.type is np_string or objid.dtype.type is np.unicode_:
+        np_unicode = np.str_
+    if objid.dtype.type is np_string or objid.dtype.type is np_unicode:
         tempobjid = objid.astype(np.int64)
     elif objid.dtype.type is np.int64:
         tempobjid = objid.copy()
