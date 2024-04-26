@@ -539,7 +539,7 @@ def cholesky_solve(a, bb):
 
 
 def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
-            maxiter=10, **kwargs):
+            maxiter=10, groupbadpix=False, **kwargs):
     """Iteratively fit a B-spline set to data, with rejection.
 
     Additional keyword parameters are passed to
@@ -563,6 +563,8 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     maxiter : :class:`int`, optional
         Maximum number of rejection iterations, default 10.  Set this to
         zero to disable rejection.
+    groupbadpix : :class:`bool`, optional
+        This keyword will be passed to :func:`~pydl.pydlutils.math.djs_reject`.
 
     Returns
     -------
@@ -665,9 +667,9 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         if error == -2:
             return (sset, outmask)
         elif error == 0:
-            maskwork, qdone = djs_reject(ywork, yfit, invvar=invwork,
-                                         inmask=inmask, outmask=maskwork,
-                                         upper=upper, lower=lower)
+            maskwork, qdone = djs_reject(ywork, yfit, inmask=inmask, outmask=maskwork,
+                                         invvar=invwork, lower=lower, upper=upper,
+                                         groupbadpix=groupbadpix)
         else:
             pass
     outmask[xsort] = maskwork
