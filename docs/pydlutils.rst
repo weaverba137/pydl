@@ -68,7 +68,7 @@ yanny       Good            Tools for manipulating `SDSS parameter files`_.
 
 .. _idlutils: https://www.sdss4.org/dr16/software/idlutils/
 .. _SDSS: https://www.sdss.org
-.. _`The IDL® Astronomy User's Libary`: https://idlastro.gsfc.nasa.gov/
+.. _`The IDL® Astronomy User's Libary`: https://asd.gsfc.nasa.gov/archive/idlastro/
 .. _healpy: https://healpy.readthedocs.io/en/latest/
 .. _bitmasks: https://www.sdss4.org/dr16/algorithms/bitmasks/
 .. _`sweep files`: https://data.sdss.org/datamodel/files/PHOTO_SWEEP/RERUN/calibObj.html

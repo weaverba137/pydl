@@ -56,7 +56,7 @@ structure     NA              Tools for manipulating IDL data structures. Use :c
 tv            NA              Functions for manipulating IDL image displays.
 ============= =============== ===================================================
 
-.. _`The IDL® Astronomy User's Libary`: https://idlastro.gsfc.nasa.gov/
+.. _`The IDL® Astronomy User's Libary`: https://asd.gsfc.nasa.gov/archive/idlastro/
 .. _idlutils: https://www.sdss4.org/dr16/software/idlutils/
 .. _`Coyote library`: http://www.idlcoyote.com/
 .. _`Functions from the JHU Applied Physics Lab`: https://fermi.jhuapl.edu/s1r/idl/idl.html
