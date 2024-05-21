@@ -117,7 +117,7 @@ class HMF(object):
             npix = self.spectra.shape[0]
         else:
             nobj, npix = self.spectra.shape
-        log.info("Building HMF from %d object spectra.", nobj)
+        log.info("Building HMF from %d object spectra." % (nobj,))
         fluxdict = dict()
         #
         # If there is only one object spectrum, then all we can do is return it.
@@ -277,7 +277,7 @@ class HMF(object):
                    (si.sum(0) == 0))
         n_zero = zerocol.sum()
         if n_zero > 0:
-            log.warn("Found %d bad columns in input data!", n_zero)
+            log.warn("Found %d bad columns in input data!" % (n_zero,))
         #
         # Find the largest set of contiguous pixels
         #
@@ -294,7 +294,9 @@ class HMF(object):
         whitespectra = whiten(self.spectra)
         log.debug(whitespectra[0:3, 0:3])
         self.g, foo = kmeans(whitespectra, self.K)
-        self.g /= np.repeat(self.normbase(), M).reshape(self.g.shape)
+        # log.debug((self.normbase(), M))
+        # log.debug(self.g.shape)
+        self.g /= np.repeat(self.normbase(), M - n_zero).reshape(self.g.shape)
         log.debug(self.g[0:3, 0:3])
         #
         # Initialize a matrix
@@ -309,7 +311,7 @@ class HMF(object):
         #
         t0 = time.time()
         for m in range(self.n_iter):
-            log.info("Starting iteration #%4d.", m+1)
+            log.info("Starting iteration #%4d." % (m+1,))
             if self.nonnegative:
                 self.a = self.astepnn()
                 self.g = self.gstepnn()
@@ -318,12 +320,12 @@ class HMF(object):
                 self.g = self.gstep()
                 self.a, self.g = self.reorder()
             norm = self.normbase()
-            self.g /= np.repeat(norm, M).reshape(self.g.shape)
+            self.g /= np.repeat(norm, M - n_zero).reshape(self.g.shape)
             self.a = (self.a.T*np.repeat(norm, N).reshape(self.K, N)).T
             log.debug(self.a[0:3, 0:3])
             log.debug(self.g[0:3, 0:3])
-            log.debug("Chi**2 after iteration #%4d = %f.", m+1, self.badness())
-            log.info("The elapsed time for iteration #%4d is %6.2f s.", m+1, time.time()-t0)
+            log.debug("Chi**2 after iteration #%4d = %f." % (m+1, self.badness()))
+            log.info("The elapsed time for iteration #%4d is %6.2f s." % (m+1, time.time()-t0))
         return (self.a, self.g)
 
 
@@ -657,7 +659,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
         npix = newflux.shape[0]
     else:
         nobj, npix = newflux.shape
-    log.info("Building PCA from %d object spectra.", nobj)
+    log.info("Building PCA from %d object spectra." % (nobj,))
     nzi = newivar.nonzero()
     first_nonzero = (np.arange(nobj, dtype=nzi[0].dtype),
                      np.array([nzi[1][nzi[0] == k].min() for k in range(nobj)]))
@@ -731,7 +733,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
                                      synwvec*out.yfit) / (maskivar[iobj, :] +
                                                           synwvec)
                 acoeff[iobj, :] = out.acoeff
-            log.info("The elapsed time for iteration #%2d is %6.2f s.", ipiter+1, time.time()-t0)
+            log.info("The elapsed time for iteration #%2d is %6.2f s." % (ipiter+1, time.time()-t0))
         #
         # Now set ymodel for rejecting points.
         #
@@ -1266,7 +1268,7 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
             indx = loglam > 0
             rowloglam = loglam[indx]
         for iobj in range(nobj):
-            log.info("OBJECT %5d", iobj)
+            log.info("OBJECT %5d" % (iobj,))
             if loglam.ndim > 1:
                 if loglam.shape[0] != nobj:
                     raise ValueError('Wrong number of dimensions for loglam.')
@@ -1303,7 +1305,7 @@ def template_metadata(inputfile, verbose=False):
         log.setLevel('DEBUG')
     if not os.path.exists(inputfile):
         raise Pydlspec2dException("Could not find {0}!".format(inputfile))
-    log.debug("Reading input data from %s.", inputfile)
+    log.debug("Reading input data from %s." % (inputfile,))
     par = yanny(inputfile)
     required_metadata = {'object': str, 'method': str, 'aesthetics': str,
                          'run2d': str, 'run1d': str,
@@ -1313,7 +1315,7 @@ def template_metadata(inputfile, verbose=False):
     for key in required_metadata:
         try:
             metadata[key] = required_metadata[key](par[key])
-            log.debug('%s = %s', key, par[key])
+            log.debug('%s = %s' % (key, par[key]))
         except KeyError:
             raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
         except ValueError:
@@ -1331,6 +1333,7 @@ def template_metadata(inputfile, verbose=False):
         for key in required_hmf_metadata:
             try:
                 metadata[key] = required_hmf_metadata[key](par[key])
+                log.debug('%s = %s' % (key, par[key]))
             except KeyError:
                 raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
             except ValueError:
@@ -1380,8 +1383,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     # Read the input spectra
     #
     if os.path.exists(dumpfile):
-        log.info("Loading data from %s.", dumpfile)
-        with open(dumpfile) as f:
+        log.info("Loading data from %s." % (dumpfile,))
+        with open(dumpfile, 'rb') as f:
             inputflux = pickle.load(f)
         newflux = inputflux['newflux']
         newivar = inputflux['newivar']
@@ -1399,8 +1402,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         if missing.any():
             imissing = missing.nonzero()[0]
             for k in imissing:
-                log.error("Missing plate=%d mjd=%d fiberid=%d",
-                          slist.plate[k], slist.mjd[k], slist.fiberid[k])
+                log.error("Missing plate=%d mjd=%d fiberid=%d" %
+                          (slist.plate[k], slist.mjd[k], slist.fiberid[k]))
             raise ValueError("{0:d} missing object(s).".format(missing.sum()))
         #
         # Do not fit where the spectrum may be dominated by sky-sub residuals.
@@ -1444,7 +1447,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         # Dump input fluxes to a file for debugging purposes.
         #
         if not os.path.exists(dumpfile):
-            with open(dumpfile, 'w') as f:
+            with open(dumpfile, 'wb') as f:
                 inputflux = {'newflux': newflux, 'newivar': newivar,
                              'newloglam': newloglam}
                 pickle.dump(inputflux, f)
@@ -1504,7 +1507,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     if flux:
         nfluxes = 30
         separation = 5.0
-        nplots = nspectra/nfluxes
+        nplots = nspectra//nfluxes
         if nspectra % nfluxes > 0:
             nplots += 1
         for k in range(nplots):
@@ -1673,7 +1676,7 @@ def template_qso(metadata, newflux, newivar, verbose=False):
         nobj, npix = newflux.shape
     objflux = newflux.copy()
     for ikeep in range(metadata['nkeep']):
-        log.info("Solving for eigencomponent #%d of %d", ikeep+1, metadata['nkeep'])
+        log.info("Solving for eigencomponent #%d of %d" % (ikeep+1, metadata['nkeep']))
         if metadata['method'].lower() == 'pca':
             pcaflux1 = pca_solve(objflux, newivar,
                                  niter=metadata['niter'], nkeep=1,
@@ -1771,7 +1774,7 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
         #
         # Find the subclasses for this stellar type
         #
-        log.info("Finding eigenspectra for Stellar class %s.", c)
+        log.info("Finding eigenspectra for Stellar class %s." % (c,))
         indx = (slist['class'] == c).nonzero()[0]
         nindx = indx.size
         thesesubclass = slist['subclass'][indx]
