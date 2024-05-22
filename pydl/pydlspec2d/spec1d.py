@@ -1600,13 +1600,25 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     #
     if os.path.exists(outfile+'.fits'):
         os.remove(outfile+'.fits')
-    hdu0 = fits.PrimaryHDU(pcaflux['flux'])
+    hdu0 = fits.PrimaryHDU(pcaflux['flux'], name='EIGENSPECTRA')
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
     if not pydl_version:
         pydl_version = 'git'
     hdu0.header['OBJECT'] = (objtypes[metadata['object']], 'Type of template')
     hdu0.header['COEFF0'] = (pcaflux['newloglam'][0], 'Wavelength zeropoint')
     hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
+    #
+    # WCS
+    #
+    hdu0.header['WCSAXES'] = (1, 'Number of coordinate axes')
+    hdu0.header['CRPIX1'] = (1.0, 'Pixel coordinate of reference point')
+    hdu0.header['CTYPE1'] = ('WAVE-LOG', 'Wavelength in vacuuo, logarithmic axis')
+    hdu0.header['CRVAL1'] = (10**pcaflux['newloglam'][0], '[Angstrom] Coordinate value at reference point')
+    hdu0.header['CDELT1'] = ((10**pcaflux['newloglam'][0]) * (pcaflux['newloglam'][1]-pcaflux['newloglam'][0]) * np.log(10), '[Angstrom] Coordinate increment at reference point')
+    hdu0.header['CUNIT1'] = ('Angstrom', 'Units of coordinate increment and value')
+    #
+    # Metadata
+    #
     hdu0.header['IDLUTILS'] = ('pydl-{0}'.format(pydl_version), 'Version of idlutils')
     hdu0.header['SPEC2D'] = ('pydl-{0}'.format(pydl_version), 'Version of idlspec2d')
     hdu0.header['RUN2D'] = (os.environ['RUN2D'], 'Version of 2d reduction')
@@ -1618,6 +1630,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
     # for i in range(len(namearr)):
     #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
+    hdu0.add_checksum()
     c = [fits.Column(name='plate', format='J', array=slist.plate),
          fits.Column(name='mjd', format='J', array=slist.mjd),
          fits.Column(name='fiberid', format='J', array=slist.fiberid)]
@@ -1628,9 +1641,10 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
             hdu0.header['NAME{0:d}'.format(i)] = (name, 'Name of class {0:d}.'.format(i))
     else:
         c.append(fits.Column(name='zfit', format='D', array=slist.zfit))
-    hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c))
+    hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c), name='INPUT_SPECTRA')
+    hdu1.add_checksum()
     hdulist = fits.HDUList([hdu0, hdu1])
-    hdulist.writeto(outfile+'.fits')
+    hdulist.writeto(outfile+'.fits', overwrite=True)
     if metadata['object'].lower() != 'star':
         plot_eig(outfile+'.fits')
     #
