@@ -10,7 +10,9 @@ import numpy as np
 from numpy.linalg import solve
 try:
     import matplotlib
-    matplotlib.use('Agg')
+    # TODO: Sometimes this interferes with notebooks, other times not.
+    # Maybe don't set this at import time.
+    # matplotlib.use('Agg')
     matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
     import matplotlib.pyplot as plt
     from matplotlib.font_manager import FontProperties
@@ -1600,10 +1602,12 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     #
     if os.path.exists(outfile+'.fits'):
         os.remove(outfile+'.fits')
-    hdu0 = fits.PrimaryHDU(pcaflux['flux'], name='EIGENSPECTRA')
+    hdu0 = fits.PrimaryHDU(pcaflux['flux'])
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
     if not pydl_version:
         pydl_version = 'git'
+    hdu0.header['EXTNAME'] = ('EIGENSPECTRA', 'extension name')
+    hdu0.header['LONGSTRN'] = ('OGIP 1.0', 'The OGIP Long String Convention may be used.')
     hdu0.header['OBJECT'] = (objtypes[metadata['object']], 'Type of template')
     hdu0.header['COEFF0'] = (pcaflux['newloglam'][0], 'Wavelength zeropoint')
     hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
@@ -1628,8 +1632,6 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     if metadata['method'].lower() == 'hmf':
         hdu0.header['NONNEG'] = (metadata['nonnegative'], 'Was nonnegative HMF used?')
         hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
-    # for i in range(len(namearr)):
-    #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
     hdu0.add_checksum()
     c = [fits.Column(name='plate', format='J', array=slist.plate),
          fits.Column(name='mjd', format='J', array=slist.mjd),
