@@ -137,27 +137,27 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
         if width == 1:
             return array
         if boundary == 'none':
-            if array.ndim == 1:
-                return median(array, width)
-            elif array.ndim == 2:
-                return median(array, width)
-            else:
-                raise ValueError('Unsupported number of dimensions with ' +
-                                 'this boundary condition.')
-        elif boundary == 'reflect':
+            return median(array, width)
+        else:
             padsize = int(np.ceil(width/2.0))
             if array.ndim == 1:
                 bigarr = np.zeros(array.shape[0]+2*padsize, dtype=array.dtype)
                 bigarr[padsize:padsize+array.shape[0]] = array
-                bigarr[0:padsize] = array[0:padsize][::-1]
-                bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (array[array.shape[0]-padsize:array.shape[0]][::-1])
-                f = median(bigarr, width)
-                medarray = f[padsize:padsize+array.shape[0]]
-                return medarray
             elif array.ndim == 2:
                 bigarr = np.zeros((array.shape[0]+2*padsize,
                                    array.shape[1]+2*padsize), dtype=array.dtype)
                 bigarr[padsize:padsize+array.shape[0], padsize:padsize+array.shape[1]] = array
+            else:
+                raise ValueError('Unsupported number of dimensions with ' +
+                                 'this boundary condition.')
+        if array.ndim == 1:
+            bigarr[0:padsize] = array[0:padsize][::-1]
+            bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (array[array.shape[0]-padsize:array.shape[0]][::-1])
+            f = median(bigarr, width)
+            medarray = f[padsize:padsize+array.shape[0]]
+            return medarray
+        else:
+            if boundary == 'reflect':
                 # Copy into top + bottom
                 bigarr[0:padsize, padsize:array.shape[1]+padsize] = array[0:padsize, :][::-1, :]
                 bigarr[array.shape[0]+padsize:bigarr.shape[0], padsize:array.shape[1]+padsize] = array[array.shape[0]-padsize:array.shape[0], :][::-1, :]
@@ -175,15 +175,12 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 f = median(bigarr, min(width, array.size))
                 medarray = f[padsize:array.shape[0]+padsize, padsize:array.shape[1]+padsize]
                 return medarray
+            elif boundary == 'nearest':
+                raise ValueError('This boundary condition not implemented')
+            elif boundary == 'wrap':
+                raise ValueError('This boundary condition not implemented')
             else:
-                raise ValueError('Unsupported number of dimensions with ' +
-                                 'this boundary condition.')
-        elif boundary == 'nearest':
-            raise ValueError('This boundary condition not implemented')
-        elif boundary == 'wrap':
-            raise ValueError('This boundary condition not implemented')
-        else:
-            raise ValueError('Unknown boundary condition.')
+                raise ValueError('Unknown boundary condition.')
     else:
         raise ValueError('Invalid to specify both dimension & width.')
 

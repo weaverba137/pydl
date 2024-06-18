@@ -14,8 +14,11 @@ try:
 except ImportError:
     # automodapi can only skip this if it exists.
     FontProperties = None
+import astropy.units as u
 from astropy import log
 from astropy.io import ascii, fits
+from astropy.time import Time
+from astropy.wcs import WCS
 from . import Pydlspec2dException, Pydlspec2dUserWarning
 
 #
@@ -753,7 +756,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
     return fluxdict
 
 
-def plot_eig(filename, title='Unknown'):
+def plot_eig(filename, title='Unknown', save=True):
     """Plot spectra from an eigenspectra/template file.
 
     Parameters
@@ -762,6 +765,13 @@ def plot_eig(filename, title='Unknown'):
         Name of a FITS file containing eigenspectra/templates.
     title : :class:`str`, optional
         Title to put on the plot.
+    save : :class:`bool`, optional
+        If ``True``, save the plot to a PNG file.
+
+    Returns
+    -------
+    :class:`tuple`
+        The figure and axes objects created.
 
     Raises
     ------
@@ -783,27 +793,40 @@ def plot_eig(filename, title='Unknown'):
         else:
             raise ValueError('Unknown template type!')
     base, ext = os.path.splitext(filename)
+    try:
+        created = Time(int(base.split('-')[-1]), format='mjd').to_datetime().date().strftime('%Y-%m-%d')
+        title += f" [{created}]"
+    except ValueError:
+        pass
     with fits.open(filename, mode='readonly') as hdulist:
+        w = WCS(hdulist[0].header, naxis=1)
         newloglam0 = hdulist[0].header['COEFF0']
         objdloglam = hdulist[0].header['COEFF1']
         spectro_data = hdulist[0].data
     (neig, ndata) = spectro_data.shape
-    newloglam = np.arange(ndata) * objdloglam + newloglam0
-    lam = 10.0**newloglam
+    try:
+        lam = (w.wcs_pix2world(np.arange(ndata), 0)[0] * u.Unit(w.wcs.cunit[0])).to(u.Angstrom)
+    except u.UnitConversionError:
+        lam = 10**(np.arange(ndata)*objdloglam + newloglam0) * u.Angstrom
     fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
     colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
-    for l in range(neig):
-        _ = ax.plot(lam, spectro_data[l, :],
-                    colorvec[l % len(colorvec)]+'-', linewidth=1)
-    _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+    for i in range(neig):
+        if i == 0 and spectro_data[i, :].min() < 0:
+            eigen_flux = -1 * spectro_data[i, :]
+        else:
+            eigen_flux = spectro_data[i, :]
+        _ = ax.plot(lam, eigen_flux,
+                    colorvec[i % len(colorvec)]+'-', linewidth=1)
+    _ = ax.set_xlabel(r'Wavelength [Å]')
     _ = ax.set_ylabel('Flux [Arbitrary Units]')
     _ = ax.set_title(title)
     # ax.set_xlim([3500.0,10000.0])
     # ax.set_ylim([-400.0,500.0])
     # fig.savefig(base+'.zoom.png')
-    fig.savefig(base+'.png')
-    plt.close(fig)
-    return
+    if save:
+        fig.savefig(base+'.png')
+    # plt.close(fig)
+    return (fig, ax)
 
 
 def readspec(platein, mjd=None, fiber=None, **kwargs):
@@ -1483,12 +1506,14 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     # The presence of boundary='nearest' means that this code snippet
     # was never meant to be called!  In other words it should always
     # be the case that qgood.all() is True.
+    # DJS was working with a data set based on plate 306 that
+    # just so happened to have all of qgood.all() == True with the wavelength
+    # limits 3300 -- 8800 Angstrom.
+    # ALSO, if djs_median is called with a one-dimensional object, boundary is ignored!
     #
     if 'usemask' in pcaflux:
         qgood = pcaflux['usemask'] >= metadata['minuse']
         if not qgood.all():
-            warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
-        if False:
             medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
             for i in range(metadata['nkeep']):
                 medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
@@ -1519,7 +1544,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                             pcaflux['newflux'][l, :] + separation*(l % nfluxes),
                             colorvec[l % len(colorvec)]+'-',
                             linewidth=1)
-            _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+            _ = ax.set_xlabel(r'Wavelength [Å]')
             _ = ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')
             _ = ax.set_title('Input Spectra {0:04d}-{1:04d}'.format(istart+1, iend+1))
             _ = ax.set_ylim(pcaflux['newflux'][istart, :].min(), pcaflux['newflux'][iend-1, :].max()+separation*(nfluxes-1))
@@ -1530,7 +1555,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     #
     fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
     _ = ax.plot(10.0**pcaflux['newloglam'], (pcaflux['newivar'] == 0).sum(0)/float(nspectra), 'k-')
-    _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+    _ = ax.set_xlabel(r'Wavelength [Å]')
     _ = ax.set_ylabel('Fraction of spectra with missing data')
     _ = ax.set_title('Missing Data')
     _ = ax.grid(True)
@@ -1547,7 +1572,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                         np.zeros(pcaflux['newloglam'].shape,
                         dtype=pcaflux['newloglam'].dtype) + metadata['minuse'],
                         'k--')
-        _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+        _ = ax.set_xlabel(r'Wavelength [Å]')
         _ = ax.set_ylabel('Usemask')
         _ = ax.set_title('UseMask')
         _ = ax.grid(True)
@@ -1877,7 +1902,7 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
                         "{0}-".format(colorvec[isub % len(colorvec)]),
                         linewidth=1)
             if isub == 0:
-                _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+                _ = ax.set_xlabel(r'Wavelength [Å]')
                 _ = ax.set_ylabel('Flux [arbitrary units]')
                 _ = ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
             _ = ax.text(10.0**newloglam[-1], plotflux[-1],
