@@ -5,7 +5,11 @@ PyDL Changelog
 1.0.1 (unreleased)
 ------------------
 
-* Allow the ``groupbadpix`` keyword to be passed to :func:`~pydl.pydlutils.math.djs_reject`.
+* Allow the ``groupbadpix`` keyword to be passed to
+  :func:`~pydl.pydlutils.math.djs_reject`; refactor of
+  :func:`~pydl.pydlutils.math.djs_median`; test infrastructure updates (PR `#78`_).
+
+.. _`#78`: https://github.com/weaverba137/pydl/pull/78
 
 1.0.0 (2024-01-02)
 ------------------

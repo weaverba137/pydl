@@ -119,7 +119,8 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
         `width`/2 of the boundary.  'reflect' means reflect pixel values around the
         boundary. 'nearest' means use the values of the nearest boundary pixel.
         'wrap' means wrap pixel values around the boundary. 'nearest' and 'wrap'
-        are not implemented.
+        are not implemented. If `array` is one-dimensional, and `boundary` is not
+        'none', then it is forced to be 'reflect'.
 
     Returns
     -------
@@ -151,6 +152,9 @@ def djs_median(array, dimension=None, width=None, boundary='none'):
                 raise ValueError('Unsupported number of dimensions with ' +
                                  'this boundary condition.')
         if array.ndim == 1:
+            #
+            # 'reflect' is the only implemented option in this case.
+            #
             bigarr[0:padsize] = array[0:padsize][::-1]
             bigarr[padsize+array.shape[0]:padsize*2+array.shape[0]] = (array[array.shape[0]-padsize:array.shape[0]][::-1])
             f = median(bigarr, width)

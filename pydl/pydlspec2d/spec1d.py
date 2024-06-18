@@ -1503,21 +1503,18 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     pcaflux['newloglam'] = newloglam
     #
     # Fill in bad data with a running median of the good data.
-    # The presence of boundary='nearest' means that this code snippet
-    # was never meant to be called!  In other words it should always
-    # be the case that qgood.all() is True.
-    # DJS was working with a data set based on plate 306 that
-    # just so happened to have all of qgood.all() == True with the wavelength
-    # limits 3300 -- 8800 Angstrom.
-    # ALSO, if djs_median is called with a one-dimensional object, boundary is ignored!
+    #
+    # Historical note: djs_median() was called with boundary='nearest', which
+    # is very weird, because 'nearest' was never implemented. However, boundary
+    # is ignored for one-dimensional inputs, so it's sloppy code, but not
+    # actually a problem.
     #
     if 'usemask' in pcaflux:
         qgood = pcaflux['usemask'] >= metadata['minuse']
         if not qgood.all():
             medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
             for i in range(metadata['nkeep']):
-                medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
-                                               width=51, boundary='nearest')
+                medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood], width=51)
                 medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
             pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
     #
