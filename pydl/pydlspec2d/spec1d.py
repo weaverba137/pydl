@@ -9,11 +9,6 @@ from warnings import warn
 import numpy as np
 from numpy.linalg import solve
 try:
-    import matplotlib
-    # TODO: Sometimes this interferes with notebooks, other times not.
-    # Maybe don't set this at import time.
-    # matplotlib.use('Agg')
-    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
     import matplotlib.pyplot as plt
     from matplotlib.font_manager import FontProperties
 except ImportError:
@@ -22,6 +17,11 @@ except ImportError:
 from astropy import log
 from astropy.io import ascii, fits
 from . import Pydlspec2dException, Pydlspec2dUserWarning
+
+#
+# Used for automated matplotlib plots.
+#
+_default_figsize = (16.0, 12.0)
 
 #
 # Used by findspec
@@ -782,24 +782,22 @@ def plot_eig(filename, title='Unknown'):
             title = 'CV Stars: Eigenspectra'
         else:
             raise ValueError('Unknown template type!')
-    base, ext = filename.split('.')
-    spectrum = fits.open(filename)
-    newloglam0 = spectrum[0].header['COEFF0']
-    objdloglam = spectrum[0].header['COEFF1']
-    spectro_data = spectrum[0].data
-    spectrum.close()
+    base, ext = os.path.splitext(filename)
+    with fits.open(filename, mode='readonly') as hdulist:
+        newloglam0 = hdulist[0].header['COEFF0']
+        objdloglam = hdulist[0].header['COEFF1']
+        spectro_data = hdulist[0].data
     (neig, ndata) = spectro_data.shape
     newloglam = np.arange(ndata) * objdloglam + newloglam0
     lam = 10.0**newloglam
-    fig = plt.figure(dpi=100)
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
     colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
     for l in range(neig):
         _ = ax.plot(lam, spectro_data[l, :],
                     colorvec[l % len(colorvec)]+'-', linewidth=1)
-    ax.set_xlabel(r'Wavelength [$\AA$]')
-    ax.set_ylabel('Flux [Arbitrary Units]')
-    ax.set_title(title)
+    _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+    _ = ax.set_ylabel('Flux [Arbitrary Units]')
+    _ = ax.set_title(title)
     # ax.set_xlim([3500.0,10000.0])
     # ax.set_ylim([-400.0,500.0])
     # fig.savefig(base+'.zoom.png')
@@ -1515,47 +1513,44 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         for k in range(nplots):
             istart = k*nfluxes
             iend = min(istart+nfluxes, nspectra) - 1
-            fig = plt.figure(dpi=100)
-            ax = fig.add_subplot(111)
+            fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
             for l in range(istart, iend+1):
                 _ = ax.plot(10.0**pcaflux['newloglam'],
                             pcaflux['newflux'][l, :] + separation*(l % nfluxes),
                             colorvec[l % len(colorvec)]+'-',
                             linewidth=1)
-            ax.set_xlabel(r'Wavelength [$\AA$]')
-            ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')
-            ax.set_title('Input Spectra {0:04d}-{1:04d}'.format(istart+1, iend+1))
-            ax.set_ylim(pcaflux['newflux'][istart, :].min(), pcaflux['newflux'][iend-1, :].max()+separation*(nfluxes-1))
+            _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+            _ = ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')
+            _ = ax.set_title('Input Spectra {0:04d}-{1:04d}'.format(istart+1, iend+1))
+            _ = ax.set_ylim(pcaflux['newflux'][istart, :].min(), pcaflux['newflux'][iend-1, :].max()+separation*(nfluxes-1))
             fig.savefig('{0}.flux.{1:04d}-{2:04d}.png'.format(outfile, istart+1, iend+1))
             plt.close(fig)
     #
     # Missing data diagnostic.
     #
-    fig = plt.figure(dpi=100)
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
     _ = ax.plot(10.0**pcaflux['newloglam'], (pcaflux['newivar'] == 0).sum(0)/float(nspectra), 'k-')
-    ax.set_xlabel(r'Wavelength [$\AA$]')
-    ax.set_ylabel('Fraction of spectra with missing data')
-    ax.set_title('Missing Data')
-    ax.grid(True)
+    _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+    _ = ax.set_ylabel('Fraction of spectra with missing data')
+    _ = ax.set_title('Missing Data')
+    _ = ax.grid(True)
     fig.savefig(outfile+'.missing.png')
     plt.close(fig)
     #
     # usemask diagnostic
     #
     if 'usemask' in pcaflux:
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         _ = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
                         pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-',
                         10.0**pcaflux['newloglam'],
                         np.zeros(pcaflux['newloglam'].shape,
                         dtype=pcaflux['newloglam'].dtype) + metadata['minuse'],
                         'k--')
-        ax.set_xlabel(r'Wavelength [$\AA$]')
-        ax.set_ylabel('Usemask')
-        ax.set_title('UseMask')
-        ax.grid(True)
+        _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+        _ = ax.set_ylabel('Usemask')
+        _ = ax.set_title('UseMask')
+        _ = ax.grid(True)
         fig.savefig(outfile+'.usemask.png')
         plt.close(fig)
     #
@@ -1565,8 +1560,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         aratio10 = pcaflux['acoeff'][:, 1]/pcaflux['acoeff'][:, 0]
         aratio20 = pcaflux['acoeff'][:, 2]/pcaflux['acoeff'][:, 0]
         aratio30 = pcaflux['acoeff'][:, 3]/pcaflux['acoeff'][:, 0]
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         _ = ax.plot(aratio10, aratio20, marker='None', linestyle='None')
         for k in range(len(aratio10)):
             _ = ax.text(aratio10[k], aratio20[k],
@@ -1574,15 +1568,14 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                         horizontalalignment='center', verticalalignment='center',
                         color=colorvec[k % len(colorvec)],
                         fontproperties=smallfont)
-        # ax.set_xlim([aratio10.min(), aratio10.max])
-        # ax.set_xlim([aratio20.min(), aratio20.max])
-        ax.set_xlabel('Eigenvalue Ratio, $a_1/a_0$')
-        ax.set_ylabel('Eigenvalue Ratio, $a_2/a_0$')
-        ax.set_title('Eigenvalue Ratios')
+        # _ = ax.set_xlim([aratio10.min(), aratio10.max])
+        # _ = ax.set_xlim([aratio20.min(), aratio20.max])
+        _ = ax.set_xlabel('Eigenvalue Ratio, $a_1/a_0$')
+        _ = ax.set_ylabel('Eigenvalue Ratio, $a_2/a_0$')
+        _ = ax.set_title('Eigenvalue Ratios')
         fig.savefig(outfile+'.a2_v_a1.png')
         plt.close(fig)
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         _ = ax.plot(aratio20, aratio30, marker='None', linestyle='None')
         for k in range(len(aratio10)):
             _ = ax.text(aratio20[k], aratio30[k],
@@ -1590,11 +1583,11 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                         horizontalalignment='center', verticalalignment='center',
                         color=colorvec[k % len(colorvec)],
                         fontproperties=smallfont)
-        # ax.set_xlim([aratio10.min(), aratio10.max])
-        # ax.set_xlim([aratio20.min(), aratio20.max])
-        ax.set_xlabel('Eigenvalue Ratio, $a_2/a_0$')
-        ax.set_ylabel('Eigenvalue Ratio, $a_3/a_0$')
-        ax.set_title('Eigenvalue Ratios')
+        # _ = ax.set_xlim([aratio10.min(), aratio10.max])
+        # _ = ax.set_xlim([aratio20.min(), aratio20.max])
+        _ = ax.set_xlabel('Eigenvalue Ratio, $a_2/a_0$')
+        _ = ax.set_ylabel('Eigenvalue Ratio, $a_3/a_0$')
+        _ = ax.set_title('Eigenvalue Ratios')
         fig.savefig(outfile+'.a3_v_a2.png')
         plt.close(fig)
     #
@@ -1862,8 +1855,7 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
         thesesubclassnum = np.zeros(thesesubclass.size, dtype='i4')
         colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
         smallfont = FontProperties(size='xx-small')
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         for isub in range(nsubclass):
             ii = (thesesubclass == subclasslist[isub]).nonzero()[0]
             thesesubclassnum[ii] = isub
@@ -1881,13 +1873,13 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
             # Plot spectra
             #
             plotflux = thisflux/thisflux.max()
-            ax.plot(10.0**newloglam, plotflux,
-                    "{0}-".format(colorvec[isub % len(colorvec)]),
-                    linewidth=1)
+            _ = ax.plot(10.0**newloglam, plotflux,
+                        "{0}-".format(colorvec[isub % len(colorvec)]),
+                        linewidth=1)
             if isub == 0:
-                ax.set_xlabel(r'Wavelength [$\AA$]')
-                ax.set_ylabel('Flux [arbitrary units]')
-                ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
+                _ = ax.set_xlabel(r'Wavelength [$\AA$]')
+                _ = ax.set_ylabel('Flux [arbitrary units]')
+                _ = ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
             _ = ax.text(10.0**newloglam[-1], plotflux[-1],
                         subclasslist[isub],
                         horizontalalignment='right', verticalalignment='center',
@@ -1919,7 +1911,8 @@ def template_input_main():  # pragma: no cover
     #
     import sys
     from argparse import ArgumentParser
-
+    import matplotlib
+    matplotlib.use("Agg")
     # Get home directory in platform-independent way
     home_dir = os.path.expanduser('~')
     #
