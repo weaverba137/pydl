@@ -28,12 +28,15 @@ authors:
   - family-names: Macleod
     given-names: Duncan
 title: "weaverba137/pydl: Production release with updated package infrastructure"
-version: 1.0.0
-doi: 10.5281/zenodo.10452785
+version: 1.0.1
+doi: 10.5281/zenodo.12801942
 date-released: "2024-01-02"
 repository-code: "https://github.com/weaverba137/pydl"
 license: BSD-3-Clause
 identifiers:
+  - description: "Version 1.0.1 of PyDL"
+    type: doi
+    value: 10.5281/zenodo.12801942
   - description: "Version 1.0.0 of PyDL"
     type: doi
     value: 10.5281/zenodo.10452785
