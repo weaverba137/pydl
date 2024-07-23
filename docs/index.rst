@@ -59,7 +59,7 @@ Base API
 .. _`IDL®`: https://www.nv5geospatialsoftware.com/Products/IDL
 .. _idlutils: https://www.sdss4.org/dr16/software/idlutils/
 .. _SDSS: https://www.sdss.org
-.. _`Goddard utilities`: https://idlastro.gsfc.nasa.gov/
+.. _`Goddard utilities`: https://asd.gsfc.nasa.gov/archive/idlastro/
 .. _idlspec2d: https://svn.sdss.org/public/repo/eboss/idlspec2d/trunk/
 .. _BOSS: https://www.sdss4.org/surveys/boss/
 .. _eBOSS: https://www.sdss4.org/surveys/eboss/

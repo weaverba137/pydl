@@ -63,11 +63,11 @@ def test_djs_median():
     # Exceptions
     #
     with pytest.raises(ValueError):
-        _ = djs_median(data, width=5, boundary='nearest')
+        _ = djs_median(data2, width=5, boundary='nearest')
     with pytest.raises(ValueError):
-        _ = djs_median(data, width=5, boundary='wrap')
+        _ = djs_median(data2, width=5, boundary='wrap')
     with pytest.raises(ValueError):
-        _ = djs_median(data, width=5, boundary='foobar')
+        _ = djs_median(data2, width=5, boundary='foobar')
     with pytest.raises(ValueError):
         _ = djs_median(data2, width=5, dimension=1)
     with pytest.raises(ValueError):

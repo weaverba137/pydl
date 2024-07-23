@@ -66,7 +66,13 @@ def unwrap_objid(objid):
     rec.array([(2, 301, 3704, 3, 0, 91, 146)],
           dtype=[('skyversion', '<i4'), ('rerun', '<i4'), ('run', '<i4'), ('camcol', '<i4'), ('firstfield', '<i4'), ('frame', '<i4'), ('id', '<i4')])
     """
-    if objid.dtype.type is np.string_ or objid.dtype.type is np.unicode_:
+    try:
+        np_string = np.string_  # Numpy 1.x
+        np_unicode = np.unicode_
+    except AttributeError:
+        np_string = np.bytes_  # Numpy 2.x
+        np_unicode = np.str_
+    if objid.dtype.type is np_string or objid.dtype.type is np_unicode:
         tempobjid = objid.astype(np.int64)
     elif objid.dtype.type is np.int64:
         tempobjid = objid.copy()

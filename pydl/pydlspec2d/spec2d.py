@@ -223,8 +223,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                     sset, bmask = iterfit(inloglam_r[ss],
                                           objflux.ravel()[ss],
                                           nord=nord, groupbadpix=True,
-                                          requiren=1, bkspace=bkptbin,
-                                          silent=True)
+                                          requiren=1, bkspace=bkptbin)
                 else:
                     #
                     # Fit with variance
@@ -233,8 +232,7 @@ def combine1fiber(inloglam, objflux, newloglam, objivar=None, verbose=False,
                                           objflux.ravel()[ss],
                                           invvar=objivar.ravel()[ss],
                                           nord=nord, groupbadpix=True,
-                                          requiren=1, bkspace=bkptbin,
-                                          silent=True)
+                                          requiren=1, bkspace=bkptbin)
                 if np.sum(np.absolute(sset.coeff)) == 0:
                     sset = None
                     bmask = np.zeros(len(ss))

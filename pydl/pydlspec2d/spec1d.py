@@ -9,17 +9,22 @@ from warnings import warn
 import numpy as np
 from numpy.linalg import solve
 try:
-    import matplotlib
-    matplotlib.use('Agg')
-    matplotlib.rcParams['figure.figsize'] = (16.0, 12.0)
     import matplotlib.pyplot as plt
     from matplotlib.font_manager import FontProperties
 except ImportError:
     # automodapi can only skip this if it exists.
     FontProperties = None
+import astropy.units as u
 from astropy import log
 from astropy.io import ascii, fits
+from astropy.time import Time
+from astropy.wcs import WCS
 from . import Pydlspec2dException, Pydlspec2dUserWarning
+
+#
+# Used for automated matplotlib plots.
+#
+_default_figsize = (16.0, 12.0)
 
 #
 # Used by findspec
@@ -117,7 +122,7 @@ class HMF(object):
             npix = self.spectra.shape[0]
         else:
             nobj, npix = self.spectra.shape
-        log.info("Building HMF from %d object spectra.", nobj)
+        log.info("Building HMF from %d object spectra." % (nobj,))
         fluxdict = dict()
         #
         # If there is only one object spectrum, then all we can do is return it.
@@ -277,7 +282,7 @@ class HMF(object):
                    (si.sum(0) == 0))
         n_zero = zerocol.sum()
         if n_zero > 0:
-            log.warn("Found %d bad columns in input data!", n_zero)
+            log.warn("Found %d bad columns in input data!" % (n_zero,))
         #
         # Find the largest set of contiguous pixels
         #
@@ -294,7 +299,9 @@ class HMF(object):
         whitespectra = whiten(self.spectra)
         log.debug(whitespectra[0:3, 0:3])
         self.g, foo = kmeans(whitespectra, self.K)
-        self.g /= np.repeat(self.normbase(), M).reshape(self.g.shape)
+        # log.debug((self.normbase(), M))
+        # log.debug(self.g.shape)
+        self.g /= np.repeat(self.normbase(), M - n_zero).reshape(self.g.shape)
         log.debug(self.g[0:3, 0:3])
         #
         # Initialize a matrix
@@ -309,7 +316,7 @@ class HMF(object):
         #
         t0 = time.time()
         for m in range(self.n_iter):
-            log.info("Starting iteration #%4d.", m+1)
+            log.info("Starting iteration #%4d." % (m+1,))
             if self.nonnegative:
                 self.a = self.astepnn()
                 self.g = self.gstepnn()
@@ -318,12 +325,12 @@ class HMF(object):
                 self.g = self.gstep()
                 self.a, self.g = self.reorder()
             norm = self.normbase()
-            self.g /= np.repeat(norm, M).reshape(self.g.shape)
+            self.g /= np.repeat(norm, M - n_zero).reshape(self.g.shape)
             self.a = (self.a.T*np.repeat(norm, N).reshape(self.K, N)).T
             log.debug(self.a[0:3, 0:3])
             log.debug(self.g[0:3, 0:3])
-            log.debug("Chi**2 after iteration #%4d = %f.", m+1, self.badness())
-            log.info("The elapsed time for iteration #%4d is %6.2f s.", m+1, time.time()-t0)
+            log.debug("Chi**2 after iteration #%4d = %f." % (m+1, self.badness()))
+            log.info("The elapsed time for iteration #%4d is %6.2f s." % (m+1, time.time()-t0))
         return (self.a, self.g)
 
 
@@ -657,7 +664,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
         npix = newflux.shape[0]
     else:
         nobj, npix = newflux.shape
-    log.info("Building PCA from %d object spectra.", nobj)
+    log.info("Building PCA from %d object spectra." % (nobj,))
     nzi = newivar.nonzero()
     first_nonzero = (np.arange(nobj, dtype=nzi[0].dtype),
                      np.array([nzi[1][nzi[0] == k].min() for k in range(nobj)]))
@@ -731,7 +738,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
                                      synwvec*out.yfit) / (maskivar[iobj, :] +
                                                           synwvec)
                 acoeff[iobj, :] = out.acoeff
-            log.info("The elapsed time for iteration #%2d is %6.2f s.", ipiter+1, time.time()-t0)
+            log.info("The elapsed time for iteration #%2d is %6.2f s." % (ipiter+1, time.time()-t0))
         #
         # Now set ymodel for rejecting points.
         #
@@ -749,7 +756,7 @@ def pca_solve(newflux, newivar, maxiter=0, niter=10, nkeep=3,
     return fluxdict
 
 
-def plot_eig(filename, title='Unknown'):
+def plot_eig(filename, title='Unknown', save=True):
     """Plot spectra from an eigenspectra/template file.
 
     Parameters
@@ -758,6 +765,13 @@ def plot_eig(filename, title='Unknown'):
         Name of a FITS file containing eigenspectra/templates.
     title : :class:`str`, optional
         Title to put on the plot.
+    save : :class:`bool`, optional
+        If ``True``, save the plot to a PNG file.
+
+    Returns
+    -------
+    :class:`tuple`
+        The figure and axes objects created.
 
     Raises
     ------
@@ -778,30 +792,41 @@ def plot_eig(filename, title='Unknown'):
             title = 'CV Stars: Eigenspectra'
         else:
             raise ValueError('Unknown template type!')
-    base, ext = filename.split('.')
-    spectrum = fits.open(filename)
-    newloglam0 = spectrum[0].header['COEFF0']
-    objdloglam = spectrum[0].header['COEFF1']
-    spectro_data = spectrum[0].data
-    spectrum.close()
+    base, ext = os.path.splitext(filename)
+    try:
+        created = Time(int(base.split('-')[-1]), format='mjd').to_datetime().date().strftime('%Y-%m-%d')
+        title += f" [{created}]"
+    except ValueError:
+        pass
+    with fits.open(filename, mode='readonly') as hdulist:
+        w = WCS(hdulist[0].header, naxis=1)
+        newloglam0 = hdulist[0].header['COEFF0']
+        objdloglam = hdulist[0].header['COEFF1']
+        spectro_data = hdulist[0].data
     (neig, ndata) = spectro_data.shape
-    newloglam = np.arange(ndata) * objdloglam + newloglam0
-    lam = 10.0**newloglam
-    fig = plt.figure(dpi=100)
-    ax = fig.add_subplot(111)
+    try:
+        lam = (w.wcs_pix2world(np.arange(ndata), 0)[0] * u.Unit(w.wcs.cunit[0])).to(u.Angstrom)
+    except u.UnitConversionError:
+        lam = 10**(np.arange(ndata)*objdloglam + newloglam0) * u.Angstrom
+    fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
     colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
-    for l in range(neig):
-        _ = ax.plot(lam, spectro_data[l, :],
-                    colorvec[l % len(colorvec)]+'-', linewidth=1)
-    ax.set_xlabel(r'Wavelength [$\AA$]')
-    ax.set_ylabel('Flux [Arbitrary Units]')
-    ax.set_title(title)
+    for i in range(neig):
+        if i == 0 and spectro_data[i, :].min() < 0:
+            eigen_flux = -1 * spectro_data[i, :]
+        else:
+            eigen_flux = spectro_data[i, :]
+        _ = ax.plot(lam, eigen_flux,
+                    colorvec[i % len(colorvec)]+'-', linewidth=1)
+    _ = ax.set_xlabel(r'Wavelength [Å]')
+    _ = ax.set_ylabel('Flux [Arbitrary Units]')
+    _ = ax.set_title(title)
     # ax.set_xlim([3500.0,10000.0])
     # ax.set_ylim([-400.0,500.0])
     # fig.savefig(base+'.zoom.png')
-    fig.savefig(base+'.png')
-    plt.close(fig)
-    return
+    if save:
+        fig.savefig(base+'.png')
+    # plt.close(fig)
+    return (fig, ax)
 
 
 def readspec(platein, mjd=None, fiber=None, **kwargs):
@@ -1266,7 +1291,7 @@ def preprocess_spectra(flux, ivar, loglam=None, zfit=None, aesthetics='mean',
             indx = loglam > 0
             rowloglam = loglam[indx]
         for iobj in range(nobj):
-            log.info("OBJECT %5d", iobj)
+            log.info("OBJECT %5d" % (iobj,))
             if loglam.ndim > 1:
                 if loglam.shape[0] != nobj:
                     raise ValueError('Wrong number of dimensions for loglam.')
@@ -1303,7 +1328,7 @@ def template_metadata(inputfile, verbose=False):
         log.setLevel('DEBUG')
     if not os.path.exists(inputfile):
         raise Pydlspec2dException("Could not find {0}!".format(inputfile))
-    log.debug("Reading input data from %s.", inputfile)
+    log.debug("Reading input data from %s." % (inputfile,))
     par = yanny(inputfile)
     required_metadata = {'object': str, 'method': str, 'aesthetics': str,
                          'run2d': str, 'run1d': str,
@@ -1313,7 +1338,7 @@ def template_metadata(inputfile, verbose=False):
     for key in required_metadata:
         try:
             metadata[key] = required_metadata[key](par[key])
-            log.debug('%s = %s', key, par[key])
+            log.debug('%s = %s' % (key, par[key]))
         except KeyError:
             raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
         except ValueError:
@@ -1331,6 +1356,7 @@ def template_metadata(inputfile, verbose=False):
         for key in required_hmf_metadata:
             try:
                 metadata[key] = required_hmf_metadata[key](par[key])
+                log.debug('%s = %s' % (key, par[key]))
             except KeyError:
                 raise KeyError('The {0} keyword was not found in {1}!'.format(key, inputfile))
             except ValueError:
@@ -1380,8 +1406,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     # Read the input spectra
     #
     if os.path.exists(dumpfile):
-        log.info("Loading data from %s.", dumpfile)
-        with open(dumpfile) as f:
+        log.info("Loading data from %s." % (dumpfile,))
+        with open(dumpfile, 'rb') as f:
             inputflux = pickle.load(f)
         newflux = inputflux['newflux']
         newivar = inputflux['newivar']
@@ -1399,8 +1425,8 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         if missing.any():
             imissing = missing.nonzero()[0]
             for k in imissing:
-                log.error("Missing plate=%d mjd=%d fiberid=%d",
-                          slist.plate[k], slist.mjd[k], slist.fiberid[k])
+                log.error("Missing plate=%d mjd=%d fiberid=%d" %
+                          (slist.plate[k], slist.mjd[k], slist.fiberid[k]))
             raise ValueError("{0:d} missing object(s).".format(missing.sum()))
         #
         # Do not fit where the spectrum may be dominated by sky-sub residuals.
@@ -1444,7 +1470,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         # Dump input fluxes to a file for debugging purposes.
         #
         if not os.path.exists(dumpfile):
-            with open(dumpfile, 'w') as f:
+            with open(dumpfile, 'wb') as f:
                 inputflux = {'newflux': newflux, 'newivar': newivar,
                              'newloglam': newloglam}
                 pickle.dump(inputflux, f)
@@ -1477,19 +1503,18 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     pcaflux['newloglam'] = newloglam
     #
     # Fill in bad data with a running median of the good data.
-    # The presence of boundary='nearest' means that this code snippet
-    # was never meant to be called!  In other words it should always
-    # be the case that qgood.all() is True.
+    #
+    # Historical note: djs_median() was called with boundary='nearest', which
+    # is very weird, because 'nearest' was never implemented. However, boundary
+    # is ignored for one-dimensional inputs, so it's sloppy code, but not
+    # actually a problem.
     #
     if 'usemask' in pcaflux:
         qgood = pcaflux['usemask'] >= metadata['minuse']
         if not qgood.all():
-            warn("Would have triggered djs_median replacement!", Pydlspec2dUserWarning)
-        if False:
             medflux = np.zeros(pcaflux['flux'].shape, dtype=pcaflux['flux'].dtype)
             for i in range(metadata['nkeep']):
-                medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood],
-                                               width=51, boundary='nearest')
+                medflux[i, qgood] = djs_median(pcaflux['flux'][i, qgood], width=51)
                 medflux[i, :] = djs_maskinterp(medflux[i, :], ~qgood, const=True)
             pcaflux['flux'][:, ~qgood] = medflux[:, ~qgood]
     #
@@ -1504,53 +1529,50 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     if flux:
         nfluxes = 30
         separation = 5.0
-        nplots = nspectra/nfluxes
+        nplots = nspectra//nfluxes
         if nspectra % nfluxes > 0:
             nplots += 1
         for k in range(nplots):
             istart = k*nfluxes
             iend = min(istart+nfluxes, nspectra) - 1
-            fig = plt.figure(dpi=100)
-            ax = fig.add_subplot(111)
+            fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
             for l in range(istart, iend+1):
                 _ = ax.plot(10.0**pcaflux['newloglam'],
                             pcaflux['newflux'][l, :] + separation*(l % nfluxes),
                             colorvec[l % len(colorvec)]+'-',
                             linewidth=1)
-            ax.set_xlabel(r'Wavelength [$\AA$]')
-            ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')
-            ax.set_title('Input Spectra {0:04d}-{1:04d}'.format(istart+1, iend+1))
-            ax.set_ylim(pcaflux['newflux'][istart, :].min(), pcaflux['newflux'][iend-1, :].max()+separation*(nfluxes-1))
+            _ = ax.set_xlabel(r'Wavelength [Å]')
+            _ = ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')
+            _ = ax.set_title('Input Spectra {0:04d}-{1:04d}'.format(istart+1, iend+1))
+            _ = ax.set_ylim(pcaflux['newflux'][istart, :].min(), pcaflux['newflux'][iend-1, :].max()+separation*(nfluxes-1))
             fig.savefig('{0}.flux.{1:04d}-{2:04d}.png'.format(outfile, istart+1, iend+1))
             plt.close(fig)
     #
     # Missing data diagnostic.
     #
-    fig = plt.figure(dpi=100)
-    ax = fig.add_subplot(111)
+    fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
     _ = ax.plot(10.0**pcaflux['newloglam'], (pcaflux['newivar'] == 0).sum(0)/float(nspectra), 'k-')
-    ax.set_xlabel(r'Wavelength [$\AA$]')
-    ax.set_ylabel('Fraction of spectra with missing data')
-    ax.set_title('Missing Data')
-    ax.grid(True)
+    _ = ax.set_xlabel(r'Wavelength [Å]')
+    _ = ax.set_ylabel('Fraction of spectra with missing data')
+    _ = ax.set_title('Missing Data')
+    _ = ax.grid(True)
     fig.savefig(outfile+'.missing.png')
     plt.close(fig)
     #
     # usemask diagnostic
     #
     if 'usemask' in pcaflux:
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         _ = ax.semilogy(10.0**pcaflux['newloglam'][pcaflux['usemask'] > 0],
                         pcaflux['usemask'][pcaflux['usemask'] > 0], 'k-',
                         10.0**pcaflux['newloglam'],
                         np.zeros(pcaflux['newloglam'].shape,
                         dtype=pcaflux['newloglam'].dtype) + metadata['minuse'],
                         'k--')
-        ax.set_xlabel(r'Wavelength [$\AA$]')
-        ax.set_ylabel('Usemask')
-        ax.set_title('UseMask')
-        ax.grid(True)
+        _ = ax.set_xlabel(r'Wavelength [Å]')
+        _ = ax.set_ylabel('Usemask')
+        _ = ax.set_title('UseMask')
+        _ = ax.grid(True)
         fig.savefig(outfile+'.usemask.png')
         plt.close(fig)
     #
@@ -1560,8 +1582,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
         aratio10 = pcaflux['acoeff'][:, 1]/pcaflux['acoeff'][:, 0]
         aratio20 = pcaflux['acoeff'][:, 2]/pcaflux['acoeff'][:, 0]
         aratio30 = pcaflux['acoeff'][:, 3]/pcaflux['acoeff'][:, 0]
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         _ = ax.plot(aratio10, aratio20, marker='None', linestyle='None')
         for k in range(len(aratio10)):
             _ = ax.text(aratio10[k], aratio20[k],
@@ -1569,15 +1590,14 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                         horizontalalignment='center', verticalalignment='center',
                         color=colorvec[k % len(colorvec)],
                         fontproperties=smallfont)
-        # ax.set_xlim([aratio10.min(), aratio10.max])
-        # ax.set_xlim([aratio20.min(), aratio20.max])
-        ax.set_xlabel('Eigenvalue Ratio, $a_1/a_0$')
-        ax.set_ylabel('Eigenvalue Ratio, $a_2/a_0$')
-        ax.set_title('Eigenvalue Ratios')
+        # _ = ax.set_xlim([aratio10.min(), aratio10.max])
+        # _ = ax.set_xlim([aratio20.min(), aratio20.max])
+        _ = ax.set_xlabel('Eigenvalue Ratio, $a_1/a_0$')
+        _ = ax.set_ylabel('Eigenvalue Ratio, $a_2/a_0$')
+        _ = ax.set_title('Eigenvalue Ratios')
         fig.savefig(outfile+'.a2_v_a1.png')
         plt.close(fig)
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         _ = ax.plot(aratio20, aratio30, marker='None', linestyle='None')
         for k in range(len(aratio10)):
             _ = ax.text(aratio20[k], aratio30[k],
@@ -1585,11 +1605,11 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
                         horizontalalignment='center', verticalalignment='center',
                         color=colorvec[k % len(colorvec)],
                         fontproperties=smallfont)
-        # ax.set_xlim([aratio10.min(), aratio10.max])
-        # ax.set_xlim([aratio20.min(), aratio20.max])
-        ax.set_xlabel('Eigenvalue Ratio, $a_2/a_0$')
-        ax.set_ylabel('Eigenvalue Ratio, $a_3/a_0$')
-        ax.set_title('Eigenvalue Ratios')
+        # _ = ax.set_xlim([aratio10.min(), aratio10.max])
+        # _ = ax.set_xlim([aratio20.min(), aratio20.max])
+        _ = ax.set_xlabel('Eigenvalue Ratio, $a_2/a_0$')
+        _ = ax.set_ylabel('Eigenvalue Ratio, $a_3/a_0$')
+        _ = ax.set_title('Eigenvalue Ratios')
         fig.savefig(outfile+'.a3_v_a2.png')
         plt.close(fig)
     #
@@ -1601,9 +1621,23 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     objtypes = {'gal': 'GALAXY', 'qso': 'QSO', 'star': 'STAR'}
     if not pydl_version:
         pydl_version = 'git'
+    hdu0.header['EXTNAME'] = ('EIGENSPECTRA', 'extension name')
+    hdu0.header['LONGSTRN'] = ('OGIP 1.0', 'The OGIP Long String Convention may be used.')
     hdu0.header['OBJECT'] = (objtypes[metadata['object']], 'Type of template')
     hdu0.header['COEFF0'] = (pcaflux['newloglam'][0], 'Wavelength zeropoint')
     hdu0.header['COEFF1'] = (pcaflux['newloglam'][1]-pcaflux['newloglam'][0], 'Delta wavelength')
+    #
+    # WCS
+    #
+    hdu0.header['WCSAXES'] = (1, 'Number of coordinate axes')
+    hdu0.header['CRPIX1'] = (1.0, 'Pixel coordinate of reference point')
+    hdu0.header['CTYPE1'] = ('WAVE-LOG', 'Wavelength in vacuuo, logarithmic axis')
+    hdu0.header['CRVAL1'] = (10**pcaflux['newloglam'][0], '[Angstrom] Coordinate value at reference point')
+    hdu0.header['CDELT1'] = ((10**pcaflux['newloglam'][0]) * (pcaflux['newloglam'][1]-pcaflux['newloglam'][0]) * np.log(10), '[Angstrom] Coordinate increment at reference point')
+    hdu0.header['CUNIT1'] = ('Angstrom', 'Units of coordinate increment and value')
+    #
+    # Metadata
+    #
     hdu0.header['IDLUTILS'] = ('pydl-{0}'.format(pydl_version), 'Version of idlutils')
     hdu0.header['SPEC2D'] = ('pydl-{0}'.format(pydl_version), 'Version of idlspec2d')
     hdu0.header['RUN2D'] = (os.environ['RUN2D'], 'Version of 2d reduction')
@@ -1613,8 +1647,7 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
     if metadata['method'].lower() == 'hmf':
         hdu0.header['NONNEG'] = (metadata['nonnegative'], 'Was nonnegative HMF used?')
         hdu0.header['EPSILON'] = (metadata['epsilon'], 'Regularization parameter used.')
-    # for i in range(len(namearr)):
-    #     hdu0.header["NAME{0:d}".format(i)] = namearr[i]+' '
+    hdu0.add_checksum()
     c = [fits.Column(name='plate', format='J', array=slist.plate),
          fits.Column(name='mjd', format='J', array=slist.mjd),
          fits.Column(name='fiberid', format='J', array=slist.fiberid)]
@@ -1625,9 +1658,10 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
             hdu0.header['NAME{0:d}'.format(i)] = (name, 'Name of class {0:d}.'.format(i))
     else:
         c.append(fits.Column(name='zfit', format='D', array=slist.zfit))
-    hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c))
+    hdu1 = fits.BinTableHDU.from_columns(fits.ColDefs(c), name='INPUT_SPECTRA')
+    hdu1.add_checksum()
     hdulist = fits.HDUList([hdu0, hdu1])
-    hdulist.writeto(outfile+'.fits')
+    hdulist.writeto(outfile+'.fits', overwrite=True)
     if metadata['object'].lower() != 'star':
         plot_eig(outfile+'.fits')
     #
@@ -1673,7 +1707,7 @@ def template_qso(metadata, newflux, newivar, verbose=False):
         nobj, npix = newflux.shape
     objflux = newflux.copy()
     for ikeep in range(metadata['nkeep']):
-        log.info("Solving for eigencomponent #%d of %d", ikeep+1, metadata['nkeep'])
+        log.info("Solving for eigencomponent #%d of %d" % (ikeep+1, metadata['nkeep']))
         if metadata['method'].lower() == 'pca':
             pcaflux1 = pca_solve(objflux, newivar,
                                  niter=metadata['niter'], nkeep=1,
@@ -1771,7 +1805,7 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
         #
         # Find the subclasses for this stellar type
         #
-        log.info("Finding eigenspectra for Stellar class %s.", c)
+        log.info("Finding eigenspectra for Stellar class %s." % (c,))
         indx = (slist['class'] == c).nonzero()[0]
         nindx = indx.size
         thesesubclass = slist['subclass'][indx]
@@ -1843,8 +1877,7 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
         thesesubclassnum = np.zeros(thesesubclass.size, dtype='i4')
         colorvec = ['k', 'r', 'g', 'b', 'm', 'c']
         smallfont = FontProperties(size='xx-small')
-        fig = plt.figure(dpi=100)
-        ax = fig.add_subplot(111)
+        fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
         for isub in range(nsubclass):
             ii = (thesesubclass == subclasslist[isub]).nonzero()[0]
             thesesubclassnum[ii] = isub
@@ -1862,13 +1895,13 @@ def template_star(metadata, newloglam, newflux, newivar, slist, outfile,
             # Plot spectra
             #
             plotflux = thisflux/thisflux.max()
-            ax.plot(10.0**newloglam, plotflux,
-                    "{0}-".format(colorvec[isub % len(colorvec)]),
-                    linewidth=1)
+            _ = ax.plot(10.0**newloglam, plotflux,
+                        "{0}-".format(colorvec[isub % len(colorvec)]),
+                        linewidth=1)
             if isub == 0:
-                ax.set_xlabel(r'Wavelength [$\AA$]')
-                ax.set_ylabel('Flux [arbitrary units]')
-                ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
+                _ = ax.set_xlabel(r'Wavelength [Å]')
+                _ = ax.set_ylabel('Flux [arbitrary units]')
+                _ = ax.set_title('STAR {0}: Eigenspectra Reconstructions'.format(c))
             _ = ax.text(10.0**newloglam[-1], plotflux[-1],
                         subclasslist[isub],
                         horizontalalignment='right', verticalalignment='center',
@@ -1900,7 +1933,8 @@ def template_input_main():  # pragma: no cover
     #
     import sys
     from argparse import ArgumentParser
-
+    import matplotlib
+    matplotlib.use("Agg")
     # Get home directory in platform-independent way
     home_dir = os.path.expanduser('~')
     #

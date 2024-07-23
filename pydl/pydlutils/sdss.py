@@ -759,7 +759,13 @@ def unwrap_specobjid(specObjID, run2d_integer=False, specLineIndex=False):
               dtype=[('plate', '<i4'), ('fiber', '<i4'), ('mjd', '<i4'), ('run2d', '<U8'), ('line', '<i4')])
 
     """
-    if (specObjID.dtype.type is np.string_ or specObjID.dtype.type is np.unicode_):
+    try:
+        np_string = np.string_  # Numpy 1.x
+        np_unicode = np.unicode_
+    except AttributeError:
+        np_string = np.bytes_  # Numpy 2.x
+        np_unicode = np.str_
+    if (specObjID.dtype.type is np_string or specObjID.dtype.type is np_unicode):
         tempobjid = specObjID.astype(np.uint64)
     elif specObjID.dtype.type is np.uint64:
         tempobjid = specObjID.copy()

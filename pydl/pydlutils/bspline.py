@@ -4,7 +4,7 @@
 """
 from warnings import warn
 import numpy as np
-from numpy.linalg.linalg import LinAlgError
+from numpy.linalg import LinAlgError
 from scipy.linalg import cholesky_banded, cho_solve_banded
 from . import PydlutilsUserWarning
 from .math import djs_reject
@@ -539,7 +539,7 @@ def cholesky_solve(a, bb):
 
 
 def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
-            maxiter=10, **kwargs):
+            maxiter=10, groupbadpix=False, **kwargs):
     """Iteratively fit a B-spline set to data, with rejection.
 
     Additional keyword parameters are passed to
@@ -563,6 +563,8 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
     maxiter : :class:`int`, optional
         Maximum number of rejection iterations, default 10.  Set this to
         zero to disable rejection.
+    groupbadpix : :class:`bool`, optional
+        This keyword will be passed to :func:`~pydl.pydlutils.math.djs_reject`.
 
     Returns
     -------
@@ -594,6 +596,11 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         outmask = np.ones(invvar.shape, dtype='bool')
     xsort = xdata.argsort()
     maskwork = (outmask & (invvar > 0))[xsort]
+    if 'requiren' in kwargs:
+        requiren = kwargs['requiren']
+        del kwargs['requiren']  # So that kwargs can be passed to bspline.
+    else:
+        requiren = None
     if 'oldset' in kwargs:
         sset = kwargs['oldset']
         sset.mask = True
@@ -605,7 +612,11 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
             # fullbkpt = kwargs['fullbkpt']
             raise ValueError('Input via fullbkpt is not supported!')
         else:
-            sset = bspline(xdata[xsort[maskwork]], **kwargs)
+            try:
+                sset = bspline(xdata[xsort[maskwork]], **kwargs)
+            except TypeError:
+                print(kwargs)
+                raise
             if maskwork.sum() < sset.nord:
                 warn('Number of good data points fewer than nord.',
                      PydlutilsUserWarning)
@@ -643,7 +654,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
             sset.coeff = 0
             iiter = maxiter + 1
         else:
-            if 'requiren' in kwargs:
+            if requiren is not None:
                 i = 0
                 while xwork[i] < sset.breakpoints[goodbk[sset.nord]] and i < nx-1:
                     i += 1
@@ -654,7 +665,7 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
                            i < nx-1):
                         ct += invwork[i]*maskwork[i] > 0
                         i += 1
-                    if ct >= kwargs['requiren']:
+                    if ct >= requiren:
                         ct = 0
                     else:
                         sset.mask[goodbk[ileft]] = False
@@ -665,9 +676,9 @@ def iterfit(xdata, ydata, invvar=None, upper=5, lower=5, x2=None,
         if error == -2:
             return (sset, outmask)
         elif error == 0:
-            maskwork, qdone = djs_reject(ywork, yfit, invvar=invwork,
-                                         inmask=inmask, outmask=maskwork,
-                                         upper=upper, lower=lower)
+            maskwork, qdone = djs_reject(ywork, yfit, inmask=inmask, outmask=maskwork,
+                                         invvar=invwork, lower=lower, upper=upper,
+                                         groupbadpix=groupbadpix)
         else:
             pass
     outmask[xsort] = maskwork
