@@ -12,9 +12,6 @@ functions are implemented to support this.
 
 .. _`IDL®`: https://www.nv5geospatialsoftware.com/Products/IDL
 """
-import os
-from astropy.tests.runner import TestRunner
-
 try:
     from .version import version as __version__
 except ImportError:
@@ -28,11 +25,6 @@ from .smooth import smooth
 from .uniq import uniq
 
 
-# Create the test function for self test
-test = TestRunner.make_test_runner_in(os.path.dirname(__file__))
-test.__test__ = False
-
-
 class PydlException(Exception):
     """Base class for exceptions raised in PyDL functions.
     """
@@ -41,7 +33,3 @@ class PydlException(Exception):
 
 __all__ = ['file_lines', 'median', 'pcomp', 'rebin', 'smooth', 'uniq',
            'PydlException']
-
-# Clean up namespace
-del os
-del TestRunner

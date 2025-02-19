@@ -5,7 +5,7 @@ except ImportError:
     ASTROPY_HEADER = False
 
 
-# Repeat this from specutils/conftest.py so tox picks it up.
+# Repeat this from pydl/conftest.py so tox picks it up.
 def pytest_configure(config):
 
     if ASTROPY_HEADER:
