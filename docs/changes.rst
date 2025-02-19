@@ -5,7 +5,11 @@ PyDL Changelog
 1.0.2 (unreleased)
 ------------------
 
-* No changes yet.
+* Remove deprecated ``astropy.tests.runner.TestRunner`` (PR `#80`_).
+  See also `astropy/astropy#16177`_.
+
+.. _`#80`: https://github.com/weaverba137/pydl/pull/80
+.. _`astropy/astropy#16177`: https://github.com/astropy/astropy/issues/16177
 
 1.0.1 (2024-07-23)
 ------------------
