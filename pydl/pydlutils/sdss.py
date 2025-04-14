@@ -576,7 +576,6 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
     Assumes that the sweep files exist in :envvar:`PHOTO_SWEEP` and
     that index files have been created.
     """
-    global sweep_cache
     #
     # Check values
     #
