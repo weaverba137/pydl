@@ -57,6 +57,13 @@ from astropy.table import Table
 from . import PydlutilsException, PydlutilsUserWarning
 
 
+try:
+    UTC = datetime.UTC
+except AttributeError:
+    from zoneinfo import ZoneInfo
+    UTC = ZoneInfo('UTC')
+
+
 class yanny(OrderedDict):
     """An object interface to a yanny file.
 
@@ -865,7 +872,7 @@ class yanny(OrderedDict):
                   "{0} exists, aborting write!".format(newfile))
         if comments is None:
             basefile = os.path.basename(newfile)
-            timestamp = datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
+            timestamp = datetime.datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
             comments = f"""#
 # {basefile}
 #
@@ -947,7 +954,7 @@ class yanny(OrderedDict):
         if not isinstance(datatable, dict):
             raise ValueError("Data to append is not of the correct type. " +
                              "Use a dict!")
-        timestamp = datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
+        timestamp = datetime.datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
         contents = ''
         #
         # Print any key/value pairs
