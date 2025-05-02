@@ -5,6 +5,8 @@ PyDL Changelog
 1.0.2 (unreleased)
 ------------------
 
+* Advance test matrix to more recent Python versions; other infrastructure
+  clean-up.
 * Remove deprecated ``astropy.tests.runner.TestRunner`` (PR `#80`_).
   See also `astropy/astropy#16177`_.
 
