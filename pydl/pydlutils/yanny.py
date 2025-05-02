@@ -148,7 +148,7 @@ class yanny(OrderedDict):
                                           string).groups()
         else:
             try:
-                (word, remainder) = re.split(r'\s+', string, 1)
+                (word, remainder) = re.split(r'\s+', string, maxsplit=1)
             except ValueError:
                 (word, remainder) = (string, '')
         # if remainder is None:
