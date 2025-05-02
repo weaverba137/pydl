@@ -195,10 +195,10 @@ class HMF(object):
         d = np.zeros((K, K, M), dtype=self.a.dtype)
         if self.epsilon is not None and self.epsilon > 0:
             foo = self.epsilon * np.eye(K, dtype=self.a.dtype)
-            for l in range(M):
-                d[:, :, l] = foo
-                if l > 0 and l < M-1:
-                    d[:, :, l] *= 2
+            for ll in range(M):
+                d[:, :, ll] = foo
+                if ll > 0 and ll < M-1:
+                    d[:, :, ll] *= 2
             # d[:, :, 0] = foo
             # d[:, :, 1:M-1] = 2*foo
             # d[:, :, M-1] = foo
@@ -1536,10 +1536,10 @@ def template_input(inputfile, dumpfile, flux=False, verbose=False):
             istart = k*nfluxes
             iend = min(istart+nfluxes, nspectra) - 1
             fig, ax = plt.subplots(1, 1, figsize=_default_figsize, dpi=100)
-            for l in range(istart, iend+1):
+            for indx in range(istart, iend+1):
                 _ = ax.plot(10.0**pcaflux['newloglam'],
-                            pcaflux['newflux'][l, :] + separation*(l % nfluxes),
-                            colorvec[l % len(colorvec)]+'-',
+                            pcaflux['newflux'][indx, :] + separation*(indx % nfluxes),
+                            colorvec[indx % len(colorvec)]+'-',
                             linewidth=1)
             _ = ax.set_xlabel(r'Wavelength [Å]')
             _ = ax.set_ylabel(r'Flux [$\mathsf{10^{-17} erg\, cm^{-2} s^{-1} \AA^{-1}}$] + Constant')

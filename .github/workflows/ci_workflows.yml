@@ -37,14 +37,14 @@ jobs:
             toxargs: -v
             toxposargs: --remote-data=astropy
 
-          - name: Python 3.11 (Windows)
+          - name: Python 3.12 (Windows)
             os: windows-latest
-            python: 3.11
+            python: '3.12'
             toxenv: py311-test
 
-          - name: Python 3.11 (MacOS X)
+          - name: Python 3.10 (MacOS X)
             os: macos-latest
-            python: 3.11
+            python: '3.10'
             toxenv: py311-test
 
           - name: Python 3.10
@@ -52,14 +52,9 @@ jobs:
             python: '3.10'
             toxenv: py310-test
 
-          - name: Python 3.9
-            os: ubuntu-latest
-            python: 3.9
-            toxenv: py39-test
-
-          - name: Python 3.8 with oldest supported version of key dependencies
-            os: ubuntu-20.04
-            python: 3.8
+          - name: Python 3.10 with oldest supported version of key dependencies
+            os: ubuntu-22.04
+            python: '3.10'
             toxenv: py38-test-oldestdeps
 
     steps:
@@ -71,13 +66,13 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
-    - name: Install language-pack-de and tzdata
-      if: startsWith(matrix.os, 'ubuntu')
-      run: |
-          sudo apt-get update
-          sudo apt-get install language-pack-de tzdata graphviz
+    # - name: Install language-pack-de and tzdata
+    #   if: startsWith(matrix.os, 'ubuntu')
+    #   run: |
+    #       sudo apt-get update
+    #       sudo apt-get install language-pack-de tzdata graphviz
     - name: Install Python dependencies
-      run: python -m pip install --upgrade tox codecov
+      run: python -m pip install --upgrade tox
     - name: Run tests
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
@@ -91,10 +86,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: (Allowed Failure) Python 3.11 with development versions of key dependencies
+          - name: (Allowed Failure) Python 3.13 with development versions of key dependencies
             os: ubuntu-latest
-            python: '3.11'
-            toxenv: py311-test-devdeps
+            python: '3.13'
+            toxenv: py313-test-devdeps
             toxargs: -v
 
           - name: (Allowed Failure) Python 3.12 with remote data and dev version of key dependencies
@@ -113,13 +108,13 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python }}
-    - name: Install language-pack-de and tzdata
-      if: startsWith(matrix.os, 'ubuntu')
-      run: |
-          sudo apt-get update
-          sudo apt-get install language-pack-de tzdata
+    # - name: Install language-pack-de and tzdata
+    #   if: startsWith(matrix.os, 'ubuntu')
+    #   run: |
+    #       sudo apt-get update
+    #       sudo apt-get install language-pack-de tzdata
     - name: Install Python dependencies
-      run: python -m pip install --upgrade tox codecov
+      run: python -m pip install --upgrade tox
     - name: Run tests
       # This is the specific switch for allowed failures.
       continue-on-error: true

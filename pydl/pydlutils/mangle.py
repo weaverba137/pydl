@@ -677,7 +677,7 @@ def read_mangle_polygons(filename):
     with open(filename, 'r') as ply:
         # lines = ply.read().split(ply.newlines)
         lines = ply.readlines()
-    lines = [l.strip() for l in lines]
+    lines = [ln.strip() for ln in lines]
     try:
         _ = int(lines[0].strip().split()[0])
     except ValueError:

@@ -374,7 +374,7 @@ def struct_print(array, filename=None, formatcodes=None, alias=None,
     rowformat = (colstart + colsep.join([formatcodes[tag]
                                          for tag in array.dtype.names]) + colend)
     for k in range(array.size):
-        lines.append(rowformat.format(*([decode_mixed(l) for l in array[k].tolist()])))
+        lines.append(rowformat.format(*([decode_mixed(ll) for ll in array[k].tolist()])))
     if html:
         lines.append('</table>')
     f = None   # This variable will store a file handle
