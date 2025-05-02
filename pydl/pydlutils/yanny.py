@@ -865,7 +865,7 @@ class yanny(OrderedDict):
                   "{0} exists, aborting write!".format(newfile))
         if comments is None:
             basefile = os.path.basename(newfile)
-            timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            timestamp = datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
             comments = f"""#
 # {basefile}
 #
@@ -947,7 +947,7 @@ class yanny(OrderedDict):
         if not isinstance(datatable, dict):
             raise ValueError("Data to append is not of the correct type. " +
                              "Use a dict!")
-        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+        timestamp = datetime.datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
         contents = ''
         #
         # Print any key/value pairs
