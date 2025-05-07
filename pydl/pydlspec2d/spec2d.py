@@ -46,7 +46,7 @@ def aesthetics(flux, invvar, method='traditional'):
             goodpts = invvar > 0
             newflux[~goodpts] = newflux[goodpts].mean()
         elif method == 'damp':
-            l = 250  # damping length in pixels
+            damp_len = 250  # damping length in pixels
             goodpts = invvar.nonzero()[0]
             nflux = flux.size
             mingood = goodpts.min()
@@ -54,10 +54,10 @@ def aesthetics(flux, invvar, method='traditional'):
             newflux = djs_maskinterp(flux, invvar == 0, const=True)
             pixels = np.arange(nflux, dtype='f')
             if mingood > 0:
-                damp1 = float(min(mingood, l))
+                damp1 = float(min(mingood, damp_len))
                 newflux *= 0.5*(1.0+erf((pixels-mingood)/damp1))
             if maxgood < (nflux - 1):
-                damp2 = float(min(maxgood, l))
+                damp2 = float(min(maxgood, damp_len))
                 newflux *= 0.5*(1.0+erf((maxgood-pixels)/damp2))
         elif method == 'nothing':
             newflux = flux.copy()

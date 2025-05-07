@@ -170,21 +170,21 @@ def sdss_flagexist(flagname, bitname, flagexist=False, whichexist=False):
         bitnames = [bitname.upper()]
     else:
         bitnames = [b.upper() for b in bitname]
-    f = False
-    l = False
+    flexist = False
+    allexist = False
     which = [False] * len(bitnames)
     if flagname.upper() in maskbits:
-        f = True
+        flexist = True
         which = [n in maskbits[flagname.upper()] for n in bitnames]
-        l = sum(which) == len(which)
+        allexist = sum(which) == len(which)
     if flagexist and whichexist:
-        return (l, f, which)
+        return (allexist, flexist, which)
     elif flagexist:
-        return (l, f)
+        return (allexist, flexist)
     elif whichexist:
-        return (l, which)
+        return (allexist, which)
     else:
-        return l
+        return allexist
 
 
 def sdss_flagname(flagname, flagvalue, concat=False):
@@ -263,7 +263,7 @@ def sdss_flagval(flagname, bitname):
     Examples
     --------
     >>> from pydl.pydlutils.sdss import sdss_flagval
-    >>> sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL']) # doctest: +REMOTE_DATA
+    >>> int(sdss_flagval('ANCILLARY_TARGET1',['BLAZGX','ELG','BRIGHTGAL']))  # doctest: +REMOTE_DATA
     2310346608843161600
     """
     global maskbits

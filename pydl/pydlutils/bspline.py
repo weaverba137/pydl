@@ -334,10 +334,10 @@ class bspline(object):
             imj = ileft-j
             deltam[:, j] = x - bkpt[imj]
             vmprev = 0.0
-            for l in range(j+1):
-                vm = vnikx[:, l]/(deltap[:, l] + deltam[:, j-l])
-                vnikx[:, l] = vm*deltap[:, l] + vmprev
-                vmprev = vm*deltam[:, j-l]
+            for k in range(j+1):
+                vm = vnikx[:, k]/(deltap[:, k] + deltam[:, j-k])
+                vnikx[:, k] = vm*deltap[:, k] + vmprev
+                vmprev = vm*deltam[:, j-k]
             j += 1
             vnikx[:, j] = vmprev
         return vnikx
@@ -451,7 +451,7 @@ class bspline(object):
             return -2
 
 
-def cholesky_band(l, mininf=0.0):
+def cholesky_band(low, mininf=0.0):
     """Compute *lower* Cholesky decomposition of a banded matrix.
 
     This function provides informative error messages to pass back to the
@@ -460,15 +460,15 @@ def cholesky_band(l, mininf=0.0):
 
     Parameters
     ----------
-    l : :class:`numpy.ndarray`
+    low : :class:`numpy.ndarray`
         A matrix on which to perform the Cholesky decomposition.  The
         matrix must be in a special, *lower* form described in
         :func:`scipy.linalg.cholesky_banded`.  In addition, the input
         must be padded.  If the original, square matrix has size
         :math:`N \\times N`, and the width of the band is :math:`b`,
-        `l` must be :math:`b \\times (N + b)`.
+        `low` must be :math:`b \\times (N + b)`.
     mininf : :class:`float`, optional
-        Entries in the `l` matrix are considered negative if they are less
+        Entries in the `low` matrix are considered negative if they are less
         than this value (default 0.0).
 
     Returns
@@ -479,19 +479,19 @@ def cholesky_band(l, mininf=0.0):
         be the input matrix.  If no problems were detected, the first item
         will be -1, and the second item will be the Cholesky decomposition.
     """
-    bw, nn = l.shape
+    bw, nn = low.shape
     n = nn - bw
-    negative = l[0, 0:n] <= mininf
-    if negative.any() or not np.all(np.isfinite(l)):
+    negative = low[0, 0:n] <= mininf
+    if negative.any() or not np.all(np.isfinite(low)):
         warn('Bad entries: ' + str(negative.nonzero()[0]), PydlutilsUserWarning)
-        return (negative.nonzero()[0], l)
+        return (negative.nonzero()[0], low)
     try:
-        lower = cholesky_banded(l[:, 0:n], lower=True)
+        lower = cholesky_banded(low[:, 0:n], lower=True)
     except LinAlgError:
         #
         # Figure out where the error is.
         #
-        lower = l.copy()
+        lower = low.copy()
         kn = bw - 1
         spot = np.arange(kn, dtype='i4') + 1
         for j in range(n):
@@ -500,11 +500,11 @@ def cholesky_band(l, mininf=0.0):
             x = lower[spot, j]
             if not np.all(np.isfinite(x)):
                 warn('NaN found in cholesky_band.', PydlutilsUserWarning)
-                return (j, l)
+                return (j, low)
     #
     # Restore padding.
     #
-    L = np.zeros(l.shape, dtype=l.dtype)
+    L = np.zeros(low.shape, dtype=low.dtype)
     L[:, 0:n] = lower
     return (-1, L)
 

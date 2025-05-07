@@ -57,6 +57,13 @@ from astropy.table import Table
 from . import PydlutilsException, PydlutilsUserWarning
 
 
+try:
+    UTC = datetime.UTC
+except AttributeError:
+    from zoneinfo import ZoneInfo
+    UTC = ZoneInfo('UTC')
+
+
 class yanny(OrderedDict):
     """An object interface to a yanny file.
 
@@ -141,7 +148,7 @@ class yanny(OrderedDict):
                                           string).groups()
         else:
             try:
-                (word, remainder) = re.split(r'\s+', string, 1)
+                (word, remainder) = re.split(r'\s+', string, maxsplit=1)
             except ValueError:
                 (word, remainder) = (string, '')
         # if remainder is None:
@@ -281,11 +288,11 @@ class yanny(OrderedDict):
         for c in dt.names:
             if dt[c].kind == 'V':
                 t = dt[c].subdtype[0].str[1:]
-                l = dt[c].subdtype[1][0]
+                ln = dt[c].subdtype[1][0]
                 s = dt[c].subdtype[0].itemsize
             else:
                 t = dt[c].str[1:]
-                l = 0
+                ln = 0
                 s = dt[c].itemsize
             line = '    '
             if t[0] in 'SU':
@@ -296,8 +303,8 @@ class yanny(OrderedDict):
             else:
                 line += dtmap[t]
             line += ' {0}'.format(c)
-            if l > 0:
-                line += "[{0:d}]".format(l)
+            if ln > 0:
+                line += "[{0:d}]".format(ln)
             if t[0] in 'SU' and c not in enums:
                 line += "[{0:d}]".format(s)
             line += ';'
@@ -865,7 +872,7 @@ class yanny(OrderedDict):
                   "{0} exists, aborting write!".format(newfile))
         if comments is None:
             basefile = os.path.basename(newfile)
-            timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+            timestamp = datetime.datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
             comments = f"""#
 # {basefile}
 #
@@ -947,7 +954,7 @@ class yanny(OrderedDict):
         if not isinstance(datatable, dict):
             raise ValueError("Data to append is not of the correct type. " +
                              "Use a dict!")
-        timestamp = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
+        timestamp = datetime.datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S UTC')
         contents = ''
         #
         # Print any key/value pairs

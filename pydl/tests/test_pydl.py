@@ -22,10 +22,10 @@ def test_file_lines():
     # Find the test files
     #
     line_numbers = (1, 42, 137)
-    plainfiles = [get_pkg_data_filename('t/this-file-contains-{0:d}-lines.txt'.format(l))
-                  for l in line_numbers]
-    gzfiles = [get_pkg_data_filename('t/this-file-contains-{0:d}-lines.txt.gz'.format(l))
-               for l in line_numbers]
+    plainfiles = [get_pkg_data_filename('t/this-file-contains-{0:d}-lines.txt'.format(ln))
+                  for ln in line_numbers]
+    gzfiles = [get_pkg_data_filename('t/this-file-contains-{0:d}-lines.txt.gz'.format(ln))
+               for ln in line_numbers]
     for i, p in enumerate(plainfiles):
         n = file_lines(p)
         assert n == line_numbers[i]
