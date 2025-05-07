@@ -6,11 +6,12 @@ PyDL Changelog
 ------------------
 
 * Advance test matrix to more recent Python versions; other infrastructure
-  clean-up.
+  clean-up (PR `#81`_).
 * Remove deprecated ``astropy.tests.runner.TestRunner`` (PR `#80`_).
   See also `astropy/astropy#16177`_.
 
 .. _`#80`: https://github.com/weaverba137/pydl/pull/80
+.. _`#81`: https://github.com/weaverba137/pydl/pull/81
 .. _`astropy/astropy#16177`: https://github.com/astropy/astropy/issues/16177
 
 1.0.1 (2024-07-23)
