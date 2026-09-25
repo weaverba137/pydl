@@ -111,7 +111,7 @@ API
     :skip: PydlutilsException, PydlutilsUserWarning
 
 .. automodapi:: pydl.pydlutils.math
-    :skip: svd, djs_laxisnum, median
+    :skip: svd, djs_laxisnum, median, cached_property
 
 .. automodapi:: pydl.pydlutils.misc
 
