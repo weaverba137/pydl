@@ -25,7 +25,7 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-import os
+# import os
 import sys
 import datetime
 from pathlib import Path
@@ -156,7 +156,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
               [author], 1)]
 
 # -- Resolving issue number to links in changelog -----------------------------
-github_issues_url = pyproject['project.urls']['Issues']
+github_issues_url = pyproject['project']['urls']['Issues']
 
 
 # -- Options for linkcheck output -------------------------------------------
