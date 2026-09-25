@@ -74,6 +74,23 @@ yanny       Good            Tools for manipulating `SDSS parameter files`_.
 .. _`sweep files`: https://data.sdss.org/datamodel/files/PHOTO_SWEEP/RERUN/calibObj.html
 .. _`SDSS parameter files`: https://www.sdss4.org/dr16/software/par/
 
+Environment Variables
++++++++++++++++++++++
+
+These environment variables are optional, but can be used with some functions.
+
+.. envvar:: PHOTO_RESOLVE
+
+    window
+
+.. envvar:: PHOTO_SWEEP
+
+    sdss
+
+.. envvar:: PHOTOLOG_DIR
+
+    sdss
+
 API
 +++
 
@@ -94,7 +111,7 @@ API
     :skip: PydlutilsException, PydlutilsUserWarning
 
 .. automodapi:: pydl.pydlutils.math
-    :skip: svd, djs_laxisnum, median
+    :skip: svd, djs_laxisnum, median, cached_property
 
 .. automodapi:: pydl.pydlutils.misc
 

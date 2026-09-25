@@ -1,8 +1,2 @@
-prune build
-prune docs/_build
-prune docs/api
 prune .github
-exclude .gitignore
-exclude .mailmap
-exclude .readthedocs.yml
-global-exclude *.pyc *.o
+global-exclude .gitignore .mailmap .readthedocs.yml

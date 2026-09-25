@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """This module corresponds to the math directory in idlutils.
 """
+from functools import cached_property
 import numpy as np
 from numpy.linalg import svd
-import astropy.utils as au
 from .misc import djs_laxisnum
 from ..median import median
 
@@ -13,7 +13,7 @@ class computechi2(object):
     """Solve the linear set of equations :math:`A x = b` using SVD.
 
     The attributes of this class are all read-only properties, implemented
-    with :class:`~astropy.utils.decorators.lazyproperty`.
+    with :func:`~functools.cached_property`.
 
     Parameters
     ----------
@@ -48,27 +48,27 @@ class computechi2(object):
         self.mmi = np.dot((self.vv.T / np.tile(self.ww, self.nstar).reshape(self.nstar, self.nstar)), self.uu.T)
         return
 
-    @au.lazyproperty
+    @cached_property
     def acoeff(self):
         """(:class:`~numpy.ndarray`) The fit parameters, :math:`x`,
         in :math:`A x = b`. This vector has length :math:`M`.
         """
         return np.dot(self.mmi, np.dot(self.mmatrix.T, self.bvec))
 
-    @au.lazyproperty
+    @cached_property
     def chi2(self):
         r"""(:class:`float <numpy.generic>`) The :math:`\chi^2` value of the fit.
         """
         return np.sum((np.dot(self.mmatrix, self.acoeff) - self.bvec)**2)
 
-    @au.lazyproperty
+    @cached_property
     def yfit(self):
         """(:class:`~numpy.ndarray`) The evaluated best-fit at each point.
         This vector has length :math:`N`.
         """
         return np.dot(self.amatrix, self.acoeff)
 
-    @au.lazyproperty
+    @cached_property
     def dof(self):
         """(:class:`int <numpy.generic>`) The degrees of freedom of the fit.
         This is the number of values of `bvec` that have `sqivar` > 0 minus
@@ -76,7 +76,7 @@ class computechi2(object):
         """
         return (self.sqivar > 0).sum() - self.nstar
 
-    @au.lazyproperty
+    @cached_property
     def covar(self):
         """(:class:`~numpy.ndarray`) The covariance matrix.
         The shape of this matrix is (:math:`M`, :math:`M`).
@@ -90,7 +90,7 @@ class computechi2(object):
                 covar[j, i] = covar[i, j]
         return covar
 
-    @au.lazyproperty
+    @cached_property
     def var(self):
         """(:class:`~numpy.ndarray`) The variances of the fit.
         This is identical to the diagonal of the covariance matrix.
