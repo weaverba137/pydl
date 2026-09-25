@@ -51,8 +51,8 @@ exclude = [".github/*"]
 # [tool.setuptools.dynamic]
 # version = {attr = "pydl.__version__"}
 
-# [tool.setuptools_scm]
-# version_file = "pydl/version.py"
+[tool.setuptools_scm]
+version_file = "pydl/_version.py"
 
 [tool.pytest.ini_options]
 testpaths = ["pydl", "docs"]
