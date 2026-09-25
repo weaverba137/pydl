@@ -1286,7 +1286,7 @@ def read_table_yanny(filename, tablename=None):
 
     Raises
     ------
-    :exc:`PydlutilsException`
+    :exc:`~pydl.pydlutils.PydlutilsException`
         If `tablename` is not set.
     :exc:`KeyError`
         If `tablename` does not exist in the file.

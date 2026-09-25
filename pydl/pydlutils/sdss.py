@@ -693,7 +693,7 @@ def set_maskbits(idlutils_version='v5_5_33', maskbits_file=None):
 
     Raises
     ------
-    :exc:`URLError`
+    :exc:`~urllib.error.URLError`
         If the data file could not be retrieved.
     """
     from astropy.utils.data import download_file

@@ -502,7 +502,7 @@ def spheregroup(ra, dec, linklength, chunksize=None):
 
     Raises
     ------
-    :exc:`PydlutilsException`
+    :exc:`~pydl.pydlutils.PydlutilsException`
         If the array of coordinates only contains one point.
 
     Notes
