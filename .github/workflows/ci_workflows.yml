@@ -41,14 +41,14 @@ jobs:
             python: 3.x
             toxenv: build_docs
 
-          - name: Linux - oldest Python, base dependencies
+          - name: Linux - older Python, base dependencies
             os: ubuntu-latest
             python: '3.11'
             toxenv: py311-test
 
           - name: Linux - oldest Python, oldest dependencies
             os: ubuntu-24.04
-            python: '3.11'
+            python: '3.10'
             toxenv: py311-test-oldestdeps
 
           - name: Linux - intermediate Python, base dependencies
