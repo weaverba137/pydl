@@ -2,16 +2,27 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
+    tags:
+      - '*'
   pull_request:
   schedule:
     # run every Wednesday at 5pm UTC
     - cron: '17 0 * * 3'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # Job names describe roles ("oldest"/"intermediate"/"current"/"latest" Python)
+  # rather than versions, so they stay stable if they are made required status
+  # checks. When bumping Python versions, change the python/toxenv values below
+  # (and in ci_cron_weekly.yml), not the names. "latest" (devdeps) moves to a
+  # new Python first. When 3.11 is dropped, "oldest" becomes 3.12 and both
+  # "intermediate" jobs become 3.13.
   tests:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
@@ -30,38 +41,43 @@ jobs:
             python: 3.x
             toxenv: build_docs
 
-          - name: Python 3.11 with astropy data and coverage
+          - name: Linux - oldest Python, base dependencies
             os: ubuntu-latest
             python: '3.11'
-            toxenv: py311-test-cov
-            toxargs: -v
-            toxposargs: --remote-data=astropy
+            toxenv: py311-test
 
-          - name: Python 3.12 (Windows)
+          - name: Linux - oldest Python, oldest dependencies
+            os: ubuntu-24.04
+            python: '3.11'
+            toxenv: py311-test-oldestdeps
+
+          - name: Linux - intermediate Python, base dependencies
+            os: ubuntu-latest
+            python: '3.13'
+            toxenv: py313-test
+
+          - name: Windows - intermediate Python, base dependencies
             os: windows-latest
             python: '3.12'
             toxenv: py312-test
 
-          - name: Python 3.10 (MacOS X)
+          - name: macOS - current Python, base dependencies
             os: macos-latest
-            python: '3.10'
-            toxenv: py310-test
+            python: '3.14'
+            toxenv: py314-test
 
-          - name: Python 3.10
+          - name: Linux - current Python, remote data, coverage
             os: ubuntu-latest
-            python: '3.10'
-            toxenv: py310-test
-
-          - name: Python 3.10 with oldest supported version of key dependencies
-            os: ubuntu-22.04
-            python: '3.10'
-            toxenv: py310-test-oldestdeps
+            python: '3.14'
+            toxenv: py314-test-cov
+            toxargs: -v
+            toxposargs: --remote-data=any
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python }}
     - name: Install language-pack-de and tzdata
@@ -84,26 +100,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: (Allowed Failure) Python 3.13 with development versions of key dependencies
+          - name: (Allowed Failure) Linux - latest Python, dev dependencies, remote data
             os: ubuntu-latest
-            python: '3.13'
-            toxenv: py313-test-devdeps
-            toxargs: -v
-
-          - name: (Allowed Failure) Python 3.12 with remote data and dev version of key dependencies
-            os: ubuntu-latest
-            python: '3.12-dev'
-            toxenv: py312-test-devdeps
+            python: '3.15'
+            toxenv: py315-test-devdeps
             toxargs: -v
             toxposargs: --remote-data=any
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python }}
+        allow-prereleases: true
     # - name: Install language-pack-de and tzdata
     #   if: startsWith(matrix.os, 'ubuntu')
     #   run: |
