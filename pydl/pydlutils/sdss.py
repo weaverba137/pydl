@@ -252,7 +252,7 @@ def sdss_flagval(flagname, bitname):
 
     Returns
     -------
-    :attribute:`numpy.uint64`
+    :attr:`numpy.uint64`
         The value of the bitmask name(s).
 
     Raises
@@ -320,7 +320,7 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None,
 
     Returns
     -------
-    :class:`numpy.ndarray` of :attribute:`numpy.int64`
+    :class:`numpy.ndarray` of :attr:`numpy.int64`
         The ObjIDs of the objects.
 
     Raises
@@ -450,7 +450,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
 
     Returns
     -------
-    :class:`numpy.ndarray` of :attribute:`numpy.uint64`
+    :class:`numpy.ndarray` of :attr:`numpy.uint64`
         The specObjIDs of the objects.
 
     Raises
@@ -568,7 +568,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
 
     Raises
     ------
-    :exc:`PydlutilsException`
+    :exc:`~pydl.pydlutils.PydlutilsException`
         If :envvar:`PHOTO_SWEEP` is not set.
 
     Notes
