@@ -1,14 +1,14 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 # -*- coding: utf-8 -*-
+from functools import cached_property
 import numpy as np
-from astropy.utils import lazyproperty
 
 
 class pcomp(object):
     """Replicates the IDL ``PCOMP()`` function.
 
     The attributes of this class are all read-only properties, implemented
-    with :class:`~astropy.utils.decorators.lazyproperty`.
+    with :func:`~functools.cached_property`.
 
     Parameters
     ----------
@@ -68,7 +68,7 @@ class pcomp(object):
         #
         return
 
-    @lazyproperty
+    @cached_property
     def coefficients(self):
         """(:class:`~numpy.ndarray`) The principal components.
         These are the coefficients of `derived`.
@@ -77,7 +77,7 @@ class pcomp(object):
         return self._evecs * np.tile(np.sqrt(self._evals), self._nv).reshape(
             self._nv, self._nv)
 
-    @lazyproperty
+    @cached_property
     def derived(self):
         """(:class:`~numpy.ndarray`) The derived variables.
         """
@@ -86,13 +86,13 @@ class pcomp(object):
             derived_data += self._xstd
         return derived_data
 
-    @lazyproperty
+    @cached_property
     def variance(self):
         """(:class:`~numpy.ndarray`) The variances of each derived variable.
         """
         return self._evals/self._c.trace()
 
-    @lazyproperty
+    @cached_property
     def eigenvalues(self):
         """(:class:`~numpy.ndarray`) The eigenvalues.
         There is one eigenvalue for each principal component.
