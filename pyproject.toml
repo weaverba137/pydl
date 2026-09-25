@@ -54,6 +54,14 @@ exclude = [".github/*"]
 # [tool.setuptools_scm]
 # version_file = "pydl/version.py"
 
+[tool.pytest.ini_options]
+testpaths = ["pydl", "docs"]
+astropy_header = true
+xfail_strict = true
+doctest_plus = "enabled"
+text_file_format = "rst"
+addopts = ["--color=yes", "--doctest-rst", "--astropy-header"]
+
 [tool.coverage.run]
 relative_files = true
 source = ["pydl"]
