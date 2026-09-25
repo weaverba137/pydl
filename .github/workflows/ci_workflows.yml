@@ -49,7 +49,7 @@ jobs:
           - name: Linux - oldest Python, oldest dependencies
             os: ubuntu-24.04
             python: '3.10'
-            toxenv: py311-test-oldestdeps
+            toxenv: py310-test-oldestdeps
 
           - name: Linux - intermediate Python, base dependencies
             os: ubuntu-latest
