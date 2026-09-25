@@ -71,6 +71,27 @@ testsuite  None            Tools for high-level quality assurance, *e.g.* compar
 .. _eBOSS: https://www.sdss4.org/surveys/eboss/
 .. _APOGEE-2: https://www.sdss4.org/surveys/apogee-2/
 
+Environment Variables
++++++++++++++++++++++
+
+These environment variables are optional, but can be used with some functions.
+
+.. envvar:: SPECTRO_REDUX
+
+    spec1d
+
+.. envvar:: BOSS_SPECTRO_REDUX
+
+    spec1d
+
+.. envvar:: RUN2D
+
+    spec1d
+
+.. envvar:: RUN1D
+
+    spec1d
+
 API
 +++
 

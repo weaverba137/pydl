@@ -638,8 +638,7 @@ class yanny(OrderedDict):
     def convert(self, structure, variable, value):
         """Converts value into the appropriate (Python) type.
 
-        * ``short`` & ``int`` are converted to Python :class:`int`.
-        * ``long`` is converted to Python :class:`long`.
+        * ``short``, ``int`` & ``long`` are converted to Python :class:`int`.
         * ``float`` & ``double`` are converted to Python :class:`float`.
         * Other types are not altered.
 
@@ -657,7 +656,7 @@ class yanny(OrderedDict):
 
         Returns
         -------
-        :class:`int`, :class:`long`, :class:`float` or :class:`str`
+        :class:`int`, :class:`float` or :class:`str`
             `value` converted to a Python numerical type.
         """
         intTypes = set(['short', 'int', 'long'])
