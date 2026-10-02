@@ -76,6 +76,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v7
+      with:
+        fetch-tags: true
     - name: Set up Python
       uses: actions/setup-python@v7
       with:
@@ -110,6 +112,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v7
+      with:
+        fetch-tags: true
     - name: Set up Python
       uses: actions/setup-python@v7
       with:

@@ -128,4 +128,4 @@ API
     :skip: chebyt, FITS_rec, PydlutilsException, djs_reject, djs_laxisgen, flegendre
 
 .. automodapi:: pydl.pydlutils.yanny
-    :skip: OrderedDict, PydlutilsException, PydlutilsUserWarning, Table
+    :skip: OrderedDict, PydlutilsException, PydlutilsUserWarning, Table, ZoneInfo
