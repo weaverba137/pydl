@@ -113,8 +113,8 @@ These environment variables are optional, but can be used with some functions.
     However, in a given data release it is possible to have multiple valid
     values of :envvar:`RUN2D`.
 
-.. _`SPECTRO_REDUX in the SDSS data model: https://data.sdss.org/datamodel/files/SPECTRO_REDUX/
-.. _`BOSS_SPECTRO_REDUX in the SDSS data model: https://data.sdss.org/datamodel/files/BOSS_SPECTRO_REDUX/
+.. _`SPECTRO_REDUX in the SDSS data model`: https://data.sdss.org/datamodel/files/SPECTRO_REDUX/
+.. _`BOSS_SPECTRO_REDUX in the SDSS data model`: https://data.sdss.org/datamodel/files/BOSS_SPECTRO_REDUX/
 
 API
 +++
