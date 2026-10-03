@@ -194,7 +194,7 @@ def sdss_flagname(flagname, flagvalue, concat=False):
     ----------
     flagname : :class:`str`
         The name of a bitmask group. Not case-sensitive.
-    flagvalue : :class:`long`
+    flagvalue : :class:`int`
         The value to be converted into bitmask names.
     concat : :class:`bool`, optional
         If set to ``True``, the list of names is converted to a
@@ -252,7 +252,7 @@ def sdss_flagval(flagname, bitname):
 
     Returns
     -------
-    :class:`numpy.uint64`
+    :attr:`numpy.uint64`
         The value of the bitmask name(s).
 
     Raises
@@ -320,7 +320,7 @@ def sdss_objid(run, camcol, field, objnum, rerun=301, skyversion=None,
 
     Returns
     -------
-    :class:`numpy.ndarray` of :class:`numpy.int64`
+    :class:`numpy.ndarray` of :attr:`numpy.int64`
         The ObjIDs of the objects.
 
     Raises
@@ -450,7 +450,7 @@ def sdss_specobjid(plate, fiber, mjd, run2d, line=None, index=None):
 
     Returns
     -------
-    :class:`numpy.ndarray` of :class:`numpy.uint64`
+    :class:`numpy.ndarray` of :attr:`numpy.uint64`
         The specObjIDs of the objects.
 
     Raises
@@ -568,7 +568,7 @@ def sdss_sweep_circle(ra, dec, radius, stype='star', allobj=False):
 
     Raises
     ------
-    :exc:`PydlutilsException`
+    :exc:`~pydl.pydlutils.PydlutilsException`
         If :envvar:`PHOTO_SWEEP` is not set.
 
     Notes
@@ -693,7 +693,7 @@ def set_maskbits(idlutils_version='v5_5_33', maskbits_file=None):
 
     Raises
     ------
-    :exc:`URLError`
+    :exc:`~urllib.error.URLError`
         If the data file could not be retrieved.
     """
     from astropy.utils.data import download_file

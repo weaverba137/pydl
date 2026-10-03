@@ -71,6 +71,51 @@ testsuite  None            Tools for high-level quality assurance, *e.g.* compar
 .. _eBOSS: https://www.sdss4.org/surveys/eboss/
 .. _APOGEE-2: https://www.sdss4.org/surveys/apogee-2/
 
+Environment Variables
++++++++++++++++++++++
+
+These environment variables are optional, but can be used with some functions.
+
+.. envvar:: SPECTRO_REDUX
+
+    In the directory heirarchy of SDSS data releases, this environment variable
+    stores the path to the directory containing all *reduced* spectroscopic
+    data. Within this directory, individual spectroscopic reductions are
+    contained within a :envvar:`RUN2D` directory.
+    See also `SPECTRO_REDUX in the SDSS data model`_.
+
+.. envvar:: BOSS_SPECTRO_REDUX
+
+    In the directory heirarchy of SDSS data releases, this environment variable
+    stores the path to the directory containing *reduced* spectroscopic data
+    from the (e)BOSS surveys. The contents of :envvar:`SPECTRO_REDUX` are
+    usually a superset of the contents of :envvar:`BOSS_SPECTRO_REDUX`, but
+    because of differences in top-level summary files, this is only true for
+    subdirectories rather than files.
+    See also `BOSS_SPECTRO_REDUX in the SDSS data model`_.
+
+.. envvar:: RUN2D
+
+    In SDSS data releases, this environment variable holds the version of the
+    "2D" spectroscopic extraction pipeline software. It is typically also the
+    name of a directory, although the full path would be,
+    *e.g.* ``${SPECTRO_REDUX}/${RUN2D}``.
+    The spectroscopic extraction involves converting raw data, which are
+    2-dimensional CCD images into sets 1-dimensional flux-versus-wavelength spectra.
+
+.. envvar:: RUN1D
+
+    In SDSS data releases, this environment variable holds the version of the
+    "1D" spectroscopic pipeline, which covers the steps of redshift determination
+    and spectroscopic classification based on the 1-dimensional outputs from the
+    "2D" pipeline. Historically, both steps were performed by the idlspec2d_
+    package and in almost all cases ``${RUN1D} == ${RUN2D}``.
+    However, in a given data release it is possible to have multiple valid
+    values of :envvar:`RUN2D`.
+
+.. _`SPECTRO_REDUX in the SDSS data model`: https://data.sdss.org/datamodel/files/SPECTRO_REDUX/
+.. _`BOSS_SPECTRO_REDUX in the SDSS data model`: https://data.sdss.org/datamodel/files/BOSS_SPECTRO_REDUX/
+
 API
 +++
 

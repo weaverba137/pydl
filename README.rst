@@ -5,11 +5,11 @@ PyDL
 |Astropy Status| |License| |Zenodo| |PyPI Status| |Actions Status| |Coveralls Status| |Documentation Status|
 
 .. |Astropy Status| image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
-    :target: http://www.astropy.org
+    :target: https://www.astropy.org
     :alt: Powered by Astropy Badge
 
 .. |License| image:: https://img.shields.io/pypi/l/pydl.svg
-    :target: https://pypi.python.org/pypi/pydl
+    :target: https://pypi.org/project/pydl
     :alt: License
 
 .. |Zenodo| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.2575873.svg
@@ -29,7 +29,7 @@ PyDL
     :alt: Test Coverage Status
 
 .. |Documentation Status| image:: https://readthedocs.org/projects/pydl/badge/?version=latest
-    :target: http://pydl.readthedocs.org/en/latest/
+    :target: https://pydl.readthedocs.io/en/latest/
     :alt: Documentation Status
 
 Description

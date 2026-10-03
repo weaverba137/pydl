@@ -10,6 +10,7 @@ on:
   schedule:
     # run every Monday at 6am UTC
     - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,23 +28,21 @@ jobs:
 
           # We do not use remote data here, since
           # that gives too many false positives due to URL timeouts.
-          - name: Python 3.11 with pre-release version of key dependencies
+          - name: Linux - current Python, pre-release dependencies
             os: ubuntu-latest
-            python: '3.11'
-            toxenv: py311-test-predeps
+            python: '3.14'
+            toxenv: py314-test-predeps
 
           - name: Documentation link check
             os: ubuntu-latest
-            python: '3.10'
+            python: '3.13'
             toxenv: linkcheck
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      uses: actions/checkout@v7
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python }}
     - name: Install language-pack-de and tzdata
