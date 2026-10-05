@@ -1,5 +1,90 @@
 [build-system]
-requires = ["setuptools",
-            "setuptools_scm",
-            "wheel"]
+requires = ["setuptools", "setuptools_scm"]
 build-backend = 'setuptools.build_meta'
+
+[project]
+name = "pydl"
+dynamic = ["version"]
+authors = [ { name = "Benjamin Alan Weaver", email = "benjamin.weaver@noirlab.edu"} ]
+license = "BSD-3-Clause"
+license-files = ["LICENSE.rst"]
+description = "Library of IDL astronomy routines converted to Python."
+readme = "README.rst"
+requires-python = ">=3.10"
+dependencies = ["astropy>=6.0", "scipy>=1.8"]
+keywords = ["astronomy", "astropy", "python", "SDSS"]
+classifiers = ["Development Status :: 5 - Production/Stable",
+               "Environment :: Console",
+               "Intended Audience :: Science/Research",
+               "Operating System :: OS Independent",
+               "Programming Language :: Python :: 3",
+               "Topic :: Scientific/Engineering :: Physics",
+               "Topic :: Scientific/Engineering :: Astronomy"]
+
+[project.optional-dependencies]
+all = ["matplotlib"]
+test = ["pytest-astropy", "pytest-mock", "tox"]
+docs = ["sphinx-astropy"]
+
+[project.urls]
+Documentation = "https://pydl.readthedocs.io/en/latest/"
+Repository = "https://github.com/weaverba137/pydl"
+Issues = "https://github.com/weaverba137/pydl/issues"
+Changelog = "https://pydl.readthedocs.io/en/latest/changes.html"
+
+[project.scripts]
+get_juldate = "pydl.goddard.astro:get_juldate_main"
+hogg_iau_name = "pydl.pydlutils.misc:hogg_iau_name_main"
+compute_templates = "pydl.pydlspec2d.spec1d:template_input_main"
+
+[tool.setuptools.package-data]
+"pydl.tests" = ["t/*"]
+"pydl.goddard.tests" = ["t/*"]
+"pydl.photoop.tests" = ["t/*"]
+"pydl.pydlspec2d.tests" = ["t/*"]
+"pydl.pydlutils" = ["data/cooling/*", "data/filters/*"]
+"pydl.pydlutils.tests" = ["t/*"]
+
+[tool.setuptools.packages.find]
+exclude = [".github/*"]
+
+# [tool.setuptools.dynamic]
+# version = {attr = "pydl.__version__"}
+
+[tool.setuptools_scm]
+version_file = "pydl/_version.py"
+
+[tool.pytest.ini_options]
+testpaths = ["pydl", "docs"]
+astropy_header = true
+xfail_strict = true
+doctest_plus = "enabled"
+text_file_format = "rst"
+addopts = ["--color=yes", "--doctest-rst", "--astropy-header"]
+
+[tool.coverage.run]
+relative_files = true
+source = ["pydl"]
+omit = ["pydl/tests/*",
+        "pydl/*/tests/*",
+        "pydl/_version*",
+        "*/pydl/tests/*",
+        "*/pydl/*/tests/*",
+        "*/pydl/_version*"]
+
+[tool.coverage.report]
+exclude_lines = [
+                # Have to re-enable the standard pragma
+                "pragma: no cover",
+                # Don't complain about packages we have installed
+                "except ImportError",
+                # Don't complain if tests don't hit assertions
+                "raise AssertionError",
+                "raise NotImplementedError",
+                # Don't complain about script hooks
+                "def main\\(.*\\):",
+                # Ignore branches that don't pertain to this version of Python
+                "pragma: py{ignore_python_version}",
+                # Don't complain about IPython completion helper
+                "def _ipython_key_completions_",
+                ]

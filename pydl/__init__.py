@@ -13,7 +13,7 @@ functions are implemented to support this.
 .. _`IDL®`: https://www.nv5geospatialsoftware.com/Products/IDL
 """
 try:
-    from .version import version as __version__
+    from ._version import version as __version__
 except ImportError:
     __version__ = ''
 

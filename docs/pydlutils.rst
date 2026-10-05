@@ -74,6 +74,47 @@ yanny       Good            Tools for manipulating `SDSS parameter files`_.
 .. _`sweep files`: https://data.sdss.org/datamodel/files/PHOTO_SWEEP/RERUN/calibObj.html
 .. _`SDSS parameter files`: https://www.sdss4.org/dr16/software/par/
 
+Environment Variables
++++++++++++++++++++++
+
+These environment variables are optional, but can be used with some functions.
+
+.. envvar:: PHOTO_RESOLVE
+
+    In the directory heirarchy of SDSS data releases, this environment variable
+    stores the path to the directory containing files related to the
+    identification of duplicate photometric observations of the same
+    astronomical object, and the determination of which photometric observations
+    cover a particular region of the sky. The latter case is called the "window"
+    or "window function" of the survey, and :mod:`~pydl.photoop.window` uses
+    the window files to perform calculations such as: "Is this point in the sky
+    covered by SDSS imaging, and if so, which images?"
+    See also `Resolve in SDSS imaging`_ and `PHOTO_RESOLVE in the SDSS data model`_.
+
+.. envvar:: PHOTO_SWEEP
+
+    In the directory heirarchy of SDSS data releases, this environment variable
+    stores the path to the directory containing a subset of the full
+    SDSS photometric catalog. Historically this was used to produce lists
+    of targets for spectroscopic follow-up, as well as more rapid searches
+    of small sky areas. In particular, :func:`~pydl.pydlutils.sdss.sdss_sweep_circle`
+    performs a search of a circular area around a given RA, Dec using these
+    files. Despite being a subset with only essential columns, the
+    sweep files still total on the order of a few hundred GB.
+    See also `PHOTO_SWEEP in the SDSS data model`_.
+
+.. envvar:: PHOTOLOG_DIR
+
+    This environment variable stores the path to a specific SDSS data product,
+    "photolog". Currently, :func:`~pydl.pydlutils.sdss.sdss_astrombad` can
+    look for a specific file in a subdirectory:
+    ``${PHOTOLOG_DIR}/opfiles/opBadFields.par``. However, it is more likely
+    that this relatively small file will simply be downloaded.
+
+.. _`Resolve in SDSS imaging`: https://www.sdss4.org/dr17/algorithms/resolve/
+.. _`PHOTO_RESOLVE in the SDSS data model`: https://data.sdss.org/datamodel/files/PHOTO_RESOLVE/
+.. _`PHOTO_SWEEP in the SDSS data model`: https://data.sdss.org/datamodel/files/PHOTO_SWEEP/
+
 API
 +++
 
@@ -94,7 +135,7 @@ API
     :skip: PydlutilsException, PydlutilsUserWarning
 
 .. automodapi:: pydl.pydlutils.math
-    :skip: svd, djs_laxisnum, median
+    :skip: svd, djs_laxisnum, median, cached_property
 
 .. automodapi:: pydl.pydlutils.misc
 
