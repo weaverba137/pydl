@@ -76,6 +76,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v7
+      # This is needed for setuptools_scm to work correctly.
       with:
         fetch-depth: 0
         fetch-tags: true
@@ -113,7 +114,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v7
+      # This is needed for setuptools_scm to work correctly.
       with:
+        fetch-depth: 0
         fetch-tags: true
     - name: Set up Python
       uses: actions/setup-python@v7
